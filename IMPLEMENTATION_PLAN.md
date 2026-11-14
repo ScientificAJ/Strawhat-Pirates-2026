@@ -393,3 +393,9 @@ The [collaborator evaluation](docs/scientific-coworker-evaluation-2026-11-14.md)
 ## 15 November 2026 — Optional agent library
 
 The owner authorized a separate [Agents workspace](docs/custom-agents.md) with useful built-in roles, manual profile and reusable-skill creation, and description-based reviewable drafts. Profiles retain bounded role/skill instructions and explicit tool groups. Their conversations preserve frozen configurations and remain separate from core Research Studio. Server scientific, consent and approval controls remain authoritative. Verification for this extension uses focused unit cases, static/build checks and a bounded rendered workflow inspection; the earlier broad suites are not repeated.
+
+## 15 November 2026 — Science and citation review
+
+The [science review](docs/science-validation-2026-11-15.md) records a bounded audit of registered formulas, unit conversions, numerical boundaries, uncertainty, comparison/ranking and claim provenance. Concrete defects were corrected with focused known-answer/regression checks. Numbered chat citations and a Sources footer expose recorded source locations through the existing exact evidence reader. This review does not complete hosted acceptance, reconcile all source records into independent experiments, certify calibration or establish general semantic claim verification; those limits remain explicit.
+
+At the owner's subsequent request, the complete local pass finished with 640 Python tests and 54 Chrome tests passing, including real database/gVisor paths, plus static/build checks. The [full verification report](docs/full-product-verification-2026-11-15.md) preserves the separate live custom-role outcome, including its withheld source-citation paragraph. No hosted acceptance or general scientific certification is inferred from these results.

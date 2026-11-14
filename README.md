@@ -16,6 +16,10 @@ The [interface refinement](docs/ui-refinement-2026-11-14.md) adds a restrained w
 
 The separate [Agents workspace](docs/custom-agents.md) offers three built-in research roles, manual profiles, reusable skills and description-based drafts. Each conversation retains its selected configuration; standard Research Studio remains available independently.
 
+The [science and source-traceability review](docs/science-validation-2026-11-15.md) records the formula, unit, uncertainty and evidence checks, corrections and remaining scientific limits. Chat replies include numbered citations and a Sources list linked to recorded evidence locations.
+
+The [full local verification report](docs/full-product-verification-2026-11-15.md) records the complete backend, browser, execution and static/build results, plus the separate bounded live research check.
+
 Run `pnpm run setup` and `pnpm dev`, then open `http://127.0.0.1:3100`. See [local development](docs/local-development.md) for requirements and checks, and the current backend/frontend reports for implementation evidence. The [first build report](docs/local-build-2026-11-14.md) remains historical.
 
 - [Master brief](MASTER_BRIEF.md): product scope, scientific contracts, architecture, interface requirements, and empirical data audit.

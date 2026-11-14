@@ -36,6 +36,18 @@ Each location retains its source checksum and investigation/document identity.
 An embedded figure additionally carries its archive member and member checksum.
 A valid source location does not itself prove an interpretation.
 
+Chat replies now expose these recorded locations through numbered bracket
+citations and a Sources footer. Numbers are stable within the reply and identify
+the facts cited by its displayed claims. Calculations retain their own origin;
+their original-source locations identify inputs rather than a measurement of the
+computed output. Missing facts or unsupported locators remain explicit. The
+[science review](science-validation-2026-11-15.md) records the audit and limits.
+
+A citation to a returned table preview may identify several recorded cells
+without a narrower claim-to-cell mapping. Its source-location selector preserves
+that preview scope; it does not guess which cell scientifically supports a
+particular phrase. Source inspection remains distinct from semantic verification.
+
 Identical bytes can belong to different source records. Saffire-I and Saffire-III
 README copies have the same byte checksum but different accessions and file
 names. Use accession/asset selectors on source-format requests and exact asset

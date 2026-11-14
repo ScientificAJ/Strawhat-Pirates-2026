@@ -339,3 +339,7 @@ claiming NASA experimental calibration. No paid API call is involved.
 ## 14 November 2026 — Optional source-parameterized droplet model
 
 `droplet_d_squared_v1` provides the bounded constant-K D² trajectory and constant-density relative-mass relation described in the [model workspace report](source-parameterized-models-2026-11-14.md). The FLEX-007 endpoint resolves nominal D₀ and kavg from unit-bearing source lines. Assigned-input models retain analyst assumptions. The record separates source parameters, calculated states and illustrative geometry. It does not change registered fits, qualify a predictor or alter source bytes.
+
+## 15 November 2026 — Scientific boundary review
+
+The [calculation audit](science-calculations-audit-2026-11-15.md) records primary-reference checks and targeted numerical/domain corrections. Moments-based Monte Carlo ratio propagation now requires a fixed nonzero denominator; the same restriction applies to temperature in its oxygen-molar-density function. A stochastic Gaussian denominator does not generally support the reported population moments. This restriction does not add a new probability distribution or qualify any measurement. The [umbrella review](science-validation-2026-11-15.md) also records unit conversion, plotted-coordinate lineage and scientific-integrity checks.
