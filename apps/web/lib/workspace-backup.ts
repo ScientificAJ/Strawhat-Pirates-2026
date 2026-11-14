@@ -27,7 +27,7 @@ export type Preferences = {
   last_backup_at?: string;
 };
 export const defaultPreferences: Preferences = {
-  theme: "light",
+  theme: "system",
   density: "comfortable",
   units: "source",
   summary_depth: "technical",
@@ -50,7 +50,8 @@ export async function readPreferences(): Promise<Preferences> {
       resolve({
         ...defaultPreferences,
         ...request.result,
-        theme: request.result?.theme ?? theme.result ?? "light",
+        theme:
+          request.result?.theme ?? theme.result ?? defaultPreferences.theme,
       });
     };
     tx.onerror = tx.onabort = () => {

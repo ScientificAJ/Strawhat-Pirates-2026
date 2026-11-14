@@ -286,18 +286,24 @@ export function WorkspaceSettings({
       <form className="settings-form" onSubmit={save}>
         <section>
           <h2>Appearance and accessibility</h2>
+          <p id="appearance-help" className="muted">
+            System default follows your device’s light or dark appearance,
+            including automatic changes. Choose Light or Dark to keep a fixed
+            appearance.
+          </p>
           <div className="settings-fields">
             <label>
               Appearance
               <select
+                aria-describedby="appearance-help"
                 value={preferences.theme}
                 onChange={(event) =>
                   change("theme", event.target.value as Preferences["theme"])
                 }
               >
+                <option value="system">System default</option>
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
-                <option value="system">System preference</option>
               </select>
             </label>
             <label>
