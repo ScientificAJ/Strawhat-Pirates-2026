@@ -1,3 +1,5 @@
+import { workspaceDatabaseName } from "./local-workspaces";
+
 export type SourceAnchor = {
   accession: string;
   investigation_version: number;
@@ -43,14 +45,22 @@ type WorkspaceBackup = {
   cases: ResearchCase[];
 };
 
-function database(): Promise<IDBDatabase> {
+export function openWorkspaceDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const opening = indexedDB.open("nova-ember-workspace", 1);
+    const opening = indexedDB.open(workspaceDatabaseName(), 2);
     opening.onupgradeneeded = () => {
-      opening.result.createObjectStore("cases", { keyPath: "id" });
-      opening.result.createObjectStore("preferences");
+      const db = opening.result;
+      if (!db.objectStoreNames.contains("cases"))
+        db.createObjectStore("cases", { keyPath: "id" });
+      if (!db.objectStoreNames.contains("preferences"))
+        db.createObjectStore("preferences");
+      if (!db.objectStoreNames.contains("documents"))
+        db.createObjectStore("documents", { keyPath: "id" });
     };
-    opening.onsuccess = () => resolve(opening.result);
+    opening.onsuccess = () => {
+      opening.result.onversionchange = () => opening.result.close();
+      resolve(opening.result);
+    };
     opening.onerror = () =>
       reject(
         new Error(
@@ -65,6 +75,8 @@ function database(): Promise<IDBDatabase> {
       );
   });
 }
+
+const database = openWorkspaceDatabase;
 
 export async function storedTheme(): Promise<"light" | "dark" | null> {
   const db = await database();
@@ -166,7 +178,10 @@ export async function saveCase(
     const current = store.get(value.id);
     current.onsuccess = () => {
       const stored = current.result as ResearchCase | undefined;
-      if (stored && stored.revision !== expectedRevision) {
+      if (
+        (stored && stored.revision !== expectedRevision) ||
+        (!stored && expectedRevision !== undefined && expectedRevision > 0)
+      ) {
         conflict = true;
         tx.abort();
         reject(
@@ -249,7 +264,7 @@ function validAnchors(value: unknown): value is SourceAnchor[] | undefined {
   );
 }
 
-function validRevision(
+export function validRevision(
   value: unknown,
   allowDraft = false,
 ): value is SavedRevision {
@@ -269,6 +284,19 @@ function validRevision(
       (id) => typeof id === "string" && /^PSI-\d+$/.test(id),
     ) &&
     validAnchors(record.source_anchors)
+  );
+}
+
+export function isResearchCase(value: unknown): value is ResearchCase {
+  if (!value || typeof value !== "object") return false;
+  const item = value as ResearchCase;
+  return (
+    boundedText(item.id, 500) &&
+    boundedText(item.title, 1000) &&
+    validRevision({ ...item, saved_at: item.updated_at }, true) &&
+    Array.isArray(item.revisions) &&
+    item.revisions.length <= 10000 &&
+    item.revisions.every((revision) => validRevision(revision))
   );
 }
 

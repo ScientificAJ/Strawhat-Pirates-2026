@@ -1,0 +1,468 @@
+.workbench {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+.heading p {
+  max-width: 72ch;
+  color: var(--secondary);
+  margin: 0;
+}
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--divider);
+  padding-bottom: 10px;
+}
+.tabs button,
+.tabs a {
+  padding: 9px 13px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--secondary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.tabs [aria-selected="true"],
+.tabs [aria-current="page"] {
+  background: var(--blue-wash);
+  color: var(--action);
+}
+.split {
+  display: grid;
+  grid-template-columns: minmax(220px, 290px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.aside {
+  background: var(--subtle);
+  padding: 20px;
+  border-radius: 12px;
+  display: grid;
+  gap: 16px;
+}
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 0;
+}
+.surface h2 {
+  margin-bottom: 12px;
+}
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.field small,
+.muted {
+  color: var(--secondary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+.field input,
+.field select,
+.field textarea,
+.editor {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--boundary);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 9px 11px;
+}
+.field textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+.full {
+  grid-column: 1/-1;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.status {
+  padding: 10px 12px;
+  background: var(--blue-wash);
+  border-radius: 7px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.error {
+  padding: 12px;
+  border: 1px solid var(--danger);
+  border-radius: 7px;
+  color: var(--danger);
+  background: var(--danger-wash);
+}
+.warning {
+  padding: 12px;
+  background: var(--caution-wash);
+  color: var(--caution);
+  border-radius: 7px;
+}
+.table {
+  overflow: auto;
+  max-height: 520px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+}
+.table table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.8125rem;
+}
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--divider);
+  padding: 10px 12px;
+  min-width: 90px;
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+.table th {
+  position: sticky;
+  top: 0;
+  background: var(--subtle);
+  z-index: 1;
+}
+.table td {
+  font-variant-numeric: tabular-nums;
+}
+.table td button {
+  background: none;
+  border: 0;
+  color: var(--action);
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.check input {
+  margin-top: 4px;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+.variables {
+  display: grid;
+  gap: 7px;
+  max-height: 420px;
+  overflow: auto;
+}
+.variable {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider);
+}
+.variable label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.variable small {
+  display: block;
+  margin: 4px 0 0 25px;
+  overflow-wrap: anywhere;
+  color: var(--secondary);
+}
+.summary {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  color: var(--secondary);
+  font-size: 0.8125rem;
+}
+.summary strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.details {
+  margin-top: 16px;
+  border-top: 1px solid var(--divider);
+  padding-top: 12px;
+}
+.details summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+.details pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.75rem;
+  max-height: 360px;
+  overflow: auto;
+}
+.empty {
+  padding: 32px 12px;
+  text-align: center;
+  max-width: 65ch;
+  margin: auto;
+  color: var(--secondary);
+}
+.empty h3 {
+  color: var(--ink);
+}
+.editor {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  min-height: 240px;
+  tab-size: 4;
+  resize: vertical;
+}
+.output {
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: 460px;
+  background: var(--subtle);
+  padding: 16px;
+  font:
+    0.8125rem/1.6 "IBM Plex Mono",
+    monospace;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.list {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.item {
+  border-bottom: 1px solid var(--divider);
+  padding: 12px 0;
+  display: grid;
+  gap: 8px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.stack {
+  display: grid;
+  gap: 16px;
+}
+.figure {
+  min-height: 220px;
+  overflow: auto;
+  max-width: 100%;
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 8px;
+}
+.figure svg {
+  max-width: 100%;
+  height: auto;
+}
+.caption {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  max-width: 75ch;
+  line-height: 1.6;
+}
+.skeleton {
+  height: 200px;
+  background: var(--subtle);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: var(--subtle);
+  color: var(--secondary);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+}
+.component {
+  grid-column: span var(--span, 6);
+  min-width: 0;
+}
+.component[draggable="true"] {
+  cursor: grab;
+}
+.selection {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+.media {
+  width: 100%;
+  max-height: 520px;
+  background: var(--subtle);
+  object-fit: contain;
+  border-radius: 8px;
+}
+.mediaStage {
+  position: relative;
+  overflow: hidden;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.annotation {
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.inline {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.inline > .field {
+  flex: 1;
+  min-width: 140px;
+}
+.progress {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--action);
+}
+.delete {
+  color: var(--danger);
+}
+.link {
+  color: var(--action);
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.6;
+  }
+}
+@media (max-width: 950px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+  .aside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .variables {
+    grid-column: 1/-1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .component {
+    grid-column: span 12;
+  }
+}
+@media (max-width: 600px) {
+  .fields,
+  .aside,
+  .variables {
+    grid-template-columns: 1fr;
+  }
+  .surface {
+    padding: 16px;
+  }
+  .heading {
+    flex-direction: column;
+  }
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .component {
+    grid-column: span 4;
+  }
+  .row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .tabs {
+    gap: 2px;
+  }
+  .tabs button,
+  .tabs a {
+    padding: 8px 10px;
+  }
+  .figure {
+    padding: 0;
+  }
+  .table th,
+  .table td {
+    padding: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+.workbench fieldset,
+.surface fieldset {
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0;
+  min-width: 0;
+}
+.workbench legend,
+.surface legend {
+  padding: 0 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.caption {
+  overflow-wrap: anywhere;
+}
+.field,
+.heading > div {
+  min-width: 0;
+}
+.workbench button,
+.workbench select,
+.workbench input,
+.workbench textarea {
+  max-width: 100%;
+}
+.workbench .actions > button,
+.workbench .actions > label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.field {
+  align-content: start;
+}

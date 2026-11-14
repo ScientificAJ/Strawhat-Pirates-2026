@@ -151,7 +151,13 @@ export function useResource<T>(url: string | null) {
   const reload = useCallback(() => setAttempt((current) => current + 1), []);
 
   useEffect(() => {
-    if (!url) return;
+    if (!url) {
+      setData(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+    setData(null);
     const controller = new AbortController();
     setLoading(true);
     setError(null);
