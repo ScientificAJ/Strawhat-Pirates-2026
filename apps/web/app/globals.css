@@ -227,6 +227,7 @@ sub {
   text-decoration: none;
   letter-spacing: -0.035em;
   padding: 0 8px;
+  width: fit-content;
   min-height: 44px;
   border-radius: 8px;
 }

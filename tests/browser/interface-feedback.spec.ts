@@ -103,6 +103,9 @@ for (const width of [1440, 390]) {
     }
     await expectComfortableTarget(page.locator(".wordmark"));
     if (width < 960) {
+      const brand = await page.locator(".wordmark").boundingBox();
+      const close = await page.locator(".mobile-close").boundingBox();
+      expect(brand!.x + brand!.width).toBeLessThanOrEqual(close!.x);
       await page.keyboard.press("Escape");
       await expect(page.locator("#mobile-navigation")).toBeHidden();
     }
