@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Bookmark, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -21,6 +21,7 @@ import { SupportingSource } from "./supporting-source";
 import { RawTable } from "./catalog";
 import { useWorkspacePreferences } from "../lib/workspace-preferences";
 import { RetainedFormatView } from "./retained-format-view";
+import { InvestigationWatch } from "./investigation-watch";
 import {
   Anchor,
   Empty,
@@ -497,31 +498,14 @@ export function InvestigationDossier({
         <>
           <div className={s.toolbar}>
             <h2>Versioned original sources</h2>
-            <button
-              className="button"
-              onClick={() => {
-                void saveDocument({
-                  kind: "watch",
-                  title: "Watch " + accession,
-                  snapshot_id: snapshotId,
-                  data: {
-                    accession,
-                    investigation_version: data.version,
-                    source_ids: data.assets.map((asset) => asset.id),
-                    check: "on_return",
-                  },
-                })
-                  .then(() =>
-                    setMessage(
-                      "Evidence watch saved. Source changes are checked when you return; this frozen dossier remains unchanged.",
-                    ),
-                  )
-                  .catch((reason) => setProblem(errorMessage(reason)));
-              }}
-            >
-              <Bookmark size={16} /> Watch source changes
-            </button>
           </div>
+          <InvestigationWatch
+            key={accession}
+            accession={accession}
+            snapshotId={snapshotId}
+            version={data.version}
+            assetIds={data.assets.map((asset) => asset.id)}
+          />
           <div className={s.scroll}>
             <table className={s.table}>
               <thead>

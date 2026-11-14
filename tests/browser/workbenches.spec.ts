@@ -477,3 +477,58 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     )
     .toBe(true);
 });
+
+test("investigation watches reopen their frozen baseline and public change feed", async ({
+  page,
+}) => {
+  let checked = 0;
+  await page.route("**/v1/snapshots/*/changes", (route) => {
+    checked++;
+    return route.fulfill({
+      json: {
+        observed_changes: [
+          {
+            accession: "PSI-69",
+            status: "metadata_changed",
+            changed_fields: ["description"],
+          },
+        ],
+        released_changes: {},
+        limitations: [
+          "Offline change-feed fixture; no source release was promoted.",
+        ],
+      },
+    });
+  });
+  await page.goto("/app/investigations/PSI-69?section=sources");
+  await page
+    .getByRole("button", { name: "Watch source changes", exact: true })
+    .click();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "1 observed changes for PSI-69." }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Pause source watch", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "1 observed changes for PSI-69." }),
+  ).toBeVisible();
+  expect(checked).toBeGreaterThanOrEqual(2);
+  await page.goto("/app/settings");
+  await page
+    .getByRole("link", { name: "PSI-69 · source watch", exact: true })
+    .click();
+  await expect(page).toHaveURL(/snapshot=[a-f0-9]{64}/);
+  await page
+    .getByRole("button", { name: "Pause source watch", exact: true })
+    .click();
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Watch source changes", exact: true }),
+  ).toBeVisible();
+});

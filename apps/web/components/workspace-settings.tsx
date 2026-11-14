@@ -32,6 +32,9 @@ export function WorkspaceSettings({
   onRestore: () => void;
 }) {
   const { updateContext } = useResearchContext();
+  const [investigationWatches, setInvestigationWatches] = useState<
+    WorkspaceDocument[]
+  >([]);
   const [savedScopes, setSavedScopes] = useState<WorkspaceDocument[]>([]);
   const [watches, setWatches] = useState<
     { document: WorkspaceDocument; researchCase: ResearchCase | undefined }[]
@@ -69,6 +72,11 @@ export function WorkspaceSettings({
       void Promise.all([listDocuments(), listCases()])
         .then(([documents, cases]) => {
           if (!active) return;
+          setInvestigationWatches(
+            documents.filter(
+              (item) => item.kind === "watch" && item.data.enabled !== false,
+            ),
+          );
           setSavedScopes(
             documents.filter(
               (item) =>
@@ -543,6 +551,22 @@ export function WorkspaceSettings({
             No cases are watched in this workspace. Enable a watch in a case’s
             Evidence changes section.
           </p>
+        )}
+        {investigationWatches.length > 0 && (
+          <>
+            <h3>Watched investigations</h3>
+            <ul>
+              {investigationWatches.map((item) => (
+                <li key={item.id}>
+                  <Link
+                    href={`/app/investigations/${String(item.data.accession)}?section=sources&snapshot=${item.snapshot_id}`}
+                  >
+                    {String(item.data.accession)} · source watch
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
         <Link className="text-button" href="/app/cases">
           Open research cases
