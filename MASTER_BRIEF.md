@@ -1598,6 +1598,8 @@ Construct the master on a 24-unit grid. Preserve generous internal negative spac
 
 Use the wordmark in a medium-weight, carefully spaced sans serif. Do not replace individual letters with flames or spacecraft. The mark must remain recognizable on white, graphite, monochrome print, and a browser tab. Final vector artwork must be drawn and inspected before release; this specification defines its construction rather than supplying finished logo files.
 
+**14 November 2026 refinement:** The working wordmark may carry a small decorative volumetric ember inside the intact A. Keep the letter readable, the existing abstract mark, and a static fallback. The accent runs only briefly on deliberate hover or keyboard focus; it is not experimental footage or a scientific rendering. This extends the identity without replacing a letter or adding a background animation.
+
 ### A40.3 Imagery and graphic language
 
 Prioritize authentic experiment images, apparatus details, calibrated frames, and source-linked scientific figures. Present images in simple frames with captions and credits. Preserve the original scientific image and distinguish display adjustments from measurement inputs.
@@ -1647,6 +1649,8 @@ The neutral surfaces should occupy most of an ordinary research screen. As an ar
 ### A41.2 Dark theme tokens
 
 The default onboarding presentation is light. Offer persistent Light, Dark, and System settings. Dark mode is an equal-quality research theme, not a simple inversion and not a requirement to make the app feel premium.
+
+**14 November 2026 default update:** System is now the default for a new workspace, superseding the earlier light default. Follow the device’s light/dark preference and live changes; retain explicit saved Light or Dark choices. Keep the established light and dark palettes and source-media treatment.
 
 | Token | Value | Intended use |
 |---|---|---|
