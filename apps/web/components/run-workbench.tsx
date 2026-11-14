@@ -18,6 +18,7 @@ import { ErrorState, LoadingRows } from "./chrome";
 import { sourceRole } from "./scientific-records";
 import { ScientificRecordView } from "./scientific-records";
 import { SupportingSource } from "./supporting-source";
+import { FlexAnalysis } from "./laboratory";
 import { RawTable } from "./catalog";
 import { useWorkspacePreferences } from "../lib/workspace-preferences";
 import { RetainedFormatView } from "./retained-format-view";
@@ -31,12 +32,12 @@ import {
   InspectButton,
   Limitations,
   post,
-  Scope,
   sourceUrl,
   SourceInspector,
   useQuery,
 } from "./workbench-common";
 import s from "./workbench.module.css";
+import journey from "./research-journey.module.css";
 
 type DeepDossier = Dossier & {
   source_fields: Record<
@@ -148,6 +149,7 @@ async function studioDraft(
       investigations: [accession],
       anchors,
       summary_depth: depth,
+      auto_submit: true,
     },
   });
 }
@@ -168,6 +170,15 @@ export function InvestigationDossier({
     "/v1/investigations/" + accession + "/dossier?snapshot_id=" + snapshotId,
   );
   const data = result.data;
+  useEffect(() => {
+    if (!data || !context) return;
+    updateContext({
+      snapshot_id: snapshotId,
+      investigations: [accession],
+      selected_sources: [],
+      selected_evidence: [],
+    });
+  }, [data, accession, snapshotId, context?.snapshot_id, updateContext]);
   const sections = ["overview", "runs", "findings", "methods", "sources"];
   const [section, setSection] = useState("overview");
   const [depth, setDepth] = useState("brief");
@@ -191,15 +202,16 @@ export function InvestigationDossier({
     url.searchParams.set("snapshot", snapshotId);
     window.history.replaceState(null, "", url);
   }
-  async function ask() {
+  async function ask(question?: string) {
     try {
       updateContext({ investigations: [accession] });
       const intent = await studioDraft(
-        "Explain " +
-          accession +
-          " at " +
-          depth +
-          " depth, distinguishing objectives, available findings, methods and applicability. Cite the selected source version.",
+        question ??
+          "Explain " +
+            accession +
+            " at " +
+            depth +
+            " depth, distinguishing objectives, available findings, methods and applicability. Cite the selected source version.",
         snapshotId,
         accession,
         Object.values(data?.source_fields ?? {}).map((value) => value.anchor),
@@ -210,32 +222,12 @@ export function InvestigationDossier({
       setProblem(errorMessage(reason));
     }
   }
-  async function comparison() {
-    try {
-      const ids = [
-        ...new Set([
-          ...(context?.snapshot_id === snapshotId
-            ? (context.investigations ?? [])
-            : []),
-          accession,
-        ]),
-      ].slice(0, 8);
-      updateContext({ investigations: ids });
-      const document = await saveDocument({
-        kind: "comparison",
-        title: "Investigation comparison",
-        snapshot_id: snapshotId,
-        data: { level: "investigations", investigation_ids: ids },
-      });
-      router.push("/app/compare/" + document.id + "?snapshot=" + snapshotId);
-    } catch (reason) {
-      setProblem(errorMessage(reason));
-    }
+  function comparison() {
+    router.push(`/app/compare?ids=${accession}&snapshot=${snapshotId}`);
   }
   if (result.error)
     return <ErrorState message={result.error} retry={result.reload} />;
-  if (!data)
-    return <LoadingRows label="Opening the versioned investigation dossier" />;
+  if (!data) return <LoadingRows label="Opening the investigation" />;
   const table = data.assets.find((asset) => asset.file_name.endsWith(".csv"));
   const media = data.assets.find(
     (asset) =>
@@ -261,7 +253,7 @@ export function InvestigationDossier({
         className="text-button"
         href={"/app/investigations?snapshot=" + snapshotId}
       >
-        <ArrowLeft size={16} /> Investigation explorer
+        <ArrowLeft size={16} /> All investigations
       </Link>
       <div className="page-heading">
         <div>
@@ -269,28 +261,32 @@ export function InvestigationDossier({
           <p>{data.title}</p>
         </div>
         <div className={s.actions}>
-          <button className="button" onClick={() => tab("runs")}>
-            Explore source records <ArrowRight size={16} />
+          <button className="button button-primary" onClick={() => void ask()}>
+            Ask about this research <ArrowRight size={16} />
           </button>
           <button className="button" onClick={() => void comparison()}>
-            Add to comparison
+            Compare with another investigation
           </button>
           {onSave && (
-            <button
-              className="button button-primary"
-              onClick={() => onSave(accession)}
-            >
-              Save to a case
+            <button className="button" onClick={() => onSave(accession)}>
+              Save investigation
             </button>
           )}
         </div>
       </div>
-      <Scope snapshotId={snapshotId}>
-        <span>
-          {data.accession} · investigation version {data.version} ·{" "}
-          {human(data.coverage.metadata)}
+      <div className={journey.nextSteps}>
+        <span className={s.help}>
+          {data.accession} · {data.platform || "NASA combustion research"}
         </span>
-      </Scope>
+        <a
+          className="text-button"
+          href={data.source_url}
+          target="_blank"
+          rel="noreferrer"
+        >
+          NASA source record <ArrowRight size={15} />
+        </a>
+      </div>
       <div
         className={s.tabs}
         role="tablist"
@@ -306,8 +302,8 @@ export function InvestigationDossier({
             {
               {
                 overview: "Overview",
-                runs: "Runs and conditions",
-                findings: "Findings",
+                runs: "Explore data",
+                findings: "Interpret the evidence",
                 methods: "Methods and hardware",
                 sources: "Sources",
               }[value]
@@ -328,7 +324,8 @@ export function InvestigationDossier({
       {["overview", "methods"].includes(section) && (
         <div className={s.dossier}>
           <div className={s.stack}>
-            <div className={s.toolbar}>
+            <details className={journey.sourceDetails}>
+              <summary>Reading detail</summary>
               <div className={s.actions} aria-label="Summary depth">
                 {["brief", "technical", "methods"].map((value) => (
                   <button
@@ -344,21 +341,23 @@ export function InvestigationDossier({
                   </button>
                 ))}
               </div>
-              <button className="button" onClick={() => void ask()}>
-                Ask about this investigation
-              </button>
-            </div>
-            <p className={s.help}>
-              Source-reported overview. Choosing a depth reveals more source
-              context; a model synthesis is drafted separately in Studio and
-              sent only on request.
-            </p>
+            </details>
             {fields.map((name) => {
               const field = data.source_fields[name];
               return field ? (
-                <section key={name}>
-                  <h2>{human(name)}</h2>
-                  <p className={s.help}>{human(field.scientific_role)}</p>
+                <section key={name} className={journey.researchSummary}>
+                  <h2>
+                    {{
+                      objective: "What the researchers wanted to understand",
+                      description: "About the investigation",
+                      approach: "How the research was carried out",
+                      hypothesis: "Research hypothesis",
+                      researchImpacts: "Potential applications",
+                      experimentHardware: "Experimental hardware",
+                      flightProgram: "Flight program",
+                      missionName: "Mission",
+                    }[name] ?? human(name)}
+                  </h2>
                   <div className={s.prose}>
                     {typeof field.value === "string"
                       ? field.value
@@ -372,33 +371,46 @@ export function InvestigationDossier({
           <aside className={s.stack}>
             {media ? (
               <OriginalMedia asset={media} snapshotId={snapshotId} />
-            ) : (
-              <div className={s.notice}>
-                <p>
-                  No authentic image or clip is retained for this source scope.
-                  Source documents remain available.
-                </p>
-              </div>
-            )}
+            ) : null}
             <section className={s.surface}>
-              <h2>Evidence and readiness</h2>
+              <h2>Work with this investigation</h2>
+              <p className={s.help}>
+                {data.coverage.acquired_assets > 0
+                  ? `${data.coverage.acquired_assets} source files are available to inspect.`
+                  : "The NASA catalog describes this investigation. Its experimental files are not yet available here."}
+              </p>
+              <div className={s.stack}>
+                <button className="button" onClick={() => tab("runs")}>
+                  Explore data and conditions <ArrowRight size={15} />
+                </button>
+                <button className="button" onClick={() => tab("sources")}>
+                  Read original sources <BookOpen size={15} />
+                </button>
+                <button
+                  className="text-button"
+                  onClick={() =>
+                    void ask(
+                      `What does ${accession} tell us about fire-safety controls or equipment? Identify relevant source evidence, experimental conditions and what remains untested.`,
+                    )
+                  }
+                >
+                  Explore fire-safety relevance <ArrowRight size={15} />
+                </button>
+                <button
+                  className="text-button"
+                  onClick={() =>
+                    void ask(
+                      `Which possible Earth applications are described for ${accession}? Distinguish documented applications from research hypotheses and explain the conditions that would need to change.`,
+                    )
+                  }
+                >
+                  Explore possible Earth applications <ArrowRight size={15} />
+                </button>
+              </div>
+            </section>
+            <details className={journey.sourceDetails}>
+              <summary>Source coverage and scientific readiness</summary>
               <dl className={s.facts}>
-                <div>
-                  <dt>Retained assets</dt>
-                  <dd>{data.coverage.acquired_assets}</dd>
-                </div>
-                <div>
-                  <dt>Manifest</dt>
-                  <dd>{human(data.coverage.manifest)}</dd>
-                </div>
-                <div>
-                  <dt>Calibration</dt>
-                  <dd>{human(data.coverage.calibration_status)}</dd>
-                </div>
-                <div>
-                  <dt>Model readiness</dt>
-                  <dd>{human(data.coverage.model_readiness)}</dd>
-                </div>
                 <div>
                   <dt>Hardware</dt>
                   <dd>{data.hardware || "Not reported"}</dd>
@@ -407,15 +419,23 @@ export function InvestigationDossier({
                   <dt>DOI</dt>
                   <dd>{data.doi || "Not reported"}</dd>
                 </div>
+                <div>
+                  <dt>Calibration evidence</dt>
+                  <dd>{human(data.coverage.calibration_status)}</dd>
+                </div>
+                <div>
+                  <dt>Predictive modeling</dt>
+                  <dd>{human(data.coverage.model_readiness)}</dd>
+                </div>
               </dl>
-            </section>
-            {data.quality_notes?.length > 0 && (
-              <Limitations values={data.quality_notes} />
-            )}
+              <Limitations values={data.quality_notes ?? []} />
+              <p>Investigation version {data.version}</p>
+              <code>{snapshotId}</code>
+            </details>
           </aside>
         </div>
       )}
-      {["overview", "methods"].includes(section) && (
+      {section === "methods" && (
         <SimulationLauncher
           key={`${accession}:${snapshotId}`}
           accession={accession}
@@ -425,11 +445,12 @@ export function InvestigationDossier({
       {section === "runs" && (
         <>
           <div className={s.notice}>
-            <h2>Retain the original record grain</h2>
+            <h2>Explore the experimental records</h2>
             <p>
-              Ranges, days, sessions, samples and notes do not become
-              independent runs. The selected source-specific adapter retains
-              measurement definitions and unresolved conditions.
+              Read the reported conditions and observations, then open a record
+              for its measurements and sources. Records may describe tests,
+              sessions or summaries; they are not automatically independent
+              experiments.
             </p>
             <Link
               className="button"
@@ -450,11 +471,22 @@ export function InvestigationDossier({
               </span>
             ))}
           </div>
-          <SourceFactorMatrix
-            accession={accession}
-            snapshotId={snapshotId}
-            onInspect={setAnchor}
-          />
+          <details className={journey.advanced}>
+            <summary>Which conditions and measurements are available?</summary>
+            <SourceFactorMatrix
+              accession={accession}
+              snapshotId={snapshotId}
+              onInspect={setAnchor}
+            />
+          </details>
+          {table && (
+            <Link
+              className="button button-primary"
+              href={`/app/lab/data/${table.sha256}?snapshot=${snapshotId}`}
+            >
+              Analyze or export this dataset <ArrowRight size={16} />
+            </Link>
+          )}
           {table ? (
             <ScientificRecordView
               asset={table}
@@ -467,26 +499,40 @@ export function InvestigationDossier({
             />
           ) : (
             <Empty>
-              No experimental table is retained here. Inspect the available
-              methods and manifest; absence from this snapshot does not
-              establish that no runs exist.
+              An experimental table is not available here yet. Open Sources to
+              read the available documents or visit the NASA record for
+              additional data.
             </Empty>
           )}
         </>
       )}
       {section === "findings" && (
         <>
+          {accession === "PSI-69" && (
+            <FlexAnalysis
+              snapshotId={snapshotId}
+              onSave={(id) => onSave?.(id)}
+            />
+          )}
           <div className={s.surface}>
-            <h2>Results are not inferred from objectives</h2>
-            <p className={s.prose}>{data.findings_status}</p>
-            <p className={s.help}>
-              Use the source reports and actual measurements to assemble a cited
-              interpretation. Prospective impacts and hypotheses remain labeled
-              as such.
+            <h2>What can the evidence tell us?</h2>
+            <p className={s.prose}>
+              The research objective explains what the team set out to study. To
+              understand what they found, follow the source reports and
+              measurements. Ask for a cited interpretation, or inspect the
+              original data yourself.
             </p>
-            <button className="button" onClick={() => void ask()}>
-              Draft a source-grounded question in Studio
-            </button>
+            <div className={journey.nextSteps}>
+              <button
+                className="button button-primary"
+                onClick={() => void ask()}
+              >
+                Explain the available evidence <ArrowRight size={16} />
+              </button>
+              <button className="button" onClick={() => tab("sources")}>
+                Read sources
+              </button>
+            </div>
           </div>
           {data.source_fields.researchImpacts && (
             <section>
@@ -505,7 +551,7 @@ export function InvestigationDossier({
       {section === "sources" && (
         <>
           <div className={s.toolbar}>
-            <h2>Versioned original sources</h2>
+            <h2>Original sources</h2>
           </div>
           <InvestigationWatch
             key={accession}
@@ -533,7 +579,10 @@ export function InvestigationDossier({
                     <td>
                       File v{asset.file_version}
                       <small>{asset.license ?? "Rights unresolved"}</small>
-                      <code>{asset.sha256.slice(0, 16)}</code>
+                      <details className={journey.sourceDetails}>
+                        <summary>Source identifier</summary>
+                        <code>{asset.sha256}</code>
+                      </details>
                     </td>
                     <td>
                       <button
@@ -602,6 +651,7 @@ export function RunWorkbench({
   snapshotId: string;
 }) {
   const preferences = useWorkspacePreferences();
+  const router = useRouter();
   const identity = useMemo(() => {
     try {
       return { value: parseRunIdentity(id), error: "" };
@@ -613,7 +663,7 @@ export function RunWorkbench({
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
   const [problem, setProblem] = useState("");
-  const { updateContext } = useResearchContext();
+  const { context, updateContext } = useResearchContext();
   const value = identity.value;
   const result = useQuery<FrozenSelection>(
     "/v1/cohorts/resolve",
@@ -637,6 +687,42 @@ export function RunWorkbench({
       asset.media_type.startsWith("video/") ||
       asset.media_type.startsWith("image/"),
   );
+  useEffect(() => {
+    if (
+      !value ||
+      !source ||
+      !record ||
+      !context ||
+      source.asset.id !== value[1] ||
+      source.asset.accession !== value[0]
+    )
+      return;
+    updateContext({
+      snapshot_id: snapshotId,
+      investigations: [value[0]],
+      selected_sources: [
+        {
+          asset_sha256: value[2],
+          accession: value[0],
+          asset_id: value[1],
+          source_rows: [value[3]],
+          columns: [],
+        },
+      ],
+      selected_evidence: [
+        {
+          snapshot_id: snapshotId,
+          source_sha256: value[2],
+          accession: value[0],
+          asset_id: value[1],
+          kind: "table_cell",
+          source_kind: "psi",
+          source_row: value[3],
+          column: 0,
+        },
+      ],
+    });
+  }, [value, source, record, snapshotId, context?.snapshot_id, updateContext]);
   if (identity.error)
     return (
       <Empty>
@@ -711,35 +797,37 @@ export function RunWorkbench({
             {record.line_end !== record.source_row ? "–" + record.line_end : ""}
           </p>
         </div>
+      </div>
+      <details className={journey.sourceDetails}>
+        <summary>Source identity and version</summary>
+        <p>
+          {source.asset.file_name} · file version {source.asset.file_version}
+        </p>
+        <code>{snapshotId}</code>
+      </details>
+      <div className={journey.nextSteps}>
         <button
-          className="button"
+          className="button button-primary"
           onClick={() => {
-            updateContext({
-              investigations: [value[0]],
-              selected_sources: [
-                {
-                  asset_sha256: value[2],
-                  accession: value[0],
-                  asset_id: value[1],
-                  source_rows: [value[3]],
-                  columns: [],
-                },
-              ],
-            });
-            setMessage(
-              "Exact source record added to the shared research context.",
-            );
+            void studioDraft(
+              `Explain this selected ${value[0]} source record at physical line ${record.source_row}. Describe what was reported, which quantities can be interpreted and what its evidence can support. Cite the exact source cells.`,
+              snapshotId,
+              value[0],
+              record.fields.map((field) => sourceAnchor(field.column_index)),
+            )
+              .then((intent) => router.push(`/app/agent?intent=${intent.id}`))
+              .catch((reason) => setProblem(errorMessage(reason)));
           }}
         >
-          Use this record as context
+          Ask about this record <ArrowRight size={16} />
         </button>
+        <Link
+          className="button"
+          href={`/app/lab/data/${source.asset.sha256}?snapshot=${snapshotId}`}
+        >
+          Analyze or export data <ArrowRight size={16} />
+        </Link>
       </div>
-      <Scope snapshotId={snapshotId}>
-        <span>
-          Source file version {source.asset.file_version} · Independent run
-          identity not established
-        </span>
-      </Scope>
       <div className={s.chips}>
         {record.fields
           .filter((field) => field.quantity_kind && field.raw_text)
@@ -819,7 +907,7 @@ export function RunWorkbench({
         <aside className={s.stack}>
           {media && <OriginalMedia asset={media} snapshotId={snapshotId} />}
           <section className={s.surface}>
-            <h2>Keep the record reproducible</h2>
+            <h2>Continue with this data</h2>
             <a className="button" href={sourceUrl(source.asset, snapshotId)}>
               Download original file
             </a>
@@ -836,7 +924,7 @@ export function RunWorkbench({
                 snapshotId
               }
             >
-              Inspect data and registered methods <ArrowRight size={15} />
+              Analyze or export data <ArrowRight size={15} />
             </Link>
           </section>
           <label className={s.field}>
@@ -875,9 +963,11 @@ function OriginalValue({ field }: { field: ScientificField }) {
   return (
     <>
       {field.raw_text || "Not reported"}
-      <small>
-        {human(field.basis)} · {human(field.location)}
-      </small>
+      {(field.basis || field.location) && (
+        <small>
+          {[field.basis, field.location].filter(Boolean).map(human).join(" · ")}
+        </small>
+      )}
     </>
   );
 }
@@ -889,15 +979,20 @@ function InterpretedValue({ field }: { field: ScientificField }) {
           <span className={s.number}>
             {String(field.canonical_value)} {field.canonical_unit}
           </span>
-          <small>Unit conversion; source uncertainty not inferred</small>
+          <small>Converted from the reported unit</small>
         </>
       ) : (
         human(field.missing_reason || field.status)
       )}
       {field.qualifier && <small>{human(field.qualifier)}</small>}
-      {field.notes.map((text, index) => (
-        <small key={index}>{text}</small>
-      ))}
+      {field.notes.length > 0 && (
+        <details className={journey.sourceDetails}>
+          <summary>Interpretation notes</summary>
+          {field.notes.map((text, index) => (
+            <p key={index}>{text}</p>
+          ))}
+        </details>
+      )}
     </>
   );
 }

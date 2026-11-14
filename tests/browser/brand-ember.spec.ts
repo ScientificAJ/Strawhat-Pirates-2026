@@ -66,7 +66,9 @@ test("wordmark flame rests idle, bounds activation, and stops for interruption o
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect.poll(() => frameCount(page)).toBeGreaterThan(reduced);
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator("#mobile-navigation")).toBeHidden();
+  await expect(wordmark).toBeVisible();
+  await page.mouse.move(300, 300);
+  await wordmark.evaluate((element) => element.blur());
   await expectFramesStopped(page);
 });
 
@@ -98,7 +100,7 @@ test("workspace reduced motion prevents flame animation and context loss keeps n
   await expectFramesStopped(page);
   await wordmark.click();
   await expect(
-    page.getByRole("heading", { name: "Research overview", exact: true }),
+    page.getByRole("heading", { name: /Understand fire/ }),
   ).toBeVisible();
 });
 
@@ -121,6 +123,6 @@ test("unavailable WebGL leaves a static wordmark with a readable accessible name
   await wordmark.hover();
   await expect(wordmark.locator("canvas")).toHaveCSS("opacity", "0");
   await expect(
-    page.getByRole("heading", { name: "Research overview", exact: true }),
+    page.getByRole("heading", { name: /Understand fire/ }),
   ).toBeVisible();
 });

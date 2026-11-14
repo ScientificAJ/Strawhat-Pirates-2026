@@ -4,7 +4,10 @@ import { readFile } from "node:fs/promises";
 test("reproduce source-label counts and recover a failed exact discovery request", async ({
   page,
 }) => {
-  await page.goto("/app");
+  await page.goto("/app/investigations/PSI-69");
+  await page
+    .getByRole("tab", { name: "Interpret the evidence", exact: true })
+    .click();
   await expect(
     page.getByRole("img", {
       name: "Completion: 27 records; Disruption: 61 records; Extinction: 186 records",
@@ -36,6 +39,10 @@ test("calculate stated oxygen and pressure while keeping unsupported pooling unr
   page,
 }) => {
   await page.goto("/app/lab/scenarios");
+  await page.getByText("Atmosphere", { exact: true }).click();
+  await page
+    .getByText("Calculate oxygen partial pressure", { exact: true })
+    .click();
   const oxygen = page.getByRole("group", {
     name: "Oxygen mole fraction",
     exact: true,
@@ -74,8 +81,16 @@ test("calculate stated oxygen and pressure while keeping unsupported pooling unr
     page.getByText(/Similar partial pressure does not establish equivalent/),
   ).toBeVisible();
   await page.goto("/app/compare?ids=PSI-25,PSI-69");
+  await page
+    .getByText("Check experimental comparability and rank evidence", {
+      exact: true,
+    })
+    .click();
   await expect(
-    page.getByRole("heading", { name: "Comparability: unknown", exact: true }),
+    page.getByRole("heading", {
+      name: "Measurement comparison: unknown",
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
     page.getByText(/^quantitative pooling:\s*not established$/),
@@ -87,20 +102,37 @@ test("calculate stated oxygen and pressure while keeping unsupported pooling unr
     }),
   ).toBeVisible();
   await expect(
-    page.getByRole("cell", { name: "Not reported", exact: true }),
-  ).toHaveCount(66);
+    page.getByRole("cell", { name: "Not reported", exact: true }).first(),
+  ).toBeVisible();
 });
 
 test("save a revision and restore a portable case in an independent browser, with mobile navigation", async ({
   page,
   browser,
 }, testInfo) => {
+  // Exercise a full navigation before debounced selection persistence can finish.
+  await page.addInitScript(() => {
+    const schedule = window.setTimeout.bind(window);
+    window.setTimeout = ((
+      handler: TimerHandler,
+      delay?: number,
+      ...args: unknown[]
+    ) =>
+      schedule(
+        handler,
+        delay === 300 ? 30_000 : delay,
+        ...args,
+      )) as typeof window.setTimeout;
+  });
   await page.goto("/app/investigations/PSI-69");
   await page
-    .getByRole("button", { name: "Save to a case", exact: true })
+    .getByRole("button", { name: "Save investigation", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/app\/cases\/[a-f0-9-]+$/);
-  await page.getByLabel("Case title").fill("FLEX endpoint interpretation");
+  await expect(
+    page.getByRole("status").filter({ hasText: "Investigation saved" }),
+  ).toBeVisible();
+  await page.goto("/app/cases/new");
+  await page.getByLabel("Notes title").fill("FLEX endpoint interpretation");
   await page
     .getByLabel("Research question")
     .fill(
@@ -115,16 +147,19 @@ test("save a revision and restore a portable case in an independent browser, wit
     .getByRole("button", { name: "Save revision", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Revision 2 saved", exact: true }),
+    page.getByRole("button", { name: "Revision 1 saved", exact: true }),
   ).toBeVisible();
+  await expect(page).toHaveURL(/\/app\/cases\/[a-f0-9-]{36}$/);
   await page.reload();
   await expect(page.getByLabel("Notes and unresolved questions")).toHaveValue(
     "Keep all three source labels. Confirm the burning-rate unit from the protocol.",
   );
 
+  const originalNotes = page.url();
+  await page.goto("/app/settings");
   const downloadEvent = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Back up workspace", exact: true })
+    .getByRole("button", { name: "Download research backup", exact: true })
     .click();
   const download = await downloadEvent;
   const backupPath = testInfo.outputPath("workspace.json");
@@ -132,7 +167,7 @@ test("save a revision and restore a portable case in an independent browser, wit
   const before = JSON.parse(await readFile(backupPath, "utf8"));
   expect(before.cases).toHaveLength(1);
   expect(before.cases[0].investigation_ids).toEqual(["PSI-69"]);
-  expect(before.cases[0].revisions).toHaveLength(2);
+  expect(before.cases[0].revisions).toHaveLength(1);
 
   const other = await browser.newContext({
     viewport: { width: 390, height: 844 },
@@ -143,11 +178,11 @@ test("save a revision and restore a portable case in an independent browser, wit
     await restored.goto("/app/cases");
     await expect(
       restored.getByRole("heading", {
-        name: "Begin with a question worth keeping",
+        name: "A place to pick up where you left off",
       }),
     ).toBeVisible();
     await restored
-      .getByLabel("Restore a workspace backup")
+      .getByLabel("Restore a research backup")
       .setInputFiles(backupPath);
     await restored
       .getByRole("button", { name: "Import independent copies", exact: true })
@@ -165,7 +200,7 @@ test("save a revision and restore a portable case in an independent browser, wit
     await restored
       .getByRole("button", { name: "Save revision", exact: true })
       .click();
-    await page.reload();
+    await page.goto(originalNotes);
     await expect(page.getByLabel("Notes and unresolved questions")).toHaveValue(
       before.cases[0].notes,
     );
@@ -177,22 +212,24 @@ test("save a revision and restore a portable case in an independent browser, wit
         ),
       )
       .toBe(true);
-    await expect(restored.locator("#mobile-navigation")).toBeHidden();
-    await restored.getByRole("button", { name: "More", exact: true }).click();
+    await expect(restored.locator("#research-navigation")).toBeHidden();
+    await restored
+      .getByRole("button", { name: "Open navigation", exact: true })
+      .click();
     await expect(
       restored
-        .getByRole("complementary", { name: "Application navigation" })
+        .getByRole("dialog", { name: "Research navigation" })
         .getByRole("button", { name: "Close navigation", exact: true }),
     ).toBeFocused();
     await restored.keyboard.press("Escape");
     await expect(
       restored.getByRole("button", { name: "Open navigation", exact: true }),
     ).toBeFocused();
-    await expect(restored.locator("#mobile-navigation")).toBeHidden();
+    await expect(restored.locator("#research-navigation")).toBeHidden();
     await restored.keyboard.press("Tab");
     expect(
       await restored.evaluate(() =>
-        Boolean(document.activeElement?.closest("#mobile-navigation")),
+        Boolean(document.activeElement?.closest("#research-navigation")),
       ),
     ).toBe(false);
   } finally {

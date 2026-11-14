@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import type { ChatCitation } from "../lib/chat-sources";
 import { SourceInspector, anchorLabel } from "./workbench-common";
 import styles from "./chat-sources.module.css";
@@ -106,6 +108,16 @@ export function ChatSources({
   citations: ChatCitation[];
   onSelect: SelectCitation;
 }) {
+  const investigations = new Map<string, Set<string>>();
+  for (const citation of citations) {
+    for (const anchor of citation.anchors) {
+      if (!anchor.accession || !/^PSI-\d+$/.test(anchor.accession)) continue;
+      const accessions =
+        investigations.get(anchor.snapshot_id) ?? new Set<string>();
+      accessions.add(anchor.accession);
+      investigations.set(anchor.snapshot_id, accessions);
+    }
+  }
   return (
     <section className={styles.sources} aria-label="Sources for this reply">
       <h3>Sources</h3>
@@ -142,6 +154,30 @@ export function ChatSources({
                   </p>
                 )}
                 {citation.scopeNote && <p>{citation.scopeNote}</p>}
+                <div className={styles.nextSteps}>
+                  {[
+                    ...new Map(
+                      citation.anchors
+                        .filter(
+                          (anchor) =>
+                            anchor.accession &&
+                            /^PSI-\d+$/.test(anchor.accession),
+                        )
+                        .map((anchor) => [
+                          `${anchor.snapshot_id}:${anchor.accession}`,
+                          anchor,
+                        ]),
+                    ).values(),
+                  ].map((anchor) => (
+                    <Link
+                      key={`${anchor.snapshot_id}:${anchor.accession}`}
+                      href={`/app/investigations/${anchor.accession}?snapshot=${anchor.snapshot_id}`}
+                    >
+                      Explore investigation {anchor.accession}{" "}
+                      <ArrowRight size={14} />
+                    </Link>
+                  ))}
+                </div>
                 <details>
                   <summary>Evidence identifier</summary>
                   <code>{citation.id}</code>
@@ -155,6 +191,20 @@ export function ChatSources({
           No source references were attached to the displayed claims.
         </p>
       )}
+      {[...investigations.entries()]
+        .filter(([, accessions]) => accessions.size > 1)
+        .map(([snapshot, accessions]) => (
+          <Link
+            className={styles.compare}
+            key={snapshot}
+            href={`/app/compare?ids=${[...accessions].slice(0, 8).join(",")}&snapshot=${snapshot}`}
+          >
+            {accessions.size > 8
+              ? "Compare the first 8 cited investigations"
+              : "Compare cited investigations"}{" "}
+            <ArrowRight size={16} />
+          </Link>
+        ))}
     </section>
   );
 }

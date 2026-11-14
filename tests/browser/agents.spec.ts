@@ -207,7 +207,9 @@ test("Agents keep reviewed skills and frozen chats separate from core research, 
   await page
     .getByRole("button", { name: "Agent library", exact: true })
     .click();
-  await page.getByRole("button", { name: "New agent", exact: true }).click();
+  await page
+    .getByRole("button", { name: "New research assistant", exact: true })
+    .click();
   const editor = page.getByRole("region", {
     name: "Agent editor",
     exact: true,
@@ -246,8 +248,9 @@ test("Agents keep reviewed skills and frozen chats separate from core research, 
   await expect(
     page.getByRole("button", { name: "Live voice", exact: true }),
   ).toBeHidden();
+  await page.getByText("Conversation details", { exact: false }).click();
   await page
-    .getByRole("textbox", { name: "Session title", exact: true })
+    .getByRole("textbox", { name: "Conversation title", exact: true })
     .fill("Frozen role conversation");
   await page
     .getByRole("textbox", { name: "Research question", exact: true })
@@ -319,23 +322,28 @@ test("Agents keep reviewed skills and frozen chats separate from core research, 
 
   await page.goto("/app/agent");
   await expect(
-    page.getByRole("heading", { name: "Research Studio", exact: true }),
+    page.getByRole("heading", { name: "Research assistant", exact: true }),
   ).toBeVisible();
+  await page.getByText("Conversation details", { exact: false }).click();
   await expect(
-    page.getByRole("textbox", { name: "Session title", exact: true }),
+    page.getByRole("textbox", { name: "Conversation title", exact: true }),
   ).toHaveValue("Untitled research");
   await expect(
     page.getByText("Agent configuration for this conversation", {
       exact: true,
     }),
   ).toBeHidden();
-  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Recent questions", exact: true })
+    .click();
   await expect(
     page
-      .getByRole("region", { name: "Saved research sessions", exact: true })
+      .getByRole("region", { name: "Recent research questions", exact: true })
       .getByRole("button", { name: "Frozen role conversation", exact: true }),
   ).toBeHidden();
-  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Recent questions", exact: true })
+    .click();
   await page
     .getByRole("textbox", { name: "Research question", exact: true })
     .fill("Check the regular core research request without a custom role.");
@@ -380,7 +388,7 @@ test("Agents keep reviewed skills and frozen chats separate from core research, 
     page.getByRole("button", { name: "Preparing draft…", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "New agent", exact: true }),
+    page.getByRole("button", { name: "New research assistant", exact: true }),
   ).toBeDisabled();
   expect(draftRequests[0]).toEqual({
     description: draftDescription,

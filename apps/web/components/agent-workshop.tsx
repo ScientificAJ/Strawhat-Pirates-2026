@@ -20,6 +20,7 @@ import {
 } from "../lib/agent-profiles";
 import {
   listDocuments,
+  readDocument,
   type WorkspaceDocument,
 } from "../lib/workspace-documents";
 import {
@@ -200,6 +201,23 @@ export function AgentWorkshop({
       setError(message(reason));
     }
   }
+  useEffect(() => {
+    const session = new URLSearchParams(window.location.search).get("session");
+    if (!session) return;
+    let active = true;
+    void readDocument<StudioSession>(session)
+      .then((document) => {
+        if (!active) return;
+        if (document?.kind === "agent_session") resumeChat(document);
+        else setError("This saved conversation could not be found.");
+      })
+      .catch((reason) => {
+        if (active) setError(message(reason));
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   async function saveProfile(event: React.FormEvent) {
     event.preventDefault();
     if (busyRef.current || builtin) return;
@@ -316,7 +334,7 @@ export function AgentWorkshop({
     <div className={styles.workshop}>
       <div className="page-heading">
         <div>
-          <h1>Agents</h1>
+          <h1>Custom research assistants</h1>
           <p>
             Choose a research role, or shape your own with instructions and
             reusable skills.
@@ -330,14 +348,14 @@ export function AgentWorkshop({
             newAgent();
           }}
         >
-          <Plus size={16} /> New agent
+          <Plus size={16} /> New research assistant
         </button>
       </div>
       <p className={styles.introduction}>
-        Agents are optional. Their instructions guide the role and working style
-        within Nova Ember’s source, numerical and approval rules. Profiles,
-        skills and conversations stay in this browser workspace and travel with
-        its complete backup.
+        For specialized questions, choose a research role or save your own
+        instructions. You can also{" "}
+        <a href="/app/agent">ask the research assistant directly</a> without
+        creating a role.
       </p>
       <div
         className={styles.toolbar}

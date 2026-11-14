@@ -210,17 +210,25 @@ test("Studio retains named drafts, forks without overwriting, and renders checke
   const state = await offlineStudio(page);
   await page.goto("/app/agent");
   await page
-    .getByRole("textbox", { name: "Session title" })
+    .getByText("Conversation details", { exact: false })
+    .first()
+    .click();
+  await page
+    .getByRole("textbox", { name: "Conversation title" })
     .fill("Pressure evidence notebook");
   await page
     .getByRole("textbox", { name: "Research question", exact: true })
     .fill("Inspect the selected source records.");
   await expect(
-    page.getByText("Saved in this browser", { exact: true }),
+    page.getByText("Saved automatically", { exact: true }),
   ).toBeVisible();
   await page.reload();
+  await page
+    .getByText("Conversation details", { exact: false })
+    .first()
+    .click();
   await expect(
-    page.getByRole("textbox", { name: "Session title" }),
+    page.getByRole("textbox", { name: "Conversation title" }),
   ).toHaveValue("Pressure evidence notebook");
   await expect(
     page.getByRole("textbox", { name: "Research question", exact: true }),
@@ -246,11 +254,11 @@ test("Studio retains named drafts, forks without overwriting, and renders checke
       exact: true,
     }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Fork", exact: true }).click();
+  await page.getByRole("button", { name: "Make a copy", exact: true }).click();
   await expect(
-    page.getByRole("textbox", { name: "Session title" }),
-  ).toHaveValue("Pressure evidence notebook · fork");
-  await expect(page.getByText(/Forked from/)).toBeVisible();
+    page.getByRole("textbox", { name: "Conversation title" }),
+  ).toHaveValue("Pressure evidence notebook · copy");
+  await expect(page.getByText(/This is a separate copy/)).toBeVisible();
   await expect(
     page.getByText(/The current page has a different selection/),
   ).toBeHidden();
@@ -278,7 +286,7 @@ test("Studio retains named drafts, forks without overwriting, and renders checke
 test("Contextual draft moves to Studio and keyboard range changes the actual split", async ({
   page,
 }) => {
-  await offlineStudio(page);
+  const state = await offlineStudio(page);
   await page.setViewportSize({ width: 1500, height: 950 });
   await page.goto("/app/cases");
   await page
@@ -290,12 +298,21 @@ test("Contextual draft moves to Studio and keyboard range changes the actual spl
   await panel
     .getByRole("textbox", { name: "Research question", exact: true })
     .fill("Keep this unsent source question.");
-  await panel.getByRole("button", { name: "Open Studio", exact: true }).click();
+  await panel
+    .getByRole("button", { name: "Open full conversation", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/app\/agent\/[a-f0-9-]+$/);
   await expect(
     page.getByRole("textbox", { name: "Research question", exact: true }),
   ).toHaveValue("Keep this unsent source question.");
-  await page.getByText("Studio layout", { exact: true }).click();
+  await page.getByRole("button", { name: "Send", exact: true }).click();
+  state.done = true;
+  await expect(
+    page.getByRole("heading", { name: "Two records in the offline reference" }),
+  ).toBeVisible();
+  await page
+    .getByText("Adjust answer and evidence layout", { exact: true })
+    .click();
   const range = page.getByRole("slider", { name: "Conversation width" });
   const before = await page
     .getByRole("region", { name: "Conversation", exact: true })

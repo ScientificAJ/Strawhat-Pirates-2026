@@ -1,5 +1,13 @@
 "use client";
 import Link from "next/link";
+import {
+  ArrowRight,
+  ChartNoAxesCombined,
+  Database,
+  FlaskConical,
+  Image,
+  Code,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Asset } from "../lib/api";
 import {
@@ -20,7 +28,7 @@ import { DashboardWorkbench } from "./dashboard-workbench";
 import styles from "./laboratory-workbench.module.css";
 
 export function LaboratoryWorkbench({
-  view = "data",
+  view = "start",
   entityId,
   snapshotId,
 }: {
@@ -70,9 +78,7 @@ export function LaboratoryWorkbench({
       ...previous.filter((item) => item.id !== input.id),
       input,
     ]);
-    setNotice(
-      `${input.name} is available in the Code tab. No code or AI request was started.`,
-    );
+    setNotice(`${input.name} is ready for analysis in Python & shell.`);
     try {
       const existing = await readDocument<{ items: FrozenInput[] }>(
         `laboratory-inputs-${snapshotId}`,
@@ -85,7 +91,7 @@ export function LaboratoryWorkbench({
         {
           id: `laboratory-inputs-${snapshotId}`,
           kind: "analysis",
-          title: "Selected laboratory input references",
+          title: "Selected data files",
           snapshot_id: snapshotId,
           data: { items },
         },
@@ -177,38 +183,140 @@ export function LaboratoryWorkbench({
   if (mode === "dashboards")
     return <DashboardWorkbench id={entityId} snapshotId={snapshotId} />;
   const titles: Record<string, string> = {
-    data: "Data laboratory",
-    models: "Methods and modeling",
-    scenarios: "Scenario laboratory",
-    code: "Python and shell",
-    media: "Media and measurements",
-    uploads: "Scientific input files",
+    start: "Data & models",
+    data: "Explore source data",
+    models: "Calculations & fits",
+    scenarios: "Conditions & safety",
+    media: "Images & video",
+    code: "Python & shell",
+    uploads: "Add your data",
   };
   return (
     <div className={styles.workbench}>
       <div className={styles.heading}>
         <div>
-          <h1>{titles[mode] ?? "Data laboratory"}</h1>
+          <h1>{titles[mode] ?? "Data & models"}</h1>
           <p>
-            Inspect source evidence, make explicit transformations, and preserve
-            a reproducible research record.
+            {mode === "start"
+              ? "Turn an investigation into a dataset, a figure or a reproducible calculation."
+              : mode === "data"
+                ? "Choose an investigation, select variables and export the data behind your question."
+                : mode === "models"
+                  ? "Calculate from known inputs or fit measured data. Keep the method and its sources together."
+                  : mode === "scenarios"
+                    ? "Describe the conditions that matter to your question, then look for comparable evidence."
+                    : mode === "media"
+                      ? "Inspect NASA images and recordings; calibrate a measurement when the source supports it."
+                      : "Bring your data and research methods together."}
           </p>
         </div>
-        <Link className="button" href="/app/dashboards/new">
-          Compose a dashboard
-        </Link>
-      </div>
-      <nav className={styles.tabs} aria-label="Scientific laboratory">
-        {Object.entries(titles).map(([key, label]) => (
-          <Link
-            key={key}
-            href={`/app/lab/${key}`}
-            aria-current={mode === key ? "page" : undefined}
-          >
-            {label}
+        {mode !== "start" && (
+          <Link className="text-button" href="/app/lab">
+            All analysis tools <ArrowRight size={16} />
           </Link>
-        ))}
-      </nav>
+        )}
+      </div>
+      {mode !== "start" && (
+        <nav className="lab-subnav" aria-label="Analysis tools">
+          {["data", "models", "scenarios", "media"].map((key) => (
+            <Link
+              key={key}
+              href={`/app/lab/${key}`}
+              aria-current={mode === key ? "page" : undefined}
+            >
+              {titles[key]}
+            </Link>
+          ))}
+          <details>
+            <summary>More tools</summary>
+            <div className="inline-actions">
+              <Link href="/app/lab/uploads">Add your data</Link>
+              <Link href="/app/lab/code">Python & shell</Link>
+              <Link href="/app/dashboards">Research figures</Link>
+              <Link href="/app/lab/evidence">Evidence & sources</Link>
+            </div>
+          </details>
+        </nav>
+      )}
+      {mode === "start" && (
+        <>
+          <section className="lab-introduction">
+            <div>
+              <h2>What would you like to work with?</h2>
+              <p>
+                Start from a NASA investigation or bring your own measurements.
+                Source references and units stay with the data through
+                selection, calculation and export.
+              </p>
+              {context?.investigations?.[0] && (
+                <Link
+                  className="button button-primary"
+                  href={`/app/lab/data/${context.investigations[0]}`}
+                >
+                  Continue with {context.investigations[0]}{" "}
+                  <ArrowRight size={16} />
+                </Link>
+              )}
+              <Link className="text-button" href="/app/investigations">
+                Find an investigation first <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="lab-start-list">
+              <Link href="/app/lab/data">
+                <Database size={22} />
+                <span>
+                  <strong>Explore and extract data</strong>
+                  <small>
+                    Select variables, build a chart and export a dataset.
+                  </small>
+                </span>
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/app/lab/models">
+                <ChartNoAxesCombined size={22} />
+                <span>
+                  <strong>Calculate or fit measurements</strong>
+                  <small>
+                    Use scientific methods and inspect what a fit establishes.
+                  </small>
+                </span>
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/app/lab/scenarios">
+                <FlaskConical size={22} />
+                <span>
+                  <strong>Explore conditions and fire safety</strong>
+                  <small>
+                    Compare your research conditions with available evidence.
+                  </small>
+                </span>
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/app/lab/media">
+                <Image size={22} />
+                <span>
+                  <strong>Inspect images and video</strong>
+                  <small>
+                    Explore flame recordings and source-based measurements.
+                  </small>
+                </span>
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+          </section>
+          <nav className="lab-subnav" aria-label="Additional analysis tools">
+            <Link href="/app/lab/uploads">Add your own data</Link>
+            <Link href="/app/lab/code">
+              <Code size={15} /> Python & shell
+            </Link>
+            <Link href="/app/dashboards">Research figures</Link>
+            <Link href="/app/lab/evidence/controls">
+              Safety-control research
+            </Link>
+            <Link href="/app/lab/evidence/earth">Earth applications</Link>
+          </nav>
+        </>
+      )}
       {error && (
         <p role="alert" className={styles.error}>
           {error}
@@ -219,7 +327,7 @@ export function LaboratoryWorkbench({
           {notice}
         </p>
       )}
-      {mode === "code" ? (
+      {mode === "start" ? null : mode === "code" ? (
         <ExecutionWorkbench
           snapshotId={snapshotId}
           entityId={entityId}
@@ -247,6 +355,7 @@ export function LaboratoryWorkbench({
       ) : (
         <DatasetWorkbench
           snapshotId={snapshotId}
+          entityId={entityId}
           onInput={publicInput}
           onChart={(value) => void focused(value)}
         />

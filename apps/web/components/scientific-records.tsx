@@ -5,7 +5,6 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  ChevronRight,
   FileText,
 } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +23,7 @@ import {
   SourceAnchor,
 } from "../lib/workspace-storage";
 import { ErrorState, LoadingRows, Notice } from "./chrome";
+import styles from "./scientific-records.module.css";
 
 const roleLabels: Record<string, string> = {
   source_test_record: "Source test record",
@@ -90,15 +90,10 @@ export function ScientificRecordView({
       aria-busy={result.loading}
     >
       <div className="section-heading">
-        <div>
-          <h2>{quality ? "Source quality" : "Scientific source records"}</h2>
-          <p>{asset.file_name}</p>
-        </div>
-        <span className="status status-neutral">
-          {data?.status === "interpreted"
-            ? "Source-specific mapping"
-            : "Source interpretation"}
-        </span>
+        <h2>{quality ? "Source quality" : "Experimental records"}</h2>
+        <button className="text-button" onClick={onOriginal}>
+          Read original table <ArrowRight size={15} />
+        </button>
       </div>
       {result.error ? (
         <>
@@ -112,30 +107,12 @@ export function ScientificRecordView({
         <LoadingRows label="Reading source-specific records" />
       ) : (
         <>
-          <div className="source-record-context">
-            <span>
-              <strong>{data.source_record_count}</strong> source records
-            </span>
-            <span>
-              <strong>{data.empty_record_count}</strong> empty records excluded
-            </span>
-            <span>
-              Independent experimental runs:{" "}
-              <strong>
-                {data.independent_run_count === null
-                  ? "Not established"
-                  : data.independent_run_count}
-              </strong>
-            </span>
-          </div>
-          <Notice>
-            <strong>Source records retain their original grain.</strong>
-            <p>
-              A day, condition range, session, source note, or sample record is
-              not automatically an independent experimental run. An empty or
-              unresolved field is never replaced with zero.
-            </p>
-          </Notice>
+          <p className={styles.count} aria-live="polite">
+            {data.total_records}{" "}
+            {data.total_records === 1 ? "record" : "records"}
+            {rowKind ? " in this category" : ""}
+            {result.loading ? " · Updating…" : ""}
+          </p>
           {data.status === "schema_unrecognized" && (
             <Notice kind="caution">
               <strong>
@@ -151,18 +128,6 @@ export function ScientificRecordView({
               </button>
             </Notice>
           )}
-          <div className="row-role-summary" aria-label="Source record roles">
-            {Object.entries(data.row_kind_counts).map(([role, count]) => (
-              <span key={role}>
-                <strong>{count}</strong>
-                {count === 1
-                  ? sourceRole(role)
-                  : sourceRole(role).endsWith("summary")
-                    ? sourceRole(role).slice(0, -1) + "ies"
-                    : sourceRole(role) + "s"}
-              </span>
-            ))}
-          </div>
           {quality ? (
             <>
               <QualityView data={data} />
@@ -174,49 +139,40 @@ export function ScientificRecordView({
             </>
           ) : (
             <>
-              <div className="record-toolbar">
-                <label htmlFor={`source-role-${asset.sha256}`}>
-                  Record role
-                </label>
-                <select
-                  id={`source-role-${asset.sha256}`}
-                  value={rowKind}
-                  onChange={(event) => {
-                    setRowKind(event.target.value);
-                    setOffset(0);
-                  }}
-                >
-                  <option value="">All source roles</option>
-                  {Object.entries(data.row_kind_counts).map(([role, count]) => (
-                    <option value={role} key={role}>
-                      {sourceRole(role)} ({count})
-                    </option>
-                  ))}
-                </select>
-                <span aria-live="polite">
-                  {data.total_records}{" "}
-                  {data.total_records === 1 ? "record" : "records"}
-                  {rowKind ? " in this role" : ""}
-                  {result.loading ? " · Updating…" : ""}
-                </span>
-              </div>
-              <div className="scientific-record-list">
-                {data.records.length ? (
-                  data.records.map((record) => (
-                    <RecordEntry
-                      data={data}
-                      record={record}
-                      key={record.source_row}
-                    />
-                  ))
-                ) : (
-                  <div className="empty-state compact-empty">
-                    <p>
-                      No records have this source role in the selected snapshot.
-                    </p>
-                  </div>
-                )}
-              </div>
+              {Object.keys(data.row_kind_counts).length > 1 && (
+                <div className="record-toolbar">
+                  <label htmlFor={`source-role-${asset.sha256}`}>
+                    Record category
+                  </label>
+                  <select
+                    id={`source-role-${asset.sha256}`}
+                    value={rowKind}
+                    onChange={(event) => {
+                      setRowKind(event.target.value);
+                      setOffset(0);
+                    }}
+                  >
+                    <option value="">All categories</option>
+                    {Object.entries(data.row_kind_counts).map(
+                      ([role, count]) => (
+                        <option value={role} key={role}>
+                          {sourceRole(role)} ({count})
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </div>
+              )}
+              {data.records.length ? (
+                <RecordDataTable data={data} />
+              ) : (
+                <div className="empty-state compact-empty">
+                  <p>
+                    No records match this category. Choose another category to
+                    continue.
+                  </p>
+                </div>
+              )}
               <RecordPagination
                 data={data}
                 loading={result.loading}
@@ -234,44 +190,201 @@ export function ScientificRecordView({
               )}
             </>
           )}
+          <details className={styles.interpretation}>
+            <summary>How to interpret these records</summary>
+            <p>
+              Values are shown as reported in the source. Open a record for
+              units, conversions, conditions and interpretation notes. Missing
+              values remain missing.
+            </p>
+            <p>
+              Records may describe tests, sessions, summaries or notes. They are
+              not automatically independent experiments; check their identity
+              and conditions before combining results or fitting a model.
+            </p>
+            <p>
+              {data.empty_record_count > 0
+                ? `${data.empty_record_count} empty source records were excluded. `
+                : ""}
+              {data.independent_run_count === null
+                ? "Independent experimental units have not been established for this table."
+                : `${data.independent_run_count} independent experimental units are identified.`}
+            </p>
+            <ul>
+              {data.limitations.map((text, index) => (
+                <li key={index}>{text}</li>
+              ))}
+            </ul>
+            <dl>
+              <dt>Source file</dt>
+              <dd>{asset.file_name}</dd>
+              <dt>Interpretation method</dt>
+              <dd>{data.adapter_id}</dd>
+              <dt>Source identifier</dt>
+              <dd>
+                <code>{asset.sha256}</code>
+              </dd>
+              <dt>Source version</dt>
+              <dd>
+                <code>{data.snapshot_id}</code>
+              </dd>
+            </dl>
+          </details>
         </>
       )}
     </section>
   );
 }
 
-function RecordEntry({
+function RecordDataTable({ data }: { data: ScientificRecords }) {
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const columns = Array.from(
+    {
+      length: Math.max(
+        data.headers.length,
+        ...data.records.map((record) => record.raw_cells.length),
+      ),
+    },
+    (_, column) => data.headers[column] || `Column ${column + 1}`,
+  );
+  const unresolvedColumns = new Set(
+    columns.flatMap((_, column) => {
+      const fields = data.records.flatMap((record) =>
+        record.fields.filter(
+          (field) => field.column_index === column && field.raw_text,
+        ),
+      );
+      return fields.length > 0 &&
+        fields.every((field) => field.status === "unresolved")
+        ? [column]
+        : [];
+    }),
+  );
+  return (
+    <>
+      <p className={styles.tableHint}>
+        Reported source values · Scroll to see all columns. Open a record for
+        its interpretation.
+      </p>
+      <div
+        className={styles.tableScroll}
+        role="region"
+        aria-label="Experimental source values"
+        tabIndex={0}
+      >
+        <table className={styles.values}>
+          <thead>
+            <tr>
+              <th scope="col">Source record</th>
+              {columns.map((header, column) => (
+                <th scope="col" key={column}>
+                  {header || `Column ${column + 1}`}
+                  {unresolvedColumns.has(column) && (
+                    <small>Meaning unresolved</small>
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.records.map((record) => (
+              <SourceDataRow
+                key={record.source_row}
+                data={data}
+                record={record}
+                columns={columns}
+                open={selectedRow === record.source_row}
+                unresolvedColumns={unresolvedColumns}
+                onToggle={() =>
+                  setSelectedRow(
+                    selectedRow === record.source_row
+                      ? null
+                      : record.source_row,
+                  )
+                }
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+function SourceDataRow({
   data,
   record,
+  columns,
+  open,
+  unresolvedColumns,
+  onToggle,
 }: {
   data: ScientificRecords;
   record: ScientificRecord;
+  columns: string[];
+  open: boolean;
+  unresolvedColumns: Set<number>;
+  onToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
   return (
-    <details
-      className="scientific-record"
-      name={`source-records-${data.asset.sha256}`}
-      onToggle={(event) => setOpen(event.currentTarget.open)}
-    >
-      <summary>
-        <ChevronRight className="record-disclosure" size={16} />
-        <span className="mono">Physical row {physicalRows(record)}</span>
-        <span className="record-kind">{sourceRole(record.row_kind)}</span>
-        <span className="record-preview">
-          {record.raw_cells
-            .slice(0, 3)
-            .filter((value) => value !== "")
-            .join(" · ")}
-        </span>
-      </summary>
+    <>
+      <tr>
+        <th scope="row">
+          <button
+            className="text-button"
+            onClick={onToggle}
+            aria-expanded={open}
+            aria-controls={`source-detail-${data.asset.sha256}-${record.source_row}`}
+          >
+            Record {physicalRows(record)}
+          </button>
+        </th>
+        {columns.map((_, column) => {
+          const field = record.fields.find(
+            (value) => value.column_index === column,
+          );
+          return (
+            <td key={column}>
+              {record.raw_cells[column] || <span className="muted">—</span>}
+              {field?.status === "unresolved" &&
+                !unresolvedColumns.has(column) && (
+                  <small>Meaning unresolved</small>
+                )}
+              {field?.missing_reason && (
+                <small>{missingLabel(field.missing_reason)}</small>
+              )}
+            </td>
+          );
+        })}
+      </tr>
       {open && (
-        <div className="record-fields">
-          <FieldTable fields={record.fields} />
-          <AttachSourceRow data={data} record={record} />
-        </div>
+        <tr id={`source-detail-${data.asset.sha256}-${record.source_row}`}>
+          <td colSpan={columns.length + 1}>
+            <div className={styles.recordDetail}>
+              <div className="section-heading">
+                <h3>
+                  Record {physicalRows(record)} · {sourceRole(record.row_kind)}
+                </h3>
+                <button className="text-button" onClick={onToggle}>
+                  Close record
+                </button>
+              </div>
+              <FieldTable fields={record.fields} />
+              <Link
+                className="button button-small"
+                href={`/app/runs/${encodeURIComponent(JSON.stringify([data.asset.accession, data.asset.id, data.asset.sha256, record.source_row]))}?snapshot=${data.snapshot_id}`}
+              >
+                Ask about or analyze this record <ArrowRight size={15} />
+              </Link>
+              <details className={styles.interpretation}>
+                <summary>Attach this record to saved research</summary>
+                <AttachSourceRow data={data} record={record} />
+              </details>
+            </div>
+          </td>
+        </tr>
       )}
-    </details>
+    </>
   );
 }
 
@@ -284,7 +397,7 @@ function FieldTable({ fields }: { fields: ScientificField[] }) {
             <tr>
               <th scope="col">Source column</th>
               <th scope="col">Original text</th>
-              <th scope="col">Normalized value</th>
+              <th scope="col">Converted value</th>
               <th scope="col">Meaning and qualifications</th>
             </tr>
           </thead>
@@ -324,7 +437,7 @@ function FieldTable({ fields }: { fields: ScientificField[] }) {
                 </dd>
               </div>
               <div>
-                <dt>Normalized value</dt>
+                <dt>Converted value</dt>
                 <dd className="field-normalized">
                   <NormalizedValue field={field} />
                 </dd>
@@ -361,8 +474,8 @@ function NormalizedValue({ field }: { field: ScientificField }) {
       {field.status === "missing"
         ? "No reported value"
         : field.status === "unresolved"
-          ? "Withheld"
-          : "Not a normalized quantity"}
+          ? "Meaning unresolved"
+          : "Source text"}
     </span>
   );
 }

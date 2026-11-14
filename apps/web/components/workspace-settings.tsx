@@ -9,7 +9,6 @@ import {
 import { ArrowDownToLine, RefreshCw, Trash2 } from "lucide-react";
 import { request, useResource } from "../lib/api";
 import {
-  clearBrowserWorkspace,
   clearAllLocalWorkspaces,
   defaultPreferences,
   readPreferences,
@@ -21,7 +20,7 @@ import {
   type WorkspaceDocument,
 } from "../lib/workspace-documents";
 import { listCases, type ResearchCase } from "../lib/workspace-storage";
-import { Notice } from "./chrome";
+import { Notice, LoadingRows } from "./chrome";
 import { isRecord } from "./artifact-view";
 
 export function WorkspaceSettings({
@@ -43,9 +42,9 @@ export function WorkspaceSettings({
   const [preferences, setPreferences] = useState(defaultPreferences);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [preferencesReady, setPreferencesReady] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [removeRemote, setRemoveRemote] = useState(true);
-  const [removeAll, setRemoveAll] = useState(false);
   const [busy, setBusy] = useState(false);
   const [storage, setStorage] = useState<{
     usage?: number;
@@ -59,7 +58,8 @@ export function WorkspaceSettings({
   useEffect(() => {
     void readPreferences()
       .then(setPreferences)
-      .catch((reason) => setError(String(reason)));
+      .catch((reason) => setError(String(reason)))
+      .finally(() => setPreferencesReady(true));
     if (navigator.storage?.estimate)
       void navigator.storage
         .estimate()
@@ -188,7 +188,7 @@ export function WorkspaceSettings({
       setStorage((current) => ({ ...current, persisted }));
     } catch {
       setError(
-        "Persistent browser storage could not be requested. Keep a workspace backup.",
+        "Persistent browser storage could not be requested. Keep a research backup.",
       );
     }
   }
@@ -212,7 +212,7 @@ export function WorkspaceSettings({
         });
         if (!uploads.ok && ![404, 410].includes(uploads.status))
           throw new Error(
-            "Temporary uploads could not be listed. Local work was preserved.",
+            "Temporary uploads could not be listed. Saved research was preserved.",
           );
         if (uploads.ok) {
           const body: unknown = await uploads.json();
@@ -235,7 +235,7 @@ export function WorkspaceSettings({
         });
         if (!voices.ok && ![404, 410].includes(voices.status))
           throw new Error(
-            "Voice sessions could not be listed. Local work was preserved.",
+            "Voice sessions could not be listed. Saved research was preserved.",
           );
         if (voices.ok) {
           const body: unknown = await voices.json();
@@ -262,11 +262,10 @@ export function WorkspaceSettings({
         const results = await Promise.allSettled(deletions);
         if (results.some((result) => result.status === "rejected"))
           throw new Error(
-            "Some temporary server data could not be removed. Local work was preserved. Retry while this browser still has access, or let the stated expiry remove it.",
+            "Some temporary server data could not be removed. Saved research was preserved. Retry while this browser still has access, or let the stated expiry remove it.",
           );
       }
-      if (removeAll) await clearAllLocalWorkspaces();
-      else await clearBrowserWorkspace();
+      await clearAllLocalWorkspaces();
       window.location.assign("/app");
     } catch (reason) {
       setError(
@@ -275,12 +274,17 @@ export function WorkspaceSettings({
       setBusy(false);
     }
   }
+  if (!preferencesReady)
+    return <LoadingRows label="Opening your preferences" />;
   return (
     <>
       <div className="page-heading">
         <div>
-          <h1>Workspace settings</h1>
-          <p>Research preferences and recovery for this browser.</p>
+          <h1>Preferences & backups</h1>
+          <p>
+            Choose how you read the research, and keep a portable copy of your
+            work.
+          </p>
         </div>
       </div>
       <form className="settings-form" onSubmit={save}>
@@ -430,8 +434,8 @@ export function WorkspaceSettings({
           )}
         </div>
       </form>
-      <section className="settings-section">
-        <h2>AI and budgets</h2>
+      <details className="settings-section">
+        <summary>Research assistant &amp; usage</summary>
         {models.error ? (
           <Notice kind="error">
             {models.error}
@@ -475,25 +479,25 @@ export function WorkspaceSettings({
         </button>
         <p className="field-help">
           Published-rate estimates and reservations are distinct from the
-          provider invoice. Studio and voice show the consequences of a request
-          before it starts.
+          provider invoice. Research and voice requests use the configured
+          service allowance before it starts.
         </p>
-      </section>
+      </details>
       <section className="settings-section">
-        <h2>Workspace backups and storage</h2>
+        <h2>Back up your research</h2>
         <p>
-          Cases, saved views, sessions, revisions, notes and preferences live in
-          this browser profile. Clearing site data, private browsing, browser
-          eviction or loss of this device can erase unexported work. Anyone
-          using this same browser profile can open it.
+          Your saved investigations, questions, analyses, notes and preferences
+          live in this browser profile. Clearing site data, private browsing,
+          browser eviction or loss of this device can erase unexported work.
+          Anyone using this same browser profile can open it.
         </p>
         <div className="inline-actions">
           <button className="button" onClick={onBackup}>
             <ArrowDownToLine size={16} />
-            Back up workspace
+            Download research backup
           </button>
           <button className="button" onClick={onRestore}>
-            Restore workspace
+            Restore research backup
           </button>
           <button
             className="button"
@@ -522,17 +526,17 @@ export function WorkspaceSettings({
           Last backup:{" "}
           {preferences.last_backup_at
             ? new Date(preferences.last_backup_at).toLocaleString()
-            : "No backup recorded in this workspace"}
+            : "No backup downloaded yet"}
           . Restore creates independent copies; it does not synchronize devices
           or recover expired remote processing.
         </p>
       </section>
-      <section className="settings-section">
-        <h2>Evidence watches</h2>
+      <details className="settings-section">
+        <summary>Source watches</summary>
         <p>
-          Watched cases check public source changes when opened or refreshed. A
-          closed browser sends no alerts. Review affected conclusions in the
-          case before adopting a new source version.
+          Watched research checks public source changes when opened or
+          refreshed. A closed browser sends no alerts. Review affected
+          conclusions in the notes before adopting a new source version.
         </p>
         {watches.length ? (
           <ul>
@@ -543,19 +547,15 @@ export function WorkspaceSettings({
                     {researchCase.title}
                   </Link>
                 ) : (
-                  <span>
-                    {document.title} · Original case is unavailable in this
-                    workspace
-                  </span>
-                )}{" "}
-                · snapshot {document.snapshot_id?.slice(0, 12) ?? "not pinned"}
+                  <span>{document.title} · Original notes are unavailable</span>
+                )}
               </li>
             ))}
           </ul>
         ) : (
           <p>
-            No cases are watched in this workspace. Enable a watch in a case’s
-            Evidence changes section.
+            You have no source watches yet. Follow an investigation to check its
+            sources when you revisit it.
           </p>
         )}
         {investigationWatches.length > 0 && (
@@ -575,12 +575,12 @@ export function WorkspaceSettings({
           </>
         )}
         <Link className="text-button" href="/app/cases">
-          Open research cases
+          Open saved research
         </Link>
-      </section>
+      </details>
       {savedScopes.length > 0 && (
         <section className="settings-section">
-          <h2>Selections from workspace backups</h2>
+          <h2>Restore a saved research selection</h2>
           <p>
             Copied selections stay separate from the active scope. Choose one to
             resume its exact source snapshot and saved views. This changes the
@@ -589,7 +589,7 @@ export function WorkspaceSettings({
           <ul>
             {savedScopes.map((item) => (
               <li key={item.id}>
-                {item.title} · {item.snapshot_id?.slice(0, 12)}
+                {item.title}
                 <button
                   className="button button-small"
                   onClick={() => restoreScope(item)}
@@ -615,43 +615,27 @@ export function WorkspaceSettings({
           onClick={() => setConfirm(true)}
         >
           <Trash2 size={16} />
-          Clear this workspace
+          Clear saved research
         </button>
       </section>
       {confirm && (
         <div
           className="inline-confirmation"
           role="region"
-          aria-label="Clear workspace confirmation"
+          aria-label="Delete saved research confirmation"
         >
-          <h2>Clear this local workspace?</h2>
+          <h2>Delete all saved research in this browser?</h2>
           <p>
-            This removes its cases, research documents, revisions and
-            preferences. Other local workspaces remain. Download a backup before
-            continuing.
+            This removes all saved questions, investigations, notes, analyses
+            and preferences from this browser, including research saved with
+            earlier versions of Nova Ember. Download a backup before continuing.
           </p>
-          <label className="check-label">
-            <input
-              type="checkbox"
-              checked={removeAll}
-              onChange={(event) => setRemoveAll(event.target.checked)}
-            />
-            Remove all Nova Ember local workspaces in this browser profile
-          </label>
-          {removeAll && (
-            <p>
-              Every local workspace is selected. Back up each workspace before
-              continuing; the button below downloads the active workspace only.
-              Browser receipts are controlled separately by temporary-data
-              deletion.
-            </p>
-          )}
           <div className="inline-actions">
             <button className="button" onClick={onBackup}>
               Back up before clearing
             </button>
             <button className="button" onClick={() => setConfirm(false)}>
-              Keep this workspace
+              Keep my research
             </button>
           </div>
           <label className="check-label">
@@ -660,20 +644,15 @@ export function WorkspaceSettings({
               checked={removeRemote}
               onChange={(event) => setRemoveRemote(event.target.checked)}
             />
-            Also remove this workspace’s remembered server jobs, all temporary
-            uploads accessible to this browser, and end its voice sessions
-            (including other local workspaces)
+            Also remove temporary tasks and uploaded files accessible to this
+            browser, and end its voice sessions
           </label>
           <button
             className="button button-danger"
             disabled={busy}
             onClick={clear}
           >
-            {busy
-              ? "Removing selected data…"
-              : removeAll
-                ? "Clear all local workspaces"
-                : "Clear selected workspace"}
+            {busy ? "Removing saved research…" : "Delete saved research"}
           </button>
         </div>
       )}

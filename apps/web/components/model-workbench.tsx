@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Save, Play, ArrowDownToLine } from "lucide-react";
+import Link from "next/link";
+import { Save, Play, ArrowDownToLine, ArrowRight } from "lucide-react";
 import { useResource } from "../lib/api";
 import {
   fileDownload,
@@ -19,6 +20,7 @@ import {
 import { ScientificChart } from "./scientific-chart";
 import { ArtifactView, isRecord } from "./artifact-view";
 import { ScientificResult } from "./scientific-result";
+import { ScenarioCalculator } from "./laboratory";
 import { JobMonitor } from "./job-monitor";
 import styles from "./laboratory-workbench.module.css";
 
@@ -39,7 +41,7 @@ export function ModelWorkbench({
     regressions: Record<string, unknown>[];
     limitations?: string[];
   }>("/v1/models");
-  const [tab, setTab] = useState("fits");
+  const [tab, setTab] = useState("start");
   const [methodId, setMethodId] = useState("trace-fit");
   const [parameters, setParameters] = useState<Record<string, unknown>>({});
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
@@ -94,8 +96,10 @@ export function ModelWorkbench({
             setRestored(doc.data);
             setId(doc.id);
             setRevision(doc.revision);
-            if (typeof doc.data.method === "string")
+            if (typeof doc.data.method === "string") {
               setMethodId(doc.data.method);
+              setTab(doc.data.method === "trace-fit" ? "fits" : "library");
+            }
             if (doc.data.parameters && typeof doc.data.parameters === "object")
               setParameters(doc.data.parameters as Record<string, unknown>);
             if (typeof doc.data.job_id === "string") setJobId(doc.data.job_id);
@@ -257,18 +261,34 @@ export function ModelWorkbench({
       <section className={styles.surface}>
         <div className={styles.row}>
           <div>
-            <h2>Methods and modeling</h2>
+            <h2>Choose a calculation for your question</h2>
             <p className={styles.caption}>
-              Registered calculations keep measurements, assumptions,
-              descriptive fits and qualified predictions distinct.
+              Use known inputs, fit measured data or inspect the evidence behind
+              a predictive model.
             </p>
           </div>
-          <button className="button" onClick={save}>
-            <Save size={16} />
-            Save research draft
-          </button>
+          {tab !== "start" && tab !== "atmosphere" && (
+            <button className="button" onClick={save}>
+              <Save size={16} />
+              Save calculation
+            </button>
+          )}
         </div>
-        <nav className={styles.tabs} aria-label="Model laboratory">
+        <nav className={styles.tabs} aria-label="Calculation types">
+          <button
+            role="tab"
+            aria-selected={tab === "start"}
+            onClick={() => setTab("start")}
+          >
+            Choose a method
+          </button>
+          <button
+            role="tab"
+            aria-selected={tab === "atmosphere"}
+            onClick={() => setTab("atmosphere")}
+          >
+            Atmosphere calculator
+          </button>
           <button
             role="tab"
             aria-selected={tab === "fits"}
@@ -277,21 +297,21 @@ export function ModelWorkbench({
               setMethodId("trace-fit");
             }}
           >
-            Measured-trace fits
+            Fit measurements
           </button>
           <button
             role="tab"
             aria-selected={tab === "library"}
             onClick={() => setTab("library")}
           >
-            Scientific method library
+            All scientific methods
           </button>
           <button
             role="tab"
             aria-selected={tab === "predictions"}
             onClick={() => setTab("predictions")}
           >
-            Qualified predictions
+            Predictive models
           </button>
         </nav>
         {error && (
@@ -310,10 +330,58 @@ export function ModelWorkbench({
             is not current.
           </p>
         )}
-        {tab !== "predictions" ? (
+        {tab === "start" ? (
+          <div className="lab-choice-list">
+            <button onClick={() => setTab("atmosphere")}>
+              <span>
+                <strong>Calculate oxygen partial pressure</strong>
+                <small>
+                  Explore the relationship between oxygen concentration and
+                  total pressure.
+                </small>
+              </span>
+              <ArrowRight size={18} />
+            </button>
+            <button
+              onClick={() => {
+                setTab("fits");
+                setMethodId("trace-fit");
+              }}
+            >
+              <span>
+                <strong>Fit a measured flame or droplet trace</strong>
+                <small>
+                  Describe how a calibrated measurement changes over time.
+                </small>
+              </span>
+              <ArrowRight size={18} />
+            </button>
+            <button onClick={() => setTab("library")}>
+              <span>
+                <strong>Choose another scientific method</strong>
+                <small>
+                  Transport, uncertainty, detector response and other
+                  calculations.
+                </small>
+              </span>
+              <ArrowRight size={18} />
+            </button>
+            <button onClick={() => setTab("predictions")}>
+              <span>
+                <strong>Explore predictive modeling</strong>
+                <small>
+                  Inspect validation and supported conditions before predicting.
+                </small>
+              </span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        ) : tab === "atmosphere" ? (
+          <ScenarioCalculator />
+        ) : tab !== "predictions" ? (
           <>
             <label className={styles.field}>
-              Registered method
+              Scientific method
               <select
                 value={methodId}
                 onChange={(event) => {
@@ -334,12 +402,17 @@ export function ModelWorkbench({
             </label>
             {methodId === "trace-fit" && (
               <>
-                <p className={styles.status}>
-                  Fit calibrated front position against time or measured droplet
-                  diameter squared against time over a declared regime. These
-                  are descriptions of this run. Within-trace fit quality does
-                  not establish a prediction for another run.
+                <p className={styles.caption}>
+                  Fit a calibrated flame-front position or droplet diameter over
+                  time. A fit describes the selected experiment; predicting
+                  another experiment needs separate validation.
                 </p>
+                {!sourceChart && (
+                  <Link className="text-button" href="/app/lab/data">
+                    Select and chart source measurements first{" "}
+                    <ArrowRight size={16} />
+                  </Link>
+                )}
                 <button
                   className="button button-small"
                   disabled={!sourceChart}
@@ -348,6 +421,14 @@ export function ModelWorkbench({
                   Use selected chart points with source anchors
                 </button>
               </>
+            )}
+            {catalog.error && (
+              <p className={styles.error} role="alert">
+                The method list could not be loaded.{" "}
+                <button className="text-button" onClick={catalog.reload}>
+                  Try again
+                </button>
+              </p>
             )}
             {catalog.loading ? (
               <div className={styles.skeleton} />
@@ -374,9 +455,7 @@ export function ModelWorkbench({
                       disabled={busy}
                     >
                       <Play size={15} />
-                      {busy
-                        ? "Submitting registered calculation…"
-                        : "Run selected method"}
+                      {busy ? "Calculating…" : "Calculate"}
                     </button>
                     <button
                       type="button"
@@ -412,11 +491,11 @@ export function ModelWorkbench({
               <div className={styles.skeleton} />
             ) : !models.data?.regressions.length ? (
               <div className={styles.empty}>
-                <h3>No qualified NASA predictor is activated</h3>
+                <h3>No independently validated predictor is available yet</h3>
                 <p>
-                  Source-specific descriptive fits remain available.
-                  Registration requires independent grouped evaluation,
-                  justified intervals and a complete supported condition domain.
+                  You can extract datasets, fit measurements and evaluate a
+                  model. Prediction for new fire conditions requires independent
+                  test data and a supported range of conditions.
                 </p>
               </div>
             ) : (

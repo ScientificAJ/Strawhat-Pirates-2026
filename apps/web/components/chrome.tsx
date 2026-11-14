@@ -2,35 +2,22 @@
 
 import Link from "next/link";
 import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
+  ArrowRight,
   BookOpen,
   ChevronRight,
   Compass,
   FlaskConical,
   GitCompareArrows,
-  LayoutDashboard,
   Menu,
   MessageSquare,
-  Monitor,
   Moon,
   Search,
-  Sun,
   Settings,
-  Activity,
-  Map,
-  UsersRound,
+  Sun,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  activeWorkspaceId,
-  localWorkspaces,
-  addLocalWorkspace,
-  selectLocalWorkspace,
-  type LocalWorkspace,
-} from "../lib/local-workspaces";
 import type { Preferences } from "../lib/workspace-backup";
 import type { WorkspaceContext } from "../lib/research-context";
 import { BrandEmber } from "./brand-ember";
@@ -100,7 +87,6 @@ function Wordmark({
 }
 
 const destinations = [
-  { id: "overview", title: "Overview", href: "/app", icon: LayoutDashboard },
   {
     id: "investigations",
     title: "Investigations",
@@ -113,19 +99,26 @@ const destinations = [
     href: "/app/compare",
     icon: GitCompareArrows,
   },
-  { id: "lab", title: "Laboratory", href: "/app/lab", icon: FlaskConical },
+  { id: "lab", title: "Data & models", href: "/app/lab", icon: FlaskConical },
   {
     id: "agent",
-    title: "Research Studio",
+    title: "Research assistant",
     href: "/app/agent",
     icon: MessageSquare,
   },
-  { id: "cases", title: "Research cases", href: "/app/cases", icon: BookOpen },
+  { id: "cases", title: "Your research", href: "/app/cases", icon: BookOpen },
+];
+const furtherDestinations = [
+  { id: "help", title: "How to use Nova Ember", href: "/app/help" },
+  { id: "coverage", title: "Evidence & sources", href: "/app/coverage" },
+  { id: "dashboards", title: "Research figures", href: "/app/dashboards" },
+  { id: "jobs", title: "Running tasks", href: "/app/jobs" },
+  { id: "agents", title: "Custom research assistants", href: "/app/agents" },
+  { id: "settings", title: "Settings & backup", href: "/app/settings" },
 ];
 
 export function Shell({
   section,
-  snapshot,
   children,
   theme,
   onTheme,
@@ -148,542 +141,289 @@ export function Shell({
   preferences?: Preferences;
   context?: WorkspaceContext | null;
 }) {
-  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const [workspaces, setWorkspaces] = useState<LocalWorkspace[]>([]);
-  const [activeWorkspace, setActiveWorkspace] = useState("primary");
-  const [workspaceError, setWorkspaceError] = useState("");
-  const [workspaceName, setWorkspaceName] = useState("");
-  const [creating, setCreating] = useState(false);
+  const [open, setOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [command, setCommand] = useState("");
-  const commandQuery = command.trim().toLowerCase();
-  const commands = useRef<HTMLDialogElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const menu = useRef<HTMLButtonElement>(null);
+  const drawer = useRef<HTMLDialogElement>(null);
+  const current = [...destinations, ...furtherDestinations].find(
+    (item) => item.id === section,
+  );
+  const query = command.trim().toLowerCase();
+  const links = [...destinations, ...furtherDestinations].filter((item) =>
+    item.title.toLowerCase().includes(query),
+  );
   useEffect(() => {
-    try {
-      setWorkspaces(localWorkspaces());
-      setActiveWorkspace(activeWorkspaceId());
-    } catch (reason) {
-      setWorkspaceError(String(reason));
+    const element = dialog.current;
+    if (commandOpen && !element?.open) {
+      element?.showModal();
+      element?.querySelector("input")?.focus();
     }
-  }, []);
+    if (!commandOpen && element?.open) element.close();
+  }, [commandOpen]);
   useEffect(() => {
-    const key = (event: KeyboardEvent) => {
+    const element = drawer.current;
+    if (open && !element?.open) element?.showModal();
+    if (!open && element?.open) element.close();
+  }, [open]);
+  useEffect(() => {
+    function key(event: KeyboardEvent) {
       if (
         preferences?.command_shortcut !== false &&
         (event.ctrlKey || event.metaKey) &&
         event.key.toLowerCase() === "k"
       ) {
         event.preventDefault();
-        setCommandOpen((current) => !current);
+        setCommandOpen((value) => !value);
       }
-    };
+    }
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
   }, [preferences?.command_shortcut]);
   useEffect(() => {
-    const element = commands.current;
-    if (commandOpen && !element?.open) element?.showModal();
-    if (!commandOpen && element?.open) element.close();
-  }, [commandOpen]);
-  function switchWorkspace(id: string) {
-    if (id === activeWorkspace) return;
-    if (
-      !window.confirm(
-        "Switch local workspaces? Save any open draft first. Temporary server jobs keep running and remain accessible to this browser until expiry.",
-      )
-    )
-      return;
-    try {
-      selectLocalWorkspace(id);
-      window.location.assign("/app");
-    } catch (reason) {
-      setWorkspaceError(String(reason));
-    }
-  }
-  function createWorkspace(event: React.FormEvent) {
-    event.preventDefault();
-    try {
-      const item = addLocalWorkspace(workspaceName);
-      setWorkspaces(localWorkspaces());
-      setCreating(false);
-      setWorkspaceName("");
-      switchWorkspace(item.id);
-    } catch (reason) {
-      setWorkspaceError(String(reason));
-    }
-  }
-  const utilityDestinations = [
-    {
-      id: "agents",
-      title: "Agents",
-      href: "/app/agents",
-      icon: UsersRound,
-    },
-    {
-      id: "dashboards",
-      title: "Dashboards",
-      href: "/app/dashboards",
-      icon: LayoutDashboard,
-    },
-    {
-      id: "jobs",
-      title: "Jobs and activity",
-      href: "/app/jobs",
-      icon: Activity,
-    },
-    {
-      id: "coverage",
-      title: "Evidence coverage",
-      href: "/app/coverage",
-      icon: Map,
-    },
-    {
-      id: "settings",
-      title: "Settings",
-      href: "/app/settings",
-      icon: Settings,
-    },
-  ];
-  const commandItems = [
-    ...destinations,
-    ...utilityDestinations,
-    {
-      id: "learning",
-      title: "Learning mode",
-      href: "/app/learning",
-      icon: BookOpen,
-    },
-    {
-      id: "stewardship",
-      title: "Source stewardship",
-      href: "/app/stewardship",
-      icon: BookOpen,
-    },
-  ].filter((item) => item.title.toLowerCase().includes(commandQuery));
-  const navigationRef = useRef<HTMLElement>(null);
-  const menuRef = useRef<HTMLButtonElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const openedBefore = useRef(false);
-  useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 960px)");
-    const changed = () => {
-      if (desktop.matches) setOpen(false);
+    const media = window.matchMedia("(min-width: 1100px)");
+    const close = () => {
+      if (media.matches) setOpen(false);
     };
-    desktop.addEventListener("change", changed);
-    return () => desktop.removeEventListener("change", changed);
+    media.addEventListener("change", close);
+    return () => media.removeEventListener("change", close);
   }, []);
-  useEffect(() => {
-    if (!open) {
-      if (openedBefore.current) menuRef.current?.focus();
-      openedBefore.current = false;
-      return;
-    }
-    openedBefore.current = true;
-    closeRef.current?.focus();
-    function keydown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-      if (event.key !== "Tab") return;
-      const elements = Array.from(
-        navigationRef.current?.querySelectorAll<HTMLElement>(
-          "a[href], button:not([disabled])",
-        ) ?? [],
-      ).filter((element) => element.offsetParent !== null);
-      const first = elements[0];
-      const last = elements[elements.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last?.focus();
-      }
-      if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first?.focus();
-      }
-    }
-    document.addEventListener("keydown", keydown);
-    return () => document.removeEventListener("keydown", keydown);
-  }, [open]);
-  const current = [...destinations, ...utilityDestinations].find(
-    (item) => item.id === section,
-  );
-  const selected = context?.investigations ?? [];
-  const actions = [
-    {
-      id: "compare-selected",
-      title: "Compare selected investigations",
-      hint: "Open condition comparison",
-      disabled: selected.length < 2,
-      run: () =>
-        router.push(
-          `/app/compare?ids=${selected.join(",")}&snapshot=${context?.snapshot_id}`,
-        ),
-    },
-    {
-      id: "ask-selection",
-      title: "Ask about selection",
-      hint: "Review context before any model request",
-      disabled: !onAsk,
-      run: () => onAsk?.(),
-    },
-    {
-      id: "inspect-source",
-      title: "Inspect selected source",
-      hint: "Open the exact source snapshot",
-      disabled: !selected.length,
-      run: () =>
-        router.push(
-          `/app/investigations/${selected[0]}?section=sources&snapshot=${context?.snapshot_id}`,
-        ),
-    },
-    {
-      id: "save-case",
-      title: "Save research case",
-      hint: "Open a local case draft",
-      disabled: false,
-      run: () => router.push("/app/cases/new"),
-    },
-    {
-      id: "export",
-      title: "Export a frozen research case",
-      hint: "Choose a case and review the export",
-      disabled: false,
-      run: () => router.push("/app/cases"),
-    },
-  ].filter((item) => item.title.toLowerCase().includes(commandQuery));
+  function navigate(href: string) {
+    setOpen(false);
+    setCommandOpen(false);
+    router.push(href);
+  }
   return (
     <div
-      className="app-shell"
+      className="app-shell research-shell"
       data-assistant-open={assistantOpen || undefined}
       data-theme={theme}
       data-density={preferences?.density}
-      data-compact-rail={preferences?.compact_rail || undefined}
       data-reduce-transparency={preferences?.reduce_transparency || undefined}
       data-reduce-motion={preferences?.reduce_motion || undefined}
     >
       <a className="skip-link" href="#research-content">
         Skip to research content
       </a>
-      {open && (
-        <button
-          className="navigation-backdrop"
-          aria-label="Close navigation"
-          onClick={() => setOpen(false)}
-        />
-      )}
-      <aside
-        id="mobile-navigation"
-        ref={navigationRef}
-        className={`navigation ${open ? "navigation-open" : ""}`}
-        aria-label="Application navigation"
-      >
-        <button
-          ref={closeRef}
-          className="icon-button mobile-close"
-          aria-label="Close navigation"
-          onClick={() => {
-            setOpen(false);
-          }}
-        >
-          <X size={18} />
-        </button>
+      <header className="site-header">
         <Wordmark
           reducedMotion={preferences?.reduce_motion ?? false}
           onNavigate={() => setOpen(false)}
         />
-        <div className="workspace-switcher">
-          <label className="workspace-label" htmlFor="local-workspace">
-            <Monitor size={15} />
-            <span>Local workspace</span>
-          </label>
-          <select
-            id="local-workspace"
-            aria-label="Local workspace"
-            value={activeWorkspace}
-            onChange={(event) => switchWorkspace(event.target.value)}
-          >
-            {workspaces.length ? (
-              workspaces.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))
-            ) : (
-              <option value="primary">On this device</option>
-            )}
-          </select>
+        <nav className="site-nav" aria-label="Research">
+          {destinations.map(({ id, title, href }) => (
+            <Link
+              key={id}
+              href={href}
+              aria-current={section === id ? "page" : undefined}
+            >
+              {title}
+            </Link>
+          ))}
+        </nav>
+        <div className="site-tools">
           <button
-            className="text-button"
-            onClick={() => setCreating((value) => !value)}
+            className="icon-button"
+            aria-label="Find a page or tool"
+            onClick={() => setCommandOpen(true)}
           >
-            New workspace
+            <Search size={19} />
           </button>
-          {creating && (
-            <form onSubmit={createWorkspace}>
-              <label>
-                Workspace name
-                <input
-                  autoFocus
-                  maxLength={100}
-                  required
-                  value={workspaceName}
-                  onChange={(event) => setWorkspaceName(event.target.value)}
-                />
-              </label>
-              <button className="button button-small" type="submit">
-                Create
-              </button>
-              <button
-                className="text-button"
-                type="button"
-                onClick={() => setCreating(false)}
-              >
-                Cancel
-              </button>
-            </form>
-          )}
-          {workspaceError && <p role="alert">{workspaceError}</p>}
+          <button
+            className="icon-button theme-control"
+            onClick={onTheme}
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+          >
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+          <Link
+            className="icon-button settings-control"
+            href="/app/settings"
+            aria-label="Settings and backup"
+          >
+            <Settings size={19} />
+          </Link>
+          <button
+            ref={menu}
+            className="icon-button site-menu"
+            aria-label="Open navigation"
+            aria-expanded={open}
+            aria-controls="research-navigation"
+            onClick={() => setOpen(true)}
+          >
+            <Menu size={21} />
+          </button>
         </div>
-        <nav aria-label="Research">
+      </header>
+      <div className="site-sectionbar">
+        <div className="site-breadcrumb">
+          <Link href="/app">Home</Link>
+          {section !== "overview" && (
+            <>
+              <ChevronRight size={14} />
+              <span>{current?.title ?? "Research"}</span>
+            </>
+          )}
+        </div>
+        <div className="site-selection">
+          {!!context?.investigations?.length && section !== "overview" && (
+            <Link
+              href={`/app/compare?ids=${context.investigations.join(",")}&snapshot=${context.snapshot_id}`}
+            >
+              {context.investigations.length} selected investigation
+              {context.investigations.length === 1 ? "" : "s"}
+            </Link>
+          )}
+          {onAsk && section !== "agent" && section !== "overview" && (
+            <button
+              id="contextual-assistant-header"
+              className="text-button"
+              onClick={onAsk}
+            >
+              <MessageSquare size={16} />
+              Ask about this page
+            </button>
+          )}
+        </div>
+      </div>
+      <main
+        id="research-content"
+        className="research-content site-content"
+        tabIndex={-1}
+      >
+        {children}
+      </main>
+      <footer className="site-footer">
+        <span>
+          Nova Ember <span className="footer-separator">/</span> NASA combustion
+          research, connected.
+        </span>
+        <nav aria-label="Further research tools">
+          {furtherDestinations
+            .filter((item) => ["help", "coverage", "jobs"].includes(item.id))
+            .map((item) => (
+              <Link key={item.id} href={item.href}>
+                {item.title}
+              </Link>
+            ))}
+        </nav>
+        <span className="footer-credit">Built by StrawHat Pirates</span>
+      </footer>
+      <dialog
+        ref={drawer}
+        id="research-navigation"
+        className="research-navigation"
+        aria-label="Research navigation"
+        onCancel={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          menu.current?.focus();
+        }}
+      >
+        <div className="command-heading">
+          <h2>Explore Nova Ember</h2>
+          <button
+            className="icon-button"
+            aria-label="Close navigation"
+            onClick={() => setOpen(false)}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <nav>
           {destinations.map(({ id, title, href, icon: Icon }) => (
             <Link
               key={id}
               href={href}
-              className={`navigation-link ${section === id ? "is-active" : ""}`}
               aria-current={section === id ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
-              <Icon size={19} strokeWidth={1.75} />
-              <span>{title}</span>
+              <Icon size={19} />
+              {title}
+              <ArrowRight size={16} />
             </Link>
           ))}
         </nav>
-        <nav className="navigation-utilities" aria-label="Workspace tools">
-          {utilityDestinations.map(({ id, title, href, icon: Icon }) => (
-            <Link
-              key={id}
-              className={`navigation-link ${section === id ? "is-active" : ""}`}
-              aria-current={section === id ? "page" : undefined}
-              href={href}
-              onClick={() => setOpen(false)}
-            >
-              <Icon size={18} />
-              <span>{title}</span>
+        <nav className="further-navigation">
+          {furtherDestinations.map((item) => (
+            <Link key={item.id} href={item.href} onClick={() => setOpen(false)}>
+              {item.title}
+              <ChevronRight size={16} />
             </Link>
           ))}
         </nav>
-        <div className="navigation-bottom">
-          <div className="workspace-note">
-            <span className="small-dot" />
-            <span>Your personal workspace</span>
-            <p>
-              Saved research stays in this browser. Back up to move devices.
-            </p>
-          </div>
-          <button className="navigation-link" onClick={onBackup}>
-            <ArrowDownToLine size={18} />
-            <span>Back up workspace</span>
-          </button>
-          <button className="navigation-link" onClick={onRestore}>
-            <ArrowUpFromLine size={18} />
-            <span>Restore backup</span>
-          </button>
-          <Link
-            className="navigation-link"
-            href="/app/help"
-            onClick={() => setOpen(false)}
-          >
-            <BookOpen size={18} />
-            <span>Research guide</span>
-          </Link>
-          <div className="navigation-theme">
-            <span>Appearance</span>
-            <button
-              className="icon-button"
-              onClick={onTheme}
-              aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
-            >
-              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-            </button>
-          </div>
-        </div>
-      </aside>
-      <div
-        className="main-shell"
-        inert={open || undefined}
-        aria-hidden={open || undefined}
-      >
-        <header className="app-header">
-          <button
-            ref={menuRef}
-            className="icon-button mobile-menu"
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-controls="mobile-navigation"
-            aria-label={open ? "Close navigation" : "Open navigation"}
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-          <div className="breadcrumb">
-            <span>Workspace</span>
-            <ChevronRight size={14} />
-            <span>{current?.title ?? "Research guide"}</span>
-          </div>
-          <div className="header-actions">
-            <button
-              className="header-search"
-              onClick={() => setCommandOpen(true)}
-              aria-label="Open command palette"
-            >
-              <Search size={17} />
-              <span>Go to…</span>
-              <kbd>
-                {preferences?.command_shortcut === false
-                  ? "Commands"
-                  : "⌘ / Ctrl K"}
-              </kbd>
-            </button>
-            {onAsk && (
-              <button
-                id="contextual-assistant-header"
-                className="icon-button"
-                aria-label="Ask about selected context"
-                onClick={onAsk}
-              >
-                <MessageSquare size={18} />
-              </button>
-            )}
-            <span className="header-divider" />
-            <button
-              className="icon-button"
-              onClick={onTheme}
-              aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
-            >
-              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-            </button>
-          </div>
-        </header>
-        <main id="research-content" className="research-content" tabIndex={-1}>
-          {children}
-        </main>
-        <footer className="context-footer">
-          <span>
-            <span className="small-dot" />
-            NASA PSI evidence
-          </span>
-          <span title={snapshot ?? undefined}>
-            {snapshot
-              ? `Snapshot ${snapshot.slice(0, 18)}`
-              : "Snapshot not loaded"}
-          </span>
-          <span>
-            {context?.scenario && Object.keys(context.scenario).length
-              ? "Scenario selected"
-              : "No scenario selected"}{" "}
-            · {context?.investigations?.length ?? 0} investigations ·{" "}
-            {context?.selected_sources?.length ?? 0} selected sources
-          </span>
-        </footer>
-        <nav className="mobile-bottom-nav" aria-label="Quick navigation">
-          <Link
-            href="/app"
-            aria-current={section === "overview" ? "page" : undefined}
-          >
-            <LayoutDashboard size={19} />
-            <span>Overview</span>
-          </Link>
-          <Link
-            href="/app/investigations"
-            aria-current={section === "investigations" ? "page" : undefined}
-          >
-            <Compass size={19} />
-            <span>Investigations</span>
-          </Link>
-          <Link
-            href="/app/agent"
-            aria-current={section === "agent" ? "page" : undefined}
-          >
-            <MessageSquare size={19} />
-            <span>Studio</span>
-          </Link>
-          <button onClick={() => setOpen(true)} aria-expanded={open}>
-            <Menu size={19} />
-            <span>More</span>
-          </button>
-        </nav>
-      </div>
+      </dialog>
       <dialog
+        ref={dialog}
         className="command-palette"
-        ref={commands}
-        aria-label="Command palette"
+        aria-label="Find a page or tool"
         onCancel={() => setCommandOpen(false)}
         onClose={() => setCommandOpen(false)}
       >
         <div className="command-heading">
-          <h2>Go to a research workspace</h2>
+          <h2>Find a page or tool</h2>
           <button
             className="icon-button"
-            aria-label="Close command palette"
+            aria-label="Close search"
             onClick={() => setCommandOpen(false)}
           >
             <X size={18} />
           </button>
         </div>
         <label>
-          Find a destination
+          What do you need?
           <input
             autoFocus
             value={command}
             onChange={(event) => setCommand(event.target.value)}
-            placeholder="Investigations, models, jobs…"
+            placeholder="Investigations, data, backup…"
           />
         </label>
-        <nav aria-label="Research commands">
-          <h3>Research actions</h3>
-          {actions.map((item) => (
-            <button
-              key={item.id}
-              disabled={item.disabled}
-              onClick={() => {
-                setCommandOpen(false);
-                item.run();
-              }}
-            >
-              <span>
-                <strong>{item.title}</strong>
-                <small>
-                  {item.hint}
-                  {item.disabled ? " · Select the required context first" : ""}
-                </small>
-              </span>
+        <nav aria-label="Search results">
+          {links.map((item) => (
+            <button key={item.id} onClick={() => navigate(item.href)}>
+              {item.title}
               <ChevronRight size={16} />
             </button>
           ))}
         </nav>
-        <nav aria-label="Command destinations">
-          <h3>Go to</h3>
-          {commandItems.map(({ id, title, href, icon: Icon }) => (
+        {!links.length && (
+          <p>
+            No matching page.{" "}
             <button
-              key={id}
+              className="text-button"
+              onClick={() =>
+                navigate(`/app/investigations?q=${encodeURIComponent(command)}`)
+              }
+            >
+              Search investigations instead
+            </button>
+          </p>
+        )}
+        {(!query || "backup restore".includes(query)) && (
+          <div className="command-backup">
+            <button
+              className="text-button"
               onClick={() => {
                 setCommandOpen(false);
-                router.push(href);
+                onBackup();
               }}
             >
-              <Icon size={18} />
-              {title}
-              <ChevronRight size={16} />
+              Download research backup
             </button>
-          ))}
-          {!commandItems.length && (
-            <p>
-              No matching destination. Use Investigations to search the public
-              evidence catalog.
-            </p>
-          )}
-        </nav>
-        <p>Navigation only. No model request or computation starts here.</p>
+            <button
+              className="text-button"
+              onClick={() => {
+                setCommandOpen(false);
+                onRestore();
+              }}
+            >
+              Restore a backup
+            </button>
+          </div>
+        )}
       </dialog>
     </div>
   );

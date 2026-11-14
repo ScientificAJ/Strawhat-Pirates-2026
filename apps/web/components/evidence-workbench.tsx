@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, BookOpen, Save, Search, X } from "lucide-react";
@@ -29,6 +29,7 @@ import {
   useQuery,
 } from "./workbench-common";
 import s from "./workbench.module.css";
+import journey from "./research-journey.module.css";
 
 type Claim = {
   id: string;
@@ -120,13 +121,13 @@ type Assessment = {
   unit?: string;
 };
 const views = [
-  ["sources", "Sources and relationships"],
-  ["contradictions", "Contradictions"],
+  ["sources", "Read sources"],
+  ["contradictions", "Compare claims"],
   ["gaps", "Coverage and gaps"],
-  ["hypotheses", "Hypotheses"],
-  ["controls", "Control research"],
+  ["hypotheses", "Develop a hypothesis"],
+  ["controls", "Fire safety"],
   ["earth", "Earth applications"],
-  ["learning", "Learning mode"],
+  ["learning", "Learn the science"],
   ["stewardship", "Source quality"],
 ];
 const conditions = [
@@ -195,23 +196,26 @@ function TextField({
   multiline?: boolean;
   placeholder?: string;
 }) {
+  const id = useId();
   return (
-    <label className={s.field}>
-      {label}
+    <div className={s.field}>
+      <label htmlFor={id}>{label}</label>
       {multiline ? (
         <textarea
+          id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
         />
       ) : (
         <input
+          id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
         />
       )}
-    </label>
+    </div>
   );
 }
 export function EvidenceWorkbench({
@@ -226,6 +230,12 @@ export function EvidenceWorkbench({
     views.some(([id]) => id === initialView) ? initialView : "sources",
   );
   const [query, setQuery] = useState("");
+  const [researchQuestion, setResearchQuestion] = useState("");
+  const [assessmentOpen, setAssessmentOpen] = useState(false);
+  const [sourceNote, setSourceNote] = useState<{
+    text: string;
+    anchor: Anchor | null;
+  } | null>(null);
   const [submitted, setSubmitted] = useState("");
   const [accession, setAccession] = useState("");
   const [anchor, setAnchor] = useState<Anchor | null>(null);
@@ -291,10 +301,15 @@ export function EvidenceWorkbench({
     snapshotId,
   });
   useEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get("view");
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("view");
     if (requested && views.some(([name]) => name === requested))
       setView(requested);
-  }, []);
+    const savedId = params.get("saved");
+    if (savedId) void restore(savedId);
+    // Restore only on entry or a source-version change, never on form edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshotId]);
   function validateSnapshot() {
     const anchors = [
       ...selected.map((item) => item.hit.anchor),
@@ -395,6 +410,9 @@ export function EvidenceWorkbench({
   function navigate(value: string) {
     if (value !== view) setDocument(null);
     setView(value);
+    setAssessmentOpen(false);
+    setSourceNote(null);
+    setResearchQuestion("");
     setAssessment(null);
     setProblem("");
     const url = new URL(window.location.href);
@@ -648,7 +666,7 @@ export function EvidenceWorkbench({
       const value = await readDocument(id);
       if (!value)
         throw new Error(
-          "This local record is unavailable. Import its workspace backup.",
+          "This saved research is unavailable. Restore a research backup to reopen it.",
         );
       if (value.snapshot_id !== snapshotId)
         throw new Error(
@@ -656,7 +674,35 @@ export function EvidenceWorkbench({
             value.snapshot_id?.slice(0, 12),
         );
       const data = value.data;
+      const restoredView =
+        typeof data.view === "string" &&
+        views.some(([name]) => name === data.view)
+          ? data.view
+          : "sources";
+      const url = new URL(window.location.href);
+      url.searchParams.set("saved", value.id);
+      url.searchParams.set("snapshot", snapshotId);
+      url.searchParams.set("view", restoredView);
+      window.history.replaceState(null, "", url);
       setDocument(value);
+      if (value.kind === "note" && typeof data.note === "string") {
+        const savedAnchor = data.source_anchor;
+        setSourceNote({
+          text: data.note,
+          anchor:
+            savedAnchor &&
+            typeof savedAnchor === "object" &&
+            "source_sha256" in savedAnchor &&
+            "kind" in savedAnchor
+              ? (savedAnchor as Anchor)
+              : null,
+        });
+        setView("sources");
+        setMessage("Opened your saved source note.");
+        return;
+      }
+      setSourceNote(null);
+      setAssessmentOpen(["controls", "earth"].includes(restoredView));
       setForm({ ...formDefaults, ...(data.form as Partial<Form>) });
       setSelected((data.selected as typeof selected) ?? []);
       setConfiguration((data.configuration as Record<string, string>) ?? {});
@@ -679,12 +725,8 @@ export function EvidenceWorkbench({
       setPriors(model?.priors ?? "");
       setLikelihoods(model?.likelihoods ?? "");
       setProbabilityJustification(model?.probabilityJustification ?? "");
-      setView(String(data.view || "sources"));
-      setMessage(
-        "Opened revision " +
-          value.revision +
-          "; saving creates the next immutable local revision.",
-      );
+      setView(restoredView);
+      setMessage(`Opened ${value.title}.`);
     } catch (reason) {
       setProblem(errorMessage(reason));
     }
@@ -692,6 +734,7 @@ export function EvidenceWorkbench({
   async function learningQuestion(
     question: string,
     investigations: string[] = [],
+    anchors: Anchor[] = [],
   ) {
     try {
       validateSnapshot();
@@ -703,8 +746,9 @@ export function EvidenceWorkbench({
           question,
           snapshot_id: snapshotId,
           investigations,
-          summary_depth: "learning",
-          anchors: selected.map((item) => item.hit.anchor),
+          summary_depth: view === "learning" ? "brief" : "technical",
+          anchors: [...selected.map((item) => item.hit.anchor), ...anchors],
+          auto_submit: true,
         },
       });
       router.push("/app/agent?intent=" + intent.id);
@@ -838,35 +882,41 @@ export function EvidenceWorkbench({
       <div className="page-heading">
         <div>
           <h1>
-            {view === "learning"
-              ? "Learning with the evidence"
-              : view === "stewardship"
-                ? "Source quality and personal corrections"
-                : "Evidence and research planning"}
+            {view === "controls"
+              ? "Research for fire safety"
+              : view === "earth"
+                ? "From space research to Earth"
+                : view === "learning"
+                  ? "Understand combustion in space"
+                  : view === "sources"
+                    ? "Read the original evidence"
+                    : views.find(([name]) => name === view)?.[1]}
           </h1>
           <p>
-            Keep source observations, interpretations, hypotheses and unresolved
-            questions distinct.
+            {view === "controls"
+              ? "Explore the research behind prevention, detection and suppression."
+              : view === "earth"
+                ? "Discover possible applications and the conditions that determine whether evidence transfers."
+                : view === "sources"
+                  ? "Find the passages, observations and methods behind a scientific explanation."
+                  : "Follow the evidence from a research question to a source-backed interpretation."}
           </p>
         </div>
       </div>
-      <Scope snapshotId={snapshotId}>
-        <span>
-          {view === "learning"
-            ? "Learning mode · Full sources stay available"
-            : "Public evidence · Personal research records"}
-        </span>
-      </Scope>
-      <nav className={s.tabs} aria-label="Evidence workspaces">
-        {views.map(([value, label]) => (
-          <button
-            key={value}
-            aria-current={view === value ? "page" : undefined}
-            onClick={() => navigate(value)}
-          >
-            {label}
-          </button>
-        ))}
+      <nav className={s.tabs} aria-label="Research pathways">
+        {views
+          .filter(([name]) =>
+            ["sources", "controls", "earth", "learning"].includes(name),
+          )
+          .map(([value, label]) => (
+            <button
+              key={value}
+              aria-current={view === value ? "page" : undefined}
+              onClick={() => navigate(value)}
+            >
+              {label}
+            </button>
+          ))}
       </nav>
       {problem && (
         <p className={s.error} role="alert">
@@ -877,6 +927,47 @@ export function EvidenceWorkbench({
         <p role="status" className={s.success}>
           {message}
         </p>
+      )}
+      {sourceNote && document && (
+        <section className={journey.researchSummary}>
+          <h2>{document.title}</h2>
+          <TextField
+            label="Your source note"
+            value={sourceNote.text}
+            multiline
+            onChange={(text) =>
+              setSourceNote((current) =>
+                current ? { ...current, text } : null,
+              )
+            }
+          />
+          <div className={s.actions}>
+            {sourceNote.anchor && (
+              <InspectButton anchor={sourceNote.anchor} onInspect={setAnchor} />
+            )}
+            <button
+              className="button button-primary"
+              disabled={!sourceNote.text.trim()}
+              onClick={() => {
+                void saveDocument({
+                  id: document.id,
+                  revision: document.revision,
+                  kind: document.kind,
+                  title: document.title,
+                  snapshot_id: document.snapshot_id,
+                  data: { ...document.data, note: sourceNote.text },
+                })
+                  .then((saved) => {
+                    setDocument(saved);
+                    setMessage("Source note saved.");
+                  })
+                  .catch((reason) => setProblem(errorMessage(reason)));
+              }}
+            >
+              <Save size={16} /> Save note
+            </button>
+          </div>
+        </section>
       )}
       {view === "learning" ? (
         <>
@@ -928,7 +1019,7 @@ export function EvidenceWorkbench({
                   )
                 }
               >
-                Draft a guided question in Studio <ArrowRight size={16} />
+                Begin a guided explanation <ArrowRight size={16} />
               </button>
             </section>
             <section className={s.surface}>
@@ -984,281 +1075,400 @@ export function EvidenceWorkbench({
         </>
       ) : (
         <>
-          <section className={s.surface}>
-            <div className={s.sectionHeading}>
-              <div>
-                <h2>Find and attach exact evidence</h2>
-                <p>
-                  Read the original passage before adopting an interpretation.
-                </p>
-              </div>
-              <label className={s.field}>
-                Investigation scope
-                <select
-                  value={accession}
-                  onChange={(event) => {
-                    setAccession(event.target.value);
-                    setAxis1("");
-                    setAxis2("");
-                    setCoverageRequest(null);
-                  }}
-                >
-                  <option value="">All retained investigations</option>
-                  {catalog.data?.items.map((item) => (
-                    <option key={item.accession} value={item.accession}>
-                      {item.acronym || item.accession} · {item.accession}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <form
-              className={s.search}
-              onSubmit={(event) => {
-                event.preventDefault();
-                setSubmitted(query.trim());
-              }}
-            >
-              <label className="visually-hidden" htmlFor="evidence-search">
-                Literal source terms
-              </label>
-              <input
-                id="evidence-search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Exact source terms, apparatus, method, or qualification"
-              />
-              <button className="button">
-                <Search size={16} /> Search sources
-              </button>
-            </form>
-            {search.error ? (
-              <ErrorState message={search.error} retry={search.reload} />
-            ) : search.loading && submitted ? (
-              <LoadingRows label="Reading retained source passages" />
-            ) : (
-              search.data && (
-                <>
-                  <p className={s.help}>
-                    {search.data.total} literal matches ·{" "}
-                    {search.data.search_scope}
-                  </p>
-                  <ul className={s.sourceList}>
-                    {search.data.items.map((hit, index) => (
-                      <li key={index}>
-                        <span className={s.help}>
-                          {anchorLabel(hit.anchor)} · {human(hit.field_role)}
-                        </span>
-                        <blockquote>{hit.text}</blockquote>
-                        <div className={s.actions}>
-                          <InspectButton
-                            anchor={hit.anchor}
-                            onInspect={setAnchor}
-                          />
-                          {view === "contradictions" ? (
-                            <>
-                              <button
-                                className="button"
-                                onClick={() => {
-                                  setLeft(hit);
-                                  field("left", hit.text);
-                                }}
-                              >
-                                Use as left assertion
-                              </button>
-                              <button
-                                className="button"
-                                onClick={() => {
-                                  setRight(hit);
-                                  field("right", hit.text);
-                                }}
-                              >
-                                Use as right assertion
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                className="button"
-                                onClick={() => attach(hit)}
-                              >
-                                Attach as supporting source
-                              </button>
-                              {view === "hypotheses" && (
-                                <button
-                                  className="button"
-                                  onClick={() => attach(hit, "contrary")}
-                                >
-                                  Attach as contrary source
-                                </button>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                  {!search.data.items.length && (
-                    <Empty>
-                      No passages contain all literal terms in this scope. Try a
-                      specific source term or open meaning search in
-                      investigation discovery; missing results are not proof of
-                      missing science.
-                    </Empty>
-                  )}
-                </>
-              )
-            )}
-            {selected.length > 0 && (
-              <div className={s.chips} aria-label="Attached source evidence">
-                {selected.map((item, index) => (
-                  <span className={s.chip} key={index}>
-                    {item.role}:{" "}
-                    {item.hit.anchor.accession ?? item.hit.anchor.document_id}
-                    <button
-                      aria-label={"Remove attached evidence " + (index + 1)}
-                      onClick={() =>
-                        setSelected((value) =>
-                          value.filter(
-                            (_, selectedIndex) => selectedIndex !== index,
-                          ),
-                        )
-                      }
-                    >
-                      <X size={14} />
-                    </button>
-                  </span>
+          {view === "controls" && (
+            <section className={journey.researchSummary}>
+              <h2>Which part of fire safety are you investigating?</h2>
+              <p>
+                Different experiments address how flames spread, how smoke is
+                detected, or how a flame goes out. Start with your question; the
+                research assistant can find relevant investigations and explain
+                the evidence and its limits.
+              </p>
+              <div className={journey.topics}>
+                {["Prevention", "Detection", "Suppression"].map((value) => (
+                  <button
+                    className="button"
+                    key={value}
+                    aria-pressed={category === value}
+                    onClick={() => setCategory(value)}
+                  >
+                    {value}
+                  </button>
                 ))}
               </div>
-            )}
-          </section>
-          {view === "sources" && (
-            <section className={s.surface}>
-              <div className={s.toolbar}>
-                <h2>Source-reported relationships</h2>
-                <div className={s.actions}>
-                  <button
-                    className="button"
-                    aria-pressed={!graph}
-                    onClick={() => setGraph(false)}
-                  >
-                    Relationship list
-                  </button>
-                  <button
-                    className="button"
-                    aria-pressed={graph}
-                    onClick={() => setGraph(true)}
-                  >
-                    Focused graph and list
-                  </button>
-                </div>
-              </div>
-              {lineage.error ? (
-                <ErrorState message={lineage.error} retry={lineage.reload} />
-              ) : !lineage.data ? (
-                <LoadingRows label="Reading hardware and investigation relationships" />
+              <form
+                className={s.form}
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void learningQuestion(
+                    researchQuestion.trim() ||
+                      `Which NASA microgravity combustion investigations are relevant to fire ${category.toLowerCase()}? Explain the mechanisms, useful experimental evidence, conditions, equipment relevance and what has not been validated for use.`,
+                    accession ? [accession] : [],
+                  );
+                }}
+              >
+                <TextField
+                  label="Your fire-safety question"
+                  value={researchQuestion}
+                  onChange={setResearchQuestion}
+                  placeholder="For example: what research helps smoke detectors work in spacecraft?"
+                />
+                <button className="button button-primary" type="submit">
+                  Find and explain relevant research <ArrowRight size={16} />
+                </button>
+              </form>
+              <p className={s.help}>
+                Research evidence helps evaluate a control. It does not
+                establish an operating limit or certify equipment for a
+                particular environment.
+              </p>
+              <Link className="text-button" href="/app/investigations">
+                Browse the investigations yourself <ArrowRight size={15} />
+              </Link>
+              <h3>Investigations to start with</h3>
+              {catalog.error ? (
+                <ErrorState message={catalog.error} retry={catalog.reload} />
+              ) : !catalog.data ? (
+                <LoadingRows label="Finding relevant investigations" />
               ) : (
-                <>
-                  <label className={s.field}>
-                    Focus node
-                    <select
-                      value={focus}
-                      onChange={(event) => setFocus(event.target.value)}
-                    >
-                      {lineage.data.nodes.map((node) => (
-                        <option key={node.id} value={node.id}>
-                          {node.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {graph && (
-                    <>
-                      <svg
-                        viewBox="0 0 640 280"
-                        style={{ width: "100%", maxHeight: 320 }}
-                        role="img"
-                        aria-label="Bounded source relationship graph; the complete focused relationship list follows."
-                      >
-                        {nodeIds.map((id, index) => {
-                          const x = index === 0 ? 90 : 300 + (index % 2) * 210,
-                            y =
-                              index === 0
-                                ? 140
-                                : 30 + Math.floor((index - 1) / 2) * 66;
-                          return (
-                            <g key={id}>
-                              <line
-                                x1="90"
-                                y1="140"
-                                x2={x}
-                                y2={y}
-                                stroke="var(--boundary)"
-                                strokeDasharray="4 4"
-                              />
-                              <circle
-                                cx={x}
-                                cy={y}
-                                r={index === 0 ? 12 : 7}
-                                fill={
-                                  index === 0
-                                    ? "var(--action)"
-                                    : "var(--secondary)"
-                                }
-                              />
-                              <text
-                                x={x + 16}
-                                y={y + 4}
-                                fill="currentColor"
-                                fontSize="11"
-                              >
-                                {id.length > 26 ? id.slice(0, 24) + "…" : id}
-                              </text>
-                            </g>
-                          );
-                        })}
-                      </svg>
-                      <p className={s.help}>
-                        Graph shows up to eight neighboring identities. Edges
-                        denote source-reported context, not causation. The list
-                        below retains every focused relationship and its source.
-                      </p>
-                    </>
-                  )}
-                  <ul className={s.sourceList}>
-                    {focusedEdges.map((edge, index) => (
-                      <li key={index}>
-                        <div className={s.relationship}>
-                          <span>
-                            {lineage.data?.nodes.find(
-                              (node) => node.id === edge.source,
-                            )?.label ?? edge.source}
-                          </span>
-                          <span>{human(edge.relation)}</span>
-                          <span>
-                            {lineage.data?.nodes.find(
-                              (node) => node.id === edge.target,
-                            )?.label ?? edge.target}
-                          </span>
-                        </div>
-                        <p>{edge.limitation}</p>
-                        <InspectButton
-                          anchor={edge.anchor}
-                          onInspect={setAnchor}
-                        />
+                <ul className={s.sourceList}>
+                  {(category === "Detection"
+                    ? ["PSI-101", "PSI-102", "PSI-47"]
+                    : category === "Suppression"
+                      ? ["PSI-69", "PSI-68", "PSI-26"]
+                      : ["PSI-25", "PSI-98", "PSI-99"]
+                  ).map((id) => {
+                    const item = catalog.data?.items.find(
+                      (investigation) => investigation.accession === id,
+                    );
+                    if (!item) return null;
+                    const purpose = item.objective || item.description;
+                    return (
+                      <li key={id}>
+                        <Link
+                          href={`/app/investigations/${id}?snapshot=${snapshotId}`}
+                        >
+                          <strong>{item.acronym || item.title}</strong>
+                        </Link>
+                        <p>
+                          {purpose.length > 300
+                            ? purpose.slice(0, 300).replace(/\s+\S*$/, "") + "…"
+                            : purpose}
+                        </p>
+                        <Link
+                          className="text-button"
+                          href={`/app/investigations/${id}?snapshot=${snapshotId}`}
+                        >
+                          Explore the investigation <ArrowRight size={15} />
+                        </Link>
                       </li>
-                    ))}
-                  </ul>
-                  {!focusedEdges.length && (
-                    <Empty>
-                      No source-reported relationship is retained for this
-                      focus. This is not evidence that no relation exists.
-                    </Empty>
-                  )}
-                  <Limitations values={lineage.data.limitations} />
-                </>
+                    );
+                  })}
+                </ul>
               )}
             </section>
+          )}
+          {view === "earth" && (
+            <section className={journey.researchSummary}>
+              <p>
+                NASA’s catalog describes possible Earth benefits of combustion
+                research. The connections below are research hypotheses. Follow
+                the original wording, then explore how gravity, ventilation,
+                materials and scale affect a proposed application.
+              </p>
+            </section>
+          )}
+          <details
+            className={journey.advanced}
+            open={view === "sources" || assessmentOpen ? true : undefined}
+          >
+            <summary>
+              {view === "sources"
+                ? "Find original source passages"
+                : "Find sources for your own assessment"}
+            </summary>
+            <section>
+              <div className={s.sectionHeading}>
+                <div>
+                  <h2>Search the evidence</h2>
+                  <p>
+                    Read the original passage before adopting an interpretation.
+                  </p>
+                </div>
+                <label className={s.field}>
+                  Investigation scope
+                  <select
+                    value={accession}
+                    onChange={(event) => {
+                      setAccession(event.target.value);
+                      setAxis1("");
+                      setAxis2("");
+                      setCoverageRequest(null);
+                    }}
+                  >
+                    <option value="">All retained investigations</option>
+                    {catalog.data?.items.map((item) => (
+                      <option key={item.accession} value={item.accession}>
+                        {item.acronym || item.accession} · {item.accession}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <form
+                className={s.search}
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setSubmitted(query.trim());
+                }}
+              >
+                <label className="visually-hidden" htmlFor="evidence-search">
+                  Source search terms
+                </label>
+                <input
+                  id="evidence-search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Try a material, experiment, method or scientific term"
+                />
+                <button className="button">
+                  <Search size={16} /> Search sources
+                </button>
+              </form>
+              {search.error ? (
+                <ErrorState message={search.error} retry={search.reload} />
+              ) : search.loading && submitted ? (
+                <LoadingRows label="Reading retained source passages" />
+              ) : (
+                search.data && (
+                  <>
+                    <p className={s.help}>
+                      {search.data.total} literal matches ·{" "}
+                      {search.data.search_scope}
+                    </p>
+                    <ul className={s.sourceList}>
+                      {search.data.items.map((hit, index) => (
+                        <li key={index}>
+                          <span className={s.help}>
+                            {anchorLabel(hit.anchor)} · {human(hit.field_role)}
+                          </span>
+                          <blockquote>{hit.text}</blockquote>
+                          <div className={s.actions}>
+                            <InspectButton
+                              anchor={hit.anchor}
+                              onInspect={setAnchor}
+                            />
+                            {view === "contradictions" ? (
+                              <>
+                                <button
+                                  className="button"
+                                  onClick={() => {
+                                    setLeft(hit);
+                                    field("left", hit.text);
+                                  }}
+                                >
+                                  Use as left assertion
+                                </button>
+                                <button
+                                  className="button"
+                                  onClick={() => {
+                                    setRight(hit);
+                                    field("right", hit.text);
+                                  }}
+                                >
+                                  Use as right assertion
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  className="button"
+                                  onClick={() => attach(hit)}
+                                >
+                                  Attach as supporting source
+                                </button>
+                                {view === "hypotheses" && (
+                                  <button
+                                    className="button"
+                                    onClick={() => attach(hit, "contrary")}
+                                  >
+                                    Attach as contrary source
+                                  </button>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    {!search.data.items.length && (
+                      <Empty>
+                        No passage contains every entered term. Try fewer words,
+                        choose another investigation, or ask the research
+                        assistant to explore the question.
+                      </Empty>
+                    )}
+                  </>
+                )
+              )}
+              {selected.length > 0 && (
+                <div className={s.chips} aria-label="Attached source evidence">
+                  {selected.map((item, index) => (
+                    <span className={s.chip} key={index}>
+                      {item.role}:{" "}
+                      {item.hit.anchor.accession ?? item.hit.anchor.document_id}
+                      <button
+                        aria-label={"Remove attached evidence " + (index + 1)}
+                        onClick={() =>
+                          setSelected((value) =>
+                            value.filter(
+                              (_, selectedIndex) => selectedIndex !== index,
+                            ),
+                          )
+                        }
+                      >
+                        <X size={14} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </section>
+          </details>
+          {view === "sources" && (
+            <details className={journey.advanced}>
+              <summary>
+                Explore relationships between investigations and hardware
+              </summary>
+              <section>
+                <div className={s.toolbar}>
+                  <h2>Source-reported relationships</h2>
+                  <div className={s.actions}>
+                    <button
+                      className="button"
+                      aria-pressed={!graph}
+                      onClick={() => setGraph(false)}
+                    >
+                      Relationship list
+                    </button>
+                    <button
+                      className="button"
+                      aria-pressed={graph}
+                      onClick={() => setGraph(true)}
+                    >
+                      Focused graph and list
+                    </button>
+                  </div>
+                </div>
+                {lineage.error ? (
+                  <ErrorState message={lineage.error} retry={lineage.reload} />
+                ) : !lineage.data ? (
+                  <LoadingRows label="Reading hardware and investigation relationships" />
+                ) : (
+                  <>
+                    <label className={s.field}>
+                      Investigation or hardware
+                      <select
+                        value={focus}
+                        onChange={(event) => setFocus(event.target.value)}
+                      >
+                        {lineage.data.nodes.map((node) => (
+                          <option key={node.id} value={node.id}>
+                            {node.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {graph && (
+                      <>
+                        <svg
+                          viewBox="0 0 640 280"
+                          style={{ width: "100%", maxHeight: 320 }}
+                          role="img"
+                          aria-label="Bounded source relationship graph; the complete focused relationship list follows."
+                        >
+                          {nodeIds.map((id, index) => {
+                            const x =
+                                index === 0 ? 90 : 300 + (index % 2) * 210,
+                              y =
+                                index === 0
+                                  ? 140
+                                  : 30 + Math.floor((index - 1) / 2) * 66;
+                            return (
+                              <g key={id}>
+                                <line
+                                  x1="90"
+                                  y1="140"
+                                  x2={x}
+                                  y2={y}
+                                  stroke="var(--boundary)"
+                                  strokeDasharray="4 4"
+                                />
+                                <circle
+                                  cx={x}
+                                  cy={y}
+                                  r={index === 0 ? 12 : 7}
+                                  fill={
+                                    index === 0
+                                      ? "var(--action)"
+                                      : "var(--secondary)"
+                                  }
+                                />
+                                <text
+                                  x={x + 16}
+                                  y={y + 4}
+                                  fill="currentColor"
+                                  fontSize="11"
+                                >
+                                  {id.length > 26 ? id.slice(0, 24) + "…" : id}
+                                </text>
+                              </g>
+                            );
+                          })}
+                        </svg>
+                        <p className={s.help}>
+                          Graph shows up to eight neighboring identities. Edges
+                          denote source-reported context, not causation. The
+                          list below retains every focused relationship and its
+                          source.
+                        </p>
+                      </>
+                    )}
+                    <ul className={s.sourceList}>
+                      {focusedEdges.map((edge, index) => (
+                        <li key={index}>
+                          <div className={s.relationship}>
+                            <span>
+                              {lineage.data?.nodes.find(
+                                (node) => node.id === edge.source,
+                              )?.label ?? edge.source}
+                            </span>
+                            <span>{human(edge.relation)}</span>
+                            <span>
+                              {lineage.data?.nodes.find(
+                                (node) => node.id === edge.target,
+                              )?.label ?? edge.target}
+                            </span>
+                          </div>
+                          <p>{edge.limitation}</p>
+                          <InspectButton
+                            anchor={edge.anchor}
+                            onInspect={setAnchor}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                    {!focusedEdges.length && (
+                      <Empty>
+                        No source-reported relationship is retained for this
+                        focus. This is not evidence that no relation exists.
+                      </Empty>
+                    )}
+                    <Limitations values={lineage.data.limitations} />
+                  </>
+                )}
+              </section>
+            </details>
           )}
           {view === "contradictions" && (
             <section className={s.form}>
@@ -1621,84 +1831,93 @@ export function EvidenceWorkbench({
             </section>
           )}
           {view === "controls" && (
-            <section className={s.form}>
-              <h2>Controls research, with qualification needs</h2>
-              <label className={s.field}>
-                Research category
-                <select
-                  value={category}
-                  onChange={(event) => setCategory(event.target.value)}
-                >
-                  {["Prevention", "Detection", "Suppression", "Recovery"].map(
-                    (value) => (
-                      <option key={value}>{value}</option>
-                    ),
-                  )}
-                </select>
-              </label>
-              <TextField
-                label="Candidate control or technology"
-                value={form.name}
-                onChange={(value) => field("name", value)}
-              />
-              <TextField
-                label="Mechanism supported or proposed"
-                value={form.mechanism}
-                onChange={(value) => field("mechanism", value)}
-                multiline
-              />
-              <TextField
-                label="Intended research outcome"
-                value={form.outcome}
-                onChange={(value) => field("outcome", value)}
-              />
-              <div className={s.fieldGrid}>
+            <details
+              className={journey.advanced}
+              open={assessmentOpen}
+              onToggle={(event) => setAssessmentOpen(event.currentTarget.open)}
+            >
+              <summary>
+                Create your own source-backed control assessment
+              </summary>
+              <section className={s.form}>
+                <h2>Record the candidate and its evidence</h2>
+                <label className={s.field}>
+                  Research category
+                  <select
+                    value={category}
+                    onChange={(event) => setCategory(event.target.value)}
+                  >
+                    {["Prevention", "Detection", "Suppression", "Recovery"].map(
+                      (value) => (
+                        <option key={value}>{value}</option>
+                      ),
+                    )}
+                  </select>
+                </label>
                 <TextField
-                  label="Countereffects (one per line)"
-                  value={form.countereffects}
-                  onChange={(value) => field("countereffects", value)}
+                  label="Candidate control or technology"
+                  value={form.name}
+                  onChange={(value) => field("name", value)}
+                />
+                <TextField
+                  label="Mechanism supported or proposed"
+                  value={form.mechanism}
+                  onChange={(value) => field("mechanism", value)}
                   multiline
                 />
                 <TextField
-                  label="Interactions with other controls (one per line)"
-                  value={form.interactions}
-                  onChange={(value) => field("interactions", value)}
+                  label="Intended research outcome"
+                  value={form.outcome}
+                  onChange={(value) => field("outcome", value)}
+                />
+                <div className={s.fieldGrid}>
+                  <TextField
+                    label="Countereffects (one per line)"
+                    value={form.countereffects}
+                    onChange={(value) => field("countereffects", value)}
+                    multiline
+                  />
+                  <TextField
+                    label="Interactions with other controls (one per line)"
+                    value={form.interactions}
+                    onChange={(value) => field("interactions", value)}
+                    multiline
+                  />
+                </div>
+                <TextField
+                  label="Necessary validation (one requirement per line)"
+                  value={form.validation}
+                  onChange={(value) => field("validation", value)}
                   multiline
                 />
-              </div>
-              <TextField
-                label="Necessary validation (one requirement per line)"
-                value={form.validation}
-                onChange={(value) => field("validation", value)}
-                multiline
-              />
-              <TextField
-                label="Limits and unsupported uses (one per line)"
-                value={form.limitations}
-                onChange={(value) => field("limitations", value)}
-                multiline
-              />
-              <label className={s.field}>
-                Researcher-selected evidence status
-                <select
-                  value={evidenceStatus}
-                  onChange={(event) => setEvidenceStatus(event.target.value)}
-                >
-                  <option value="research_hypothesis">
-                    Research hypothesis
-                  </option>
-                  <option value="source_reported">
-                    Source-reported mechanism; inspect original evidence
-                  </option>
-                  <option value="unresolved">Unresolved</option>
-                </select>
-              </label>
-            </section>
+                <TextField
+                  label="Limits and unsupported uses (one per line)"
+                  value={form.limitations}
+                  onChange={(value) => field("limitations", value)}
+                  multiline
+                />
+                <label className={s.field}>
+                  Researcher-selected evidence status
+                  <select
+                    value={evidenceStatus}
+                    onChange={(event) => setEvidenceStatus(event.target.value)}
+                  >
+                    <option value="research_hypothesis">
+                      Research hypothesis
+                    </option>
+                    <option value="source_reported">
+                      Source-reported mechanism; inspect original evidence
+                    </option>
+                    <option value="unresolved">Unresolved</option>
+                  </select>
+                </label>
+              </section>
+            </details>
           )}
           {view === "earth" && (
             <>
               <section>
-                <h2>Source-backed Earth application connections</h2>
+                <h2>Possible applications described by NASA</h2>
                 {earth.error ? (
                   <ErrorState message={earth.error} retry={earth.reload} />
                 ) : !earth.data ? (
@@ -1708,11 +1927,42 @@ export function EvidenceWorkbench({
                     <ul className={s.sourceList}>
                       {earth.data.items.map((item) => (
                         <li key={item.accession}>
-                          <h3>{item.title}</h3>
-                          <span className={s.chip}>{human(item.status)}</span>
-                          <blockquote>{item.source_text}</blockquote>
-                          <p>{item.status_reason}</p>
+                          <h3>
+                            <Link
+                              href={`/app/investigations/${item.accession}?snapshot=${snapshotId}`}
+                            >
+                              {item.title}
+                            </Link>
+                          </h3>
+                          {item.status !== "research_hypothesis" && (
+                            <span className={s.chip}>{human(item.status)}</span>
+                          )}
+                          <blockquote>
+                            {item.source_text.length > 500
+                              ? item.source_text
+                                  .slice(0, 500)
+                                  .replace(/\s+\S*$/, "") + "…"
+                              : item.source_text}
+                          </blockquote>
+                          {item.source_text.length > 500 && (
+                            <details className={journey.sourceDetails}>
+                              <summary>Full NASA source wording</summary>
+                              <blockquote>{item.source_text}</blockquote>
+                            </details>
+                          )}
                           <div className={s.actions}>
+                            <button
+                              className="button button-primary"
+                              onClick={() =>
+                                void learningQuestion(
+                                  `Explain the possible Earth applications described for ${item.accession}. Use its source evidence, distinguish research hypotheses from demonstrated applications, and explain what differences in gravity, ventilation, material, scale and atmosphere would need evaluation.`,
+                                  [item.accession],
+                                  [item.anchor],
+                                )
+                              }
+                            >
+                              Explore this connection <ArrowRight size={15} />
+                            </button>
                             <InspectButton
                               anchor={item.anchor}
                               onInspect={setAnchor}
@@ -1720,6 +1970,7 @@ export function EvidenceWorkbench({
                             <button
                               className="button"
                               onClick={() => {
+                                setAssessmentOpen(true);
                                 attach({
                                   anchor: item.anchor,
                                   text: item.source_text,
@@ -1732,9 +1983,14 @@ export function EvidenceWorkbench({
                                     ),
                                   ),
                                 );
+                                requestAnimationFrame(() =>
+                                  window.document
+                                    .getElementById("application-assessment")
+                                    ?.scrollIntoView({ block: "start" }),
+                                );
                               }}
                             >
-                              Use as evidence for a personal transfer assessment
+                              Create an assessment from this source
                             </button>
                           </div>
                         </li>
@@ -1744,52 +2000,69 @@ export function EvidenceWorkbench({
                   </>
                 )}
               </section>
-              <section className={s.form}>
-                <h2>Interpret a transfer explicitly</h2>
-                <TextField
-                  label="Application or connection title"
-                  value={form.name}
-                  onChange={(value) => field("name", value)}
-                />
-                <TextField
-                  label="Shared physical mechanism"
-                  value={form.shared}
-                  onChange={(value) => field("shared", value)}
-                  multiline
-                />
-                <label className={s.field}>
-                  Researcher-selected status
-                  <select
-                    value={evidenceStatus}
-                    onChange={(event) => setEvidenceStatus(event.target.value)}
-                  >
-                    <option value="research_hypothesis">
-                      Research hypothesis
-                    </option>
-                    <option value="supported_engineering_connection">
-                      Supported engineering connection
-                    </option>
-                    <option value="documented_application">
-                      Documented application; needs direct application evidence
-                    </option>
-                  </select>
-                </label>
-                <TextField
-                  label="Limits on transfer (one per line)"
-                  value={form.limitations}
-                  onChange={(value) => field("limitations", value)}
-                  multiline
-                />
-              </section>
+              <details
+                id="application-assessment"
+                className={journey.advanced}
+                open={assessmentOpen}
+                onToggle={(event) =>
+                  setAssessmentOpen(event.currentTarget.open)
+                }
+              >
+                <summary>Create your own application assessment</summary>
+                <section className={s.form}>
+                  <h2>Assess a proposed application</h2>
+                  <TextField
+                    label="Application or connection title"
+                    value={form.name}
+                    onChange={(value) => field("name", value)}
+                  />
+                  <TextField
+                    label="Shared physical mechanism"
+                    value={form.shared}
+                    onChange={(value) => field("shared", value)}
+                    multiline
+                  />
+                  <label className={s.field}>
+                    Researcher-selected status
+                    <select
+                      value={evidenceStatus}
+                      onChange={(event) =>
+                        setEvidenceStatus(event.target.value)
+                      }
+                    >
+                      <option value="research_hypothesis">
+                        Research hypothesis
+                      </option>
+                      <option value="supported_engineering_connection">
+                        Supported engineering connection
+                      </option>
+                      <option value="documented_application">
+                        Documented application; needs direct application
+                        evidence
+                      </option>
+                    </select>
+                  </label>
+                  <TextField
+                    label="Limits on transfer (one per line)"
+                    value={form.limitations}
+                    onChange={(value) => field("limitations", value)}
+                    multiline
+                  />
+                </section>
+              </details>
             </>
           )}
-          {["controls", "earth"].includes(view) && (
+          {["controls", "earth"].includes(view) && assessmentOpen && (
             <section className={s.form}>
               <h3>
                 {view === "earth"
                   ? "Transfer constraints"
                   : "Applicable configuration"}
               </h3>
+              <p className={s.help}>
+                Enter conditions supported by the source. Leave a field blank
+                when its value is not established.
+              </p>
               <div className={s.fieldGrid}>
                 {[
                   "material",
@@ -1803,7 +2076,7 @@ export function EvidenceWorkbench({
                 ].map((name) => (
                   <TextField
                     key={name}
-                    label={human(name) + " (leave unknown when unresolved)"}
+                    label={human(name)}
                     value={configuration[name] ?? ""}
                     onChange={(value) =>
                       setConfiguration((current) => ({
@@ -1943,37 +2216,38 @@ export function EvidenceWorkbench({
             "controls",
             "earth",
             "stewardship",
-          ].includes(view) && (
-            <div className={s.actions}>
-              {view !== "stewardship" && (
-                <button
-                  className="button button-primary"
-                  disabled={busy}
-                  onClick={() => void evaluate()}
-                >
-                  {busy
-                    ? "Assessing explicit evidence…"
-                    : "Assess the stated evidence and limits"}
+          ].includes(view) &&
+            (!["controls", "earth"].includes(view) || assessmentOpen) && (
+              <div className={s.actions}>
+                {view !== "stewardship" && (
+                  <button
+                    className="button button-primary"
+                    disabled={busy}
+                    onClick={() => void evaluate()}
+                  >
+                    {busy
+                      ? "Assessing explicit evidence…"
+                      : "Assess the stated evidence and limits"}
+                  </button>
+                )}
+                <button className="button" onClick={() => void save()}>
+                  <Save size={16} /> Save assessment
                 </button>
-              )}
-              <button className="button" onClick={() => void save()}>
-                <Save size={16} /> Save personal revision
-              </button>
-              {document && (
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    setDocument(null);
-                    setMessage(
-                      "The next save creates a separate research record.",
-                    );
-                  }}
-                >
-                  Save as a separate record
-                </button>
-              )}
-            </div>
-          )}
+                {document && (
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      setDocument(null);
+                      setMessage(
+                        "The next save creates a separate research record.",
+                      );
+                    }}
+                  >
+                    Save as a separate record
+                  </button>
+                )}
+              </div>
+            )}
           {assessment && assessmentSignature !== assessmentInputs && (
             <p className={s.notice}>
               The retained assessment refers to earlier inputs. Reassess this
@@ -2061,9 +2335,7 @@ export function EvidenceWorkbench({
           )}
           {saved.length > 0 && (
             <details className={s.surface}>
-              <summary>
-                Personal research records in this browser ({saved.length})
-              </summary>
+              <summary>Saved assessments ({saved.length})</summary>
               <ul className={s.sourceList}>
                 {saved.map((item) => (
                   <li key={item.id}>
@@ -2071,9 +2343,7 @@ export function EvidenceWorkbench({
                       <div>
                         <strong>{item.title}</strong>
                         <p>
-                          {human(item.kind)} · revision {item.revision} ·
-                          snapshot{" "}
-                          {item.snapshot_id?.slice(0, 12) ?? "not selected"}
+                          {human(item.kind)} · revision {item.revision}
                         </p>
                       </div>
                       {item.snapshot_id === snapshotId ? (
@@ -2101,6 +2371,34 @@ export function EvidenceWorkbench({
           )}
         </>
       )}
+      <details
+        className={journey.sourceDetails}
+        open={
+          ["contradictions", "gaps", "hypotheses", "stewardship"].includes(view)
+            ? true
+            : undefined
+        }
+      >
+        <summary>More research methods</summary>
+        <div className={s.actions}>
+          {views
+            .filter(
+              ([name]) =>
+                !["sources", "controls", "earth", "learning"].includes(name),
+            )
+            .map(([value, label]) => (
+              <button
+                className="button button-small"
+                key={value}
+                aria-pressed={view === value}
+                onClick={() => navigate(value)}
+              >
+                {label}
+              </button>
+            ))}
+        </div>
+      </details>
+      <Scope snapshotId={snapshotId} />
       <SourceInspector anchor={anchor} onClose={() => setAnchor(null)} />
     </section>
   );

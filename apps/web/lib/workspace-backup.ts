@@ -211,6 +211,7 @@ function validDocument(value: unknown): value is WorkspaceDocument {
 export async function restoreCompleteWorkspace(
   preview: BackupPreview,
   applyPreferences = false,
+  migrationKey?: string,
 ): Promise<number> {
   const cases = preview.input.cases as unknown[];
   const documents = (
@@ -271,18 +272,49 @@ export async function restoreCompleteWorkspace(
       ["cases", "documents", "preferences"],
       "readwrite",
     );
-    for (const item of importedCases) tx.objectStore("cases").add(item);
-    for (const item of importedDocuments) tx.objectStore("documents").add(item);
-    if (applyPreferences && validPreferences(preferences)) {
-      tx.objectStore("preferences").put(preferences, "research");
-      tx.objectStore("preferences").put(preferences.theme, "theme");
+    let importedCount = 0;
+    function importItems() {
+      for (const item of importedCases) tx.objectStore("cases").add(item);
+      for (const item of importedDocuments)
+        tx.objectStore("documents").add(item);
+      importedCount = importedCases.length + importedDocuments.length;
+      if (applyPreferences && validPreferences(preferences)) {
+        tx.objectStore("preferences").put(preferences, "research");
+        tx.objectStore("preferences").put(preferences.theme, "theme");
+      }
+      if (migrationKey) {
+        const time = new Date().toISOString();
+        const data = { source: migrationKey };
+        const title = "Earlier research imported";
+        tx.objectStore("documents").add({
+          id: `legacy-import:${migrationKey}`,
+          kind: "migration",
+          title,
+          snapshot_id: null,
+          data,
+          revision: 1,
+          created_at: time,
+          updated_at: time,
+          revisions: [
+            { revision: 1, saved_at: time, title, snapshot_id: null, data },
+          ],
+        });
+      }
     }
+    if (migrationKey) {
+      const marker = tx
+        .objectStore("documents")
+        .get(`legacy-import:${migrationKey}`);
+      marker.onsuccess = () => {
+        if (!marker.result) importItems();
+      };
+    } else importItems();
     tx.oncomplete = () => {
       db.close();
       workspaceChanged();
       if (applyPreferences)
         window.dispatchEvent(new Event("nova-ember-preferences-changed"));
-      resolve(importedCases.length + importedDocuments.length);
+      resolve(importedCount);
     };
     tx.onerror = tx.onabort = () => {
       db.close();

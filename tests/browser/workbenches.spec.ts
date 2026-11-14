@@ -81,8 +81,9 @@ test("discovery applies explicit conditions, returns to pinned selection, and re
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/app/investigations?entity=records&accession=PSI-25");
   await expect(
-    page.getByRole("tab", { name: "Runs and source records", exact: true }),
+    page.getByRole("tab", { name: "Search data records", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("button", { name: "Filters", exact: true }).click();
   await page
     .getByLabel("Source value kind", { exact: true })
     .selectOption("measurement");
@@ -100,10 +101,8 @@ test("discovery applies explicit conditions, returns to pinned selection, and re
   await page
     .getByRole("button", { name: "Apply filters", exact: true })
     .click();
-  await expect(
-    page.getByText(/source records match the exact scope/),
-  ).toBeVisible();
-  const first = page.locator("tbody tr").first();
+  await expect(page.getByText(/source records found/)).toBeVisible();
+  const first = page.locator("article").first();
   await first.getByRole("checkbox").check();
   await first.getByRole("link").first().click();
   await expect(
@@ -111,10 +110,10 @@ test("discovery applies explicit conditions, returns to pinned selection, and re
   ).toBeVisible();
   await page.goBack();
   await expect(
-    page.locator("tbody tr").first().getByRole("checkbox"),
+    page.locator("article").first().getByRole("checkbox"),
   ).toBeChecked();
   await page
-    .locator("tbody tr")
+    .locator("article")
     .first()
     .getByRole("button", { name: /Inspect/ })
     .click();
@@ -150,7 +149,7 @@ test("retained protocols render exact paragraphs and keep personal planning stat
   await page.goto("/app/lab/evidence?view=controls");
   await expect(
     page.getByRole("heading", {
-      name: "Controls research, with qualification needs",
+      name: "Research for fire safety",
     }),
   ).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
@@ -166,7 +165,12 @@ test("personal control assessment reopens with its category, exact evidence and 
 }) => {
   await page.goto("/app/lab/evidence?view=controls");
   await page
-    .getByRole("textbox", { name: "Literal source terms", exact: true })
+    .getByText("Create your own source-backed control assessment", {
+      exact: true,
+    })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Source search terms", exact: true })
     .fill("oxygen");
   await page
     .getByRole("button", { name: "Search sources", exact: true })
@@ -211,13 +215,13 @@ test("personal control assessment reopens with its category, exact evidence and 
     }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Save personal revision", exact: true })
+    .getByRole("button", { name: "Save assessment", exact: true })
     .click();
   await expect(
     page.getByText("Personal revision 1 saved.", { exact: false }),
   ).toBeVisible();
   await page.reload();
-  await page.getByText(/Personal research records in this browser/).click();
+  await page.getByText(/Saved assessments/).click();
   await page
     .getByRole("button", { name: "Open saved record", exact: true })
     .last()
@@ -244,8 +248,16 @@ test("a deleted comparison cannot be silently recreated by a stale editor", asyn
 }) => {
   await page.goto("/app/compare?ids=PSI-25,PSI-69");
   await page
-    .getByLabel("Comparison title", { exact: true })
+    .getByText("Comparison name and source version", { exact: true })
+    .click();
+  await page
+    .getByLabel("Name", { exact: true })
     .fill("Deletion conflict regression");
+  await page
+    .getByText("Check experimental comparability and rank evidence", {
+      exact: true,
+    })
+    .click();
   await expect(
     page.getByRole("heading", {
       name: "Condition difference matrix",
@@ -253,7 +265,7 @@ test("a deleted comparison cannot be silently recreated by a stale editor", asyn
     }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Save comparison revision", exact: true })
+    .getByRole("button", { name: "Save comparison", exact: true })
     .click();
   await expect(
     page.getByText("Frozen comparison revision 1 saved in this browser.", {
@@ -282,11 +294,14 @@ test("a deleted comparison cannot be silently recreated by a stale editor", asyn
   const stale = await page.context().newPage();
   try {
     await stale.goto(`/app/compare/${stored.id}?snapshot=${stored.snapshot}`);
-    await expect(
-      stale.getByLabel("Comparison title", { exact: true }),
-    ).toHaveValue("Deletion conflict regression");
     await stale
-      .getByLabel("Research question", { exact: true })
+      .getByText("Comparison name and source version", { exact: true })
+      .click();
+    await expect(stale.getByLabel("Name", { exact: true })).toHaveValue(
+      "Deletion conflict regression",
+    );
+    await stale
+      .getByLabel("What would you like to compare?", { exact: true })
       .fill("An unsaved question in the older editor.");
     await page.evaluate(
       async (id) =>
@@ -308,7 +323,7 @@ test("a deleted comparison cannot be silently recreated by a stale editor", asyn
       stored.id,
     );
     await stale
-      .getByRole("button", { name: "Save comparison revision", exact: true })
+      .getByRole("button", { name: "Save comparison", exact: true })
       .click();
     await expect(
       stale
@@ -316,7 +331,7 @@ test("a deleted comparison cannot be silently recreated by a stale editor", asyn
         .filter({ hasText: "This item changed in another tab" }),
     ).toBeVisible();
     await expect(
-      stale.getByLabel("Research question", { exact: true }),
+      stale.getByLabel("What would you like to compare?", { exact: true }),
     ).toHaveValue("An unsaved question in the older editor.");
     expect(
       await page.evaluate(
@@ -347,9 +362,11 @@ test("saved collections reopen exact source selections, undo clearing, and resto
   page,
 }) => {
   await page.goto("/app/investigations?entity=records&accession=PSI-25");
-  const records = page.locator("tbody tr input[type=checkbox]");
+  const records = page.locator("article input[type=checkbox]");
   await records.nth(0).check();
   await records.nth(1).check();
+  await page.getByRole("button", { name: "Filters", exact: true }).click();
+  await page.getByText("Save or return to a search", { exact: true }).click();
   await page
     .getByLabel("Name this query", { exact: true })
     .fill("Frozen source collection regression");
@@ -357,7 +374,9 @@ test("saved collections reopen exact source selections, undo clearing, and resto
     .getByRole("button", { name: "Save collection", exact: true })
     .click();
   await expect(
-    page.getByText("Saved in this browser as revision 1.", { exact: false }),
+    page
+      .getByRole("status")
+      .filter({ hasText: "Saved. You can find this research" }),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Clear selection", exact: true })
@@ -373,9 +392,19 @@ test("saved collections reopen exact source selections, undo clearing, and resto
     .getByRole("button", { name: "Save collection revision", exact: true })
     .click();
   await expect(
-    page.getByText("Saved in this browser as revision 2.", { exact: false }),
+    page
+      .getByRole("status")
+      .filter({ hasText: "Saved. You can find this research" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Open Frozen source collection regression · revision 2",
+      exact: true,
+    }),
   ).toBeVisible();
   await page.reload();
+  await page.getByRole("button", { name: "Filters", exact: true }).click();
+  await page.getByText("Save or return to a search", { exact: true }).click();
   await page
     .getByRole("button", {
       name: "Open Frozen source collection regression · revision 2",
@@ -398,11 +427,12 @@ test("catalog facets expose source-backed alternatives and counts without claimi
   page,
 }) => {
   await page.goto("/app/investigations");
+  await page.getByRole("button", { name: "Filters", exact: true }).click();
   await page
     .getByRole("combobox", { name: "Availability", exact: true })
     .selectOption("");
   await expect(
-    page.getByText("24 investigations match the exact scope", { exact: true }),
+    page.getByText("24 investigations found", { exact: true }),
   ).toBeVisible();
   await page
     .locator("#discovery-filter-panel summary")
@@ -415,7 +445,7 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     })
     .check();
   await expect(
-    page.getByText("2 investigations match the exact scope", { exact: true }),
+    page.getByText("2 investigations found", { exact: true }),
   ).toBeVisible();
   await page
     .locator("#discovery-filter-panel summary")
@@ -428,7 +458,7 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     })
     .check();
   await expect(
-    page.getByText("1 investigations match the exact scope", { exact: true }),
+    page.getByText("1 investigations found", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "SAFFIRE-II", exact: true }),
@@ -441,12 +471,12 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     }),
   ).toBeVisible();
   await page
-    .getByText("Catalog classification and source basis · PSI-99", {
+    .getByText("Topic sources · PSI-99", {
       exact: true,
     })
     .click();
   const material = page
-    .locator("tbody tr")
+    .locator("article")
     .first()
     .locator("section")
     .filter({
@@ -467,7 +497,7 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     })
     .click();
   await expect(
-    page.getByText("2 investigations match the exact scope", { exact: true }),
+    page.getByText("2 investigations found", { exact: true }),
   ).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Filters", exact: true }).click();
@@ -520,6 +550,7 @@ test("investigation watches reopen their frozen baseline and public change feed"
   ).toBeVisible();
   expect(checked).toBeGreaterThanOrEqual(2);
   await page.goto("/app/settings");
+  await page.getByText("Source watches", { exact: true }).click();
   await page
     .getByRole("link", { name: "PSI-69 · source watch", exact: true })
     .click();

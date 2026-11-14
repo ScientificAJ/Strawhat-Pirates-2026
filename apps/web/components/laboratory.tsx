@@ -109,7 +109,7 @@ export function FlexAnalysis({
             className="button button-small"
             onClick={() => onSave("PSI-69")}
           >
-            Save research case
+            Save investigation
           </button>
           {!compact && (
             <button

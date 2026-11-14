@@ -87,7 +87,7 @@ export function ContextualAssistant({
         }}
       >
         <div className={styles.close}>
-          <span>Selected context · private browser session</span>
+          <span>Ask about what you’re exploring</span>
           <button
             className="icon-button"
             aria-label="Close contextual assistant"

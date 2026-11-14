@@ -42,36 +42,38 @@ test("command search tolerates pasted whitespace and restores keyboard focus", a
 }) => {
   await page.goto("/app");
   await expect(
-    page.getByRole("heading", { name: "Research overview", exact: true }),
+    page.getByRole("heading", { name: /Understand fire/ }),
   ).toBeVisible();
   const trigger = page.getByRole("button", {
-    name: "Open command palette",
+    name: "Find a page or tool",
     exact: true,
   });
   await trigger.focus();
   await page.keyboard.press("Control+k");
   const palette = page.getByRole("dialog", {
-    name: "Command palette",
+    name: "Find a page or tool",
     exact: true,
   });
   await expect(palette).toBeVisible();
   await expect(
-    page.getByLabel("Find a destination", { exact: true }),
+    page.getByLabel("What do you need?", { exact: true }),
   ).toBeFocused();
   await page
-    .getByLabel("Find a destination", { exact: true })
+    .getByLabel("What do you need?", { exact: true })
     .fill(" Settings ");
   await expect(
-    palette.getByRole("button", { name: "Settings", exact: true }),
+    palette.getByRole("button", { name: "Settings & backup", exact: true }),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(palette).toBeHidden();
   await expect(trigger).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(palette).toBeVisible();
-  await palette.getByRole("button", { name: "Settings", exact: true }).click();
+  await palette
+    .getByRole("button", { name: "Settings & backup", exact: true })
+    .click();
   await expect(
-    page.getByRole("heading", { name: "Workspace settings", exact: true }),
+    page.getByRole("heading", { name: "Preferences & backups", exact: true }),
   ).toBeVisible();
 });
 
@@ -82,10 +84,10 @@ for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/app");
     await expect(
-      page.getByRole("heading", { name: "Research overview", exact: true }),
+      page.getByRole("heading", { name: /Understand fire/ }),
     ).toBeVisible();
     const targets = page.locator(
-      ".research-content .button, .research-content .text-button, .question-examples a, .header-search",
+      ".research-content .button, .home-examples button, .site-tools button",
     );
     expect(await targets.count()).toBeGreaterThan(4);
     for (const target of await targets.all()) {
@@ -104,15 +106,17 @@ for (const width of [1440, 390]) {
     await expectComfortableTarget(page.locator(".wordmark"));
     if (width < 960) {
       const brand = await page.locator(".wordmark").boundingBox();
-      const close = await page.locator(".mobile-close").boundingBox();
+      const close = await page
+        .getByRole("button", { name: "Close navigation", exact: true })
+        .boundingBox();
       expect(brand!.x + brand!.width).toBeLessThanOrEqual(close!.x);
       await page.keyboard.press("Escape");
-      await expect(page.locator("#mobile-navigation")).toBeHidden();
+      await expect(page.locator("#research-navigation")).toBeHidden();
     }
   });
 }
 
-test("repeated draft submission saves one intent and requires a separate model action", async ({
+test("repeated question submission saves one intent and sends one research request", async ({
   page,
 }) => {
   const submittedRequests: string[] = [];
@@ -126,7 +130,7 @@ test("repeated draft submission saves one intent and requires a separate model a
   });
   await page.goto("/app");
   const submit = page.getByRole("button", {
-    name: "Draft in Studio",
+    name: "Ask Nova Ember",
     exact: true,
   });
   await expect(submit).toBeDisabled();
@@ -136,20 +140,25 @@ test("repeated draft submission saves one intent and requires a separate model a
     .fill(question);
   await expect(submit).toBeEnabled();
   // Both events arrive before the asynchronous browser-storage save completes.
-  await page.locator(".question-composer").evaluate((element) => {
+  await page.locator(".home-question").evaluate((element) => {
     const form = element as HTMLFormElement;
     form.requestSubmit();
     form.requestSubmit();
   });
   await expect(page).toHaveURL(/\/app\/agent\?intent=[a-f0-9-]{36}$/);
-  await expect(
-    page.getByLabel("Research question", { exact: true }),
-  ).toHaveValue(question);
+  await expect(page.getByText(question, { exact: true }).first()).toBeVisible();
+  await expect
+    .poll(
+      () => submittedRequests.filter((path) => path === "/v1/research").length,
+    )
+    .toBe(1);
   const intents = await savedStudioIntents(page);
   expect(intents).toHaveLength(1);
   expect(intents[0].data.question).toBe(question);
   expect(new URL(page.url()).searchParams.get("intent")).toBe(intents[0].id);
-  expect(submittedRequests).toEqual([]);
+  expect(submittedRequests.filter((path) => path === "/v1/research")).toEqual([
+    "/v1/research",
+  ]);
 });
 
 test("a failed local draft save preserves the question and permits recovery", async ({
@@ -161,7 +170,7 @@ test("a failed local draft save preserves the question and permits recovery", as
   });
   await question.fill("Which measurements remain unresolved?");
   const submit = page.getByRole("button", {
-    name: "Draft in Studio",
+    name: "Ask Nova Ember",
     exact: true,
   });
   await expect(submit).toBeEnabled();
@@ -185,7 +194,9 @@ test("a failed local draft save preserves the question and permits recovery", as
   });
   await submit.click();
   await expect(
-    page.getByRole("alert").filter({ hasText: "Draft save interrupted" }),
+    page
+      .getByRole("alert")
+      .filter({ hasText: "Your question could not be saved" }),
   ).toBeVisible();
   await expect(question).toHaveValue("Which measurements remain unresolved?");
   await expect(submit).toBeEnabled();

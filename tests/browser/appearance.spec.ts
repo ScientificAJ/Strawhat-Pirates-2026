@@ -49,7 +49,7 @@ for (const legacyTheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: deviceTheme });
     await page.goto("/app/settings");
     await expect(
-      page.getByRole("heading", { name: "Workspace settings", exact: true }),
+      page.getByRole("heading", { name: "Preferences & backups", exact: true }),
     ).toBeVisible();
     await page.evaluate(
       (theme) =>

@@ -143,9 +143,7 @@ export function ResearchStudio({
   >([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [error, setError] = useState("");
-  const [storageStatus, setStorageStatus] = useState(
-    "Opening browser workspace…",
-  );
+  const [storageStatus, setStorageStatus] = useState("Opening your research…");
   const [capability, setCapability] = useState<boolean | null>(null);
   const [requestLimit, setRequestLimit] = useState<number | null>(null);
   const [imageOpen, setImageOpen] = useState(false);
@@ -156,6 +154,8 @@ export function ResearchStudio({
   const [newOutput, setNewOutput] = useState(false);
   const [approvals, setApprovals] = useState<JsonRecord[]>([]);
   const [busy, setBusy] = useState(false);
+  const [autoSubmitSession, setAutoSubmitSession] = useState<string>();
+  const autoSubmitted = useRef(new Set<string>());
   const current = useRef<StudioSession | null>(null);
   const saved = useRef<WorkspaceDocument<StudioSession> | null>(null);
   const saving = useRef<Promise<void>>(Promise.resolve());
@@ -192,41 +192,43 @@ export function ResearchStudio({
     update({ complexity: value });
   const setRole = (value: ResearchInput["role"]) => update({ role: value });
 
-  const persist = useCallback(async () => {
-    const value = current.current;
-    if (!value || JSON.stringify(value) === lastSaved.current) return;
-    const serialized = JSON.stringify(value);
-    saving.current = saving.current
-      .catch(() => undefined)
-      .then(async () => {
-        const old = saved.current?.id === value.id ? saved.current : null;
-        const stored = await saveDocument<StudioSession>(
-          {
-            id: value.id,
-            kind: sessionKind,
-            title: value.title,
-            snapshot_id: value.context.snapshot_id,
-            data: value,
-            revision: old?.revision,
-          },
-          old?.revision,
-        );
-        saved.current = stored;
-        lastSaved.current = serialized;
-        setStorageStatus(
-          JSON.stringify(current.current) === serialized
-            ? "Saved in this browser"
-            : "Saving changes in this browser…",
-        );
-      });
-    try {
-      await saving.current;
-    } catch (failure) {
-      setStorageStatus("Local save needs attention");
-      setError(message(failure));
-      throw failure;
-    }
-  }, [sessionKind]);
+  const persist = useCallback(
+    async (value = current.current) => {
+      if (!value || JSON.stringify(value) === lastSaved.current) return;
+      const serialized = JSON.stringify(value);
+      saving.current = saving.current
+        .catch(() => undefined)
+        .then(async () => {
+          const old = saved.current?.id === value.id ? saved.current : null;
+          const stored = await saveDocument<StudioSession>(
+            {
+              id: value.id,
+              kind: sessionKind,
+              title: value.title,
+              snapshot_id: value.context.snapshot_id,
+              data: value,
+              revision: old?.revision,
+            },
+            old?.revision,
+          );
+          saved.current = stored;
+          lastSaved.current = serialized;
+          setStorageStatus(
+            JSON.stringify(current.current) === serialized
+              ? "Saved automatically"
+              : "Saving…",
+          );
+        });
+      try {
+        await saving.current;
+      } catch (failure) {
+        setStorageStatus("Saving needs attention");
+        setError(message(failure));
+        throw failure;
+      }
+    },
+    [sessionKind],
+  );
 
   useEffect(() => {
     // The parent remembers a newly opened local session before its debounced
@@ -269,7 +271,7 @@ export function ResearchStudio({
             typeof intent.data.question === "string"
           ) {
             const selected = {
-              ...next.context,
+              ...newSession(snapshotId).context,
               context_version: crypto.randomUUID(),
               investigations: Array.isArray(intent.data.investigations)
                 ? intent.data.investigations.filter(
@@ -297,6 +299,9 @@ export function ResearchStudio({
                 ? (intent.data.summary_depth as StudioSession["summary_depth"])
                 : defaults.summary_depth,
               availability_scope: defaults.evidence_scope,
+              evidence_scope: selected.investigations?.length
+                ? "selection"
+                : "corpus",
             };
             const image = object(intent.data.image);
             if (
@@ -317,11 +322,43 @@ export function ResearchStudio({
             }
           }
         }
-        saved.current = doc?.kind === sessionKind && !intentId ? doc : null;
-        lastSaved.current = doc && !intentId ? JSON.stringify(next) : "";
+        let stored = doc?.kind === sessionKind && !intentId ? doc : null;
+        if (intentId && !agentMode) {
+          const intent = await readDocument<JsonRecord>(intentId);
+          if (intent?.kind === "studio_intent") {
+            // One saved conversation per question makes refresh and parallel
+            // opens resume the same idempotent operation.
+            const id = `question-${intentId}`;
+            stored = await readDocument<StudioSession>(id);
+            if (!stored) {
+              next = { ...next, id };
+              try {
+                stored = await saveDocument<StudioSession>(
+                  {
+                    id,
+                    kind: sessionKind,
+                    title: next.title,
+                    snapshot_id: next.context.snapshot_id,
+                    data: next,
+                  },
+                  0,
+                );
+              } catch (failure) {
+                stored = await readDocument<StudioSession>(id);
+                if (!stored) throw failure;
+              }
+            }
+            next = stored.data;
+            if (intent.data.auto_submit === true && !next.turns.length)
+              setAutoSubmitSession(id);
+          }
+        }
+        if (!active) return;
+        saved.current = stored;
+        lastSaved.current = stored ? JSON.stringify(next) : "";
         setDocuments(list);
         setSession(next);
-        setStorageStatus(doc ? "Saved in this browser" : "New browser session");
+        setStorageStatus(stored ? "Saved automatically" : "Saving…");
         onSessionRef.current?.(next.id);
       } catch (failure) {
         if (active) {
@@ -345,7 +382,7 @@ export function ResearchStudio({
   useEffect(() => {
     if (!session) return;
     if (JSON.stringify(session) !== lastSaved.current)
-      setStorageStatus("Saving changes in this browser…");
+      setStorageStatus("Saving…");
     const timer = setTimeout(() => void persist().catch(() => undefined), 900);
     return () => clearTimeout(timer);
   }, [session, persist]);
@@ -447,12 +484,20 @@ export function ResearchStudio({
             ),
           }));
           if (follow.current)
-            requestAnimationFrame(() =>
-              conversation.current?.scrollTo({
-                top: conversation.current.scrollHeight,
-                behavior: "instant",
-              }),
-            );
+            requestAnimationFrame(() => {
+              const pane = conversation.current;
+              const exchange = document.getElementById(
+                `research-turn-${turn.id}`,
+              );
+              if (!pane) return;
+              const top =
+                job.status === "succeeded" && exchange
+                  ? pane.scrollTop +
+                    exchange.getBoundingClientRect().top -
+                    pane.getBoundingClientRect().top
+                  : pane.scrollHeight;
+              pane.scrollTo({ top, behavior: "instant" });
+            });
           else if (events.length || job.result) setNewOutput(true);
         }
       } catch (failure) {
@@ -500,6 +545,12 @@ export function ResearchStudio({
   }, [childrenIds]);
 
   const artifacts = session ? sessionArtifacts(session) : [];
+  const showCanvas =
+    artifacts.some(
+      (item) =>
+        item.kind !== "Evidence" &&
+        !String(item.data.origin ?? "").startsWith("source_"),
+    ) || Boolean(selectedArtifact);
   const tabs = [
     "Dashboard",
     "Figures",
@@ -521,7 +572,16 @@ export function ResearchStudio({
   );
 
   async function send() {
-    if (!session || busy || activeTurns.length || !session.draft.trim()) return;
+    if (
+      !session ||
+      busy ||
+      activeTurns.length ||
+      session.turns.some((turn) =>
+        ["submitting", "submission_unconfirmed"].includes(turn.status),
+      ) ||
+      !session.draft.trim()
+    )
+      return;
     if (capability !== true || requestLimit === null) {
       setError(
         "Model access or the current request allowance is unavailable. Your draft is retained.",
@@ -566,7 +626,7 @@ export function ResearchStudio({
     const question = `${session.draft.trim()}${session.plan.trim() ? `\n\nMy task plan:\n${session.plan.trim()}` : ""}${session.image_source && session.image_consented ? `\n\nSelected image crop provenance (pixels only, not calibration): ${JSON.stringify(session.image_source)}` : ""}\n\nRequested evidence scope: ${scope === "selection" ? "the explicitly selected context; explain any evidence gap before broadening" : "the retained NASA corpus; preserve source-specific qualifications"}. Evidence availability: ${session.availability_scope === "catalog" ? "include catalog-only records, explicitly distinguish unacquired data" : "retained scientific assets; identify unavailable evidence"}. Summary depth: ${session.summary_depth ?? "technical"}; preserve all consequential limitations and source access.`;
     if (question.length > 6000) {
       setError(
-        "Shorten the question and task plan to fit 6,000 characters together.",
+        "Shorten your question and optional instructions to fit 6,000 characters together.",
       );
       return;
     }
@@ -589,29 +649,27 @@ export function ResearchStudio({
       status: "submitting",
       events: [],
     };
-    update((previous) => ({
-      ...previous,
+    const submitting = {
+      ...session,
+      title:
+        session.turns.length || session.title !== "Untitled research"
+          ? session.title
+          : session.draft.trim().slice(0, 90),
       draft: "",
-      turns: [...previous.turns, turn],
-    }));
+      turns: [...session.turns, turn],
+    };
+    setSession(submitting);
+    current.current = submitting;
     setBusy(true);
     setError("");
     try {
+      // Persist the operation key before sending. A reload can then recover
+      // the exact request without starting another paid operation.
+      await persist(submitting);
       const job = await studioRequest("/v1/research", input, {
         headers: { "Idempotency-Key": turn.operation_key },
       });
-      update((previous) => ({
-        ...previous,
-        turns: previous.turns.map((item) =>
-          item.id === turn.id
-            ? {
-                ...item,
-                job_id: String(job.id),
-                status: String(job.status ?? "queued"),
-              }
-            : item,
-        ),
-      }));
+      await attachJob(turn.id, job);
     } catch (failure) {
       update((previous) => ({
         ...previous,
@@ -620,7 +678,7 @@ export function ResearchStudio({
             ? {
                 ...item,
                 status: "submission_unconfirmed",
-                error: `${message(failure)} Retry this same submission to recover its operation; no automatic paid retry was made.`,
+                error: `${message(failure)} Use Recover this request to check or resume this same operation.`,
               }
             : item,
         ),
@@ -629,25 +687,50 @@ export function ResearchStudio({
       setBusy(false);
     }
   }
+  useEffect(() => {
+    if (
+      !autoSubmitSession ||
+      !session ||
+      session.id !== autoSubmitSession ||
+      capability === null ||
+      requestLimit === null ||
+      autoSubmitted.current.has(autoSubmitSession)
+    )
+      return;
+    autoSubmitted.current.add(autoSubmitSession);
+    void send();
+  }, [autoSubmitSession, session, capability, requestLimit]);
+
+  async function attachJob(turnId: string, job: JsonRecord) {
+    const value = current.current;
+    if (!value) return;
+    const next = {
+      ...value,
+      turns: value.turns.map((item) =>
+        item.id === turnId
+          ? {
+              ...item,
+              job_id: String(job.id),
+              status: String(job.status ?? "queued"),
+              error: undefined,
+            }
+          : item,
+      ),
+    };
+    // Save access to the accepted job before polling or showing its answer.
+    await persist(next);
+    current.current = next;
+    setSession(next);
+  }
+
   async function recover(turn: StudioTurn) {
     setBusy(true);
     try {
+      await persist();
       const job = await studioRequest("/v1/research", turn.request, {
         headers: { "Idempotency-Key": turn.operation_key },
       });
-      update((previous) => ({
-        ...previous,
-        turns: previous.turns.map((item) =>
-          item.id === turn.id
-            ? {
-                ...item,
-                job_id: String(job.id),
-                status: String(job.status ?? "queued"),
-                error: undefined,
-              }
-            : item,
-        ),
-      }));
+      await attachJob(turn.id, job);
     } catch (failure) {
       setError(message(failure));
     } finally {
@@ -678,6 +761,7 @@ export function ResearchStudio({
     doc?: WorkspaceDocument<StudioSession>,
     fork = false,
   ) {
+    if (busy) return;
     if (doc && !scopedSessions([doc], initialAgent.current?.id).length) {
       setError(
         "Choose a conversation from this agent’s saved session library.",
@@ -700,7 +784,7 @@ export function ResearchStudio({
       next = {
         ...session,
         id: crypto.randomUUID(),
-        title: `${session.title} · fork`,
+        title: `${session.title} · copy`,
         forked_from: session.id,
         context: { ...session.context, context_version: crypto.randomUUID() },
       };
@@ -710,6 +794,13 @@ export function ResearchStudio({
     setSelectedArtifact("");
     setHistoryOpen(false);
     onSessionChange?.(next.id);
+    current.current = next;
+    try {
+      await persist(next);
+      if (!compact && !agentMode) router.replace(`/app/agent/${next.id}`);
+    } catch (failure) {
+      setError(message(failure));
+    }
     composer.current?.focus();
   }
   async function saveArtifact(value: StudioArtifact) {
@@ -720,7 +811,7 @@ export function ResearchStudio({
         kind: "research_artifact",
         title: value.title,
         snapshot_id: value.snapshot_id,
-        data: value.data,
+        data: { ...value.data, session_id: session?.id, artifact_id: value.id },
       });
   }
   async function expand() {
@@ -827,8 +918,8 @@ export function ResearchStudio({
   if (!session)
     return (
       <section className={styles.loading} aria-busy="true">
-        <h1>Research Studio</h1>
-        <p>Opening your browser-owned research session…</p>
+        <h1>Research assistant</h1>
+        <p>Opening your conversation…</p>
       </section>
     );
   const contextEntries = [
@@ -889,17 +980,19 @@ export function ResearchStudio({
   return (
     <section
       className={`${styles.studio} ${compact ? styles.compact : ""}`}
-      aria-label={compact ? "Contextual research assistant" : "Research Studio"}
+      aria-label={
+        compact ? "Contextual research assistant" : "Research assistant"
+      }
     >
       <header className={styles.header}>
         <div>
           <h1>
             {session.agent?.frozen.profile.name ??
-              (compact ? "Ask Nova Ember" : "Research Studio")}
+              (compact ? "Ask Nova Ember" : "Research assistant")}
           </h1>
           <p>
-            Evidence, calculations and interpretation in one inspectable
-            conversation.
+            Ask about combustion, follow the NASA sources, and explore the data
+            behind an answer.
           </p>
           {session.agent && (
             <details className={styles.agentConfiguration}>
@@ -930,38 +1023,41 @@ export function ResearchStudio({
             className="button"
             onClick={() => setHistoryOpen(!historyOpen)}
             aria-expanded={historyOpen}
+            disabled={busy}
           >
-            <History size={16} /> Sessions
+            <History size={16} /> Recent questions
           </button>
           {compact ? (
             <button className="button" onClick={expand}>
-              <PanelRightOpen size={16} /> Open Studio
+              <PanelRightOpen size={16} /> Open full conversation
             </button>
           ) : (
-            <button className="button" onClick={() => switchSession()}>
-              <Plus size={16} /> New session
+            <button
+              className="button"
+              onClick={() => switchSession()}
+              disabled={busy}
+            >
+              <Plus size={16} /> New question
             </button>
           )}
         </div>
       </header>
       {historyOpen && (
-        <section
-          className={styles.history}
-          aria-label="Saved research sessions"
-        >
-          <h2>On this browser</h2>
+        <section className={styles.history} aria-label="Recent conversations">
+          <h2>Recent questions</h2>
           {!documents.length && (
-            <p>Your first session will appear here after saving.</p>
+            <p>Your questions appear here automatically as you research.</p>
           )}
           {documents.map((doc) => (
             <div key={doc.id}>
               <button
                 className={styles.textButton}
                 onClick={() => switchSession(doc)}
+                disabled={busy}
               >
                 <MessageSquare size={16} />
                 {doc.title}
-                <span>revision {doc.revision}</span>
+                <span>{new Date(doc.updated_at).toLocaleDateString()}</span>
               </button>
               <button
                 className="icon-button"
@@ -969,7 +1065,7 @@ export function ResearchStudio({
                 onClick={async () => {
                   if (
                     !window.confirm(
-                      "Remove this local conversation? Downloaded backups and remote jobs are separate.",
+                      "Remove this conversation from your saved research? Downloaded backups and running tasks are kept separately.",
                     )
                   )
                     return;
@@ -986,32 +1082,6 @@ export function ResearchStudio({
             </div>
           ))}
         </section>
-      )}
-      <div className={styles.sessionBar}>
-        <label>
-          <span className="visually-hidden">Session title</span>
-          <input
-            value={session.title}
-            maxLength={120}
-            onChange={(event) => update({ title: event.target.value })}
-            onBlur={() => void persist().catch(() => undefined)}
-          />
-        </label>
-        <button
-          className={styles.textButton}
-          onClick={() => switchSession(undefined, true)}
-        >
-          <GitFork size={15} /> Fork
-        </button>
-        <span className={styles.saveState} role="status">
-          {storageStatus}
-        </span>
-      </div>
-      {session.forked_from && (
-        <p className={styles.muted}>
-          Forked from <code>{session.forked_from.slice(0, 8)}</code>. Changes
-          here preserve the original session.
-        </p>
       )}
       {error && (
         <div className={styles.error} role="alert">
@@ -1050,9 +1120,17 @@ export function ResearchStudio({
           </button>
         </div>
       )}
-      {!compact && (
+      {!compact && !showCanvas && artifacts.length > 0 && (
+        <button
+          className={styles.textButton}
+          onClick={() => setSelectedArtifact(artifacts[0].id)}
+        >
+          Inspect retrieved evidence <BookOpen size={16} />
+        </button>
+      )}
+      {!compact && showCanvas && (
         <details className={styles.layoutControls}>
-          <summary>Studio layout</summary>
+          <summary>Adjust answer and evidence layout</summary>
           <label>
             Conversation width
             <input
@@ -1079,7 +1157,7 @@ export function ResearchStudio({
         </details>
       )}
       <div
-        className={styles.workspace}
+        className={`${styles.workspace} ${!showCanvas ? styles.conversationOnly : ""}`}
         style={
           {
             "--studio-conversation": `${Math.min(60, Math.max(35, session.conversation_width ?? 42))}%`,
@@ -1087,15 +1165,16 @@ export function ResearchStudio({
         }
       >
         <section className={styles.conversationPane} aria-label="Conversation">
-          <div className={styles.scopeHeader}>
+          <details className={styles.scopeHeader}>
+            <summary>Sources used for this conversation</summary>
+            <p>
+              NASA research sources are kept with this conversation so the
+              evidence can be revisited.
+            </p>
             <span>
-              Snapshot{" "}
-              <code title={session.context.snapshot_id}>
-                {session.context.snapshot_id.slice(0, 12)}
-              </code>
+              Source version <code>{session.context.snapshot_id}</code>
             </span>
-            <span>Private session · local execution</span>
-          </div>
+          </details>
           <div
             className={styles.conversation}
             ref={conversation}
@@ -1112,50 +1191,51 @@ export function ResearchStudio({
             {!session.turns.length && (
               <div className={styles.welcome}>
                 <BookOpen size={24} />
-                <h2>Begin with a scientific question</h2>
+                <h2>What would you like to understand?</h2>
                 <p>
-                  Ask about selected evidence, compare conditions, or plan a
-                  reproducible calculation. Source values and model
-                  interpretations stay distinguishable.
+                  Find the investigations that address your question, understand
+                  their results, or work with the measurements behind them.
                 </p>
                 <button
                   className={styles.suggestion}
                   onClick={() =>
                     update({
                       draft:
-                        "What can the selected evidence establish, and what remains unknown?",
+                        "Which NASA investigations can help me understand how flames spread in spacecraft?",
                     })
                   }
                 >
-                  What does this evidence establish?
+                  Find research on spacecraft fire spread
                 </button>
                 <button
                   className={styles.suggestion}
                   onClick={() =>
                     update({
                       draft:
-                        "Compare the selected conditions and identify the measurements needed for a valid comparison.",
+                        "How does microgravity change the way a flame burns? Explain with NASA evidence.",
                     })
                   }
                 >
-                  Check whether conditions are comparable
+                  Understand fire in microgravity
                 </button>
               </div>
             )}
             {session.turns.map((turn) => (
-              <div key={turn.id}>
+              <div key={turn.id} id={`research-turn-${turn.id}`}>
                 <ResearchMessage
                   turn={turn}
                   onSelectCitation={selectCitation}
                   assistantName={session.agent?.frozen.profile.name}
                 />
-                {turn.status === "submission_unconfirmed" && (
+                {["submission_unconfirmed", "submitting"].includes(
+                  turn.status,
+                ) && (
                   <button
                     className="button"
                     disabled={busy}
                     onClick={() => recover(turn)}
                   >
-                    Recover this exact submission
+                    Recover this request
                   </button>
                 )}
               </div>
@@ -1177,63 +1257,78 @@ export function ResearchStudio({
             </button>
           )}
           <div className={styles.composer}>
-            <div className={styles.contextLabel}>
-              <strong>Using selected context</strong>
-              <button
-                className={styles.textButton}
-                onClick={() =>
-                  update({ context_locked: !session.context_locked })
-                }
-              >
-                {session.context_locked ? (
-                  <LockKeyhole size={14} />
+            <details
+              className={styles.contextDetails}
+              open={Boolean(
+                session.context.selected_private_inputs?.length ||
+                session.context.selected_artifacts?.length,
+              )}
+            >
+              <summary>
+                {contextEntries.length
+                  ? `${contextEntries.length} selected research items`
+                  : "NASA sources · change scope"}
+              </summary>
+              <div className={styles.contextLabel}>
+                <strong>
+                  {contextEntries.length
+                    ? "Research in this question"
+                    : "Searching NASA research"}
+                </strong>
+                <button
+                  className={styles.textButton}
+                  onClick={() =>
+                    update({ context_locked: !session.context_locked })
+                  }
+                >
+                  {session.context_locked ? (
+                    <LockKeyhole size={14} />
+                  ) : (
+                    <UnlockKeyhole size={14} />
+                  )}
+                  {session.context_locked ? "Unlock context" : "Lock context"}
+                </button>
+              </div>
+              <div className={styles.chips}>
+                {contextEntries.length ? (
+                  contextEntries.map((entry, index) => (
+                    <span key={index}>
+                      {entry.label}
+                      <button
+                        aria-label={`Remove ${entry.label}`}
+                        onClick={entry.remove}
+                      >
+                        <X size={13} />
+                      </button>
+                    </span>
+                  ))
                 ) : (
-                  <UnlockKeyhole size={14} />
+                  <span>NASA combustion investigations</span>
                 )}
-                {session.context_locked ? "Unlock context" : "Lock context"}
-              </button>
-            </div>
-            <div className={styles.chips}>
-              {contextEntries.length ? (
-                contextEntries.map((entry, index) => (
-                  <span key={index}>
-                    {entry.label}
+                {session.context.focused_view && (
+                  <span>
+                    Focused {session.context.focused_view.kind}
                     <button
-                      aria-label={`Remove ${entry.label}`}
-                      onClick={entry.remove}
+                      aria-label="Remove focused view"
+                      onClick={() =>
+                        update({
+                          context: {
+                            ...session.context,
+                            focused_view: null,
+                            context_version: crypto.randomUUID(),
+                          },
+                        })
+                      }
                     >
                       <X size={13} />
                     </button>
                   </span>
-                ))
-              ) : (
-                <span>Retained NASA corpus · no private file selected</span>
-              )}
-              {session.context.focused_view && (
-                <span>
-                  Focused {session.context.focused_view.kind}
-                  <button
-                    aria-label="Remove focused view"
-                    onClick={() =>
-                      update({
-                        context: {
-                          ...session.context,
-                          focused_view: null,
-                          context_version: crypto.randomUUID(),
-                        },
-                      })
-                    }
-                  >
-                    <X size={13} />
-                  </button>
-                </span>
-              )}
-            </div>
-            <details className={styles.contextDetails}>
-              <summary>
-                Inspect shared context and private-input consent
-              </summary>
-              <pre>{JSON.stringify(session.context, null, 2)}</pre>
+                )}
+              </div>
+              <details>
+                <summary>Technical source context</summary>
+                <pre>{JSON.stringify(session.context, null, 2)}</pre>
+              </details>
               {(session.context.selected_private_inputs?.length ?? 0) +
                 (session.context.selected_artifacts?.length ?? 0) >
                 0 && (
@@ -1364,7 +1459,7 @@ export function ResearchStudio({
               ref={composer}
               value={session.draft}
               maxLength={5500}
-              placeholder="Ask a question grounded in the selected evidence…"
+              placeholder="Ask about the research, compare evidence, or explore a measurement…"
               onChange={(event) => update({ draft: event.target.value })}
               onKeyDown={(event) => {
                 if (
@@ -1414,7 +1509,12 @@ export function ResearchStudio({
                       busy ||
                       capability !== true ||
                       requestLimit === null ||
-                      !session.draft.trim()
+                      !session.draft.trim() ||
+                      session.turns.some((turn) =>
+                        ["submitting", "submission_unconfirmed"].includes(
+                          turn.status,
+                        ),
+                      )
                     }
                     onClick={send}
                   >
@@ -1425,7 +1525,7 @@ export function ResearchStudio({
               </div>
             </div>
             <details className={styles.preferences}>
-              <summary>Evidence scope, mode and allowance</summary>
+              <summary>Research options</summary>
               <label>
                 Evidence scope
                 <select
@@ -1450,9 +1550,9 @@ export function ResearchStudio({
                     )
                   }
                 >
-                  <option value="auto">Automatic complexity routing</option>
-                  <option value="routine">Routine · Terra</option>
-                  <option value="complex">Complex · Sol</option>
+                  <option value="auto">Automatic</option>
+                  <option value="routine">Routine reasoning</option>
+                  <option value="complex">Deeper reasoning</option>
                 </select>
               </label>
               <label>
@@ -1506,7 +1606,7 @@ export function ResearchStudio({
             )}
           </div>
         </section>
-        {!compact && (
+        {!compact && showCanvas && (
           <section
             className={styles.canvas}
             id="studio-artifact-canvas"
@@ -1571,13 +1671,44 @@ export function ResearchStudio({
                 <ul>
                   <li>Inspect exact source records and units.</li>
                   <li>Open real calculations and proposed code.</li>
-                  <li>Save selected artifacts into your browser workspace.</li>
+                  <li>Save useful results to your research.</li>
                 </ul>
               </div>
             )}
           </section>
         )}
       </div>
+      <details className={styles.conversationDetails}>
+        <summary>
+          Conversation details{" "}
+          <span className={styles.saveState} role="status">
+            {storageStatus}
+          </span>
+        </summary>
+        <div className={styles.sessionBar}>
+          <label>
+            <span className="visually-hidden">Conversation title</span>
+            <input
+              value={session.title}
+              maxLength={120}
+              onChange={(event) => update({ title: event.target.value })}
+              onBlur={() => void persist().catch(() => undefined)}
+            />
+          </label>
+          <button
+            className={styles.textButton}
+            onClick={() => switchSession(undefined, true)}
+            disabled={busy}
+          >
+            <GitFork size={15} /> Make a copy
+          </button>
+        </div>
+      </details>
+      {session.forked_from && (
+        <p className={styles.muted}>
+          This is a separate copy. The original conversation is preserved.
+        </p>
+      )}
       {approvals.length > 0 && (
         <section className={styles.approvals} aria-label="Proposed operations">
           <h2>Proposed operations</h2>
@@ -1590,7 +1721,7 @@ export function ResearchStudio({
                 </span>
               </div>
               <details>
-                <summary>Inspect exact operation and approval</summary>
+                <summary>Review what will run</summary>
                 <pre>
                   {JSON.stringify(
                     {

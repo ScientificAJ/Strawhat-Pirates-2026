@@ -28,11 +28,11 @@ import {
 } from "../lib/discovery-helpers";
 import {
   listDocuments,
+  readDocument,
   saveDocument,
   WorkspaceDocument,
 } from "../lib/workspace-documents";
 import { useResearchContext } from "../lib/research-context";
-import { readPreferences } from "../lib/workspace-backup";
 import { activeWorkspaceId } from "../lib/local-workspaces";
 import { ErrorState, LoadingRows } from "./chrome";
 import {
@@ -43,13 +43,13 @@ import {
   human,
   InspectButton,
   post,
-  Scope,
   SourceInspector,
   useQuery,
 } from "./workbench-common";
 import { sourceRole } from "./scientific-records";
 import { ActualThumbnail } from "./run-workbench";
 import s from "./workbench.module.css";
+import journey from "./research-journey.module.css";
 
 type Page<T> = {
   snapshot_id: string;
@@ -117,11 +117,10 @@ function CatalogContext({
   if (!values) return null;
   return (
     <details>
-      <summary>Catalog classification and source basis · {accession}</summary>
+      <summary>Topic sources · {accession}</summary>
       <p className={s.help}>
-        Catalog focus annotations are partial. They do not establish a run's
-        material, measured conditions or observed endpoint. Full source context
-        remains authoritative.
+        These topics describe the research scope. Open a source to see the
+        original wording.
       </p>
       <div className={s.annotationList}>
         {Object.entries(values).map(([name, annotations]) => (
@@ -157,11 +156,11 @@ export function DiscoveryWorkbench({
   initialQuery?: string;
 }) {
   const router = useRouter();
-  const { updateContext } = useResearchContext();
+  const { context, updateContext } = useResearchContext();
   const [draft, setDraft] = useState<Filters>(initialFilters);
   const [applied, setApplied] = useState<Filters>(initialFilters);
   const [mode, setMode] = useState<"exact" | "semantic">("exact");
-  const [cards, setCards] = useState(false);
+  const [cards, setCards] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [closeFilterChoice, setCloseFilterChoice] = useState(false);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -207,9 +206,6 @@ export function DiscoveryWorkbench({
     void (async () => {
       let filters = { ...initialFilters };
       let chosen: typeof selection = {};
-      const preferences = await readPreferences().catch(() => null);
-      filters.availability =
-        preferences?.evidence_scope === "retained" ? "assets_available" : "";
       try {
         const stored = sessionStorage.getItem(
           "nova-discovery-view:" + activeWorkspaceId() + ":" + snapshotId,
@@ -229,6 +225,52 @@ export function DiscoveryWorkbench({
       if (params.has("accession"))
         filters.accession = params.get("accession") ?? "";
       if (initialQuery) filters.text = initialQuery;
+      const savedId = params.get("saved");
+      if (savedId) {
+        try {
+          const saved = await readDocument<
+            SearchDefinition | CollectionDefinition
+          >(savedId);
+          if (!active) return;
+          if (!saved)
+            throw new Error(
+              "This saved research is unavailable. Restore a research backup to reopen it.",
+            );
+          if (saved.snapshot_id !== snapshotId)
+            throw new Error(
+              "This research belongs to another source version. Open its saved link to restore that version.",
+            );
+          if (saved.kind === "collection") {
+            setHydratedSnapshot(snapshotId);
+            openCollection(saved as WorkspaceDocument<CollectionDefinition>);
+            return;
+          }
+          if (!["saved_search", "search"].includes(saved.kind))
+            throw new Error(
+              "This saved item is not a search or source collection.",
+            );
+          const definition = saved.data as SearchDefinition;
+          filters = { ...initialFilters, ...definition.filters };
+          compileFilters(filters, snapshotId);
+          chosen = {};
+          setLoadedSearch(saved as WorkspaceDocument<SearchDefinition>);
+          setSaveTitle(saved.title);
+          setLanguage(
+            typeof definition.semanticQuestion === "string"
+              ? definition.semanticQuestion
+              : "",
+          );
+          setMode(definition.mode === "semantic" ? "semantic" : "exact");
+          setSemantic(null);
+          setMessage(
+            definition.mode === "semantic"
+              ? "Your saved question is ready below. Choose Find related evidence to run it again."
+              : `Opened ${saved.title}.`,
+          );
+        } catch (reason) {
+          if (active) setProblem(errorMessage(reason));
+        }
+      }
       if (!active) return;
       setDraft(filters);
       setApplied(filters);
@@ -250,7 +292,7 @@ export function DiscoveryWorkbench({
       );
     } catch {
       setMessage(
-        "Navigation memory is unavailable. Save this query or collection to retain it in your browser workspace.",
+        "Your recent view could not be remembered. Save this search to return to it later.",
       );
     }
   }, [snapshotId, hydratedSnapshot, applied, selection]);
@@ -445,6 +487,12 @@ export function DiscoveryWorkbench({
       selected_sources: [...sources.values()],
     });
   }
+  useEffect(() => {
+    if (hydratedSnapshot === snapshotId && context)
+      selectItems(selection, false);
+    // Rehydrate the exact selection once the shared research context is ready.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selection, hydratedSnapshot, snapshotId, context?.snapshot_id]);
   function openCollection(
     document: WorkspaceDocument<CollectionDefinition>,
     definition = document.data,
@@ -491,7 +539,7 @@ export function DiscoveryWorkbench({
       setCursor(null);
       setPrevious([]);
       setMessage(
-        "Opened this frozen collection. Selection changes remain a draft until you save its next revision.",
+        `Opened ${document.title}. Your selected sources are ready to compare or explore.`,
       );
     } catch (reason) {
       setProblem(errorMessage(reason));
@@ -526,11 +574,7 @@ export function DiscoveryWorkbench({
             ? { id: loadedCollection.id, revision: loadedCollection.revision }
             : {}),
       });
-      setMessage(
-        "Saved in this browser as revision " +
-          document.revision +
-          ". Include browser work in a backup to move it to another device.",
-      );
+      setMessage("Saved. You can find this research in Saved research.");
       if (kind === "comparison")
         router.push("/app/compare/" + document.id + "?snapshot=" + snapshotId);
       if (kind === "saved_search")
@@ -607,25 +651,46 @@ export function DiscoveryWorkbench({
     <section className={s.workbench}>
       <div className="page-heading">
         <div>
-          <h1>Investigations and source records</h1>
+          <h1>Explore investigations</h1>
           <p>
-            Find evidence, inspect its conditions, and keep your research
-            selection.
+            Discover what NASA studied, why it matters, and the evidence you can
+            work with.
           </p>
         </div>
-        <div className={s.actions}>
-          <Link className="button" href="/app/lab/evidence">
-            Evidence workspace <ArrowRight size={16} />
-          </Link>
-        </div>
       </div>
-      <Scope snapshotId={snapshotId}>
-        <span>Public sources · Personal saving in this browser</span>
-      </Scope>
+      <div className={journey.topics} aria-label="Explore a research topic">
+        {[
+          ["Flame spread", "spread"],
+          ["Droplet combustion", "droplet"],
+          ["Smoke and detection", "smoke"],
+          ["Gas flames", "gas"],
+        ].map(([label, term]) => (
+          <button
+            className="button button-small"
+            key={term}
+            onClick={() => {
+              if (selectedCount && applied.entity === "records") {
+                setProblem(
+                  "Clear the selected records before exploring investigation topics.",
+                );
+                return;
+              }
+              const next = { ...initialFilters, text: term };
+              setDraft(next);
+              setApplied(next);
+              setCursor(null);
+              setPrevious([]);
+              setMode("exact");
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <div
         className={s.tabs}
         role="tablist"
-        aria-label="Discovery entity level"
+        aria-label="Explore investigations or data"
       >
         {(["investigations", "records"] as const).map((level) => (
           <button
@@ -634,7 +699,7 @@ export function DiscoveryWorkbench({
             aria-selected={draft.entity === level}
             onClick={() => change("entity", level)}
           >
-            {level === "records" ? "Runs and source records" : "Investigations"}
+            {level === "records" ? "Search data records" : "Investigations"}
           </button>
         ))}
       </div>
@@ -665,7 +730,7 @@ export function DiscoveryWorkbench({
           </button>
         </form>
         <button
-          className={"button " + s.filterToggle}
+          className={"button " + s.filterToggle + " " + journey.filterButton}
           onClick={() => {
             if (
               filtersOpen &&
@@ -730,88 +795,6 @@ export function DiscoveryWorkbench({
           </div>
         </div>
       )}
-      <details className={s.notice}>
-        <summary>Describe the filter or question in your own words</summary>
-        <div className={s.stack}>
-          <label className={s.field}>
-            Scientific request
-            <textarea
-              value={language}
-              onChange={(event) => setLanguage(event.target.value)}
-              placeholder={
-                "For example: records in PSI-25 with oxygen volume fraction at least 25%"
-              }
-            />
-          </label>
-          <div className={s.actions}>
-            <button
-              className="button"
-              onClick={() => {
-                try {
-                  const next = proposeLanguage(language, draft);
-                  compileFilters(next.filters, snapshotId);
-                  setProposal(next);
-                  setProblem("");
-                } catch (reason) {
-                  setProblem(errorMessage(reason));
-                }
-              }}
-            >
-              Preview explicit filters
-            </button>
-            <button
-              className="button"
-              onClick={() => {
-                setMode("semantic");
-                void searchMeaning();
-              }}
-              disabled={meaningLoading}
-            >
-              {meaningLoading
-                ? "Searching…"
-                : "Search meaning · uses API when available"}
-            </button>
-          </div>
-          {proposal && (
-            <div>
-              <h3>Proposed interpretation</h3>
-              <ul>
-                {proposal.explanations.map((text, index) => (
-                  <li key={index}>{text}</li>
-                ))}
-              </ul>
-              <CompiledQuery
-                value={compileFilters(proposal.filters, snapshotId)}
-              />
-              <button
-                className="button"
-                onClick={() => {
-                  if (
-                    selectedCount &&
-                    proposal.filters.entity !== applied.entity
-                  ) {
-                    setProblem("Clear the existing entity selection first.");
-                    return;
-                  }
-                  setDraft(proposal.filters);
-                  setApplied(proposal.filters);
-                  setCursor(null);
-                  setPrevious([]);
-                  setMode("exact");
-                }}
-              >
-                Apply these editable filters
-              </button>
-            </div>
-          )}
-          <p className={s.help}>
-            Meaning search ranks evidence inside the displayed investigation
-            filters. Numerical source-record predicates apply through the exact
-            query; semantic similarity never overrides them or establishes
-            scientific applicability.
-          </p>
-        </div>
-      </details>
       {problem && (
         <div className={s.error} role="alert">
           {problem}
@@ -824,6 +807,25 @@ export function DiscoveryWorkbench({
         <p role="status" className={s.success}>
           {message}
         </p>
+      )}
+      {loadedSearch?.data.mode === "semantic" && !semantic && (
+        <section className={s.notice}>
+          <h2>Your saved research question</h2>
+          <p>{language}</p>
+          <button
+            className="button button-primary"
+            disabled={meaningLoading || !language.trim()}
+            onClick={() => {
+              setMode("semantic");
+              void searchMeaning();
+            }}
+          >
+            {meaningLoading
+              ? "Finding related evidence…"
+              : "Find related evidence"}{" "}
+            <Search size={16} />
+          </button>
+        </section>
       )}
       <div className={s.chips} aria-label="Active filters">
         {Object.entries(applied.catalogFacets ?? {}).flatMap(([name, values]) =>
@@ -938,17 +940,20 @@ export function DiscoveryWorkbench({
           </button>
         )}
       </div>
-      <div className={s.split}>
+      <div
+        className={s.split + " " + journey.explorer}
+        data-filters={filtersOpen}
+      >
         <aside
           id="discovery-filter-panel"
-          className={s.filters}
+          className={s.filters + " " + journey.filters}
           data-open={filtersOpen}
         >
           <h2>
-            <SlidersHorizontal size={17} /> Refine the evidence
+            <SlidersHorizontal size={17} /> Refine results
           </h2>
           <fieldset>
-            <legend>Scientific scope</legend>
+            <legend>Source and availability</legend>
             <label>
               Investigation
               <select
@@ -1020,32 +1025,13 @@ export function DiscoveryWorkbench({
             )}
           </fieldset>
           <fieldset>
-            <legend>Catalog focus and declared context</legend>
+            <legend>Research topics and conditions</legend>
             <p className={s.help}>
-              These source-declared labels and source-pinned annotations
-              describe catalog scope. They do not establish measured run
-              conditions, actual outcomes, calibration, or formal scientific
-              review. Counts refer to{" "}
-              {results.data?.catalog_facets?.[0]?.entity_level ===
-              "source_records"
-                ? "source records, not independent runs"
-                : "investigations"}
-              ; other filters apply while each group excludes its own
-              selections.{" "}
-              {results.loading
-                ? "Updating; previous counts remain visible. "
-                : ""}
-              Unapplied drawer changes do not change these counts.
+              Topics describe the investigation, not verified conditions for
+              every test. Counts update when filters are applied.
             </p>
             {results.data?.catalog_facets?.map((facet) => (
-              <details
-                key={facet.name}
-                open={
-                  facet.name === "purpose" || facet.name === "fuel_phase"
-                    ? true
-                    : undefined
-                }
-              >
+              <details key={facet.name}>
                 <summary>
                   {facet.label}
                   {(draft.catalogFacets?.[facet.name]?.length ?? 0) > 0
@@ -1365,140 +1351,208 @@ export function DiscoveryWorkbench({
           <button className="button button-primary" onClick={apply}>
             Apply filters
           </button>
-          <fieldset>
-            <legend>Saved searches</legend>
-            <label>
-              Name this query
-              <input
-                value={saveTitle}
-                onChange={(event) => setSaveTitle(event.target.value)}
-                placeholder="Research question or collection name"
-              />
-            </label>
-            <button
-              className="button"
-              onClick={() => void save("saved_search")}
-            >
-              <Bookmark size={16} /> Save query{loadedSearch ? " revision" : ""}
-            </button>
-            {loadedSearch && (
+          <details className={journey.sourceDetails}>
+            <summary>Save or return to a search</summary>
+            <fieldset>
+              <legend>Saved searches</legend>
+              <label>
+                Name this query
+                <input
+                  value={saveTitle}
+                  onChange={(event) => setSaveTitle(event.target.value)}
+                  placeholder="Research question or collection name"
+                />
+              </label>
               <button
-                className="text-button"
-                onClick={() => setLoadedSearch(null)}
+                className="button"
+                onClick={() => void save("saved_search")}
               >
-                Save as a new query instead
+                <Bookmark size={16} /> Save query
+                {loadedSearch ? " revision" : ""}
               </button>
-            )}
-            {saved.map((document) => (
-              <div key={document.id}>
-                {document.snapshot_id === snapshotId ? (
+              {loadedSearch && (
+                <button
+                  className="text-button"
+                  onClick={() => setLoadedSearch(null)}
+                >
+                  Save as a new query instead
+                </button>
+              )}
+              {saved.map((document) => (
+                <div key={document.id}>
+                  {document.snapshot_id === snapshotId ? (
+                    <button
+                      className="text-button"
+                      onClick={() => {
+                        const filters = {
+                          ...initialFilters,
+                          ...document.data.filters,
+                        };
+                        setDraft(filters);
+                        setApplied(filters);
+                        setLanguage(document.data.semanticQuestion);
+                        setMode(document.data.mode);
+                        setSemantic(null);
+                        setLoadedSearch(document);
+                        setSaveTitle(document.title);
+                        setCursor(null);
+                        setPrevious([]);
+                        setSelection({});
+                        updateContext({
+                          investigations: [],
+                          selected_sources: [],
+                        });
+                      }}
+                    >
+                      {document.title} · revision {document.revision}
+                    </button>
+                  ) : (
+                    <Link
+                      href={
+                        "/app/investigations?snapshot=" + document.snapshot_id
+                      }
+                    >
+                      {document.title} · open its frozen snapshot
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </fieldset>
+            <fieldset>
+              <legend>Reusable collections</legend>
+              {!collections.length && (
+                <p className={s.help}>
+                  Save a selected set to reopen the exact source identities
+                  later.
+                </p>
+              )}
+              {collections.map((document) => (
+                <div key={document.id}>
+                  {document.snapshot_id === snapshotId ? (
+                    <button
+                      className="text-button"
+                      onClick={() => openCollection(document)}
+                    >
+                      Open {document.title} · revision {document.revision}
+                    </button>
+                  ) : (
+                    <Link
+                      href={
+                        "/app/investigations?snapshot=" + document.snapshot_id
+                      }
+                    >
+                      {document.title} · open frozen snapshot
+                    </Link>
+                  )}
+                </div>
+              ))}
+              {loadedCollection && (
+                <>
+                  <label>
+                    Restore a frozen selection
+                    <select
+                      aria-label="Restore collection selection revision"
+                      value=""
+                      onChange={(event) => {
+                        const revision = loadedCollection.revisions.find(
+                          (item) =>
+                            item.revision === Number(event.target.value),
+                        );
+                        if (revision)
+                          openCollection(loadedCollection, revision.data);
+                      }}
+                    >
+                      <option value="">Choose an earlier selection</option>
+                      {loadedCollection.revisions
+                        .filter((item) => item.snapshot_id === snapshotId)
+                        .map((item) => (
+                          <option key={item.revision} value={item.revision}>
+                            Revision {item.revision} ·{" "}
+                            {item.data.items?.length ?? 0} items
+                          </option>
+                        ))}
+                    </select>
+                  </label>
                   <button
                     className="text-button"
                     onClick={() => {
-                      const filters = {
-                        ...initialFilters,
-                        ...document.data.filters,
-                      };
-                      setDraft(filters);
-                      setApplied(filters);
-                      setLanguage(document.data.semanticQuestion);
-                      setMode(document.data.mode);
-                      setSemantic(null);
-                      setLoadedSearch(document);
-                      setSaveTitle(document.title);
-                      setCursor(null);
-                      setPrevious([]);
-                      setSelection({});
-                      updateContext({
-                        investigations: [],
-                        selected_sources: [],
-                      });
+                      setLoadedCollection(null);
+                      setSaveTitle("");
                     }}
                   >
-                    {document.title} · revision {document.revision}
+                    Save the selection as a new collection
                   </button>
-                ) : (
-                  <Link
-                    href={
-                      "/app/investigations?snapshot=" + document.snapshot_id
-                    }
-                  >
-                    {document.title} · open its frozen snapshot
-                  </Link>
-                )}
-              </div>
-            ))}
-          </fieldset>
-          <fieldset>
-            <legend>Reusable collections</legend>
-            {!collections.length && (
-              <p className={s.help}>
-                Save a selected set to reopen the exact source identities later.
-              </p>
-            )}
-            {collections.map((document) => (
-              <div key={document.id}>
-                {document.snapshot_id === snapshotId ? (
-                  <button
-                    className="text-button"
-                    onClick={() => openCollection(document)}
-                  >
-                    Open {document.title} · revision {document.revision}
-                  </button>
-                ) : (
-                  <Link
-                    href={
-                      "/app/investigations?snapshot=" + document.snapshot_id
-                    }
-                  >
-                    {document.title} · open frozen snapshot
-                  </Link>
-                )}
-              </div>
-            ))}
-            {loadedCollection && (
-              <>
-                <label>
-                  Restore a frozen selection
-                  <select
-                    aria-label="Restore collection selection revision"
-                    value=""
-                    onChange={(event) => {
-                      const revision = loadedCollection.revisions.find(
-                        (item) => item.revision === Number(event.target.value),
-                      );
-                      if (revision)
-                        openCollection(loadedCollection, revision.data);
-                    }}
-                  >
-                    <option value="">Choose an earlier selection</option>
-                    {loadedCollection.revisions
-                      .filter((item) => item.snapshot_id === snapshotId)
-                      .map((item) => (
-                        <option key={item.revision} value={item.revision}>
-                          Revision {item.revision} ·{" "}
-                          {item.data.items?.length ?? 0} items
-                        </option>
-                      ))}
-                  </select>
-                </label>
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    setLoadedCollection(null);
-                    setSaveTitle("");
-                  }}
-                >
-                  Save the selection as a new collection
-                </button>
-              </>
-            )}
-          </fieldset>
+                </>
+              )}
+            </fieldset>
+          </details>
         </aside>
         <div
           className={s.results}
           aria-busy={results.loading || meaningLoading}
         >
+          {selectedCount > 0 && (
+            <div className={s.selection + " " + journey.selectionTray}>
+              <strong>
+                <Check size={16} /> {selectedCount} selected{" "}
+                {applied.entity === "records"
+                  ? "source records"
+                  : "investigations"}
+              </strong>
+              <details>
+                <summary>Inspect selected identities across all pages</summary>
+                <ul>
+                  {Object.values(selection).map((item) => (
+                    <li
+                      key={
+                        "record" in item ? recordIdentity(item) : item.accession
+                      }
+                    >
+                      <Link
+                        href={
+                          "record" in item
+                            ? runHref(item, snapshotId)
+                            : "/app/investigations/" +
+                              item.accession +
+                              "?snapshot=" +
+                              snapshotId
+                        }
+                      >
+                        {item.accession}
+                        {"record" in item
+                          ? " · " +
+                            item.asset.file_name +
+                            " · physical line " +
+                            item.record.source_row
+                          : " · " + item.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+              <button
+                className="button button-primary"
+                disabled={selectedCount < 2}
+                onClick={() => void save("comparison")}
+              >
+                Compare{selectedCount > 2 ? " in a matrix" : " side by side"}
+              </button>
+              <button
+                className="button"
+                onClick={() => void save("collection")}
+              >
+                Save collection{loadedCollection ? " revision" : ""}
+              </button>
+              <button
+                className="text-button"
+                onClick={() => {
+                  selectItems({});
+                }}
+              >
+                Clear selection
+              </button>
+            </div>
+          )}
           {semantic && mode === "semantic" && (
             <section className={s.surface}>
               <div className={s.sectionHeading}>
@@ -1556,17 +1610,17 @@ export function DiscoveryWorkbench({
                   (applied.entity === "records"
                     ? " source records"
                     : " investigations") +
-                  " match the exact scope"
-                : "Reading the frozen catalog"}
+                  " found"
+                : "Finding investigations"}
               {results.loading && results.data
                 ? " · Updating; prior results remain visible"
                 : ""}
             </p>
-            <span className={s.help}>
-              {applied.entity === "records"
-                ? "Independent runs: not established"
-                : "Readiness is source-specific"}
-            </span>
+            {applied.entity === "records" && (
+              <span className={s.help}>
+                Records retain their original source definitions.
+              </span>
+            )}
           </div>
           {results.error ? (
             <ErrorState message={results.error} retry={results.reload} />
@@ -1578,33 +1632,22 @@ export function DiscoveryWorkbench({
               {applied.entity === "records"
                 ? "source records"
                 : "investigations"}{" "}
-              match these filters in this snapshot. Remove a specific constraint
-              or include unresolved values; no global absence is implied.
+              match these filters. Try a broader term or clear a filter to see
+              more research.
             </Empty>
           ) : cards ? (
-            <div className={s.cards}>
+            <div className={journey.catalog}>
               {results.data.items.map((item) => {
                 const key =
                   "record" in item ? recordIdentity(item) : item.accession;
                 return (
-                  <article className={s.resultCard} key={key}>
+                  <article className={journey.investigation} key={key}>
                     {!("record" in item) && (
                       <ActualThumbnail
                         accession={item.accession}
                         snapshotId={snapshotId}
                       />
                     )}
-                    <label className={s.check}>
-                      <input
-                        type="checkbox"
-                        checked={Boolean(selection[key])}
-                        onChange={() => toggle(item)}
-                      />{" "}
-                      Select{" "}
-                      {"record" in item
-                        ? "source record"
-                        : item.acronym || item.accession}
-                    </label>
                     <h2>
                       <Link
                         href={
@@ -1637,7 +1680,10 @@ export function DiscoveryWorkbench({
                       </>
                     ) : (
                       <>
-                        <p>
+                        {item.acronym && (
+                          <p className={journey.fullTitle}>{item.title}</p>
+                        )}
+                        <p className={journey.purpose}>
                           {objectiveExcerpt(
                             item.objective ||
                               item.description ||
@@ -1645,8 +1691,9 @@ export function DiscoveryWorkbench({
                           )}
                         </p>
                         <p>
-                          {human(item.coverage)} · {item.asset_count} retained
-                          source files
+                          {item.asset_count > 0
+                            ? `${item.asset_count} source files to explore`
+                            : "NASA catalog record · original data not yet available here"}
                         </p>
                         <CatalogContext
                           accession={item.accession}
@@ -1657,11 +1704,34 @@ export function DiscoveryWorkbench({
                           }
                           onInspect={setAnchor}
                         />
-                        <span className={s.help}>
-                          {item.accession} · version {item.version}
-                        </span>
                       </>
                     )}
+                    <div className={journey.cardActions}>
+                      <label className={s.check}>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selection[key])}
+                          onChange={() => toggle(item)}
+                        />{" "}
+                        Select{" "}
+                        {"record" in item
+                          ? "source record"
+                          : item.acronym || item.accession}
+                      </label>
+                      <Link
+                        className="text-button"
+                        href={
+                          "record" in item
+                            ? runHref(item, snapshotId)
+                            : `/app/investigations/${item.accession}?snapshot=${snapshotId}`
+                        }
+                      >
+                        {"record" in item
+                          ? "Open record"
+                          : "Explore investigation"}{" "}
+                        <ArrowRight size={15} />
+                      </Link>
+                    </div>
                   </article>
                 );
               })}
@@ -1804,68 +1874,6 @@ export function DiscoveryWorkbench({
               </table>
             </div>
           )}
-          {selectedCount > 0 && (
-            <div className={s.selection}>
-              <strong>
-                <Check size={16} /> {selectedCount} selected{" "}
-                {applied.entity === "records"
-                  ? "source records"
-                  : "investigations"}
-              </strong>
-              <details>
-                <summary>Inspect selected identities across all pages</summary>
-                <ul>
-                  {Object.values(selection).map((item) => (
-                    <li
-                      key={
-                        "record" in item ? recordIdentity(item) : item.accession
-                      }
-                    >
-                      <Link
-                        href={
-                          "record" in item
-                            ? runHref(item, snapshotId)
-                            : "/app/investigations/" +
-                              item.accession +
-                              "?snapshot=" +
-                              snapshotId
-                        }
-                      >
-                        {item.accession}
-                        {"record" in item
-                          ? " · " +
-                            item.asset.file_name +
-                            " · physical line " +
-                            item.record.source_row
-                          : " · " + item.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-              <button
-                className="button button-primary"
-                disabled={selectedCount < 2}
-                onClick={() => void save("comparison")}
-              >
-                Compare{selectedCount > 2 ? " in a matrix" : " side by side"}
-              </button>
-              <button
-                className="button"
-                onClick={() => void save("collection")}
-              >
-                Save collection{loadedCollection ? " revision" : ""}
-              </button>
-              <button
-                className="text-button"
-                onClick={() => {
-                  selectItems({});
-                }}
-              >
-                Clear selection
-              </button>
-            </div>
-          )}
           {results.data && (
             <div className={s.toolbar}>
               <button
@@ -1890,7 +1898,98 @@ export function DiscoveryWorkbench({
               </button>
             </div>
           )}
-          <CompiledQuery value={compiled} />
+          <details className={s.notice}>
+            <summary>Search by a research question</summary>
+            <div className={s.stack}>
+              <label className={s.field}>
+                Scientific request
+                <textarea
+                  value={language}
+                  onChange={(event) => setLanguage(event.target.value)}
+                  placeholder={
+                    "For example: records in PSI-25 with oxygen volume fraction at least 25%"
+                  }
+                />
+              </label>
+              <div className={s.actions}>
+                <button
+                  className="button"
+                  onClick={() => {
+                    try {
+                      const next = proposeLanguage(language, draft);
+                      compileFilters(next.filters, snapshotId);
+                      setProposal(next);
+                      setProblem("");
+                    } catch (reason) {
+                      setProblem(errorMessage(reason));
+                    }
+                  }}
+                >
+                  Preview explicit filters
+                </button>
+                <button
+                  className="button"
+                  onClick={() => {
+                    setMode("semantic");
+                    void searchMeaning();
+                  }}
+                  disabled={meaningLoading}
+                >
+                  {meaningLoading ? "Searching…" : "Find related evidence"}
+                </button>
+              </div>
+              {proposal && (
+                <div>
+                  <h3>Proposed interpretation</h3>
+                  <ul>
+                    {proposal.explanations.map((text, index) => (
+                      <li key={index}>{text}</li>
+                    ))}
+                  </ul>
+                  <CompiledQuery
+                    value={compileFilters(proposal.filters, snapshotId)}
+                  />
+                  <button
+                    className="button"
+                    onClick={() => {
+                      if (
+                        selectedCount &&
+                        proposal.filters.entity !== applied.entity
+                      ) {
+                        setProblem(
+                          "Clear the existing entity selection first.",
+                        );
+                        return;
+                      }
+                      setDraft(proposal.filters);
+                      setApplied(proposal.filters);
+                      setCursor(null);
+                      setPrevious([]);
+                      setMode("exact");
+                    }}
+                  >
+                    Apply these editable filters
+                  </button>
+                </div>
+              )}
+              <p className={s.help}>
+                Related evidence is ordered by text similarity. Check its
+                experimental conditions before using it to answer your question.
+              </p>
+            </div>
+          </details>
+          <Link className="text-button" href="/app/lab/evidence">
+            Search original source passages <ArrowRight size={16} />
+          </Link>
+          <details className={journey.sourceDetails}>
+            <summary>Search method and source version</summary>
+            <p>
+              Exact search matches every entered term. Investigation results are
+              ordered by title.
+            </p>
+            <code>{snapshotId}</code>
+            <CompiledQuery value={compiled} />
+          </details>
         </div>
       </div>
       <SourceInspector anchor={anchor} onClose={() => setAnchor(null)} />

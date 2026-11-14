@@ -14,7 +14,7 @@ async function scientificRecords(page: Page, accession: string) {
     .click();
   await expect(
     page.getByRole("heading", {
-      name: "Scientific source records",
+      name: "Experimental records",
       exact: true,
     }),
   ).toBeVisible();
@@ -28,28 +28,32 @@ test("preserve mixed row roles, ranges, days, and sessions without inventing run
   page,
 }) => {
   await scientificRecords(page, "PSI-99");
-  await expect(page.getByLabel("Source record roles")).toContainText(
-    "9Sample records",
+  const category = page.getByLabel("Record category", { exact: true });
+  await expect(category.locator('option[value="sample_record"]')).toHaveText(
+    "Sample record (9)",
   );
-  await expect(page.getByLabel("Source record roles")).toContainText(
-    "2Flow visualizations",
+  await expect(
+    category.locator('option[value="flow_visualization"]'),
+  ).toHaveText("Flow visualization (2)");
+  await expect(category.locator('option[value="note"]')).toHaveText(
+    "Source note (4)",
   );
-  await expect(page.getByLabel("Source record roles")).toContainText(
-    "4Source notes",
-  );
-  await expect(page.getByText("Independent experimental runs:")).toContainText(
-    "Not established",
-  );
-  await page.getByLabel("Record role", { exact: true }).selectOption("note");
-  await expect(page.locator(".scientific-record")).toHaveCount(4);
-  await expect(page.locator(".record-toolbar")).toContainText(
-    "4 records in this role",
-  );
-  await page
-    .getByLabel("Record role", { exact: true })
-    .selectOption("sample_record");
-  await expect(page.locator(".scientific-record")).toHaveCount(9);
-  await page.locator(".scientific-record").first().locator("summary").click();
+  await category.selectOption("note");
+  await expect(
+    page
+      .getByRole("region", { name: "Experimental source values", exact: true })
+      .locator("tbody > tr"),
+  ).toHaveCount(4);
+  await expect(
+    page.getByText("4 records in this category", { exact: true }),
+  ).toBeVisible();
+  await category.selectOption("sample_record");
+  await expect(
+    page
+      .getByRole("region", { name: "Experimental source values", exact: true })
+      .locator("tbody > tr"),
+  ).toHaveCount(9);
+  await page.getByRole("button", { name: "Record 2", exact: true }).click();
   const thickness = page.locator(".field-table tbody tr").filter({
     has: page.getByRole("rowheader", {
       name: "Samle Thickness",
@@ -81,34 +85,44 @@ test("preserve mixed row roles, ranges, days, and sessions without inventing run
     ["PSI-47", 2, "Session records"],
   ] as const) {
     await scientificRecords(page, accession);
-    await expect(page.getByLabel("Source record roles")).toContainText(
-      `${count}${role}`,
+    const table = page.getByRole("region", {
+      name: "Experimental source values",
+      exact: true,
+    });
+    await expect(table.locator("tbody > tr")).toHaveCount(count);
+    await table
+      .getByRole("button", { name: /^Record / })
+      .first()
+      .click();
+    await expect(table.getByRole("heading", { level: 3 })).toContainText(
+      role.replace(/summaries$/, "summary").replace(/records$/, "record"),
     );
+    await page
+      .getByText("How to interpret these records", { exact: true })
+      .click();
     await expect(
-      page.getByText("Independent experimental runs:"),
-    ).toContainText("Not established");
+      page.getByText(
+        "Independent experimental units have not been established for this table.",
+        { exact: true },
+      ),
+    ).toBeVisible();
   }
 });
 
 test("distinguish raw zero, missingness, and withheld meaning on a narrow dark source view", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
   await scientificRecords(page, "PSI-69");
   await page
     .getByRole("banner")
     .getByRole("button", { name: "Switch to dark theme", exact: true })
     .click();
+  await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator(".app-shell")).toHaveAttribute(
     "data-theme",
     "dark",
   );
-  await page
-    .locator(".scientific-record")
-    .filter({ hasText: "Physical row 2" })
-    .first()
-    .locator("summary")
-    .click();
+  await page.getByRole("button", { name: "Record 2", exact: true }).click();
   const helium = page.locator(".mobile-scientific-field").filter({
     has: page.getByRole("heading", {
       name: "He initial ambient composition; mole fraction",
@@ -121,13 +135,10 @@ test("distinguish raw zero, missingness, and withheld meaning on a narrow dark s
     has: page.getByRole("heading", { name: "Burning rate; mm", exact: true }),
   });
   await expect(burning.locator(".field-original")).toHaveText("0.52");
-  await expect(burning.locator(".field-normalized")).toHaveText("Withheld");
-  await page
-    .locator(".scientific-record")
-    .filter({ hasText: "Physical row 5" })
-    .first()
-    .locator("summary")
-    .click();
+  await expect(burning.locator(".field-normalized")).toHaveText(
+    "Meaning unresolved",
+  );
+  await page.getByRole("button", { name: "Record 5", exact: true }).click();
   const missingDiameter = page.locator(".mobile-scientific-field").filter({
     has: page.getByRole("heading", {
       name: "Visible flame extinction diameter; mm",
@@ -188,24 +199,32 @@ test("distinguish raw zero, missingness, and withheld meaning on a narrow dark s
   ).toBeVisible();
 });
 
-test("pin an exact source row and preserve new and legacy workspace backups", async ({
+test("pin an exact source row and preserve new and legacy research backups", async ({
   page,
   browser,
 }, testInfo) => {
-  await page.goto("/app/investigations/PSI-99");
+  await page.goto("/app/cases/new");
   await page
-    .getByRole("button", { name: "Save to a case", exact: true })
+    .getByLabel("Notes title", { exact: true })
+    .fill("Pinned Saffire source");
+  await page
+    .getByRole("button", { name: "Save revision", exact: true })
     .click();
   await expect(page).toHaveURL(/\/app\/cases\/[a-f0-9-]+$/);
   const caseUrl = page.url();
-  const caseTitle = await page.getByLabel("Case title").inputValue();
+  const caseTitle = await page
+    .getByLabel("Notes title", { exact: true })
+    .inputValue();
   const staleEditor = await page.context().newPage();
   await staleEditor.goto(caseUrl);
   await staleEditor
     .getByLabel("Notes and unresolved questions")
     .fill("A draft opened before the source row was attached.");
   await scientificRecords(page, "PSI-99");
-  await page.locator(".scientific-record").first().locator("summary").click();
+  await page.getByRole("button", { name: "Record 2", exact: true }).click();
+  await page
+    .getByText("Attach this record to saved research", { exact: true })
+    .click();
   await page
     .getByLabel("Research case for physical row 2", { exact: true })
     .selectOption({ label: caseTitle });
@@ -228,9 +247,10 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
   await expect(
     page.getByRole("heading", { name: "Pinned source rows" }).first(),
   ).toBeVisible();
+  await page.goto("/app/settings");
   const downloadEvent = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Back up workspace", exact: true })
+    .getByRole("button", { name: "Download research backup", exact: true })
     .click();
   const backupPath = testInfo.outputPath("source-anchors.json");
   await (await downloadEvent).saveAs(backupPath);
@@ -254,10 +274,25 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
     const restored = await isolated.newPage();
     await restored.goto("/app/cases");
     await restored
-      .getByLabel("Restore a workspace backup")
+      .getByLabel("Restore a research backup")
       .setInputFiles(backupPath);
     await restored
       .getByRole("button", { name: "Import independent copies", exact: true })
+      .click();
+    await expect(
+      restored.getByRole("region", {
+        name: "Review research restore",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+    await expect(
+      restored
+        .getByRole("status")
+        .filter({ hasText: /Restored .* research items/ }),
+    ).toBeVisible();
+    await restored
+      .getByRole("banner")
+      .getByRole("link", { name: "Your research", exact: true })
       .click();
     await restored.getByRole("link", { name: new RegExp(caseTitle) }).click();
     await expect(
@@ -281,7 +316,7 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
       delete item.source_anchors;
       for (const revision of item.revisions) delete revision.source_anchors;
     }
-    await restored.getByLabel("Restore a workspace backup").setInputFiles({
+    await restored.getByLabel("Restore a research backup").setInputFiles({
       name: "legacy-v1.json",
       mimeType: "application/json",
       buffer: Buffer.from(JSON.stringify(legacy)),
@@ -290,9 +325,28 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
       .getByRole("button", { name: "Import independent copies", exact: true })
       .click();
     await expect(
+      restored.getByRole("region", {
+        name: "Review research restore",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+    await expect(
+      restored
+        .getByRole("status")
+        .filter({ hasText: /Restored .* research items/ }),
+    ).toBeVisible();
+    await restored
+      .getByRole("banner")
+      .getByRole("link", { name: "Your research", exact: true })
+      .click();
+    await expect(
       restored.getByRole("link", { name: /Legacy source notebook/ }),
     ).toBeVisible();
-    await expect(restored.locator(".case-list-item")).toHaveCount(2);
+    await expect(
+      restored
+        .getByRole("region", { name: "Saved research", exact: true })
+        .getByRole("heading", { level: 2 }),
+    ).toHaveCount(2);
   } finally {
     await isolated.close();
   }

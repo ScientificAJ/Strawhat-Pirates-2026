@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Investigation, useResource } from "../lib/api";
 import {
   RecordHit,
@@ -25,11 +26,11 @@ import {
   human,
   Limitations,
   post,
-  Scope,
   SourceInspector,
   useQuery,
 } from "./workbench-common";
 import s from "./workbench.module.css";
+import journey from "./research-journey.module.css";
 
 type Condition = {
   value?: string | number | null;
@@ -149,6 +150,7 @@ export function ComparisonWorkbench({
   investigationIds?: string[];
 }) {
   const { updateContext } = useResearchContext();
+  const router = useRouter();
   const catalog = useResource<{ items: Investigation[] }>(
     "/v1/investigations?limit=100&snapshot_id=" + snapshotId,
   );
@@ -243,7 +245,7 @@ export function ComparisonWorkbench({
         if (!active) return;
         if (!value)
           throw new Error(
-            "This comparison is not present in this browser. Import its workspace backup to restore it.",
+            "This saved comparison is unavailable. Restore a research backup or choose investigations to start again.",
           );
         setDocument(value);
         setTitle(value.title);
@@ -300,12 +302,8 @@ export function ComparisonWorkbench({
       );
       return;
     }
-    if (next.length > 2 && view !== "matrix") {
-      setProblem(
-        "Choose Matrix view before adding a third item, so each source remains readable.",
-      );
-      return;
-    }
+    if (next.length > 2) setView("matrix");
+    setProblem("");
     setSelected(next);
     setProfiles(
       next.map(
@@ -540,8 +538,8 @@ export function ComparisonWorkbench({
         <div>
           <h1>Compare the evidence</h1>
           <p>
-            Start with condition differences, then decide which numerical
-            comparisons the evidence supports.
+            See what investigations study, how their approaches differ, and
+            which evidence fits your question.
           </p>
         </div>
         <button
@@ -552,17 +550,16 @@ export function ComparisonWorkbench({
             profiles.length < 2
           }
         >
-          <Save size={16} /> Save comparison revision
+          <Save size={16} /> Save comparison
         </button>
       </div>
-      <Scope snapshotId={snapshotId}>
-        <span>
-          {recordItems.length
-            ? "Source-record selection"
-            : "Investigation selection"}{" "}
-          · {profiles.length} items
-        </span>
-      </Scope>
+      {profiles.length < 2 && (
+        <p className={journey.intro}>
+          Choose at least two investigations to read their purpose and methods
+          side by side. For numerical comparisons, check that materials,
+          conditions and outcome definitions match.
+        </p>
+      )}
       {problem && (
         <div role="alert" className={s.error}>
           {problem}
@@ -585,751 +582,889 @@ export function ComparisonWorkbench({
           {message}
         </p>
       )}
-      <div className={s.fieldGrid}>
-        <label className={s.field}>
-          Comparison title
-          <input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-          />
-        </label>
-        <label className={s.field}>
-          Research question
-          <input
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            placeholder="What endpoint and conditions are you comparing?"
-          />
-        </label>
-      </div>
-      <div className={s.toolbar}>
-        <div className={s.actions}>
-          <button
-            className="button"
-            aria-pressed={view === "side"}
-            disabled={profiles.length > 2}
-            onClick={() => setView("side")}
-          >
-            Two-item side by side
-          </button>
-          <button
-            className="button"
-            aria-pressed={view === "matrix"}
-            onClick={() => {
-              setView("matrix");
-              setProblem("");
-            }}
-          >
-            Matrix / add more items
-          </button>
-        </div>
-        <span className={s.help}>
-          Sources keep their units, reference locations, and unknowns.
-        </span>
-      </div>
+      <label className={s.field}>
+        What would you like to compare?
+        <input
+          value={question}
+          onChange={(event) => setQuestion(event.target.value)}
+          placeholder="For example: how do these investigations study flame extinction?"
+        />
+      </label>
       {!recordItems.length && (
         <details className={s.surface} open={profiles.length < 2}>
-          <summary>Select investigations ({selected.length}/8)</summary>
-          <div className={s.chips}>
+          <summary>
+            {profiles.length < 2
+              ? "Choose investigations to compare"
+              : "Change selected investigations"}{" "}
+            ({selected.length}/8)
+          </summary>
+          {catalog.error && (
+            <ErrorState message={catalog.error} retry={catalog.reload} />
+          )}
+          {catalog.loading && <LoadingRows label="Finding investigations" />}
+          <div className={journey.comparisonPicker}>
             {catalog.data?.items.map((item) => (
-              <label className={s.check} key={item.accession}>
+              <label className={journey.comparisonChoice} key={item.accession}>
                 <input
                   type="checkbox"
                   checked={selected.includes(item.accession)}
                   onChange={() => select(item.accession)}
                 />{" "}
-                {item.acronym || item.accession}
+                <span>
+                  <strong>{item.acronym || item.accession}</strong>
+                  <small>{item.title}</small>
+                </span>
               </label>
             ))}
           </div>
         </details>
       )}
+      {!recordItems.length && selected.length >= 2 && catalog.data && (
+        <section className={journey.researchSummary}>
+          <h2>Research side by side</h2>
+          <div className={s.scroll}>
+            <table className={s.table + " " + journey.comparisonTable}>
+              <thead>
+                <tr>
+                  <th scope="col">Research context</th>
+                  {selected.map((accession) => {
+                    const item = (catalog.data?.items ?? []).find(
+                      (value) => value.accession === accession,
+                    );
+                    return (
+                      <th scope="col" key={accession}>
+                        <Link
+                          href={`/app/investigations/${accession}?snapshot=${snapshotId}`}
+                        >
+                          {item?.acronym || accession}
+                        </Link>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {(
+                  [
+                    ["Question and purpose", "objective"],
+                    ["Approach", "approach"],
+                    ["Platform", "platform"],
+                    ["Hardware", "hardware"],
+                  ] as const
+                ).map(([label, field]) => (
+                  <tr key={field}>
+                    <th scope="row">{label}</th>
+                    {selected.map((accession) => {
+                      const item = (catalog.data?.items ?? []).find(
+                        (value) => value.accession === accession,
+                      );
+                      return (
+                        <td key={accession}>
+                          {item?.[field] ? (
+                            <>
+                              <p>
+                                {item[field].length > 420
+                                  ? item[field]
+                                      .slice(0, 420)
+                                      .replace(/\s+\S*$/, "") + "…"
+                                  : item[field]}
+                              </p>
+                              {item[field].length > 420 && (
+                                <details className={journey.sourceDetails}>
+                                  <summary>Full source wording</summary>
+                                  <p>{item[field]}</p>
+                                </details>
+                              )}
+                            </>
+                          ) : (
+                            "Not described in the catalog. Open the investigation’s sources for details."
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+                <tr>
+                  <th scope="row">Explore further</th>
+                  {selected.map((accession) => (
+                    <td key={accession}>
+                      <Link
+                        href={`/app/investigations/${accession}?section=runs&snapshot=${snapshotId}`}
+                      >
+                        Explore data <ArrowRight size={14} />
+                      </Link>
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className={s.help}>
+            These are source-reported research aims and methods. Similar aims do
+            not establish matching test conditions or interchangeable results.
+          </p>
+          <button
+            className="button button-primary"
+            onClick={() => {
+              void saveDocument({
+                kind: "studio_intent",
+                title: question || "Compare selected research",
+                snapshot_id: snapshotId,
+                data: {
+                  question:
+                    question ||
+                    `Compare ${selected.join(" and ")}. Explain their research questions, available evidence and important experimental differences. Cite the sources and identify which comparisons the evidence supports.`,
+                  investigations: selected,
+                  snapshot_id: snapshotId,
+                  auto_submit: true,
+                },
+              })
+                .then((intent) => router.push(`/app/agent?intent=${intent.id}`))
+                .catch((reason) => setProblem(errorMessage(reason)));
+            }}
+          >
+            Ask about these investigations <ArrowRight size={16} />
+          </button>
+        </section>
+      )}
       {profiles.length < 2 ? (
         <Empty>
-          Select two sources to begin a side-by-side comparison. Use Matrix
-          before deliberately adding more items.
+          {profiles.length === 1
+            ? "One investigation selected. Choose another above to see them side by side."
+            : "Choose two investigations above, or explore the catalog to find research for your question."}
+          <Link className="text-button" href="/app/investigations">
+            Explore investigations <ArrowRight size={15} />
+          </Link>
         </Empty>
       ) : result.error ? (
         <ErrorState message={result.error} retry={result.reload} />
       ) : !data ? (
         <LoadingRows label="Assessing explicit condition profiles" />
       ) : (
-        <>
-          <section className={s.notice} aria-live="polite">
-            <h2>Comparability: {human(data.status)}</h2>
-            <div className={s.chips}>
-              {Object.entries(data.suitability).map(([name, value]) => (
-                <span className={s.chip} key={name}>
-                  {human(name)}: <strong>{human(value)}</strong>
-                </span>
-              ))}
-            </div>
-            <p>
-              Independent units:{" "}
-              {data.independent_unit_count ?? "not established"}. A shared
-              acronym, platform, or apparatus does not establish equivalent
-              conditions.
-              {result.loading
-                ? " Updating; the previous assessment remains visible."
-                : ""}
+        <details
+          className={journey.advanced}
+          open={recordItems.length > 0 ? true : undefined}
+        >
+          <summary>Check experimental comparability and rank evidence</summary>
+          <div className={journey.advancedBody}>
+            <p className={s.help}>
+              Use this assessment when comparing measurements. Add source-backed
+              conditions below; missing conditions remain unresolved.
             </p>
-          </section>
-          {view === "side" && profiles.length === 2 && (
-            <div className={s.twoColumns}>
-              {profiles.map((item) => (
-                <section className={s.surface} key={item.run_id}>
-                  <h2>{names.get(item.run_id) || item.run_id}</h2>
-                  <p>
-                    {recordItems
-                      .find((value) => item.run_id === recordIdentity(value))
-                      ?.record.raw_cells.filter(Boolean)
-                      .slice(0, 5)
-                      .join(" · ") ||
-                      "Investigation-level source; select run-level evidence to resolve physical conditions."}
-                  </p>
-                  <Link
-                    href={
-                      "/app/investigations/" +
-                      (recordItems.find(
-                        (value) => recordIdentity(value) === item.run_id,
-                      )?.accession ?? item.run_id) +
-                      "?snapshot=" +
-                      snapshotId
-                    }
-                  >
-                    Inspect the parent investigation
-                  </Link>
-                  {recordItems.find(
-                    (value) => recordIdentity(value) === item.run_id,
-                  ) && (
-                    <Link
-                      href={runHref(
-                        recordItems.find(
-                          (value) => recordIdentity(value) === item.run_id,
-                        )!,
-                        snapshotId,
-                      )}
-                    >
-                      Inspect this exact source record
-                    </Link>
-                  )}
-                </section>
-              ))}
-            </div>
-          )}
-          <div className={s.toolbar}>
-            <h2>Condition difference matrix</h2>
-            <label className={s.check}>
-              <input
-                type="checkbox"
-                checked={allFields}
-                onChange={(event) => setAllFields(event.target.checked)}
-              />{" "}
-              Show all attributes, including matches
-            </label>
-          </div>
-          <div className={s.scroll}>
-            <table className={s.table + " " + s.matrix}>
-              <thead>
-                <tr>
-                  <th scope="col">Attribute</th>
-                  {ids.map((item) => (
-                    <th scope="col" key={item}>
-                      {names.get(item) || item}
-                    </th>
-                  ))}
-                  <th scope="col">Meaning</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((row) => (
-                  <tr
-                    key={row.field}
-                    data-state={
-                      selectedField === row.field ? "selected" : row.status
-                    }
-                  >
-                    <td>
-                      <button
-                        className="text-button"
-                        onClick={() => setSelectedField(row.field)}
-                      >
-                        {human(row.field)}
-                      </button>
-                      <small>{human(row.status)}</small>
-                    </td>
-                    {ids.map((item) => (
-                      <td key={item}>
-                        {formatCondition(row.values_by_run[item])}
-                        {row.values_by_run[item]?.source_locator && (
-                          <small>
-                            {row.values_by_run[item]?.source_locator}
-                          </small>
-                        )}
-                      </td>
-                    ))}
-                    <td>
-                      <p>{row.explanation}</p>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {selectedField && (
-            <section className={s.surface}>
-              <h2>{human(selectedField)}</h2>
-              <p>{plotted?.explanation}</p>
-              <label className={s.field}>
-                Personal note on this mismatch
-                <textarea
-                  value={notes[selectedField] ?? ""}
-                  onChange={(event) =>
-                    setNotes((value) => ({
-                      ...value,
-                      [selectedField]: event.target.value,
-                    }))
-                  }
-                />
-              </label>
-              {plotAllowed ? (
-                <div>
-                  <h3>Reported values in matched representations</h3>
-                  <svg
-                    viewBox="0 0 520 180"
-                    role="img"
-                    aria-label={
-                      "Point plot of " +
-                      human(selectedField) +
-                      "; values are also in the condition matrix."
-                    }
-                    style={{ width: "100%", maxWidth: 680 }}
-                  >
-                    <line
-                      x1="100"
-                      x2="480"
-                      y1="150"
-                      y2="150"
-                      stroke="currentColor"
-                    />
-                    {plottedValues.map((value, index) => {
-                      const numbers = plottedValues.map((item) =>
-                        Number(item?.value),
-                      );
-                      const minimum = Math.min(...numbers),
-                        maximum = Math.max(...numbers);
-                      const x =
-                        100 +
-                        (maximum === minimum
-                          ? 0.5
-                          : (Number(value?.value) - minimum) /
-                            (maximum - minimum)) *
-                          360;
-                      return (
-                        <g key={index}>
-                          <text
-                            x="2"
-                            y={30 + index * 20}
-                            fill="currentColor"
-                            fontSize="11"
-                          >
-                            {ids[index]}
-                          </text>
-                          <circle
-                            cx={x}
-                            cy={26 + index * 20}
-                            r="5"
-                            fill="var(--action)"
-                          />
-                          <text
-                            x={x + 8}
-                            y={30 + index * 20}
-                            fill="currentColor"
-                            fontSize="11"
-                          >
-                            {value?.value} {value?.unit}
-                          </text>
-                        </g>
-                      );
-                    })}
-                  </svg>
-                  <p className={s.help}>
-                    Only supplied scalar values are plotted. No curve, causal
-                    effect or new uncertainty interval was inferred.
-                  </p>
-                </div>
-              ) : (
-                <Empty>
-                  No matched numerical series is available for this row. Inspect
-                  original data or enter the source-backed condition before
-                  plotting compatible values.
-                </Empty>
-              )}
-            </section>
-          )}
-          <details className={s.surface}>
-            <summary>
-              Resolve a source-backed condition or independent-unit identity
-            </summary>
-            <div className={s.form}>
-              <div className={s.fieldGrid}>
-                <label className={s.field}>
-                  Selected source
-                  <select
-                    value={editItem}
-                    onChange={(event) => setEditItem(event.target.value)}
-                  >
-                    <option value="">Choose a source item</option>
-                    {ids.map((item) => (
-                      <option key={item}>{item}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className={s.field}>
-                  Condition
-                  <select
-                    value={field}
-                    onChange={(event) => setField(event.target.value)}
-                  >
-                    {data.conditions.map((item) => (
-                      <option key={item.field}>{item.field}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className={s.field}>
-                  Reported meaning
-                  <select
-                    value={condition.status}
-                    onChange={(event) =>
-                      setCondition((value) => ({
-                        ...value,
-                        status: event.target.value,
-                      }))
-                    }
-                  >
-                    {[
-                      "not_reported",
-                      "unresolved",
-                      "conflicting",
-                      "measured",
-                      "nominal",
-                      "derived",
-                      "not_applicable",
-                    ].map((value) => (
-                      <option key={value} value={value}>
-                        {human(value)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className={s.field}>
-                  Original / reviewed value
-                  <input
-                    value={condition.value ?? ""}
-                    onChange={(event) =>
-                      setCondition((value) => ({
-                        ...value,
-                        value: event.target.value,
-                      }))
-                    }
-                  />
-                </label>
-                <label className={s.check}>
-                  <input
-                    type="checkbox"
-                    checked={numberValue}
-                    onChange={(event) => setNumberValue(event.target.checked)}
-                  />{" "}
-                  This is a numerical quantity
-                </label>
-                <label className={s.field}>
-                  Physical unit
-                  <input
-                    value={condition.unit ?? ""}
-                    onChange={(event) =>
-                      setCondition((value) => ({
-                        ...value,
-                        unit: event.target.value,
-                      }))
-                    }
-                    placeholder="For example: Pa, m/s, or 1"
-                  />
-                </label>
-                <label className={s.field}>
-                  Basis and spatial/temporal reference
-                  <input
-                    value={condition.reference_basis ?? ""}
-                    onChange={(event) =>
-                      setCondition((value) => ({
-                        ...value,
-                        reference_basis: event.target.value,
-                      }))
-                    }
-                  />
-                </label>
-                <label className={s.field}>
-                  Exact source locator / calibration reference
-                  <input
-                    value={condition.source_locator ?? ""}
-                    onChange={(event) =>
-                      setCondition((value) => ({
-                        ...value,
-                        source_locator: event.target.value,
-                      }))
-                    }
-                  />
-                </label>
-              </div>
-              <button className="button" onClick={addCondition}>
-                Apply this condition to the draft
-              </button>
-              <p className={s.help}>
-                These are explicit researcher inputs, not an automatic source
-                verification. Non-applicability needs its own source and
-                endpoint-specific justification.
-              </p>
-              {profiles.map((item) => (
-                <div className={s.fieldGrid} key={item.run_id}>
-                  <label className={s.field}>
-                    {item.run_id} · Independent unit ID
-                    <input
-                      value={item.independent_unit_id ?? ""}
-                      onChange={(event) =>
-                        setProfiles((values) =>
-                          values.map((profile) =>
-                            profile.run_id === item.run_id
-                              ? {
-                                  ...profile,
-                                  independent_unit_id:
-                                    event.target.value || null,
-                                }
-                              : profile,
-                          ),
-                        )
-                      }
-                      placeholder="Unknown until supported by protocol"
-                    />
-                  </label>
-                  <label className={s.field}>
-                    Dependency group ID
-                    <input
-                      value={item.dependency_group_id ?? ""}
-                      onChange={(event) =>
-                        setProfiles((values) =>
-                          values.map((profile) =>
-                            profile.run_id === item.run_id
-                              ? {
-                                  ...profile,
-                                  dependency_group_id:
-                                    event.target.value || null,
-                                }
-                              : profile,
-                          ),
-                        )
-                      }
-                      placeholder="Campaign, specimen, or shared apparatus"
-                    />
-                  </label>
-                </div>
-              ))}
-            </div>
-          </details>
-          <section className={s.surface}>
-            <h2>Keep ranking questions separate</h2>
-            <div className={s.actions}>
-              {[
-                "relevance",
-                "applicability",
-                "evidence support",
-                "modeling readiness",
-              ].map((value) => (
+            {recordItems.length > 0 && (
+              <div className={s.actions}>
                 <button
                   className="button"
-                  key={value}
-                  aria-pressed={rankingMode === value}
-                  onClick={() => {
-                    setRankingMode(value);
-                    setWeights(
-                      value === "applicability"
-                        ? { ...applicability }
-                        : { ...relevance },
-                    );
-                    setRankResult(null);
-                  }}
+                  aria-pressed={view === "side"}
+                  disabled={profiles.length > 2}
+                  onClick={() => setView("side")}
                 >
-                  {human(value)}
+                  Side by side
                 </button>
-              ))}
+                <button
+                  className="button"
+                  aria-pressed={view === "matrix"}
+                  onClick={() => setView("matrix")}
+                >
+                  Condition matrix
+                </button>
+              </div>
+            )}
+            <section className={s.notice} aria-live="polite">
+              <h2>Measurement comparison: {human(data.status)}</h2>
+              <div className={s.chips}>
+                {Object.entries(data.suitability).map(([name, value]) => (
+                  <span className={s.chip} key={name}>
+                    {human(name)}: <strong>{human(value)}</strong>
+                  </span>
+                ))}
+              </div>
+              <p>
+                Independent units:{" "}
+                {data.independent_unit_count ?? "not established"}. A shared
+                acronym, platform, or apparatus does not establish equivalent
+                conditions.
+                {result.loading
+                  ? " Updating; the previous assessment remains visible."
+                  : ""}
+              </p>
+            </section>
+            {view === "side" && profiles.length === 2 && (
+              <div className={s.twoColumns}>
+                {profiles.map((item) => (
+                  <section className={s.surface} key={item.run_id}>
+                    <h2>{names.get(item.run_id) || item.run_id}</h2>
+                    <p>
+                      {recordItems
+                        .find((value) => item.run_id === recordIdentity(value))
+                        ?.record.raw_cells.filter(Boolean)
+                        .slice(0, 5)
+                        .join(" · ") ||
+                        "Investigation-level source; select run-level evidence to resolve physical conditions."}
+                    </p>
+                    <Link
+                      href={
+                        "/app/investigations/" +
+                        (recordItems.find(
+                          (value) => recordIdentity(value) === item.run_id,
+                        )?.accession ?? item.run_id) +
+                        "?snapshot=" +
+                        snapshotId
+                      }
+                    >
+                      Inspect the parent investigation
+                    </Link>
+                    {recordItems.find(
+                      (value) => recordIdentity(value) === item.run_id,
+                    ) && (
+                      <Link
+                        href={runHref(
+                          recordItems.find(
+                            (value) => recordIdentity(value) === item.run_id,
+                          )!,
+                          snapshotId,
+                        )}
+                      >
+                        Inspect this exact source record
+                      </Link>
+                    )}
+                  </section>
+                ))}
+              </div>
+            )}
+            <div className={s.toolbar}>
+              <h2>Condition difference matrix</h2>
+              <label className={s.check}>
+                <input
+                  type="checkbox"
+                  checked={allFields}
+                  onChange={(event) => setAllFields(event.target.checked)}
+                />{" "}
+                Show all attributes, including matches
+              </label>
             </div>
-            {rankingMode === "evidence support" ? (
-              <div className={s.stack}>
-                <p className={s.help}>
-                  Source-specific evidence judgments, separate from relevance
-                  scores. Entries remain personal assessments.
-                </p>
-                {[...ids]
-                  .sort(
-                    (a, b) =>
-                      [
-                        "supported",
-                        "limited",
+            <div className={s.scroll}>
+              <table className={s.table + " " + s.matrix}>
+                <thead>
+                  <tr>
+                    <th scope="col">Attribute</th>
+                    {ids.map((item) => (
+                      <th scope="col" key={item}>
+                        {names.get(item) || item}
+                      </th>
+                    ))}
+                    <th scope="col">Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visible.map((row) => (
+                    <tr
+                      key={row.field}
+                      data-state={
+                        selectedField === row.field ? "selected" : row.status
+                      }
+                    >
+                      <td>
+                        <button
+                          className="text-button"
+                          onClick={() => setSelectedField(row.field)}
+                        >
+                          {human(row.field)}
+                        </button>
+                        <small>{human(row.status)}</small>
+                      </td>
+                      {ids.map((item) => (
+                        <td key={item}>
+                          {formatCondition(row.values_by_run[item])}
+                          {row.values_by_run[item]?.source_locator && (
+                            <small>
+                              {row.values_by_run[item]?.source_locator}
+                            </small>
+                          )}
+                        </td>
+                      ))}
+                      <td>
+                        <p>{row.explanation}</p>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {selectedField && (
+              <section className={s.surface}>
+                <h2>{human(selectedField)}</h2>
+                <p>{plotted?.explanation}</p>
+                <label className={s.field}>
+                  Personal note on this mismatch
+                  <textarea
+                    value={notes[selectedField] ?? ""}
+                    onChange={(event) =>
+                      setNotes((value) => ({
+                        ...value,
+                        [selectedField]: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                {plotAllowed ? (
+                  <div>
+                    <h3>Reported values in matched representations</h3>
+                    <svg
+                      viewBox="0 0 520 180"
+                      role="img"
+                      aria-label={
+                        "Point plot of " +
+                        human(selectedField) +
+                        "; values are also in the condition matrix."
+                      }
+                      style={{ width: "100%", maxWidth: 680 }}
+                    >
+                      <line
+                        x1="100"
+                        x2="480"
+                        y1="150"
+                        y2="150"
+                        stroke="currentColor"
+                      />
+                      {plottedValues.map((value, index) => {
+                        const numbers = plottedValues.map((item) =>
+                          Number(item?.value),
+                        );
+                        const minimum = Math.min(...numbers),
+                          maximum = Math.max(...numbers);
+                        const x =
+                          100 +
+                          (maximum === minimum
+                            ? 0.5
+                            : (Number(value?.value) - minimum) /
+                              (maximum - minimum)) *
+                            360;
+                        return (
+                          <g key={index}>
+                            <text
+                              x="2"
+                              y={30 + index * 20}
+                              fill="currentColor"
+                              fontSize="11"
+                            >
+                              {ids[index]}
+                            </text>
+                            <circle
+                              cx={x}
+                              cy={26 + index * 20}
+                              r="5"
+                              fill="var(--action)"
+                            />
+                            <text
+                              x={x + 8}
+                              y={30 + index * 20}
+                              fill="currentColor"
+                              fontSize="11"
+                            >
+                              {value?.value} {value?.unit}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                    <p className={s.help}>
+                      Only supplied scalar values are plotted. No curve, causal
+                      effect or new uncertainty interval was inferred.
+                    </p>
+                  </div>
+                ) : (
+                  <Empty>
+                    No matched numerical series is available for this row.
+                    Inspect original data or enter the source-backed condition
+                    before plotting compatible values.
+                  </Empty>
+                )}
+              </section>
+            )}
+            <details className={s.surface}>
+              <summary>
+                Resolve a source-backed condition or independent-unit identity
+              </summary>
+              <div className={s.form}>
+                <div className={s.fieldGrid}>
+                  <label className={s.field}>
+                    Selected source
+                    <select
+                      value={editItem}
+                      onChange={(event) => setEditItem(event.target.value)}
+                    >
+                      <option value="">Choose a source item</option>
+                      {ids.map((item) => (
+                        <option key={item}>{item}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className={s.field}>
+                    Condition
+                    <select
+                      value={field}
+                      onChange={(event) => setField(event.target.value)}
+                    >
+                      {data.conditions.map((item) => (
+                        <option key={item.field}>{item.field}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className={s.field}>
+                    Reported meaning
+                    <select
+                      value={condition.status}
+                      onChange={(event) =>
+                        setCondition((value) => ({
+                          ...value,
+                          status: event.target.value,
+                        }))
+                      }
+                    >
+                      {[
+                        "not_reported",
+                        "unresolved",
                         "conflicting",
-                        "unknown",
-                      ].indexOf(assessments[a]?.support ?? "unknown") -
+                        "measured",
+                        "nominal",
+                        "derived",
+                        "not_applicable",
+                      ].map((value) => (
+                        <option key={value} value={value}>
+                          {human(value)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className={s.field}>
+                    Original / reviewed value
+                    <input
+                      value={condition.value ?? ""}
+                      onChange={(event) =>
+                        setCondition((value) => ({
+                          ...value,
+                          value: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+                  <label className={s.check}>
+                    <input
+                      type="checkbox"
+                      checked={numberValue}
+                      onChange={(event) => setNumberValue(event.target.checked)}
+                    />{" "}
+                    This is a numerical quantity
+                  </label>
+                  <label className={s.field}>
+                    Physical unit
+                    <input
+                      value={condition.unit ?? ""}
+                      onChange={(event) =>
+                        setCondition((value) => ({
+                          ...value,
+                          unit: event.target.value,
+                        }))
+                      }
+                      placeholder="For example: Pa, m/s, or 1"
+                    />
+                  </label>
+                  <label className={s.field}>
+                    Basis and spatial/temporal reference
+                    <input
+                      value={condition.reference_basis ?? ""}
+                      onChange={(event) =>
+                        setCondition((value) => ({
+                          ...value,
+                          reference_basis: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+                  <label className={s.field}>
+                    Exact source locator / calibration reference
+                    <input
+                      value={condition.source_locator ?? ""}
+                      onChange={(event) =>
+                        setCondition((value) => ({
+                          ...value,
+                          source_locator: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+                </div>
+                <button className="button" onClick={addCondition}>
+                  Apply this condition to the draft
+                </button>
+                <p className={s.help}>
+                  These are explicit researcher inputs, not an automatic source
+                  verification. Non-applicability needs its own source and
+                  endpoint-specific justification.
+                </p>
+                {profiles.map((item) => (
+                  <div className={s.fieldGrid} key={item.run_id}>
+                    <label className={s.field}>
+                      {item.run_id} · Independent unit ID
+                      <input
+                        value={item.independent_unit_id ?? ""}
+                        onChange={(event) =>
+                          setProfiles((values) =>
+                            values.map((profile) =>
+                              profile.run_id === item.run_id
+                                ? {
+                                    ...profile,
+                                    independent_unit_id:
+                                      event.target.value || null,
+                                  }
+                                : profile,
+                            ),
+                          )
+                        }
+                        placeholder="Unknown until supported by protocol"
+                      />
+                    </label>
+                    <label className={s.field}>
+                      Dependency group ID
+                      <input
+                        value={item.dependency_group_id ?? ""}
+                        onChange={(event) =>
+                          setProfiles((values) =>
+                            values.map((profile) =>
+                              profile.run_id === item.run_id
+                                ? {
+                                    ...profile,
+                                    dependency_group_id:
+                                      event.target.value || null,
+                                  }
+                                : profile,
+                            ),
+                          )
+                        }
+                        placeholder="Campaign, specimen, or shared apparatus"
+                      />
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </details>
+            <details className={journey.advanced}>
+              <summary>
+                Rank by relevance, applicability or evidence quality
+              </summary>
+              <p className={s.help}>
+                Record your source-backed assessments, then apply a transparent
+                ranking policy. These scores help organize research; they are
+                not safety probabilities.
+              </p>
+              <div className={s.actions}>
+                {[
+                  "relevance",
+                  "applicability",
+                  "evidence support",
+                  "modeling readiness",
+                ].map((value) => (
+                  <button
+                    className="button"
+                    key={value}
+                    aria-pressed={rankingMode === value}
+                    onClick={() => {
+                      setRankingMode(value);
+                      setWeights(
+                        value === "applicability"
+                          ? { ...applicability }
+                          : { ...relevance },
+                      );
+                      setRankResult(null);
+                    }}
+                  >
+                    {human(value)}
+                  </button>
+                ))}
+              </div>
+              {rankingMode === "evidence support" ? (
+                <div className={s.stack}>
+                  <p className={s.help}>
+                    Source-specific evidence judgments, separate from relevance
+                    scores. Entries remain personal assessments.
+                  </p>
+                  {[...ids]
+                    .sort(
+                      (a, b) =>
                         [
                           "supported",
                           "limited",
                           "conflicting",
                           "unknown",
-                        ].indexOf(assessments[b]?.support ?? "unknown") ||
-                      a.localeCompare(b),
-                  )
-                  .map((item) => (
-                    <div className={s.fieldGrid} key={item}>
-                      <label className={s.field}>
-                        {names.get(item) || item}
-                        <select
-                          value={assessments[item]?.support ?? "unknown"}
-                          onChange={(event) =>
-                            setAssessments((value) => ({
-                              ...value,
-                              [item]: {
-                                ...(value[item] ?? {
-                                  components: {},
-                                  evidence: {},
-                                  support: "unknown",
-                                  readiness: "unknown",
-                                }),
-                                support: event.target.value,
-                              },
-                            }))
-                          }
-                        >
-                          {[
-                            "unknown",
+                        ].indexOf(assessments[a]?.support ?? "unknown") -
+                          [
                             "supported",
                             "limited",
                             "conflicting",
-                          ].map((value) => (
-                            <option key={value} value={value}>
-                              {human(value)}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label className={s.field}>
-                        Source and limitation supporting this judgment
-                        <input
-                          value={assessments[item]?.supportReason ?? ""}
-                          onChange={(event) =>
-                            setAssessments((value) => ({
-                              ...value,
-                              [item]: {
-                                ...(value[item] ?? {
-                                  components: {},
-                                  evidence: {},
-                                  support: "unknown",
-                                  readiness: "unknown",
-                                }),
-                                supportReason: event.target.value,
-                              },
-                            }))
-                          }
-                        />
-                      </label>
-                    </div>
-                  ))}
-              </div>
-            ) : rankingMode === "modeling readiness" ? (
-              <div>
-                <p className={s.help}>
-                  Readiness is a source-specific assessment, separate from
-                  relevance. Enter a reasoned personal assessment; this does not
-                  activate a model.
-                </p>
-                {ids.map((item) => (
-                  <label className={s.field} key={item}>
-                    {item}
-                    <select
-                      value={assessments[item]?.readiness ?? "unknown"}
-                      onChange={(event) =>
-                        setAssessments((value) => ({
-                          ...value,
-                          [item]: {
-                            ...(value[item] ?? {
-                              components: {},
-                              evidence: {},
-                              support: "unknown",
-                              readiness: "unknown",
-                            }),
-                            readiness: event.target.value,
-                          },
-                        }))
-                      }
-                    >
-                      <option value="unknown">Unknown</option>
-                      <option value="blocked">
-                        Blocked by missing support
-                      </option>
-                      <option value="ready">
-                        Researcher-assessed ready; validation still required
-                      </option>
-                    </select>
-                  </label>
-                ))}
-              </div>
-            ) : (
-              <details>
-                <summary>
-                  Inspect components, evidence, weights and sensitivity
-                </summary>
-                <p className={s.help}>
-                  Policy:{" "}
-                  {rankingMode === "applicability"
-                    ? "scenario-applicability-v1"
-                    : "question-relevance-v1"}
-                  . Values are ranking heuristics between 0 and 1; unknowns are
-                  not renormalized away.
-                </p>
-                {ids.map((item) => (
-                  <fieldset className={s.form} key={item}>
-                    <legend>{item}</legend>
-                    {Object.keys(baseWeights).map((name) => (
-                      <div className={s.fieldGrid} key={name}>
+                            "unknown",
+                          ].indexOf(assessments[b]?.support ?? "unknown") ||
+                        a.localeCompare(b),
+                    )
+                    .map((item) => (
+                      <div className={s.fieldGrid} key={item}>
                         <label className={s.field}>
-                          {human(name)}
-                          <input
-                            type="number"
-                            min="0"
-                            max="1"
-                            step="0.05"
-                            value={assessments[item]?.components[name] ?? ""}
+                          {names.get(item) || item}
+                          <select
+                            value={assessments[item]?.support ?? "unknown"}
                             onChange={(event) =>
-                              assess(item, name, event.target.value)
+                              setAssessments((value) => ({
+                                ...value,
+                                [item]: {
+                                  ...(value[item] ?? {
+                                    components: {},
+                                    evidence: {},
+                                    support: "unknown",
+                                    readiness: "unknown",
+                                  }),
+                                  support: event.target.value,
+                                },
+                              }))
                             }
-                            placeholder="Unknown"
-                          />
+                          >
+                            {[
+                              "unknown",
+                              "supported",
+                              "limited",
+                              "conflicting",
+                            ].map((value) => (
+                              <option key={value} value={value}>
+                                {human(value)}
+                              </option>
+                            ))}
+                          </select>
                         </label>
                         <label className={s.field}>
-                          Why this component is supported
+                          Source and limitation supporting this judgment
                           <input
-                            value={assessments[item]?.evidence[name] ?? ""}
+                            value={assessments[item]?.supportReason ?? ""}
                             onChange={(event) =>
-                              assess(item, name, event.target.value, true)
+                              setAssessments((value) => ({
+                                ...value,
+                                [item]: {
+                                  ...(value[item] ?? {
+                                    components: {},
+                                    evidence: {},
+                                    support: "unknown",
+                                    readiness: "unknown",
+                                  }),
+                                  supportReason: event.target.value,
+                                },
+                              }))
                             }
-                            placeholder="Source and condition-specific explanation"
                           />
                         </label>
                       </div>
                     ))}
-                  </fieldset>
-                ))}
-                <button className="button" onClick={() => void rank()}>
-                  Evaluate the registered ranking policy
-                </button>
-                {rankResult && rankingSignature !== rankingInputs && (
-                  <p className={s.notice}>
-                    The retained ranking used earlier inputs or weights.
-                    Evaluate the current policy before interpreting this draft.
+                </div>
+              ) : rankingMode === "modeling readiness" ? (
+                <div>
+                  <p className={s.help}>
+                    Readiness is a source-specific assessment, separate from
+                    relevance. Enter a reasoned personal assessment; this does
+                    not activate a model.
                   </p>
-                )}
-                {rankResult && rankingSignature === rankingInputs && (
-                  <>
-                    <div className={s.scroll}>
-                      <table className={s.table}>
-                        <thead>
-                          <tr>
-                            <th>Item</th>
-                            <th>Heuristic score</th>
-                            <th>Unknown components</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {rankResult.items.map((item) => (
-                            <tr key={item.item_id}>
-                              <td>{item.item_id}</td>
-                              <td>
-                                {item.score === null
-                                  ? "Incomplete"
-                                  : String(item.score)}
-                              </td>
-                              <td>
-                                {item.missing_components
-                                  .map(human)
-                                  .join(", ") || "None"}
-                              </td>
+                  {ids.map((item) => (
+                    <label className={s.field} key={item}>
+                      {item}
+                      <select
+                        value={assessments[item]?.readiness ?? "unknown"}
+                        onChange={(event) =>
+                          setAssessments((value) => ({
+                            ...value,
+                            [item]: {
+                              ...(value[item] ?? {
+                                components: {},
+                                evidence: {},
+                                support: "unknown",
+                                readiness: "unknown",
+                              }),
+                              readiness: event.target.value,
+                            },
+                          }))
+                        }
+                      >
+                        <option value="unknown">Unknown</option>
+                        <option value="blocked">
+                          Blocked by missing support
+                        </option>
+                        <option value="ready">
+                          Researcher-assessed ready; validation still required
+                        </option>
+                      </select>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <details>
+                  <summary>
+                    Inspect components, evidence, weights and sensitivity
+                  </summary>
+                  <p className={s.help}>
+                    Policy:{" "}
+                    {rankingMode === "applicability"
+                      ? "scenario-applicability-v1"
+                      : "question-relevance-v1"}
+                    . Values are ranking heuristics between 0 and 1; unknowns
+                    are not renormalized away.
+                  </p>
+                  {ids.map((item) => (
+                    <fieldset className={s.form} key={item}>
+                      <legend>{item}</legend>
+                      {Object.keys(baseWeights).map((name) => (
+                        <div className={s.fieldGrid} key={name}>
+                          <label className={s.field}>
+                            {human(name)}
+                            <input
+                              type="number"
+                              min="0"
+                              max="1"
+                              step="0.05"
+                              value={assessments[item]?.components[name] ?? ""}
+                              onChange={(event) =>
+                                assess(item, name, event.target.value)
+                              }
+                              placeholder="Unknown"
+                            />
+                          </label>
+                          <label className={s.field}>
+                            Why this component is supported
+                            <input
+                              value={assessments[item]?.evidence[name] ?? ""}
+                              onChange={(event) =>
+                                assess(item, name, event.target.value, true)
+                              }
+                              placeholder="Source and condition-specific explanation"
+                            />
+                          </label>
+                        </div>
+                      ))}
+                    </fieldset>
+                  ))}
+                  <button className="button" onClick={() => void rank()}>
+                    Evaluate the registered ranking policy
+                  </button>
+                  {rankResult && rankingSignature !== rankingInputs && (
+                    <p className={s.notice}>
+                      The retained ranking used earlier inputs or weights.
+                      Evaluate the current policy before interpreting this
+                      draft.
+                    </p>
+                  )}
+                  {rankResult && rankingSignature === rankingInputs && (
+                    <>
+                      <div className={s.scroll}>
+                        <table className={s.table}>
+                          <thead>
+                            <tr>
+                              <th>Item</th>
+                              <th>Heuristic score</th>
+                              <th>Unknown components</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <Limitations values={rankResult.limitations} />
-                  </>
-                )}
-                <h3>Unsaved weight sensitivity preview</h3>
-                {Object.entries(weights).map(([name, value]) => (
-                  <label className={s.weight} key={name}>
-                    <span>{human(name)}</span>
-                    <input
-                      aria-label={human(name) + " ranking weight"}
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      value={value}
-                      onChange={(event) =>
-                        setWeights((current) => ({
-                          ...current,
-                          [name]: Number(event.target.value),
-                        }))
-                      }
-                    />
-                    <output>{value.toFixed(2)}</output>
-                  </label>
-                ))}
-                <button
-                  className="text-button"
-                  onClick={() => setWeights({ ...baseWeights })}
-                >
-                  Reset versioned weights
-                </button>
-                {Math.abs(weightTotal - 1) > 1e-9 ? (
-                  <p className={s.limit}>
-                    Weights currently total {weightTotal.toFixed(2)}. Adjust
-                    them to total 1 before interpreting this sensitivity
-                    preview.
+                          </thead>
+                          <tbody>
+                            {rankResult.items.map((item) => (
+                              <tr key={item.item_id}>
+                                <td>{item.item_id}</td>
+                                <td>
+                                  {item.score === null
+                                    ? "Incomplete"
+                                    : String(item.score)}
+                                </td>
+                                <td>
+                                  {item.missing_components
+                                    .map(human)
+                                    .join(", ") || "None"}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <Limitations values={rankResult.limitations} />
+                    </>
+                  )}
+                  <h3>Unsaved weight sensitivity preview</h3>
+                  {Object.entries(weights).map(([name, value]) => (
+                    <label className={s.weight} key={name}>
+                      <span>{human(name)}</span>
+                      <input
+                        aria-label={human(name) + " ranking weight"}
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value={value}
+                        onChange={(event) =>
+                          setWeights((current) => ({
+                            ...current,
+                            [name]: Number(event.target.value),
+                          }))
+                        }
+                      />
+                      <output>{value.toFixed(2)}</output>
+                    </label>
+                  ))}
+                  <button
+                    className="text-button"
+                    onClick={() => setWeights({ ...baseWeights })}
+                  >
+                    Reset versioned weights
+                  </button>
+                  {Math.abs(weightTotal - 1) > 1e-9 ? (
+                    <p className={s.limit}>
+                      Weights currently total {weightTotal.toFixed(2)}. Adjust
+                      them to total 1 before interpreting this sensitivity
+                      preview.
+                    </p>
+                  ) : (
+                    <ol>
+                      {sensitivity.map((item) => (
+                        <li key={item.itemId}>
+                          {item.itemId}: {item.lower.toFixed(3)}
+                          {!item.complete
+                            ? "–" +
+                              item.upper.toFixed(3) +
+                              " because components remain unknown"
+                            : ""}
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                  <p className={s.help}>
+                    This preview does not change the versioned server policy or
+                    an already frozen comparison. Saving records it as a
+                    separate personal sensitivity assessment.
                   </p>
-                ) : (
-                  <ol>
-                    {sensitivity.map((item) => (
-                      <li key={item.itemId}>
-                        {item.itemId}: {item.lower.toFixed(3)}
-                        {!item.complete
-                          ? "–" +
-                            item.upper.toFixed(3) +
-                            " because components remain unknown"
-                          : ""}
-                      </li>
-                    ))}
-                  </ol>
-                )}
-                <p className={s.help}>
-                  This preview does not change the versioned server policy or an
-                  already frozen comparison. Saving records it as a separate
-                  personal sensitivity assessment.
-                </p>
-              </details>
-            )}
-          </section>
-          <Limitations values={data.limitations} />
-          <CompiledQuery
-            value={{ method: "comparison", parameters: { profiles } }}
-          />
-          <Link className="button" href="/app/lab/data">
-            Open data and compatible chart tools <ArrowRight size={16} />
-          </Link>
-        </>
+                </details>
+              )}
+            </details>
+            <Limitations values={data.limitations} />
+            <CompiledQuery
+              value={{ method: "comparison", parameters: { profiles } }}
+            />
+            <Link className="button" href="/app/lab/data">
+              Open data and compatible chart tools <ArrowRight size={16} />
+            </Link>
+          </div>
+        </details>
       )}
+      <details className={journey.sourceDetails}>
+        <summary>Comparison name and source version</summary>
+        <label className={s.field}>
+          Name
+          <input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+        </label>
+        <code>{snapshotId}</code>
+      </details>
       <SourceInspector anchor={anchor} onClose={() => setAnchor(null)} />
     </section>
   );

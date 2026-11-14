@@ -2,15 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  ArrowDownToLine,
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  Check,
-  Plus,
-  Save,
-} from "lucide-react";
+import { ArrowDownToLine, ArrowLeft, Check, Save } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   ResearchCase,
@@ -18,6 +10,7 @@ import {
   SavedRevision,
 } from "../lib/workspace-storage";
 import { Notice } from "./chrome";
+import { SavedResearch } from "./saved-research";
 import { CaseSourceEvidence } from "./case-source-evidence";
 import {
   CaseResearchTools,
@@ -27,14 +20,14 @@ import {
 export function newCase(
   snapshot: string | null,
   ids: string[] = [],
-  title = "Untitled research case",
+  title = "Research notes",
 ): ResearchCase {
   return {
     id: crypto.randomUUID(),
     title,
     question: "",
     notes: "",
-    investigation_ids: ids,
+    investigation_ids: [...ids],
     snapshot_id: snapshot,
     source_anchors: [],
     revision: 0,
@@ -73,6 +66,22 @@ export function CaseNotebook({
     if (entityId && entityId !== "new" && !draft)
       setDraft(cases.find((item) => item.id === entityId) ?? null);
   }, [cases, draft, entityId]);
+
+  useEffect(() => {
+    if (entityId !== "new" || !selected.length) return;
+    setDraft((current) =>
+      current &&
+      current.revision === 0 &&
+      !current.investigation_ids.length &&
+      (!current.snapshot_id || current.snapshot_id === snapshot)
+        ? {
+            ...current,
+            snapshot_id: snapshot,
+            investigation_ids: [...selected],
+          }
+        : current,
+    );
+  }, [entityId, selected, snapshot]);
 
   function change(field: "title" | "question" | "notes", value: string) {
     setSaved(false);
@@ -127,77 +136,20 @@ export function CaseNotebook({
     }
   }
 
-  if (!entityId)
-    return (
-      <>
-        <div className="page-heading">
-          <div>
-            <h1>Research cases</h1>
-            <p>Your questions, evidence, and notes. Saved on this device.</p>
-          </div>
-          <Link className="button button-primary" href="/app/cases/new">
-            <Plus size={17} />
-            New research case
-          </Link>
-        </div>
-        <Notice>
-          <strong>A personal notebook without an account</strong>
-          <p>
-            Cases stay in this browser profile. Back up your workspace to move
-            to another device or preserve it before clearing browser storage.
-          </p>
-        </Notice>
-        {cases.length ? (
-          <section className="case-list">
-            {cases.map((item) => (
-              <Link
-                className="case-list-item"
-                key={item.id}
-                href={`/app/cases/${item.id}`}
-              >
-                <BookOpen size={23} />
-                <div>
-                  <h2>{item.title}</h2>
-                  <p>{item.question || "No research question recorded yet."}</p>
-                  <span className="muted">
-                    Revision {item.revision} · {item.investigation_ids.length}{" "}
-                    sources · Saved{" "}
-                    {new Date(item.updated_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <ArrowRight size={19} />
-              </Link>
-            ))}
-          </section>
-        ) : (
-          <div className="empty-state case-empty">
-            <BookOpen size={36} />
-            <h2>Begin with a question worth keeping</h2>
-            <p>
-              Open an investigation and save its evidence, or create a case to
-              record what you want to understand.
-            </p>
-            <Link className="button" href="/app/investigations">
-              Explore investigations
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        )}
-      </>
-    );
+  if (!entityId) return <SavedResearch cases={cases} />;
 
   if (!draft)
     return (
       <>
         <Link className="back-link" href="/app/cases">
           <ArrowLeft size={16} />
-          Research cases
+          Your research
         </Link>
         <Notice>
-          <strong>This case is not available in this browser.</strong>
+          <strong>These notes are not available in this browser.</strong>
           <p>
-            Restore its workspace backup here, or return to the device where it
-            was saved.
+            Restore a research backup, or return to the device where it was
+            saved.
           </p>
         </Notice>
       </>
@@ -207,15 +159,15 @@ export function CaseNotebook({
     <>
       <Link className="back-link" href="/app/cases">
         <ArrowLeft size={16} />
-        Research cases
+        Your research
       </Link>
       <div className="page-heading">
         <div>
-          <h1>{draft.revision ? "Research notebook" : "New research case"}</h1>
+          <h1>{draft.revision ? "Research notebook" : "Research notes"}</h1>
           <p>
             {saved
               ? "This revision is saved in your browser."
-              : "Record a question and keep its source context together."}
+              : "Record your reasoning and keep the evidence alongside it."}
           </p>
         </div>
         <button
@@ -229,7 +181,7 @@ export function CaseNotebook({
       <div className="notebook-layout">
         <form className="reading-surface notebook-form" onSubmit={save}>
           <label>
-            Case title
+            Notes title
             <input
               disabled={saving}
               value={draft.title}
@@ -277,7 +229,7 @@ export function CaseNotebook({
                   : "Save revision"}
             </button>
             <span className="field-help">
-              On this device · No automatic cloud sync
+              Create a revision to keep these notes and their evidence together.
             </span>
           </div>
         </form>
@@ -298,74 +250,84 @@ export function CaseNotebook({
             </ul>
           ) : (
             <p className="field-help">
-              No sources attached. Save an investigation to a case from its
-              source view.
+              No sources attached yet. Explore an investigation and save it to
+              your research.
             </p>
           )}
           <CaseSourceEvidence anchors={draft.source_anchors ?? []} />
-          <h2>Frozen context</h2>
-          <p className="field-help">
-            {draft.snapshot_id ? (
-              <>
-                Source snapshot{" "}
-                <span className="mono hash-value">{draft.snapshot_id}</span>
-              </>
-            ) : (
-              "No source snapshot selected."
-            )}
-          </p>
-          <h2>Saved revisions</h2>
-          {draft.revisions.length ? (
-            <ol className="revision-list">
-              {draft.revisions
-                .slice()
-                .reverse()
-                .map((revision) => (
-                  <li key={revision.revision}>
-                    <strong>Revision {revision.revision}</strong>
-                    <span>{new Date(revision.saved_at).toLocaleString()}</span>
-                    <details>
-                      <summary>Inspect saved notes</summary>
-                      <p>{revision.question || "No question recorded."}</p>
-                      <p className="preserve-lines">
-                        {revision.notes || "No notes recorded."}
-                      </p>
-                      <CaseSourceEvidence
-                        anchors={revision.source_anchors ?? []}
-                      />
-                    </details>
-                  </li>
-                ))}
-            </ol>
-          ) : (
+          <details>
+            <summary>Source version details</summary>
             <p className="field-help">
-              Save the first revision to preserve this question and its context.
+              {draft.snapshot_id ? (
+                <>
+                  Source snapshot{" "}
+                  <span className="mono hash-value">{draft.snapshot_id}</span>
+                </>
+              ) : (
+                "No source snapshot selected."
+              )}
             </p>
-          )}
+          </details>
+          <details>
+            <summary>Saved revisions</summary>
+            {draft.revisions.length ? (
+              <ol className="revision-list">
+                {draft.revisions
+                  .slice()
+                  .reverse()
+                  .map((revision) => (
+                    <li key={revision.revision}>
+                      <strong>Revision {revision.revision}</strong>
+                      <span>
+                        {new Date(revision.saved_at).toLocaleString()}
+                      </span>
+                      <details>
+                        <summary>Inspect saved notes</summary>
+                        <p>{revision.question || "No question recorded."}</p>
+                        <p className="preserve-lines">
+                          {revision.notes || "No notes recorded."}
+                        </p>
+                        <CaseSourceEvidence
+                          anchors={revision.source_anchors ?? []}
+                        />
+                      </details>
+                    </li>
+                  ))}
+              </ol>
+            ) : (
+              <p className="field-help">
+                Save the first revision to preserve this question and its
+                context.
+              </p>
+            )}
+          </details>
         </aside>
       </div>
-      <CaseResearchTools
-        ref={structured}
-        value={draft}
-        onReady={setToolsReady}
-        onDraftChange={() => setSaved(false)}
-        onRestore={(historical) => {
-          setDraft((current) =>
-            current
-              ? {
-                  ...current,
-                  title: historical.title,
-                  question: historical.question,
-                  notes: historical.notes,
-                  investigation_ids: historical.investigation_ids,
-                  snapshot_id: historical.snapshot_id,
-                  source_anchors: historical.source_anchors ?? [],
-                }
-              : current,
-          );
-          setSaved(false);
-        }}
-      />
+      <details className="reading-surface">
+        <summary>Prepare a research report or assess applicability</summary>
+        <CaseResearchTools
+          ref={structured}
+          value={draft}
+          onReady={setToolsReady}
+          onDraftChange={() => setSaved(false)}
+          onRestore={(historical) => {
+            setDraft((current) =>
+              current
+                ? {
+                    ...current,
+                    title: historical.title,
+                    question: historical.question,
+                    notes: historical.notes,
+                    investigation_ids: historical.investigation_ids,
+                    snapshot_id: historical.snapshot_id,
+                    source_anchors: historical.source_anchors ?? [],
+                  }
+                : current,
+            );
+            setSaved(false);
+          }}
+        />
+      </details>
     </>
   );
 }

@@ -834,7 +834,7 @@ export const CaseResearchTools = forwardRef<
         </p>
         <div className={styles.row}>
           <label>
-            Workspace document
+            Saved research item
             <select
               value={attachmentId}
               onChange={(event) => {

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Save, Copy, ArrowDownToLine } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Save, Copy, ArrowDownToLine, ArrowRight } from "lucide-react";
 import { useResource, type OxygenResult } from "../lib/api";
 import {
   fileDownload,
@@ -135,6 +136,8 @@ export function ScenarioWorkbench({
   snapshotId: string;
   entityId?: string;
 }) {
+  const router = useRouter();
+  const [finding, setFinding] = useState(false);
   const presets = useResource<{
     presets: {
       id: string;
@@ -186,6 +189,14 @@ export function ScenarioWorkbench({
         .catch((reason) => setError(message(reason)));
   }, [entityId]);
   useEffect(() => {
+    if (
+      !scenario.endpoint.trim() &&
+      !scenario.conditions.material.value.trim()
+    ) {
+      setMatches([]);
+      setCoverage(null);
+      return;
+    }
     const controller = new AbortController();
     const timer = setTimeout(() => {
       setUpdating(true);
@@ -443,6 +454,36 @@ export function ScenarioWorkbench({
       comparisonVersion.current += 1;
     };
   }, [scenario.conditions]);
+  async function findResearch() {
+    if (!scenario.endpoint.trim() || finding) return;
+    setFinding(true);
+    setError(null);
+    try {
+      const known = Object.entries(scenario.conditions)
+        .filter(([, item]) => item.value.trim())
+        .map(
+          ([key, item]) =>
+            `${key.replaceAll("_", " ")}: ${item.value} ${item.unit} (${item.status.replaceAll("_", " ")}${item.source ? "; source: " + item.source : ""})`,
+        )
+        .join("; ");
+      const question = `${scenario.endpoint.trim()}${known ? ". Conditions I want to study: " + known : ""}. Find and explain relevant NASA investigations, compare their actual experimental conditions with my question and cite the evidence. Separate research implications from established safety limits.`;
+      const intent = await saveDocument({
+        kind: "studio_intent",
+        title: scenario.endpoint.slice(0, 100),
+        snapshot_id: snapshotId,
+        data: {
+          question,
+          snapshot_id: snapshotId,
+          investigations: [],
+          auto_submit: true,
+        },
+      });
+      router.push(`/app/agent?intent=${intent.id}`);
+    } catch (reason) {
+      setError(message(reason));
+      setFinding(false);
+    }
+  }
   const differences = Array.isArray(passport?.conditions)
     ? (passport.conditions as Record<string, unknown>[])
     : [];
@@ -451,21 +492,23 @@ export function ScenarioWorkbench({
     <div className={styles.stack}>
       <div className={styles.heading}>
         <div>
-          <h2>Scenario research</h2>
+          <h2>Match research to your conditions</h2>
           <p>
-            Keep environmental assumptions explicit and inspect how the
-            available evidence fits them.
+            Start with the outcome you want to understand. Add the conditions
+            you know, then inspect relevant source records.
           </p>
         </div>
         <div className={styles.actions}>
-          <button className="button button-primary" onClick={() => save()}>
+          <button className="button" onClick={() => save()}>
             <Save size={15} />
-            Save draft
+            Save scenario
           </button>
-          <button className="button" onClick={() => save(true)}>
-            <Copy size={15} />
-            Duplicate
-          </button>
+          {id && (
+            <button className="button" onClick={() => save(true)}>
+              <Copy size={15} />
+              Duplicate
+            </button>
+          )}
         </div>
       </div>
       {error && (
@@ -484,31 +527,34 @@ export function ScenarioWorkbench({
           aria-selected={tab === "assumptions"}
           onClick={() => setTab("assumptions")}
         >
-          Assumptions and evidence
+          Question & evidence
         </button>
         <button
           role="tab"
           aria-selected={tab === "versions"}
           onClick={() => setTab("versions")}
         >
-          Versions and matched panels
+          Saved versions
         </button>
       </nav>
       {tab === "assumptions" ? (
         <div className={styles.split}>
           <section className={styles.stack}>
             <div className={styles.surface}>
+              <details>
+                <summary>Name this scenario (optional)</summary>
+                <label className={styles.field}>
+                  Scenario name
+                  <input
+                    value={scenario.title}
+                    onChange={(event) =>
+                      setScenario({ ...scenario, title: event.target.value })
+                    }
+                  />
+                </label>
+              </details>
               <label className={styles.field}>
-                Research scenario title
-                <input
-                  value={scenario.title}
-                  onChange={(event) =>
-                    setScenario({ ...scenario, title: event.target.value })
-                  }
-                />
-              </label>
-              <label className={styles.field}>
-                Research context preset
+                Starting conditions (optional)
                 <select
                   defaultValue=""
                   onChange={(event) => {
@@ -540,7 +586,9 @@ export function ScenarioWorkbench({
                     setStale(true);
                   }}
                 >
-                  <option value="">Start with editable assumptions</option>
+                  <option value="">
+                    Choose a starting example, or enter your own conditions
+                  </option>
                   {presets.data?.presets.map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.title} · {item.status.replaceAll("_", " ")}
@@ -557,21 +605,33 @@ export function ScenarioWorkbench({
                 </details>
               )}
               <label className={styles.field}>
-                Research endpoint
+                What outcome do you want to understand?
                 <input
                   value={scenario.endpoint}
                   onChange={(event) =>
                     setScenario({ ...scenario, endpoint: event.target.value })
                   }
-                  placeholder="What measured outcome matters?"
+                  placeholder="For example, flame spread over a fabric sample"
                 />
               </label>
+              <div className={styles.actions}>
+                <button
+                  className="button button-primary"
+                  disabled={!scenario.endpoint.trim() || finding}
+                  onClick={() => void findResearch()}
+                >
+                  {finding
+                    ? "Opening your research question…"
+                    : "Find research for these conditions"}
+                  <ArrowRight size={16} />
+                </button>
+              </div>
             </div>
             {sections.map((section) => (
               <details
                 key={section.title}
                 className={styles.surface}
-                open={section.title === "Atmosphere"}
+                open={undefined}
               >
                 <summary>
                   <strong>{section.title}</strong>
@@ -606,46 +666,53 @@ export function ScenarioWorkbench({
                               }
                             />
                           </label>
-                          <label className={styles.field}>
-                            Basis / reference
-                            <input
-                              value={value.basis}
-                              onChange={(event) =>
-                                change(key, { basis: event.target.value })
-                              }
-                            />
-                          </label>
-                          <label className={styles.field}>
-                            Source status
-                            <select
-                              value={value.status}
-                              onChange={(event) =>
-                                change(key, { status: event.target.value })
-                              }
-                            >
-                              <option value="not_reported">
-                                Unknown / not reported
-                              </option>
-                              <option value="nominal">
-                                Declared research assumption
-                              </option>
-                              <option value="measured">
-                                Source-backed measured value
-                              </option>
-                              <option value="unresolved">
-                                Unresolved / conflicting
-                              </option>
-                            </select>
-                          </label>
-                          <label className={`${styles.field} ${styles.full}`}>
-                            Supporting source / edition / date
-                            <input
-                              value={value.source}
-                              onChange={(event) =>
-                                change(key, { source: event.target.value })
-                              }
-                            />
-                          </label>
+                          <details className={styles.full}>
+                            <summary>Source & interpretation details</summary>
+                            <div className={styles.fields}>
+                              <label className={styles.field}>
+                                Basis / reference
+                                <input
+                                  value={value.basis}
+                                  onChange={(event) =>
+                                    change(key, { basis: event.target.value })
+                                  }
+                                />
+                              </label>
+                              <label className={styles.field}>
+                                Source status
+                                <select
+                                  value={value.status}
+                                  onChange={(event) =>
+                                    change(key, { status: event.target.value })
+                                  }
+                                >
+                                  <option value="not_reported">
+                                    Unknown / not reported
+                                  </option>
+                                  <option value="nominal">
+                                    Declared research assumption
+                                  </option>
+                                  <option value="measured">
+                                    Source-backed measured value
+                                  </option>
+                                  <option value="unresolved">
+                                    Unresolved / conflicting
+                                  </option>
+                                </select>
+                              </label>
+                              <label
+                                className={`${styles.field} ${styles.full}`}
+                              >
+                                Supporting source / edition / date
+                                <input
+                                  value={value.source}
+                                  onChange={(event) =>
+                                    change(key, { source: event.target.value })
+                                  }
+                                />
+                              </label>
+                            </div>
+                          </details>
                         </div>
                       </fieldset>
                     );
@@ -653,8 +720,10 @@ export function ScenarioWorkbench({
                 </div>
               </details>
             ))}
-            <div className={styles.surface}>
-              <h3>Oxygen partial pressure</h3>
+            <details className={styles.surface}>
+              <summary>
+                <strong>Calculate oxygen partial pressure</strong>
+              </summary>
               <p>
                 pO₂ = xO₂ × total absolute pressure. Oxygen input is percent by
                 mole; pressure units must be supported by the calculation.
@@ -721,12 +790,12 @@ export function ScenarioWorkbench({
                 flammability. A lunar or Martian context never rescales a
                 microgravity measurement.
               </p>
-            </div>
+            </details>
           </section>
           <section className={styles.stack} aria-busy={updating}>
             <div className={styles.surface}>
               <div className={styles.row}>
-                <h2>Evidence-fit preview</h2>
+                <h2>Related source records</h2>
                 {updating && (
                   <span className={styles.badge}>
                     Updating source candidates…
@@ -734,14 +803,15 @@ export function ScenarioWorkbench({
                 )}
               </div>
               <p className={styles.caption}>
-                Candidate source records match your endpoint/material text. This
-                is relevance, not physical applicability or a safety score.
-                Inspect a candidate's condition passport.
+                These records match the words in your outcome or material.
+                Compare the test conditions before using them for your question.
               </p>
               {matches.length === 0 ? (
                 <p>
-                  No matching source record was found in the inspected frozen
-                  evidence. This is not proof that the condition is unstudied.
+                  {!scenario.endpoint.trim() &&
+                  !scenario.conditions.material.value.trim()
+                    ? "Enter an outcome or material to look for source records. Use the research assistant to find and explain relevant investigations."
+                    : "No source records match those exact terms. Find research with the assistant to explore related investigations and different terminology."}
                 </p>
               ) : (
                 <ul className={styles.list}>
@@ -759,7 +829,7 @@ export function ScenarioWorkbench({
                         className="button button-small"
                         onClick={() => compare(match)}
                       >
-                        Inspect applicability passport
+                        Compare test conditions
                       </button>
                     </li>
                   ))}
@@ -768,7 +838,7 @@ export function ScenarioWorkbench({
             </div>
             {passport && (
               <div className={styles.surface}>
-                <h3>Condition passport: {readable(passport.status)}</h3>
+                <h3>Condition comparison: {readable(passport.status)}</h3>
                 {passportStale && (
                   <p className={styles.warning}>
                     Assumptions changed; updating this candidate's condition

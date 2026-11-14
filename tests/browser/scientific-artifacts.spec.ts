@@ -5,7 +5,7 @@ test("a saved uncertainty artifact displays its dimensional outputs and interpre
 }) => {
   await page.goto("/app");
   await expect(
-    page.getByRole("heading", { name: "Research overview", exact: true }),
+    page.getByRole("heading", { name: /Understand fire/ }),
   ).toBeVisible();
   const snapshot = await page.request
     .get("/v1/snapshots/current")
@@ -67,7 +67,12 @@ test("a saved uncertainty artifact displays its dimensional outputs and interpre
   );
   await page.goto("/app/cases/new");
   await page
-    .getByRole("combobox", { name: /Workspace document/ })
+    .getByText("Prepare a research report or assess applicability", {
+      exact: true,
+    })
+    .click();
+  await page
+    .getByRole("combobox", { name: /Saved research item/ })
     .selectOption("dimensional-reference");
   await page
     .getByRole("button", { name: "Attach revision", exact: true })

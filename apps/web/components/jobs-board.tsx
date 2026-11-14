@@ -93,7 +93,7 @@ export function JobsBoard({ id }: { id?: string }) {
         },
       });
       setMessage(
-        "The selected result and provenance are saved in this workspace. They survive remote expiry.",
+        "The result and its source references are saved in Your research, including after the temporary task expires.",
       );
     } catch (reason) {
       setError(String(reason));
@@ -103,29 +103,27 @@ export function JobsBoard({ id }: { id?: string }) {
     <>
       <div className="page-heading">
         <div>
-          <h1>Jobs and activity</h1>
-          <p>Confirmed backend state for this browser’s selected operations.</p>
+          <h1>Running tasks</h1>
+          <p>Follow calculations, exports and research while they run.</p>
         </div>
         <button className="button" onClick={refresh}>
           <RefreshCw size={16} />
           Refresh list
         </button>
       </div>
-      <Notice>
-        Closing a page leaves remote work running. Cancel a computation
-        explicitly, or save its result locally before its stated expiry. A
-        completed operation does not establish scientific applicability.
-      </Notice>
+      <p className="muted">
+        Tasks can keep running when you leave the page. Save a result you want
+        to keep before its expiry.
+      </p>
       {error && <Notice kind="error">{error}</Notice>}
       {message && <p role="status">{message}</p>}
       <div className="jobs-layout">
         <section>
-          <h2>Operations remembered in this workspace</h2>
+          <h2>Your recent tasks</h2>
           {documents.length === 0 ? (
             <p className="empty-state">
-              No operations have been submitted from this local workspace.
-              Scientific jobs appear here when you run a fit, export, source
-              transfer, code cell or Studio request.
+              No tasks yet. Calculations, exports and assistant requests appear
+              here as you work.
             </p>
           ) : (
             <ul className="job-list">
@@ -156,7 +154,7 @@ export function JobsBoard({ id }: { id?: string }) {
                         onClick={() => void saveResult(jobId)}
                       >
                         <Save size={14} />
-                        Save result locally
+                        Save result
                       </button>
                       <button
                         className="button button-small"
@@ -199,10 +197,10 @@ export function JobsBoard({ id }: { id?: string }) {
             <JobMonitor key={selected} id={selected} onComplete={complete} />
           ) : (
             <div className="empty-state">
-              <h2>Inspect an operation</h2>
+              <h2>Follow a task</h2>
               <p>
-                Select a job to follow its durable events, exact inputs,
-                decision, output, failure or cancellation.
+                Choose a task to see its progress, result or options to stop and
+                recover it.
               </p>
             </div>
           )}

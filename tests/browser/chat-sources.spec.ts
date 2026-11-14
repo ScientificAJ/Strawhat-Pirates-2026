@@ -491,11 +491,11 @@ test("numbered chat sources reveal a real retained passage and retain calculatio
   await expect(inspector).toBeHidden();
   await expect(secondReplySource).toBeFocused();
   await secondReplySource.click();
-  await page.getByRole("button", { name: "New session", exact: true }).focus();
+  await page.getByRole("button", { name: "New question", exact: true }).focus();
   await page.keyboard.press("Enter");
   await expect(
     page.getByRole("heading", {
-      name: "Begin with a scientific question",
+      name: "What would you like to understand?",
       exact: true,
     }),
   ).toBeVisible();

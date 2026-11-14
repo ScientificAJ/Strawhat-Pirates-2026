@@ -119,30 +119,29 @@ export function ResearchContextProvider({
   }, []);
   useEffect(() => {
     if (!ready || !context) return;
-    const timer = window.setTimeout(() => {
-      pending.current = pending.current
-        .then(async () => {
-          document.current = await saveDocument(
-            {
-              id: "active-research-context",
-              kind: "research_context",
-              title: "Current research selection",
-              snapshot_id: context.snapshot_id,
-              data: { context },
-            },
-            document.current?.revision ?? 0,
-          );
-          setStorageError(null);
-        })
-        .catch((reason) => {
-          setStorageError(
-            reason instanceof Error
-              ? reason.message
-              : "This selection could not be saved.",
-          );
-        });
-    }, 300);
-    return () => window.clearTimeout(timer);
+    // Start the revision-checked write immediately so a full navigation after
+    // saving an investigation cannot discard an unstarted selection update.
+    pending.current = pending.current
+      .then(async () => {
+        document.current = await saveDocument(
+          {
+            id: "active-research-context",
+            kind: "research_context",
+            title: "Current research selection",
+            snapshot_id: context.snapshot_id,
+            data: { context },
+          },
+          document.current?.revision ?? 0,
+        );
+        setStorageError(null);
+      })
+      .catch((reason) => {
+        setStorageError(
+          reason instanceof Error
+            ? reason.message
+            : "This selection could not be saved.",
+        );
+      });
   }, [context, ready]);
   return (
     <ResearchContext.Provider value={{ context, updateContext, storageError }}>

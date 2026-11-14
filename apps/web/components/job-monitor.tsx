@@ -129,8 +129,21 @@ export function JobMonitor({
       aria-label="Scientific job"
     >
       <div className={styles.row}>
-        <h3>Job {job?.status?.replaceAll("_", " ") ?? "connecting"}</h3>
-        <span className={styles.badge}>{id.slice(0, 8)}</span>
+        <h3 role="status">
+          {job
+            ? ({
+                queued: "Waiting to start",
+                running: "Working on your result…",
+                waiting_approval: "Review before continuing",
+                succeeded: files.length
+                  ? "Your download is ready"
+                  : "Result ready",
+                failed: "This task could not complete",
+                cancelled: "Task stopped",
+                interrupted: "Task interrupted",
+              }[job.status] ?? job.status.replaceAll("_", " "))
+            : "Connecting to your task…"}
+        </h3>
       </div>
       {error && (
         <div role="alert" className={styles.error}>
@@ -144,6 +157,12 @@ export function JobMonitor({
       {operationError && (
         <p role="alert" className={styles.error}>
           {operationError}
+        </p>
+      )}
+      {job?.error_code && (
+        <p className={styles.error} role="alert">
+          The task did not finish: {job.error_code.replaceAll("_", " ")}. Your
+          inputs remain available; check the details before trying again.
         </p>
       )}
       {job?.partial_result && (
@@ -185,7 +204,7 @@ export function JobMonitor({
             )}
             {job?.expires_at && (
               <span>
-                Remote result expires{" "}
+                Download available until{" "}
                 {new Date(job.expires_at).toLocaleString()}
               </span>
             )}
@@ -229,8 +248,8 @@ export function JobMonitor({
                   }
                 >
                   {retained.includes(String(file.id ?? file.artifact_id))
-                    ? "Saved on this browser"
-                    : "Keep file on this browser"}
+                    ? "Copy saved"
+                    : "Save a copy"}
                 </button>
                 <button
                   className="button button-small"
@@ -247,8 +266,9 @@ export function JobMonitor({
                   }
                 >
                   <ArrowDownToLine size={14} />
+                  Download{" "}
                   {readable(
-                    file.file_name ?? file.filename ?? `Artifact ${index + 1}`,
+                    file.file_name ?? file.filename ?? `file ${index + 1}`,
                   )}
                 </button>
               </div>
@@ -262,9 +282,7 @@ export function JobMonitor({
       )}
       {events.length > 0 && (
         <details className={styles.details}>
-          <summary>
-            Progress and confirmed backend state ({events.length})
-          </summary>
+          <summary>Task details ({events.length})</summary>
           <ol>
             {events.map((event) => (
               <li key={event.sequence}>
@@ -289,10 +307,15 @@ export function JobMonitor({
             Cancel computation
           </button>
         )}
-      <p className={styles.caption}>
-        Closing this page does not cancel remote work. This browser can
-        reconnect until the receipt and result expire.
-      </p>
+      {job && ["queued", "running"].includes(job.status) && (
+        <p className={styles.caption}>
+          You can leave this page and follow progress in Running tasks.
+        </p>
+      )}
+      <details className={styles.details}>
+        <summary>Task reference</summary>
+        <code>{id}</code>
+      </details>
     </section>
   );
 }

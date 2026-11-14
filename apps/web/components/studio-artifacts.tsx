@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowDownToLine, Check, Copy, ExternalLink, Save } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { ArtifactView } from "./artifact-view";
 import { downloadJson } from "../lib/api";
@@ -50,6 +51,21 @@ export function ResearchMessage({
   const simulations = records(turn.result?.facts).filter((fact) =>
     isDropletVisualization(fact.content),
   );
+  const retrievedInvestigations = [
+    ...new Set(
+      records(turn.result?.facts)
+        .flatMap((fact) =>
+          records(fact.sources).map((source) => source.accession),
+        )
+        .filter(
+          (id): id is string => typeof id === "string" && /^PSI-\d+$/.test(id),
+        ),
+    ),
+  ];
+  const incomplete =
+    turn.result &&
+    typeof turn.result.status === "string" &&
+    turn.result.status !== "completed";
   const [copied, setCopied] = useState(false);
   async function copy() {
     const body = claims
@@ -97,10 +113,21 @@ export function ResearchMessage({
         <div className={styles.messageHeading}>
           <strong>{assistantName}</strong>
           <span className={styles.status}>
-            {turn.status.replaceAll("_", " ")}
-            {turn.result?.status && turn.result.status !== "completed"
-              ? ` · ${String(turn.result.status).replaceAll("_", " ")}`
-              : ""}
+            {incomplete
+              ? "Research stopped before a complete answer"
+              : ((
+                  {
+                    queued: "Waiting to start",
+                    running: "Researching…",
+                    succeeded: "Answer ready",
+                    canceled: "Stopped",
+                    failed: "Could not complete",
+                    submitting: "Sending…",
+                    submission_unconfirmed: "Request needs recovery",
+                    waiting_approval: "Confirmation needed",
+                    cancel_requested: "Stopping…",
+                  } as Record<string, string>
+                )[turn.status] ?? turn.status.replaceAll("_", " "))}
           </span>
         </div>
         {turn.error && (
@@ -112,9 +139,17 @@ export function ResearchMessage({
         {claims.map((claim, index) => (
           <section key={index} className={styles.claim}>
             <span className={styles.origin}>
-              {String(
-                claim.interpretation_status ?? claim.origin ?? "Interpretation",
-              ).replaceAll("_", " ")}
+              {(
+                {
+                  source_summary: "NASA source summary",
+                  calculated: "Calculation",
+                  predicted: "Model prediction",
+                  model_interpretation: "Interpretation",
+                  research_hypothesis: "Research hypothesis",
+                  user_input_summary: "Your data",
+                  unknown: "Evidence gap",
+                } as Record<string, string>
+              )[String(claim.origin)] ?? "Interpretation"}
             </span>
             <p>
               {String(claim.statement ?? "")}{" "}
@@ -138,21 +173,42 @@ export function ResearchMessage({
         ))}
         {!turn.result && !turn.error && (
           <p className={styles.muted}>
-            The checked written response will appear here. Activity below
-            reflects recorded backend events.
+            Searching the research and preparing an answer. You can follow the
+            sources and calculations as they become available.
           </p>
         )}
         {turn.result && !claims.length && (
           <p>
             {String(
               turn.result.failure ??
-                "No checked scientific claim was returned. Inspect retained evidence and activity for the precise gap.",
+                "No answer was returned. Open the sources and research activity for details, or try a more specific question.",
             )}
           </p>
         )}
+        {!claims.length && retrievedInvestigations.length > 0 && (
+          <section aria-label="Retrieved investigations">
+            <h3>Explore the sources retrieved so far</h3>
+            <p>
+              The assistant did not finish a synthesis. These investigation
+              records remain available to inspect.
+            </p>
+            <div className={styles.actions}>
+              {retrievedInvestigations.map((id) => (
+                <Link
+                  className="button button-small"
+                  key={id}
+                  href={`/app/investigations/${id}?snapshot=${turn.request.context.snapshot_id}`}
+                >
+                  {id}
+                  <ExternalLink size={14} />
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
         {limits.length > 0 && (
           <div className={styles.limitations}>
-            <strong>What this does and does not establish</strong>
+            <strong>Reading this result</strong>
             <ul>
               {limits.map((limit) => (
                 <li key={limit}>{limit}</li>
@@ -205,9 +261,7 @@ export function ResearchMessage({
         {(turn.events.length > 0 ||
           records(turn.result?.actions).length > 0) && (
           <details className={styles.activity}>
-            <summary>
-              Inspect activity · {turn.events.length} recorded events
-            </summary>
+            <summary>Research activity · {turn.events.length} steps</summary>
             <ol>
               {turn.events.map((event, i) => (
                 <li key={String(event.sequence ?? i)}>
@@ -239,10 +293,15 @@ export function ResearchMessage({
         )}
         {turn.result && (
           <footer className={styles.messageFooter}>
-            <span>
-              {String(turn.result.model ?? "Recorded model")} · $
-              {String(turn.result.cost_usd ?? "unconfirmed")} estimated
-            </span>
+            <details>
+              <summary>Answer details</summary>
+              <p>Model: {String(turn.result.model ?? "Not reported")}</p>
+              <p>
+                {Number.isFinite(Number(turn.result.cost_usd))
+                  ? `Estimated usage: $${Number(turn.result.cost_usd).toFixed(4)}`
+                  : "Usage not reported"}
+              </p>
+            </details>
             <button className={styles.textButton} onClick={copy}>
               {copied ? <Check size={14} /> : <Copy size={14} />}
               {copied ? "Copied with evidence" : "Copy with evidence"}
@@ -268,7 +327,7 @@ export function ArtifactCanvas({
   async function save() {
     try {
       await onSave?.(artifact);
-      setNotice("Saved to your research workspace.");
+      setNotice("Saved to Your research.");
     } catch (error) {
       setNotice(
         error instanceof Error
@@ -367,17 +426,17 @@ export function ArtifactCanvas({
         </details>
       )}
       {strings(artifact.data.limitations).length > 0 && (
-        <div className={styles.limitations}>
-          <strong>Scientific qualifications</strong>
+        <details className={styles.limitations}>
+          <summary>Scientific qualifications</summary>
           <ul>
             {strings(artifact.data.limitations).map((value) => (
               <li key={value}>{value}</li>
             ))}
           </ul>
-        </div>
+        </details>
       )}
-      <div className={styles.sourceList}>
-        <h3>Provenance</h3>
+      <details className={styles.sourceList}>
+        <summary>Source references & provenance</summary>
         <p>
           Snapshot <code>{artifact.snapshot_id}</code>
         </p>
@@ -406,7 +465,7 @@ export function ArtifactCanvas({
             )}
           </div>
         ))}
-      </div>
+      </details>
       <details>
         <summary>Full method and artifact record</summary>
         <pre>{JSON.stringify(artifact.data, null, 2)}</pre>

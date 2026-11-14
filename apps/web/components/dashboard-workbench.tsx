@@ -479,12 +479,12 @@ export function DashboardWorkbench({
     <div className={styles.workbench}>
       <div className={styles.heading}>
         <div>
-          <h1>Research dashboards</h1>
+          <h1>Research figures</h1>
           <p>
             {mode === "preview"
               ? "Review a proposed composition"
               : mode === "edit"
-                ? "Compose source-backed scientific views"
+                ? "Bring data and calculations into one research view"
                 : "Inspect a saved research view"}{" "}
             ·{" "}
             {current.mode === "frozen"
@@ -685,14 +685,17 @@ export function DashboardWorkbench({
             />
           </label>
         </div>
-        <p className={styles.caption}>
-          Snapshot {current.corpus_snapshot_id} · dashboard revision{" "}
-          {current.revision} · browser document revision{" "}
-          {document?.revision ?? "unsaved"} ·{" "}
-          {resultsStale
-            ? "previous validated results · refresh required"
-            : (resolved?.status ?? "not validated")}
-        </p>
+        <details className={styles.details}>
+          <summary>Source and revision details</summary>
+          <p className={styles.caption}>
+            Source version {current.corpus_snapshot_id} · figure revision{" "}
+            {current.revision} · saved revision{" "}
+            {document?.revision ?? "unsaved"} ·{" "}
+            {resultsStale
+              ? "previous results; refresh required"
+              : (resolved?.status ?? "not validated")}
+          </p>
+        </details>
       </section>
       {proposal && (
         <section className={styles.surface}>

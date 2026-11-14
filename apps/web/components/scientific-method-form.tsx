@@ -157,6 +157,23 @@ export function ScientificMethodFields({
               node.type === "object" ||
               node.type === "array" ||
               Boolean(node.properties);
+            if (key === "context" && depth === 0)
+              return (
+                <details
+                  key={key}
+                  className={`${styles.details} ${styles.full}`}
+                >
+                  <summary>Input origin & source references</summary>
+                  <ScientificMethodFields
+                    schema={child}
+                    root={root}
+                    value={object[key]}
+                    onChange={(next) => onChange({ ...object, [key]: next })}
+                    label="Source references"
+                    depth={depth + 1}
+                  />
+                </details>
+              );
             return (
               <div key={key} className={complex ? styles.full : undefined}>
                 {!required && !(key in object) ? (

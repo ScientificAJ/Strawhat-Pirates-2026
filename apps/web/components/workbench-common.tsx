@@ -145,11 +145,15 @@ export function Scope({
 }) {
   return (
     <div className={s.scope}>
-      <span>
-        Frozen source snapshot{" "}
-        <code title={snapshotId}>{snapshotId.slice(0, 12)}</code>
-      </span>
       {children}
+      <details className="source-version-details">
+        <summary>Source version</summary>
+        <p>
+          This view uses a preserved copy of the NASA sources so its references
+          can be reproduced.
+        </p>
+        <code>{snapshotId}</code>
+      </details>
     </div>
   );
 }

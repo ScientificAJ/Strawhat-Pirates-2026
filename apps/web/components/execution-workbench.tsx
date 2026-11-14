@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Copy,
   Play,
@@ -8,6 +8,7 @@ import {
   ArrowDownToLine,
   RefreshCw,
 } from "lucide-react";
+import Link from "next/link";
 import { request, useResource } from "../lib/api";
 import {
   fileDownload,
@@ -62,6 +63,7 @@ export function ExecutionWorkbench({
   );
   const [seed, setSeed] = useState("");
   const [extended, setExtended] = useState(false);
+  const running = useRef(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [jobs, setJobs] = useState<string[]>([]);
@@ -213,40 +215,49 @@ export function ExecutionWorkbench({
       setError(message(reason));
     }
   }
+  async function createSession() {
+    const files = inputs.filter((input) => selected.includes(input.id));
+    const created = await post<Session>("/v1/execution/sessions", {
+      snapshot_id: snapshotId,
+      asset_sha256: files
+        .filter((input) => input.kind === "public")
+        .map((input) => input.sha256),
+      source_job_ids: files
+        .filter((input) => input.kind === "acquired")
+        .map((input) => input.id),
+      upload_ids: files
+        .filter((input) => input.kind === "upload")
+        .map((input) => input.id),
+    });
+    setSession(created);
+    return created;
+  }
   async function start() {
+    if (running.current) return;
+    running.current = true;
     setBusy(true);
     setError(null);
     try {
-      const files = inputs.filter((input) => selected.includes(input.id));
-      const created = await post<Session>("/v1/execution/sessions", {
-        snapshot_id: snapshotId,
-        asset_sha256: files
-          .filter((input) => input.kind === "public")
-          .map((input) => input.sha256),
-        source_job_ids: files
-          .filter((input) => input.kind === "acquired")
-          .map((input) => input.id),
-        upload_ids: files
-          .filter((input) => input.kind === "upload")
-          .map((input) => input.id),
-      });
-      setSession(created);
+      await createSession();
       setNotice(
-        "Session started. Input selection is frozen until you end this session.",
+        "The analysis environment is ready. Selected files stay fixed while it is active.",
       );
     } catch (reason) {
       setError(message(reason));
     } finally {
+      running.current = false;
       setBusy(false);
     }
   }
   async function run() {
-    if (!session) return;
+    if (running.current || !code.trim()) return;
+    running.current = true;
     setBusy(true);
     setError(null);
     try {
+      const environment = open && session ? session : await createSession();
       const created = await post<{ id: string }>(
-        `/v1/execution/sessions/${session.id}/commands`,
+        `/v1/execution/sessions/${environment.id}/commands`,
         {
           language,
           code,
@@ -259,6 +270,7 @@ export function ExecutionWorkbench({
     } catch (reason) {
       setError(message(reason));
     } finally {
+      running.current = false;
       setBusy(false);
     }
   }
@@ -315,8 +327,8 @@ export function ExecutionWorkbench({
           <div>
             <h2>Python and shell laboratory</h2>
             <p className={styles.caption}>
-              A stateful scientific environment on the existing project host.
-              Run only when you choose.
+              Analyze selected data with your own code. The isolated analysis
+              environment starts when you run a command.
             </p>
           </div>
           <button className="button" onClick={save} disabled={restoring}>
@@ -365,8 +377,9 @@ export function ExecutionWorkbench({
         <h3>Selected input files</h3>
         {inputs.length === 0 ? (
           <p className={styles.muted}>
-            Choose a retained dataset, completed NASA acquisition or submitted
-            private upload in the other laboratory tabs.
+            No data file selected yet. You can still run code, or{" "}
+            <Link href="/app/lab/data">choose a source dataset</Link> to work
+            with NASA measurements.
           </p>
         ) : (
           inputs.map((input) => (
@@ -395,47 +408,50 @@ export function ExecutionWorkbench({
             </label>
           ))
         )}
-        <div className={styles.actions}>
-          <button
-            className="button button-primary"
-            disabled={busy || open || !capability.data?.available}
-            onClick={start}
-          >
-            Start selected session
-          </button>
+        <details className={styles.details}>
+          <summary>Runtime controls</summary>
+          <div className={styles.actions}>
+            <button
+              className="button"
+              disabled={busy || open || !capability.data?.available}
+              onClick={start}
+            >
+              Start selected session
+            </button>
+            {session && (
+              <>
+                <button
+                  className="button"
+                  disabled={!open}
+                  onClick={() => control("renew")}
+                >
+                  Renew session
+                </button>
+                <button
+                  className="button"
+                  disabled={!open}
+                  onClick={() => control("end")}
+                >
+                  <Square size={15} />
+                  End session
+                </button>
+                <button className="button" onClick={reconnect}>
+                  <RefreshCw size={15} />
+                  Check session
+                </button>
+              </>
+            )}
+          </div>
           {session && (
-            <>
-              <button
-                className="button"
-                disabled={!open}
-                onClick={() => control("renew")}
-              >
-                Renew session
-              </button>
-              <button
-                className="button"
-                disabled={!open}
-                onClick={() => control("end")}
-              >
-                <Square size={15} />
-                End session
-              </button>
-              <button className="button" onClick={reconnect}>
-                <RefreshCw size={15} />
-                Check session
-              </button>
-            </>
+            <p className={styles.caption}>
+              Session {session.id.slice(0, 8)} · {session.status ?? "open"} ·
+              lease expires {new Date(session.expires_at).toLocaleString()} ·
+              hard deadline {new Date(session.deadline).toLocaleString()}
+              {session.terminated_at &&
+                ` · teardown confirmed ${new Date(session.terminated_at).toLocaleString()}`}
+            </p>
           )}
-        </div>
-        {session && (
-          <p className={styles.caption}>
-            Session {session.id.slice(0, 8)} · {session.status ?? "open"} ·
-            lease expires {new Date(session.expires_at).toLocaleString()} · hard
-            deadline {new Date(session.deadline).toLocaleString()}
-            {session.terminated_at &&
-              ` · teardown confirmed ${new Date(session.terminated_at).toLocaleString()}`}
-          </p>
-        )}
+        </details>
       </section>
       <section className={styles.surface}>
         <div className={styles.inline}>
@@ -488,7 +504,9 @@ export function ExecutionWorkbench({
         <div className={styles.actions}>
           <button
             className="button button-primary"
-            disabled={!open || busy || !code.trim()}
+            disabled={
+              !capability.data?.available || busy || restoring || !code.trim()
+            }
             onClick={run}
           >
             <Play size={15} />

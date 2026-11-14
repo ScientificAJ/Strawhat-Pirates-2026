@@ -53,7 +53,7 @@ test("portable research backup preserves revisions and references, excludes cred
 }, testInfo) => {
   await page.goto("/app/settings");
   await expect(
-    page.getByRole("heading", { name: "Workspace settings", exact: true }),
+    page.getByRole("heading", { name: "Preferences & backups", exact: true }),
   ).toBeVisible();
   await page
     .getByRole("combobox", { name: "Appearance", exact: true })
@@ -105,7 +105,7 @@ test("portable research backup preserves revisions and references, excludes cred
   );
   const event = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Back up workspace", exact: true })
+    .getByRole("button", { name: "Download research backup", exact: true })
     .first()
     .click();
   const file = testInfo.outputPath("research-backup.json");
@@ -129,7 +129,7 @@ test("portable research backup preserves revisions and references, excludes cred
     id: "broken",
     revisions: [{ revision: 99 }],
   });
-  await page.getByLabel("Restore a workspace backup").setInputFiles({
+  await page.getByLabel("Restore a research backup").setInputFiles({
     name: "invalid.json",
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(invalid)),
@@ -144,7 +144,7 @@ test("portable research backup preserves revisions and references, excludes cred
   await page
     .getByRole("button", { name: "Cancel restore", exact: true })
     .click();
-  await page.getByLabel("Restore a workspace backup").setInputFiles(file);
+  await page.getByLabel("Restore a research backup").setInputFiles(file);
   await page
     .getByRole("button", { name: "Import independent copies", exact: true })
     .click();
@@ -184,90 +184,32 @@ test("portable research backup preserves revisions and references, excludes cred
   );
 });
 
-test("separate local workspaces preserve an already open tab and keyboard navigation", async ({
+test("navigation preferences and clearing research preserve a deliberate confirmation", async ({
   page,
 }) => {
-  await page.goto("/app/cases/new");
-  await page.getByLabel("Case title").fill("Primary browser research");
-  await page
-    .getByRole("button", { name: "Save revision", exact: true })
-    .click();
-  await expect(
-    page.getByRole("button", { name: "Revision 1 saved", exact: true }),
-  ).toBeVisible();
-  await expect(page).toHaveURL(/\/app\/cases\/[a-f0-9-]{36}$/);
-  const original = page.url();
-  const other = await page.context().newPage();
-  await other.goto(original);
-  await page
-    .getByRole("button", { name: "New workspace", exact: true })
-    .click();
-  await page
-    .getByLabel("Workspace name", { exact: true })
-    .fill("Separate laboratory");
-  page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Create", exact: true }).click();
-  await expect(
-    page.getByLabel("Local workspace", { exact: true }),
-  ).not.toHaveValue("primary");
-  await page.goto("/app/cases");
-  await expect(
-    page.getByRole("link", { name: /Primary browser research/ }),
-  ).toHaveCount(0);
-  await other
-    .getByLabel("Notes and unresolved questions")
-    .fill("Saved from the original tab after switching another tab.");
-  await other
-    .getByRole("button", { name: "Save revision", exact: true })
-    .click();
-  await expect(
-    other.getByRole("button", { name: "Revision 2 saved", exact: true }),
-  ).toBeVisible();
-  await other.close();
-  page.once("dialog", (dialog) => dialog.accept());
-  await page
-    .getByLabel("Local workspace", { exact: true })
-    .selectOption("primary");
-  await page.goto(original);
-  await expect(page.getByLabel("Notes and unresolved questions")).toHaveValue(
-    "Saved from the original tab after switching another tab.",
-  );
-  await page.keyboard.press("Control+k");
-  await expect(
-    page.getByRole("dialog", { name: "Command palette", exact: true }),
-  ).toBeVisible();
-  await page.getByLabel("Find a destination", { exact: true }).fill("Settings");
-  await page
-    .getByRole("dialog", { name: "Command palette", exact: true })
-    .getByRole("button", { name: "Settings", exact: true })
-    .click();
-  await expect(
-    page.getByRole("heading", { name: "Workspace settings", exact: true }),
-  ).toBeVisible();
-  await page.emulateMedia({ colorScheme: "dark" });
-  await page
-    .getByRole("combobox", { name: "Appearance", exact: true })
-    .selectOption("system");
+  await page.goto("/app/settings");
   await page
     .getByLabel("Enable Cmd / Ctrl K for commands", { exact: true })
     .uncheck();
   await page
     .getByRole("button", { name: "Save preferences", exact: true })
     .click();
-  await expect(page.locator(".app-shell")).toHaveAttribute(
-    "data-theme",
-    "dark",
-  );
-  await expect(page.locator(".header-search kbd")).toHaveText("Commands");
+  await expect(
+    page.getByRole("status").filter({ hasText: "Preferences saved" }),
+  ).toBeVisible();
+  await page.reload();
+  await page
+    .getByRole("heading", { name: "Preferences & backups", exact: true })
+    .waitFor();
   await page.keyboard.press("Control+k");
   await expect(
-    page.getByRole("dialog", { name: "Command palette", exact: true }),
+    page.getByRole("dialog", { name: "Find a page or tool", exact: true }),
   ).toBeHidden();
   await page
-    .getByRole("button", { name: "Open command palette", exact: true })
+    .getByRole("button", { name: "Find a page or tool", exact: true })
     .click();
   await expect(
-    page.getByRole("dialog", { name: "Command palette", exact: true }),
+    page.getByRole("dialog", { name: "Find a page or tool", exact: true }),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await page.evaluate(() =>
@@ -277,19 +219,14 @@ test("separate local workspaces preserve an already open tab and keyboard naviga
     ),
   );
   await page
-    .getByRole("button", { name: "Clear this workspace", exact: true })
+    .getByRole("button", { name: "Clear saved research", exact: true })
     .click();
+  await expect(
+    page.getByRole("region", { name: "Delete saved research confirmation" }),
+  ).toBeVisible();
+  await page.getByLabel(/Also remove temporary tasks/).uncheck();
   await page
-    .getByLabel(
-      "Remove all Nova Ember local workspaces in this browser profile",
-      { exact: true },
-    )
-    .check();
-  await page
-    .getByLabel(/Also remove this workspace’s remembered server jobs/)
-    .uncheck();
-  await page
-    .getByRole("button", { name: "Clear all local workspaces", exact: true })
+    .getByRole("button", { name: "Delete saved research", exact: true })
     .click();
   await expect(page).toHaveURL(/\/app$/);
   expect(
@@ -297,13 +234,10 @@ test("separate local workspaces preserve an already open tab and keyboard naviga
       sessionStorage.getItem("nova-discovery-view:primary:fixture"),
     ),
   ).toBeNull();
-  await expect(
-    page.getByLabel("Local workspace", { exact: true }).locator("option"),
-  ).toHaveCount(1);
   await page.goto("/app/cases");
   await expect(
     page.getByRole("heading", {
-      name: "Begin with a question worth keeping",
+      name: "A place to pick up where you left off",
       exact: true,
     }),
   ).toBeVisible();

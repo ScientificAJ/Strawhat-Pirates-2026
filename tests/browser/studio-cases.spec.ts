@@ -106,12 +106,12 @@ test("Structured cases freeze exact artifacts, preserve personal corrections, an
   const state = await offlineCases(page);
   await page.goto("/app/cases/new");
   await page
-    .getByLabel("Case title", { exact: true })
+    .getByLabel("Notes title", { exact: true })
     .fill("Frozen pressure research");
   await seedArtifact(page);
   await page.reload();
   await page
-    .getByLabel("Case title", { exact: true })
+    .getByLabel("Notes title", { exact: true })
     .fill("Frozen pressure research");
   await page
     .getByLabel("Research question", { exact: true })
@@ -119,6 +119,11 @@ test("Structured cases freeze exact artifacts, preserve personal corrections, an
   await page
     .getByLabel("Notes and unresolved questions", { exact: true })
     .fill("PRIVATE NOTE OMIT FROM PUBLIC REPORT");
+  await page
+    .getByText("Prepare a research report or assess applicability", {
+      exact: true,
+    })
+    .click();
   const report = page.getByRole("region", {
     name: "Structured research case",
     exact: true,
@@ -140,7 +145,7 @@ test("Structured cases freeze exact artifacts, preserve personal corrections, an
       "Exact decimal subtraction: 101.325 - 98.750 kPa. Keep original values.",
     );
   await report
-    .getByRole("combobox", { name: /Workspace document/ })
+    .getByRole("combobox", { name: /Saved research item/ })
     .selectOption("known-analysis");
   await report
     .getByRole("button", { name: "Attach revision", exact: true })
@@ -184,6 +189,12 @@ test("Structured cases freeze exact artifacts, preserve personal corrections, an
     .getByRole("button", { name: "Save revision", exact: true })
     .click();
   await expect(page).toHaveURL(/\/app\/cases\/[a-f0-9-]+$/);
+  if (!(await report.isVisible()))
+    await page
+      .getByText("Prepare a research report or assess applicability", {
+        exact: true,
+      })
+      .click();
   await expect(
     report.locator("article > strong").filter({ hasText: /^Case revision 1$/ }),
   ).toBeVisible();
@@ -283,11 +294,16 @@ test("Structured frozen case survives portable backup into a fresh browser witho
   await offlineCases(page);
   await page.goto("/app/cases/new");
   await page
-    .getByLabel("Case title", { exact: true })
+    .getByLabel("Notes title", { exact: true })
     .fill("Portable scientific case");
   await page
     .getByLabel("Research question", { exact: true })
     .fill("Which source conditions remain unresolved?");
+  await page
+    .getByText("Prepare a research report or assess applicability", {
+      exact: true,
+    })
+    .click();
   const region = page.getByRole("region", {
     name: "Structured research case",
     exact: true,
@@ -320,9 +336,10 @@ test("Structured frozen case survives portable backup into a fresh browser witho
         };
       }),
   );
+  await page.goto("/app/settings");
   const event = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Back up workspace", exact: true })
+    .getByRole("button", { name: "Download research backup", exact: true })
     .first()
     .click();
   const path = testInfo.outputPath("portable-case-workspace.json");
@@ -331,9 +348,9 @@ test("Structured frozen case survives portable backup into a fresh browser witho
   const restored = await context.newPage();
   try {
     await offlineCases(restored);
-    await restored.goto("/app/cases");
+    await restored.goto("/app/settings");
     await restored
-      .getByRole("button", { name: "Restore backup", exact: true })
+      .getByRole("button", { name: "Restore research backup", exact: true })
       .first()
       .click();
     await restored.locator('input[type="file"]').first().setInputFiles(path);
@@ -343,9 +360,23 @@ test("Structured frozen case survives portable backup into a fresh browser witho
     await restored
       .getByRole("button", { name: /Import independent copies/ })
       .click();
+    await expect(
+      restored
+        .getByRole("status")
+        .filter({ hasText: /Restored .* research items/ }),
+    ).toBeVisible();
+    await restored
+      .getByRole("banner")
+      .getByRole("link", { name: "Your research", exact: true })
+      .click();
     await restored
       .getByRole("link", { name: /Portable scientific case/ })
       .first()
+      .click();
+    await restored
+      .getByText("Prepare a research report or assess applicability", {
+        exact: true,
+      })
       .click();
     const research = restored.getByRole("region", {
       name: "Structured research case",

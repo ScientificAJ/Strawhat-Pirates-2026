@@ -99,3 +99,22 @@
   padding: 8px;
   font: inherit;
 }
+
+.nextSteps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 8px 0;
+}
+.nextSteps a,
+.compare {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  font-size: 0.8125rem;
+}
+.compare {
+  margin-top: 16px;
+  font-weight: 600;
+}

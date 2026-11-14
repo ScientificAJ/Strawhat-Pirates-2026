@@ -2,28 +2,10 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  BookOpen,
-  Check,
-  ChevronRight,
-  CircleHelp,
-  ExternalLink,
-  FileText,
-  Layers,
-  Plus,
-  Search,
-  X,
-} from "lucide-react";
+import { ArrowRight, Check, CircleHelp, ExternalLink, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { type Catalog, downloadJson, family, useResource } from "../lib/api";
-import {
-  listCases,
-  type ResearchCase,
-  saveCase,
-  workspaceBackup,
-} from "../lib/workspace-storage";
+import { type Catalog, downloadJson, useResource } from "../lib/api";
+import { listCases, type ResearchCase } from "../lib/workspace-storage";
 import {
   completeWorkspaceBackup,
   defaultPreferences,
@@ -37,11 +19,11 @@ import {
   ResearchContextProvider,
   useResearchContext,
 } from "../lib/research-context";
-import { saveDocument } from "../lib/workspace-documents";
-import { CaseNotebook, newCase } from "./case-notebook";
-import { InvestigationTable } from "./catalog";
+import { readDocument, saveDocument } from "../lib/workspace-documents";
+import { CaseNotebook } from "./case-notebook";
+import { bringEarlierResearchTogether } from "../lib/research-continuity";
+import { ResearchHome } from "./research-home";
 import { ErrorState, LoadingRows, Notice, Shell } from "./chrome";
-import { FlexAnalysis } from "./laboratory";
 import { WorkspaceSettings } from "./workspace-settings";
 import { JobsBoard } from "./jobs-board";
 
@@ -104,10 +86,37 @@ type WorkspaceProps = {
 };
 export function ResearchWorkspace(props: WorkspaceProps) {
   const current = useResource<{ snapshot_id: string }>("/v1/snapshots/current");
+  const [storageReady, setStorageReady] = useState(false);
+  const [continuityError, setContinuityError] = useState("");
+  useEffect(() => {
+    let active = true;
+    void bringEarlierResearchTogether()
+      .catch(() => {
+        if (active)
+          setContinuityError(
+            "Some earlier saved research could not be brought into Your research. Its original data is preserved. Keep a backup before changing browser data.",
+          );
+      })
+      .finally(() => {
+        if (active) setStorageReady(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  if (!storageReady)
+    return (
+      <div className="app-shell research-shell">
+        <div className="site-content">
+          <LoadingRows label="Opening your research" />
+        </div>
+      </div>
+    );
   return (
     <ResearchContextProvider
       snapshotId={props.requestedSnapshot ?? current.data?.snapshot_id ?? null}
     >
+      {continuityError && <Notice kind="error">{continuityError}</Notice>}
       <WorkspaceContent
         {...props}
         latestSnapshot={current.data?.snapshot_id}
@@ -133,7 +142,6 @@ function WorkspaceContent({
   snapshotError: string | null;
   retrySnapshot: () => void;
 }) {
-  const router = useRouter();
   const { context, updateContext, storageError } = useResearchContext();
   const snapshot =
     requestedSnapshot ?? context?.snapshot_id ?? latestSnapshot ?? null;
@@ -219,47 +227,33 @@ function WorkspaceContent({
   }
   async function saveInvestigation(id: string) {
     const item = catalog.data?.items.find((item) => item.accession === id);
-    const draft = newCase(
-      snapshot,
-      [id],
-      `${item?.acronym || id} — evidence notes`,
-    );
-    const time = new Date().toISOString();
-    const value: ResearchCase = {
-      ...draft,
-      revision: 1,
-      updated_at: time,
-      revisions: [
-        {
-          revision: 1,
-          saved_at: time,
-          question: "",
-          notes: "",
-          investigation_ids: [id],
-          snapshot_id: snapshot,
-        },
-      ],
-    };
     try {
-      await saveCase(value);
-      await refreshCases();
-      router.push(`/app/cases/${value.id}`);
+      const key = `investigation-${snapshot}-${id}`;
+      const existing = await readDocument(key);
+      if (!existing)
+        await saveDocument({
+          id: key,
+          kind: "bookmark",
+          title: item?.acronym || item?.title || id,
+          snapshot_id: snapshot,
+          data: { accession: id },
+        });
+      setMessage({
+        text: "Investigation saved. Find it in Your research whenever you need it.",
+        error: false,
+      });
     } catch (reason) {
-      downloadJson("nova-ember-unsaved-case.json", workspaceBackup([value]));
       setMessage({ text: String(reason), error: true });
     }
   }
   async function backup() {
     try {
-      downloadJson(
-        "nova-ember-workspace.json",
-        await completeWorkspaceBackup(),
-      );
+      downloadJson("nova-ember-research.json", await completeWorkspaceBackup());
       const next = { ...preferences, last_backup_at: new Date().toISOString() };
       await writePreferences(next);
       setPreferences(next);
       setMessage({
-        text: "Workspace backup downloaded with cases, research documents, revisions and preferences. Credentials and live server access are excluded.",
+        text: "Research backup downloaded with your notes, conversations, analyses and preferences. Temporary uploads and live task access are not included.",
         error: false,
       });
     } catch (reason) {
@@ -284,10 +278,9 @@ function WorkspaceContent({
       setPreview(null);
       await refreshCases();
       setMessage({
-        text: `Restored ${count} research items as independent copies. Existing work is preserved. Copied selections can be resumed in Settings; expired remote inputs may need to be selected again.`,
+        text: `Restored ${count} research items as independent copies. Existing work is preserved. Saved research is available in Your research. Expired uploads may need to be added again.`,
         error: false,
       });
-      router.push("/app/cases");
     } catch (reason) {
       setMessage({ text: String(reason), error: true });
     }
@@ -318,7 +311,7 @@ function WorkspaceContent({
         accept="application/json,.json"
         ref={importInput}
         tabIndex={-1}
-        aria-label="Restore a workspace backup"
+        aria-label="Restore a research backup"
         onChange={restore}
       />
       {message && (
@@ -348,17 +341,16 @@ function WorkspaceContent({
         <section
           className="inline-confirmation"
           role="region"
-          aria-label="Review workspace restore"
+          aria-label="Review research restore"
         >
-          <h2>Review workspace restore</h2>
+          <h2>Review research restore</h2>
           <p>
-            {preview.cases} cases and {preview.documents} research documents ·
+            {preview.cases} notebooks and {preview.documents} research items ·
             version {preview.version} · exported {preview.exported_at}
           </p>
           <p>
-            Import creates independent copies with frozen source references. It
-            cannot transfer temporary browser receipts or recover expired
-            uploads. Existing drafts stay in place.
+            Your existing research stays in place. Imported work keeps its
+            source references; temporary uploads may need to be added again.
           </p>
           {preview.version === 2 && (
             <label className="check-label">
@@ -390,16 +382,15 @@ function WorkspaceContent({
       ) : snapshotError && !ready ? (
         <ErrorState message={snapshotError} retry={retrySnapshot} />
       ) : !ready ? (
-        <LoadingRows label="Opening the source snapshot" />
+        <LoadingRows label="Loading NASA research" />
       ) : section === "overview" ? (
-        <Overview
+        <ResearchHome
           snapshotId={snapshot}
           catalog={catalog.data}
           loading={catalog.loading}
           error={catalog.error}
           retry={catalog.reload}
           cases={cases}
-          onSave={saveInvestigation}
         />
       ) : section === "investigations" && entityId ? (
         <InvestigationDossier
@@ -457,7 +448,7 @@ function WorkspaceContent({
       ) : (
         <ResearchGuide />
       )}
-      {context && section !== "agent" && (
+      {context && section !== "agent" && section !== "overview" && (
         <ContextualAssistant
           context={context}
           sessionId={assistantSession}
@@ -470,286 +461,95 @@ function WorkspaceContent({
   );
 }
 
-function Overview({
-  snapshotId,
-  catalog,
-  loading,
-  error,
-  retry,
-  cases,
-  onSave,
-}: {
-  snapshotId: string;
-  catalog: Catalog | null;
-  loading: boolean;
-  error: string | null;
-  retry: () => void;
-  cases: ResearchCase[];
-  onSave: (id: string) => void;
-}) {
-  const [question, setQuestion] = useState("");
-  const [draftError, setDraftError] = useState<string | null>(null);
-  const [drafting, setDrafting] = useState(false);
-  const draftingRef = useRef(false);
-  const router = useRouter();
-  const groups = [
-    "Solid fuels and spread",
-    "Droplets and cool flames",
-    "Smoke and detection",
-    "Gas flames and transport",
-  ];
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <h1>Research overview</h1>
-          <p>Combustion research, made clear.</p>
-        </div>
-        <Link className="button button-primary" href="/app/cases/new">
-          <Plus size={17} />
-          New research case
-        </Link>
-      </div>
-      <form
-        className="question-composer"
-        aria-busy={drafting}
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!catalog || !question.trim() || draftingRef.current) return;
-          draftingRef.current = true;
-          setDrafting(true);
-          setDraftError(null);
-          void saveDocument({
-            kind: "studio_intent",
-            title: question.slice(0, 100),
-            snapshot_id: catalog.snapshot_id,
-            data: {
-              question,
-              snapshot_id: catalog.snapshot_id,
-              investigations: [],
-            },
-          })
-            .then((intent) => router.push(`/app/agent?intent=${intent.id}`))
-            .catch((reason) => {
-              draftingRef.current = false;
-              setDrafting(false);
-              setDraftError(String(reason));
-            });
-        }}
-      >
-        <label htmlFor="research-question">
-          What would you like to understand?
-        </label>
-        <div className="question-input">
-          <Search size={21} />
-          <input
-            id="research-question"
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            placeholder="Ask a combustion research question; review context before sending"
-          />
-          <button
-            className="button button-primary"
-            type="submit"
-            disabled={!catalog || !question.trim() || drafting}
-          >
-            {drafting ? "Opening draft…" : "Draft in Studio"}
-            <ArrowRight size={16} />
-          </button>
-        </div>
-        <div className="question-examples">
-          <span>Start with</span>
-          <Link href="/app/investigations?q=flame%20spread">Flame spread</Link>
-          <Link href="/app/investigations?q=droplet">Droplet combustion</Link>
-          <Link href="/app/investigations?q=smoke">Smoke measurements</Link>
-        </div>
-      </form>
-      <span className="visually-hidden" role="status">
-        {drafting ? "Saving your question and opening a Studio draft." : ""}
-      </span>
-      {draftError && <Notice kind="error">{draftError}</Notice>}
-      <div className="corpus-strip" aria-live="polite">
-        <span>
-          <Layers size={16} />
-          <strong>{catalog ? catalog.total : "—"}</strong> investigations in
-          this snapshot
-        </span>
-        <span>
-          <FileText size={16} />
-          NASA PSI source records
-        </span>
-        <Link href="/app/lab/evidence">
-          Inspect evidence limitations
-          <ArrowRight size={14} />
-        </Link>
-      </div>
-      {error && <ErrorState message={error} retry={retry} />}
-      <div className="overview-layout">
-        <div>
-          <FlexAnalysis compact onSave={onSave} snapshotId={snapshotId} />
-        </div>
-        <aside className="continuation-panel">
-          <h2>
-            {cases.length
-              ? "Continue your research"
-              : "A question becomes a case"}
-          </h2>
-          {cases[0] ? (
-            <>
-              <span className="case-label">
-                <BookOpen size={16} />
-                Saved on this device
-              </span>
-              <h3>{cases[0].title}</h3>
-              <p>
-                {cases[0].question ||
-                  "Return to your notes and the evidence you saved."}
-              </p>
-              <Link className="button" href={`/app/cases/${cases[0].id}`}>
-                Resume case
-                <ArrowRight size={16} />
-              </Link>
-            </>
-          ) : (
-            <>
-              <p>
-                Keep sources, calculations, and unresolved questions together in
-                a personal research notebook.
-              </p>
-              <ol className="research-steps">
-                <li>
-                  <span>Find</span> a relevant investigation
-                </li>
-                <li>
-                  <span>Inspect</span> the original evidence
-                </li>
-                <li>
-                  <span>Save</span> your reasoning and sources
-                </li>
-              </ol>
-              <Link className="button" href="/app/cases/new">
-                Start a research case
-                <ArrowRight size={16} />
-              </Link>
-            </>
-          )}
-          <div className="continuation-note">
-            Your work stays in this browser. Export a backup to take it with
-            you.
-          </div>
-        </aside>
-      </div>
-      <section className="coverage-section">
-        <div className="section-heading">
-          <div>
-            <h2>Explore the evidence</h2>
-            <p>A source catalog across four research families</p>
-          </div>
-          <Link className="text-button" href="/app/investigations">
-            All investigations
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-        {loading && !catalog ? (
-          <LoadingRows />
-        ) : (
-          <div className="coverage-list">
-            {groups.map((group, index) => (
-              <Link
-                className="coverage-item"
-                href={`/app/investigations?q=${encodeURIComponent(group)}`}
-                key={group}
-              >
-                <span className={`coverage-swatch coverage-series-${index}`} />
-                <span>{group}</span>
-                <strong className="mono">
-                  {catalog
-                    ? catalog.items.filter(
-                        (item) => family(item.accession) === group,
-                      ).length
-                    : "—"}
-                </strong>
-                <ChevronRight size={17} />
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-      {catalog && (
-        <section className="data-surface">
-          <div className="surface-heading">
-            <span>Investigation records</span>
-            <Link href="/app/investigations" className="text-button">
-              Open explorer
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-          <InvestigationTable
-            snapshotId={snapshotId}
-            compact
-            items={catalog.items.filter((item) =>
-              ["PSI-25", "PSI-69", "PSI-101"].includes(item.accession),
-            )}
-          />
-        </section>
-      )}
-    </>
-  );
-}
-
 function ResearchGuide() {
   return (
     <>
       <div className="page-heading">
         <div>
-          <h1>Follow the evidence</h1>
-          <p>A short guide to your local research workspace.</p>
+          <h1>Make the research your starting point</h1>
+          <p>
+            A question, the evidence behind it, and somewhere useful to go next.
+          </p>
         </div>
       </div>
       <article className="reading-surface guide">
-        <h2>Start with an investigation</h2>
+        <h2>Start with a question</h2>
         <p>
-          Search the NASA combustion catalog, open a record, and inspect its
-          objective, source version, and retained files. Catalog availability
-          and scientific readiness are different states.
+          Ask the research assistant about combustion or fire safety. It can
+          find relevant NASA sources, explain experiments, compare evidence and
+          help with calculations. Open the numbered sources in an answer to
+          inspect its basis.
         </p>
-        <h2>Inspect the original value</h2>
+        <Link className="text-button" href="/app/agent">
+          Ask a question <ArrowRight size={16} />
+        </Link>
+        <h2>Discover what NASA studied</h2>
         <p>
-          The source-table view keeps the original header, cell text, record
-          location, encoding, and file hash. An unresolved unit stays unresolved
-          rather than acquiring a plausible replacement.
+          An investigation is a study built around a research question. Browse
+          by topic or search for a material, experiment or phenomenon. Each
+          investigation introduces its purpose, experimental approach and
+          available sources. A research objective describes what a study set out
+          to learn; it is not a measured result.
         </p>
-        <h2>Reproduce a calculation</h2>
+        <Link className="text-button" href="/app/investigations">
+          Explore investigations <ArrowRight size={16} />
+        </Link>
+        <h2>Compare the evidence</h2>
         <p>
-          The FLEX analysis counts three distinct source test-end labels. The
-          atmosphere calculator uses oxygen mole fraction and absolute pressure.
-          Each calculation retains its inputs and states its interpretation
-          limits.
+          Select investigations to see their objectives and experimental setups
+          side by side. For numerical comparisons, check the materials,
+          atmosphere, flow, gravity and measurement methods. Different test
+          conditions can make results unsuitable for combining.
         </p>
-        <h2>Keep your reasoning</h2>
+        <Link className="text-button" href="/app/compare">
+          Compare investigations <ArrowRight size={16} />
+        </Link>
+        <h2>Work with data</h2>
         <p>
-          Save an investigation to a research case. Record the question, notes,
-          and unresolved issues, then save a revision. Back up the workspace
-          before clearing this browser’s data or moving to another device.
+          Open an investigation’s data table, choose variables and preview a
+          selection. Create a chart or export data with source references.
+          Calculations retain their inputs and units. A fit describes the
+          selected measurements; prediction for other conditions requires
+          independent validation.
         </p>
-        <h2>Understand the current scope</h2>
+        <Link className="text-button" href="/app/lab">
+          Open data & models <ArrowRight size={16} />
+        </Link>
+        <h2>Return to your research</h2>
         <p>
-          The laboratory uses registered scientific methods and preserves their
-          source and calibration requirements. Studio and voice use the
-          configured OpenAI service only after an explicit request. Saved work
-          remains in this browser; use Settings for portable backups and
-          temporary-data controls. Prediction remains unavailable wherever
-          independent validation or the required conditions are missing. Public
-          hosting depends on the selected host and offer eligibility.
+          Conversations and recent activity are saved as you work. Bookmark an
+          investigation or save an analysis to keep it close. Your research
+          brings these together; notebooks are available when you want to write
+          your own synthesis.
+        </p>
+        <Link className="text-button" href="/app/cases">
+          Your research <ArrowRight size={16} />
+        </Link>
+        <h2>Keep a copy</h2>
+        <p>
+          Saved research is held in this browser. Download a backup in Settings
+          before clearing browser data or moving devices. A backup includes
+          notes, conversations, analyses and references, but cannot recover
+          expired uploads or transfer live task access.
+        </p>
+        <Link className="text-button" href="/app/settings">
+          Settings & backup <ArrowRight size={16} />
+        </Link>
+        <h2>What the evidence can establish</h2>
+        <p>
+          Nova Ember connects NASA research with its original sources. Important
+          uncertainties appear with the affected value or result; source and
+          method details remain available for inspection. Research evidence can
+          inform safety decisions, but does not by itself certify equipment,
+          operating limits or a transfer from microgravity to Earth.
         </p>
         <a
-          href="https://psi.nasa.gov/physci/repo"
+          href="https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/"
           className="text-button"
           target="_blank"
           rel="noreferrer"
         >
-          Visit NASA’s source repository
-          <ExternalLink size={16} />
+          NASA’s introduction to combustion research <ExternalLink size={16} />
         </a>
       </article>
     </>

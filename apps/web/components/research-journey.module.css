@@ -1,0 +1,226 @@
+.intro {
+  max-width: 72ch;
+  color: var(--secondary);
+  line-height: 1.65;
+}
+
+.topics,
+.nextSteps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.explorer {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.explorer[data-filters="true"] {
+  grid-template-columns: 264px minmax(0, 1fr);
+}
+
+.filters {
+  display: none;
+}
+
+.filters[data-open="true"] {
+  display: grid;
+  position: static;
+  width: auto;
+  max-height: none;
+}
+
+.filterButton {
+  display: inline-flex;
+}
+
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.investigation {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  min-width: 0;
+  border: 1px solid var(--divider);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.investigation h2,
+.investigation p {
+  margin: 0;
+}
+
+.investigation h2 {
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.investigation > img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.investigation .fullTitle {
+  color: var(--secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.investigation .purpose {
+  line-height: 1.65;
+  flex: 1;
+}
+
+.investigation .cardActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--divider);
+}
+
+.selectionTray {
+  position: sticky;
+  top: 80px;
+  z-index: 3;
+  background: var(--surface);
+}
+
+.sourceDetails {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.sourceDetails summary {
+  cursor: pointer;
+  min-height: 36px;
+  padding-block: 8px;
+}
+
+.sourceDetails code {
+  display: block;
+  overflow-wrap: anywhere;
+  padding-block: 8px;
+}
+
+.researchSummary {
+  display: grid;
+  gap: 20px;
+}
+
+.researchSummary h2 {
+  font-size: 1.125rem;
+}
+
+.researchSummary p {
+  max-width: 72ch;
+  line-height: 1.7;
+}
+
+.comparisonPicker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.comparisonChoice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid var(--divider);
+  border-radius: 10px;
+  padding: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.comparisonChoice:has(input:checked) {
+  border-color: var(--action);
+  background: var(--subtle);
+}
+
+.comparisonChoice input {
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--action);
+}
+
+.comparisonChoice strong,
+.comparisonChoice small {
+  display: block;
+}
+
+.comparisonChoice small {
+  color: var(--secondary);
+  margin-top: 4px;
+}
+
+.comparisonTable {
+  min-width: 620px;
+}
+
+.comparisonTable td {
+  vertical-align: top;
+  min-width: 220px;
+  max-width: 420px;
+  line-height: 1.65;
+}
+
+.comparisonTable th:first-child {
+  min-width: 140px;
+}
+
+.advanced {
+  border-top: 1px solid var(--divider);
+  padding-top: 18px;
+}
+
+.advanced > summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: 44px;
+}
+
+.advanced[open] > summary {
+  margin-bottom: 18px;
+}
+
+.advancedBody {
+  display: grid;
+  gap: 22px;
+}
+
+@media (max-width: 1000px) {
+  .explorer[data-filters="true"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .filters[data-open="true"] {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .catalog,
+  .comparisonPicker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .investigation {
+    padding: 20px;
+  }
+}

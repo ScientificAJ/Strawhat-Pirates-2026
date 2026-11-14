@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useResearchContext } from "../lib/research-context";
+import { request } from "../lib/api";
 import { useRouter } from "next/navigation";
 import { sourceImage } from "../lib/studio-session";
 import {
@@ -55,14 +57,21 @@ export function MediaWorkbench({
   sourceChart?: ValidatedChart | null;
 }) {
   const router = useRouter();
-  const catalog = useResource<Catalog>("/v1/investigations?limit=100");
-  const [accession, setAccession] = useState("PSI-69");
+  const catalog = useResource<Catalog>(
+    `/v1/investigations?limit=100&snapshot_id=${snapshotId}`,
+  );
+  const { context } = useResearchContext();
+  const [accession, setAccession] = useState(
+    context?.investigations?.[0] ?? "",
+  );
   const dossier = useResource<Dossier>(
-    `/v1/investigations/${accession}?snapshot_id=${snapshotId}`,
+    accession
+      ? `/v1/investigations/${accession}?snapshot_id=${snapshotId}`
+      : null,
   );
   const [assetId, setAssetId] = useState("");
   const assets =
-    dossier.data?.assets.filter(
+    dossier.data?.assets?.filter(
       (item) =>
         item.media_type.startsWith("image/") ||
         item.media_type.startsWith("video/"),
@@ -160,6 +169,17 @@ export function MediaWorkbench({
       });
   }, [asset?.sha256, imageRoot, imageSchema, traceRoot, snapshotId]);
   useEffect(() => {
+    if (entityId && /^[a-f0-9]{64}$/.test(entityId)) {
+      void request<{ asset: Asset }>(
+        `/v1/assets/${entityId}/media?snapshot_id=${snapshotId}`,
+      )
+        .then((value) => {
+          setAccession(value.asset.accession);
+          setAssetId(entityId);
+        })
+        .catch((reason) => setError(message(reason)));
+      return;
+    }
     if (entityId)
       void readDocument<Record<string, unknown>>(entityId)
         .then((doc) => {
@@ -168,6 +188,8 @@ export function MediaWorkbench({
             setRevision(doc.revision);
             if (typeof doc.data.accession === "string")
               setAccession(doc.data.accession);
+            if (typeof doc.data.source_sha256 === "string")
+              setAssetId(doc.data.source_sha256);
             if (typeof doc.data.note === "string") setNote(doc.data.note);
             if (typeof doc.data.author === "string") setAuthor(doc.data.author);
             if (doc.data.region && typeof doc.data.region === "object")
@@ -430,10 +452,12 @@ export function MediaWorkbench({
               own evidence.
             </p>
           </div>
-          <button className="button" onClick={save}>
-            <Save size={15} />
-            Save annotation revision
-          </button>
+          {asset && (
+            <button className="button" onClick={save}>
+              <Save size={15} />
+              Save annotations
+            </button>
+          )}
         </div>
         {error && (
           <p className={styles.error} role="alert">
@@ -452,9 +476,10 @@ export function MediaWorkbench({
               value={accession}
               onChange={(event) => setAccession(event.target.value)}
             >
+              <option value="">Choose an investigation…</option>
               {catalog.data?.items.map((item) => (
                 <option value={item.accession} key={item.accession}>
-                  {item.acronym || item.accession}
+                  {item.acronym || item.accession} — {item.title}
                 </option>
               ))}
             </select>
@@ -463,12 +488,20 @@ export function MediaWorkbench({
             Original media
             <select
               value={asset?.sha256 ?? ""}
+              disabled={!assets.length}
               onChange={(event) => {
                 setAssetId(event.target.value);
                 setRegion(null);
                 setShowFrame(false);
               }}
             >
+              {!assets.length && (
+                <option value="">
+                  {accession
+                    ? "No retained media"
+                    : "Choose an investigation first"}
+                </option>
+              )}
               {assets.map((item) => (
                 <option key={item.id} value={item.sha256}>
                   {item.file_name}
@@ -479,10 +512,13 @@ export function MediaWorkbench({
         </div>
         {!asset ? (
           <div className={styles.empty}>
-            <h3>No retained media is available in this selection</h3>
+            <h3>
+              Choose an investigation to inspect its images and recordings
+            </h3>
             <p>
-              Select another investigation or acquire a permitted original in
-              Inputs. Missing media is not a missing scientific phenomenon.
+              Start with an investigation relevant to your question. You can
+              view its retained NASA media and, where calibration supports it,
+              measure a flame or droplet.
             </p>
           </div>
         ) : (
@@ -704,7 +740,7 @@ export function MediaWorkbench({
               disabled={!region || (isVideo && !showFrame)}
               onClick={sendRegion}
             >
-              Attach selected region in Studio for consent review
+              Ask about this region
             </button>
             <label className={styles.check}>
               <input
@@ -721,11 +757,11 @@ export function MediaWorkbench({
             </p>
             <div className={styles.fields}>
               <label className={styles.field}>
-                Annotation author label
+                Annotation author (optional)
                 <input
                   value={author}
                   onChange={(event) => setAuthor(event.target.value)}
-                  placeholder="Your local label"
+                  placeholder="Name or initials"
                 />
               </label>
               <label className={styles.field}>
@@ -767,65 +803,69 @@ export function MediaWorkbench({
           </>
         )}
       </section>
-      <section className={styles.surface}>
-        <h2>Trace synchronization</h2>
-        <div className={styles.fields}>
-          <label className={styles.field}>
-            Alignment state
-            <select
-              value={syncState}
-              onChange={(event) => setSyncState(event.target.value)}
-            >
-              <option value="unaligned">Unaligned</option>
-              <option value="estimated">Estimated alignment</option>
-              <option value="aligned">Source-documented alignment</option>
-            </select>
-          </label>
-          <label className={styles.field}>
-            Sensor time minus media time (s)
-            <input
-              type="number"
-              step="any"
-              value={offset}
-              onChange={(event) => setOffset(event.target.value)}
+      {asset && (
+        <details className={styles.surface}>
+          <summary>
+            <strong>Align media with sensor measurements</strong>
+          </summary>
+          <div className={styles.fields}>
+            <label className={styles.field}>
+              Alignment state
+              <select
+                value={syncState}
+                onChange={(event) => setSyncState(event.target.value)}
+              >
+                <option value="unaligned">Unaligned</option>
+                <option value="estimated">Estimated alignment</option>
+                <option value="aligned">Source-documented alignment</option>
+              </select>
+            </label>
+            <label className={styles.field}>
+              Sensor time minus media time (s)
+              <input
+                type="number"
+                step="any"
+                value={offset}
+                onChange={(event) => setOffset(event.target.value)}
+              />
+            </label>
+            <label className={`${styles.field} ${styles.full}`}>
+              Clock / synchronization source
+              <input
+                value={syncReference}
+                onChange={(event) => setSyncReference(event.target.value)}
+              />
+            </label>
+          </div>
+          {syncState !== "unaligned" && (!syncReference || offset === "") && (
+            <p className={styles.warning}>
+              A declared offset and synchronization source are required before
+              interpreting a shared cursor.
+            </p>
+          )}
+          {sensorTime !== null && syncReference && (
+            <p className={styles.status}>
+              Media cursor {clock} s → sensor cursor {sensorTime} s ·{" "}
+              {syncState}. Original timestamp samples: {rawPoints.length}; no
+              interpolation was applied.
+            </p>
+          )}
+          {sourceChart && (
+            <ScientificChart
+              chart={sourceChart}
+              cursor={
+                sensorTime !== null &&
+                Boolean(syncReference) &&
+                "query" in sourceChart.spec &&
+                sourceChart.spec.x_unit === "s" &&
+                sourceChart.spec.x_scale === "linear"
+                  ? { value: sensorTime, label: "Documented sensor cursor (s)" }
+                  : undefined
+              }
             />
-          </label>
-          <label className={`${styles.field} ${styles.full}`}>
-            Clock / synchronization source
-            <input
-              value={syncReference}
-              onChange={(event) => setSyncReference(event.target.value)}
-            />
-          </label>
-        </div>
-        {syncState !== "unaligned" && (!syncReference || offset === "") && (
-          <p className={styles.warning}>
-            A declared offset and synchronization source are required before
-            interpreting a shared cursor.
-          </p>
-        )}
-        {sensorTime !== null && syncReference && (
-          <p className={styles.status}>
-            Media cursor {clock} s → sensor cursor {sensorTime} s · {syncState}.
-            Original timestamp samples: {rawPoints.length}; no interpolation was
-            applied.
-          </p>
-        )}
-        {sourceChart && (
-          <ScientificChart
-            chart={sourceChart}
-            cursor={
-              sensorTime !== null &&
-              Boolean(syncReference) &&
-              "query" in sourceChart.spec &&
-              sourceChart.spec.x_unit === "s" &&
-              sourceChart.spec.x_scale === "linear"
-                ? { value: sensorTime, label: "Documented sensor cursor (s)" }
-                : undefined
-            }
-          />
-        )}
-      </section>
+          )}
+        </details>
+      )}
       {asset && imageRoot && imageSchema && (
         <section className={styles.surface}>
           <h2>Registered image-region measurement</h2>

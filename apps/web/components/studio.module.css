@@ -759,3 +759,71 @@
   background: var(--subtle);
   border-radius: 6px;
 }
+
+.conversationOnly {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 960px;
+  margin-inline: auto;
+  min-height: 560px;
+}
+.conversationOnly .conversationPane {
+  border-right: 0;
+}
+.conversationOnly .welcome {
+  padding: 42px 32px;
+  max-width: 76ch;
+}
+.conversationOnly .conversation {
+  min-height: 280px;
+}
+.conversationOnly .turn {
+  max-width: 84ch;
+  margin-inline: auto;
+}
+.conversationDetails {
+  margin-block: 0 18px;
+  font-size: 0.8125rem;
+}
+.conversationDetails > summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+.conversationDetails .sessionBar {
+  padding-top: 12px;
+}
+.scopeHeader {
+  display: block;
+  padding-block: 6px;
+}
+.scopeHeader p {
+  margin-block: 8px;
+}
+.scopeHeader > span {
+  display: block;
+  padding-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+.preferences summary,
+.contextDetails > summary {
+  min-height: 36px;
+  display: list-item;
+}
+.compact .conversationOnly .welcome {
+  padding: 24px 0;
+}
+.compact .conversationOnly .conversation {
+  min-height: 160px;
+}
+@media (max-width: 600px) {
+  .conversationOnly .welcome {
+    padding: 24px 18px;
+  }
+  .conversationOnly {
+    min-height: 480px;
+  }
+  .conversationDetails > summary {
+    gap: 8px;
+  }
+}

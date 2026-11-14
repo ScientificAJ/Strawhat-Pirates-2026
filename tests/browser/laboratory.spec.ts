@@ -8,7 +8,7 @@ test("real source selection renders Vega and retains an incomplete linked dashbo
   page,
 }) => {
   await noModelCalls(page);
-  await page.goto("/app/lab/data");
+  await page.goto("/app/lab/data/PSI-99");
   await page
     .getByRole("combobox", { name: "Value representation", exact: true })
     .selectOption("canonical");
@@ -39,34 +39,27 @@ test("real source selection renders Vega and retains an incomplete linked dashbo
     .getByRole("button", { name: "Save analysis", exact: true })
     .click();
   await expect(
-    page.getByRole("status").filter({ hasText: "Saved to this browser" }),
+    page.getByRole("status").filter({ hasText: "Analysis saved" }),
   ).toBeVisible();
   await page.screenshot({
     path: "/tmp/nova-lab-source-chart-desktop.png",
     fullPage: true,
   });
+  await page.getByText("More tools", { exact: true }).click();
   await page
-    .getByRole("link", { name: "Compose a dashboard", exact: true })
+    .getByRole("link", { name: "Research figures", exact: true })
+    .first()
     .click();
   await page
     .getByLabel("Research question", { exact: true })
     .fill("Compare the retained Saffire geometry and missing calibration");
-  await page
-    .getByLabel("Authorized saved analysis / method")
-    .selectOption({ label: "Saffire geometry inspection" })
-    .catch(async () => {
-      const select = page.getByRole("combobox").filter({
-        has: page.locator("option", {
-          hasText: "Saffire geometry inspection",
-        }),
-      });
-      const value = await select
-        .locator("option")
-        .filter({ hasText: "Saffire geometry inspection" })
-        .last()
-        .getAttribute("value");
-      await select.selectOption(value!);
-    });
+  const savedSource = page.getByLabel("Authorized saved analysis / method");
+  const savedOption = savedSource
+    .locator("option")
+    .filter({ hasText: "Saffire geometry inspection" })
+    .last();
+  await expect(savedOption).toHaveCount(1);
+  await savedSource.selectOption((await savedOption.getAttribute("value"))!);
   await page
     .getByRole("button", { name: "Add selected component", exact: true })
     .click();
@@ -233,46 +226,54 @@ test("private chunks, real Python execution and local output recovery work witho
     await page
       .getByRole("button", { name: "Use in execution", exact: true })
       .click();
+    await page.getByText("More tools", { exact: true }).click();
     await page
-      .getByRole("link", { name: "Python and shell", exact: true })
+      .getByRole("link", { name: "Python & shell", exact: true })
       .click();
     await page
       .getByRole("checkbox", { name: /analytical-reference.csv/ })
       .check();
+    const code =
+      "import csv\nfrom pathlib import Path\nfile=next(Path('/inputs').glob('*.csv'))\nrows=list(csv.DictReader(file.open()))\nprint(sum(float(row['value']) for row in rows))\nPath('/outputs/summary.csv').write_text('sum\\n12\\n')\n";
+    await page.getByRole("textbox", { name: "Code", exact: true }).fill(code);
     const opened = page.waitForResponse(
       (response) =>
         response.url().endsWith("/v1/execution/sessions") &&
         response.request().method() === "POST",
     );
-    await page
-      .getByRole("button", { name: "Start selected session", exact: true })
-      .click();
-    sessionId = (await (await opened).json()).id;
-    const code =
-      "import csv\nfrom pathlib import Path\nfile=next(Path('/inputs').glob('*.csv'))\nrows=list(csv.DictReader(file.open()))\nprint(sum(float(row['value']) for row in rows))\nPath('/outputs/summary.csv').write_text('sum\\n12\\n')\n";
-    await page.getByRole("textbox", { name: "Code", exact: true }).fill(code);
     const queued = page.waitForResponse(
       (response) =>
-        response.url().endsWith(`/sessions/${sessionId}/commands`) &&
+        /\/v1\/execution\/sessions\/[^/]+\/commands$/.test(response.url()) &&
         response.request().method() === "POST",
     );
     await page
       .getByRole("button", { name: "Run selected code", exact: true })
       .click();
+    sessionId = (await (await opened).json()).id;
     jobId = (await (await queued).json()).id;
+    await expect
+      .poll(
+        async () =>
+          (await (await page.request.get(`/v1/workflows/${jobId}`)).json())
+            .status,
+        { timeout: 30000 },
+      )
+      .toBe("succeeded");
+    const completed = await (
+      await page.request.get(`/v1/workflows/${jobId}`)
+    ).json();
+    expect(completed.result.exit_code).toBe(0);
+    expect(completed.result.stdout.trim()).toBe("12.0");
     await expect(
-      page.getByRole("heading", { name: "Job succeeded", exact: true }),
-    ).toBeVisible({ timeout: 30000 });
-    await expect(page.getByLabel("Streamed execution output")).toContainText(
-      "12.0",
-    );
+      page.getByRole("region", { name: "Scientific job", exact: true }),
+    ).toContainText("12.0");
     const download = page.getByRole("button", {
-      name: "summary.csv",
+      name: "Download summary.csv",
       exact: true,
     });
     await download
       .locator("..")
-      .getByRole("button", { name: "Keep file on this browser", exact: true })
+      .getByRole("button", { name: "Save a copy", exact: true })
       .click();
     await expect(
       page.getByRole("button", {
@@ -283,6 +284,7 @@ test("private chunks, real Python execution and local output recovery work witho
     await page
       .getByRole("button", { name: "Save notebook", exact: true })
       .click();
+    await page.getByText("Runtime controls", { exact: true }).click();
     await page
       .getByRole("button", { name: "End session", exact: true })
       .click();
@@ -325,6 +327,9 @@ test("a declared analytical trace produces a real source-qualified fit and resid
   test.setTimeout(90000);
   await noModelCalls(page);
   await page.goto("/app/lab/models");
+  await page
+    .getByRole("tab", { name: "Fit measurements", exact: true })
+    .click();
   const form = page.locator("form");
   for (let index = 0; index < 4; index++) {
     await form.getByRole("button", { name: /Add points.*entry/ }).click();
@@ -362,16 +367,31 @@ test("a declared analytical trace produces a real source-qualified fit and resid
       .click();
     await form.getByLabel(name, { exact: true }).fill(value);
   }
-  const context = form.getByRole("group", { name: "context *", exact: true });
+  await form
+    .getByText("Input origin & source references", { exact: true })
+    .click();
+  const context = form.getByRole("group", {
+    name: "Source references",
+    exact: true,
+  });
   await context
     .getByLabel("input origin *", { exact: true })
     .selectOption("synthetic_reference");
-  await page
-    .getByRole("button", { name: "Run selected method", exact: true })
-    .click();
-  await expect(
-    page.getByRole("heading", { name: "Job succeeded", exact: true }),
-  ).toBeVisible({ timeout: 30000 });
+  const submitted = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/v1/methods/calculate") &&
+      response.request().method() === "POST",
+  );
+  await page.getByRole("button", { name: "Calculate", exact: true }).click();
+  const job = await (await submitted).json();
+  await expect
+    .poll(
+      async () =>
+        (await (await page.request.get(`/v1/workflows/${job.id}`)).json())
+          .status,
+      { timeout: 30000 },
+    )
+    .toBe("succeeded");
   await expect(page.locator(".scientific-result strong")).toHaveText("0.002");
   await page.getByRole("button", { name: "fit view", exact: true }).click();
   await expect(page.locator(".vega-embed svg")).toBeVisible();

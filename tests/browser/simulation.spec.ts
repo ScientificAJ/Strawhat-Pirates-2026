@@ -91,6 +91,9 @@ function modelValue(panel: Locator, label: string) {
 async function openDossierSimulation(page: Page) {
   await page.goto("/app/investigations/PSI-69");
   await page
+    .getByRole("tab", { name: "Methods and hardware", exact: true })
+    .click();
+  await page
     .getByRole("button", { name: "Open simulation", exact: true })
     .click();
   await expect(
@@ -141,6 +144,9 @@ test("dossier simulation is opt-in, computes known states, preserves stale resul
       calculations.push(request.url());
   });
   await page.goto("/app/investigations/PSI-69");
+  await page
+    .getByRole("tab", { name: "Methods and hardware", exact: true })
+    .click();
   const opener = page.getByRole("button", {
     name: "Open simulation",
     exact: true,

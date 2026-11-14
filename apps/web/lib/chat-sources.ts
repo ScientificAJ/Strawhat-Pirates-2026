@@ -226,11 +226,14 @@ export function chatCitations(claims: unknown, facts: unknown): ChatCitation[] {
   return ids.map((id, index) => {
     const fact = byId.get(id);
     const origin = text(fact?.origin);
+    const title = text(record(fact?.content).title);
     return {
       id,
       number: index + 1,
       label:
-        text(fact?.label) ||
+        (fact?.label === "Investigation dossier" && title
+          ? title
+          : text(fact?.label)) ||
         (fact ? "Evidence record" : "Unavailable evidence record"),
       origin:
         origin === "source_measurement"

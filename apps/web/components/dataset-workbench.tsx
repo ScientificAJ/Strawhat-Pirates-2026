@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Check,
   Filter,
@@ -7,7 +7,9 @@ import {
   Plus,
   ArrowDownToLine,
   ChartNoAxesCombined,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 import type { Asset, Catalog, Dossier, ScientificRecords } from "../lib/api";
 import { request, useResource } from "../lib/api";
 import {
@@ -24,7 +26,11 @@ import {
 } from "../lib/laboratory-api";
 import { useResearchContext } from "../lib/research-context";
 import { useWorkspacePreferences } from "../lib/workspace-preferences";
-import { listDocuments, saveDocument } from "../lib/workspace-documents";
+import {
+  listDocuments,
+  readDocument,
+  saveDocument,
+} from "../lib/workspace-documents";
 import { ScientificChart, ScientificValues } from "./scientific-chart";
 import { ScientificRecordView } from "./scientific-records";
 import { RawTable } from "./catalog";
@@ -39,24 +45,59 @@ type Operation = {
 };
 export function DatasetWorkbench({
   snapshotId,
+  entityId,
   onInput,
   onChart,
 }: {
   snapshotId: string;
+  entityId?: string;
   onInput?: (asset: Asset) => void;
   onChart?: (chart: ValidatedChart) => void;
 }) {
   const { context, updateContext } = useResearchContext();
-  const catalog = useResource<Catalog>("/v1/investigations?limit=100");
-  const [accession, setAccession] = useState("PSI-99");
+  const catalog = useResource<Catalog>(
+    `/v1/investigations?limit=100&snapshot_id=${snapshotId}`,
+  );
+  const [accession, setAccession] = useState(
+    /^PSI-\d+$/.test(entityId ?? "")
+      ? entityId!
+      : (context?.investigations?.[0] ?? ""),
+  );
+  const [savedId, setSavedId] = useState<string>();
+  const [savedRevision, setSavedRevision] = useState<number>();
+  const [restored, setRestored] = useState<{
+    query: QuerySpec;
+    result?: QueryResult;
+    chart_spec?: ChartSpec;
+    chart?: ValidatedChart;
+    operations?: Operation[];
+    applied_query?: QuerySpec;
+    stale?: boolean;
+  } | null>(null);
+  const restoredOnce = useRef("");
+  const initializedSource = useRef("");
+  const draftVersion = useRef(0);
+  const querySequence = useRef(0);
+  const pendingQuery = useRef<AbortController | null>(null);
+  const [appliedQuery, setAppliedQuery] = useState<QuerySpec | null>(null);
+  const [opening, setOpening] = useState(
+    Boolean(entityId && !/^PSI-\d+$/.test(entityId)),
+  );
+  const directHash = /^[a-f0-9]{64}$/.test(entityId ?? "")
+    ? entityId
+    : undefined;
   const dossier = useResource<Dossier>(
-    `/v1/investigations/${accession}?snapshot_id=${snapshotId}`,
+    accession
+      ? `/v1/investigations/${accession}?snapshot_id=${snapshotId}`
+      : null,
   );
   const [assetId, setAssetId] = useState("");
   const assets =
     dossier.data?.assets.filter((asset) => asset.media_type === "text/csv") ??
     [];
-  const asset = assets.find((asset) => asset.sha256 === assetId) ?? assets[0];
+  const desiredHash = assetId || restored?.query.asset_sha256 || directHash;
+  const asset =
+    assets.find((asset) => asset.sha256 === desiredHash) ?? assets[0];
   const records = useResource<ScientificRecords>(
     asset
       ? `/v1/assets/${asset.sha256}/records?snapshot_id=${snapshotId}&limit=30`
@@ -77,6 +118,8 @@ export function DatasetWorkbench({
   const [result, setResult] = useState<QueryResult | null>(null);
   const [chart, setChart] = useState<ValidatedChart | null>(null);
   const [spec, setSpec] = useState<ChartSpec | null>(null);
+  const currentSpec = useRef(spec);
+  currentSpec.current = spec;
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [stale, setStale] = useState(false);
@@ -84,8 +127,49 @@ export function DatasetWorkbench({
   const [notice, setNotice] = useState("");
   const [exportId, setExportId] = useState<string | null>(null);
   useEffect(() => {
+    if (!entityId || /^PSI-\d+$/.test(entityId)) {
+      setOpening(false);
+      return;
+    }
+    let active = true;
+    void (async () => {
+      try {
+        let query: QuerySpec | undefined;
+        if (!directHash) {
+          const document =
+            await readDocument<NonNullable<typeof restored>>(entityId);
+          if (!document || !document.data.query)
+            throw new Error(
+              "This saved dataset could not be opened. Choose an investigation to start a new selection.",
+            );
+          if (document.snapshot_id !== snapshotId)
+            throw new Error(
+              "This analysis uses a different source version. Reopen it from Your research to use its original sources.",
+            );
+          if (!active) return;
+          setSavedId(document.id);
+          setSavedRevision(document.revision);
+          setRestored(document.data);
+          query = document.data.query;
+        }
+        const source = await request<ScientificRecords>(
+          `/v1/assets/${directHash ?? query!.asset_sha256}/records?snapshot_id=${snapshotId}&limit=1`,
+        );
+        if (active) setAccession(source.asset.accession);
+      } catch (reason) {
+        if (active) setError(message(reason));
+      } finally {
+        if (active) setOpening(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [entityId, directHash, snapshotId]);
+  useEffect(() => {
     setColumns([]);
     setResult(null);
+    setAppliedQuery(null);
     setSpec(null);
     setChart(null);
     setFilters([]);
@@ -93,19 +177,74 @@ export function DatasetWorkbench({
     setAssetId("");
   }, [accession]);
   useEffect(() => {
-    if (records.data) {
+    draftVersion.current += 1;
+    querySequence.current += 1;
+    pendingQuery.current?.abort();
+    initializedSource.current = "";
+    setColumns([]);
+    setRows("");
+    setGroup("");
+    setAggregate("none");
+    setFilters([]);
+    setResult(null);
+    setAppliedQuery(null);
+    setSpec(null);
+    setChart(null);
+    setOperations([]);
+    setExportId(null);
+    setBusy(false);
+    return () => {
+      querySequence.current += 1;
+      pendingQuery.current?.abort();
+    };
+  }, [accession, asset?.sha256, snapshotId]);
+  useEffect(() => {
+    if (records.data && records.data.asset.sha256 === asset?.sha256) {
+      if (
+        restored &&
+        records.data.asset.sha256 === restored.query.asset_sha256 &&
+        restoredOnce.current !== savedId
+      ) {
+        const query = restored.query;
+        restoredOnce.current = savedId ?? "";
+        setColumns(query.columns);
+        setRows(query.source_rows?.join(", ") ?? "");
+        setRepresentation(query.representation);
+        setFilters(query.filters ?? []);
+        setGroup(
+          query.group_by?.[0] === undefined ? "" : String(query.group_by[0]),
+        );
+        setAggregate(query.aggregations?.[0]?.method ?? "none");
+        setResult(restored.result ?? null);
+        setSpec(restored.chart_spec ?? null);
+        setChart(restored.chart ?? null);
+        setOperations(restored.operations ?? []);
+        setAppliedQuery(restored.applied_query ?? restored.query);
+        setStale(restored.stale ?? false);
+        initializedSource.current = records.data.asset.sha256;
+        setNotice(
+          "Saved analysis reopened with its original source selection.",
+        );
+        return;
+      }
+      if (initializedSource.current === records.data.asset.sha256) return;
+      initializedSource.current = records.data.asset.sha256;
       const numeric =
         records.data.records[0]?.fields
           .filter((field) => field.canonical_value !== null)
           .map((field) => field.column_index) ?? [];
       setColumns(numeric.slice(0, 2));
     }
-  }, [records.data]);
+  }, [records.data, restored, savedId, asset?.sha256]);
   useEffect(() => {
     setRepresentation(preferences.units === "si" ? "canonical" : "original");
+    draftVersion.current += 1;
     setStale(true);
   }, [preferences.units]);
-  const changed = () => setStale(true);
+  const changed = () => {
+    draftVersion.current += 1;
+    setStale(true);
+  };
   const currentQuery = useCallback(() => {
     if (!asset) throw new Error("Select a retained dataset first.");
     if (!columns.length)
@@ -147,12 +286,32 @@ export function DatasetWorkbench({
     aggregate,
   ]);
   async function execute(query?: QuerySpec) {
+    pendingQuery.current?.abort();
+    const controller = new AbortController();
+    pendingQuery.current = controller;
+    const sequence = ++querySequence.current;
+    const submittedVersion = draftVersion.current;
     setBusy(true);
     setError(null);
     try {
       const selection = query ?? currentQuery();
-      const data = await post<QueryResult>("/v1/queries", selection);
+      const data = await post<QueryResult>(
+        "/v1/queries",
+        selection,
+        controller.signal,
+      );
+      if (sequence !== querySequence.current || controller.signal.aborted)
+        return;
+      if (submittedVersion !== draftVersion.current) {
+        setStale(true);
+        setNotice(
+          "Your selection changed while the data was loading. Apply the current selection to see its result.",
+        );
+        return;
+      }
       setResult(data);
+      setExportId(null);
+      setAppliedQuery(selection);
       if (asset)
         updateContext({
           snapshot_id: snapshotId,
@@ -171,6 +330,11 @@ export function DatasetWorkbench({
       setChart(null);
       setSpec({
         ...chartDefaults(selection),
+        title:
+          `${dossier.data?.acronym || accession} — ${selection.columns.map((index) => records.data?.headers[index] || `Column ${index + 1}`).join(" / ")}`.slice(
+            0,
+            200,
+          ),
         x_unit:
           data.columns.find(
             (column) => column.source_index === selection.columns[0],
@@ -194,17 +358,31 @@ export function DatasetWorkbench({
           },
         ]);
     } catch (reason) {
-      setError(message(reason));
+      if (!controller.signal.aborted && sequence === querySequence.current)
+        setError(message(reason));
     } finally {
-      setBusy(false);
+      if (sequence === querySequence.current) setBusy(false);
     }
   }
   async function render() {
     if (!spec) return;
+    const submittedVersion = draftVersion.current;
+    const submittedSpec = JSON.stringify(spec);
+    const submittedSequence = querySequence.current;
     setBusy(true);
     setError(null);
     try {
       const value = await post<ValidatedChart>("/v1/charts/validate", spec);
+      if (
+        submittedVersion !== draftVersion.current ||
+        submittedSequence !== querySequence.current ||
+        submittedSpec !== JSON.stringify(currentSpec.current)
+      ) {
+        setNotice(
+          "Chart settings changed while validation was running. Your edits are preserved; validate the current settings to draw them.",
+        );
+        return;
+      }
       setChart(value);
       setSpec(value.spec as ChartSpec);
       onChart?.(value);
@@ -217,13 +395,28 @@ export function DatasetWorkbench({
   async function save() {
     try {
       const query = currentQuery();
-      await saveDocument({
-        kind: "analysis",
-        title: spec?.title ?? `${accession} source selection`,
-        snapshot_id: snapshotId,
-        data: { query, chart_spec: spec, chart, result, operations },
-      });
-      setNotice("Saved to this browser with frozen source references.");
+      const saved = await saveDocument(
+        {
+          id: savedId,
+          kind: "analysis",
+          title: spec?.title ?? `${accession} source selection`,
+          snapshot_id: snapshotId,
+          data: {
+            surface: "data",
+            query,
+            chart_spec: spec,
+            chart,
+            result,
+            operations,
+            applied_query: appliedQuery,
+            stale,
+          },
+        },
+        savedRevision,
+      );
+      setSavedId(saved.id);
+      setSavedRevision(saved.revision);
+      setNotice("Analysis saved. Reopen it from Your research.");
     } catch (reason) {
       setError(message(reason));
     }
@@ -235,6 +428,8 @@ export function DatasetWorkbench({
     format: "bundle" | "csv" | "parquet" | "svg" | "png" | "pdf",
   ) {
     if (!result || stale) return;
+    const submittedVersion = draftVersion.current;
+    const submittedSequence = querySequence.current;
     try {
       const created = await post<{ id: string }>("/v1/exports", {
         selection: {
@@ -243,7 +438,7 @@ export function DatasetWorkbench({
           case_id: crypto.randomUUID(),
           revision: 1,
           question: spec?.title ?? "Selected source data",
-          queries: [currentQuery()],
+          queries: [appliedQuery ?? currentQuery()],
           charts:
             format === "csv" || format === "parquet"
               ? []
@@ -258,6 +453,15 @@ export function DatasetWorkbench({
         },
         confirmed_selected_private_data: true,
       });
+      if (
+        submittedVersion !== draftVersion.current ||
+        submittedSequence !== querySequence.current
+      ) {
+        setNotice(
+          "An export started for the earlier selection. Find it in Running tasks; it does not describe the current selection.",
+        );
+        return;
+      }
       setExportId(created.id);
     } catch (reason) {
       setError(message(reason));
@@ -268,6 +472,52 @@ export function DatasetWorkbench({
       (field) => field.column_index === index,
     );
   const selectedAsset = asset;
+  if (opening)
+    return (
+      <div className={styles.empty} role="status">
+        Opening your source selection…
+      </div>
+    );
+  if (!accession)
+    return (
+      <section className="lab-start-empty">
+        <h2>Choose an investigation to explore its data</h2>
+        <p>
+          Open a source table, select the variables you need and export a
+          reproducible dataset. Start with a study relevant to your question.
+        </p>
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
+        {catalog.error && (
+          <p role="alert">
+            The investigation list could not be loaded.{" "}
+            <button className="text-button" onClick={catalog.reload}>
+              Try again
+            </button>
+          </p>
+        )}
+        <label className={styles.field}>
+          Investigation
+          <select
+            value=""
+            onChange={(event) => setAccession(event.target.value)}
+          >
+            <option value="">Choose an investigation…</option>
+            {catalog.data?.items.map((item) => (
+              <option key={item.accession} value={item.accession}>
+                {item.acronym || item.title} — {item.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <Link className="text-button" href="/app/investigations">
+          Browse investigation summaries first <ArrowRight size={16} />
+        </Link>
+      </section>
+    );
   return (
     <div className={styles.workbench}>
       <div className={styles.split}>
@@ -276,11 +526,17 @@ export function DatasetWorkbench({
             Investigation
             <select
               value={accession}
-              onChange={(event) => setAccession(event.target.value)}
+              onChange={(event) => {
+                changed();
+                setRestored(null);
+                setSavedId(undefined);
+                setSavedRevision(undefined);
+                setAccession(event.target.value);
+              }}
             >
               {catalog.data?.items.map((item) => (
                 <option key={item.accession} value={item.accession}>
-                  {item.acronym || item.accession} · {item.accession}
+                  {item.acronym || item.accession} — {item.title}
                 </option>
               ))}
             </select>
@@ -295,6 +551,9 @@ export function DatasetWorkbench({
                 changed();
               }}
             >
+              {!assets.length && (
+                <option value="">No retained data table</option>
+              )}
               {assets.map((item) => (
                 <option key={item.id} value={item.sha256}>
                   {item.file_name}
@@ -326,20 +585,22 @@ export function DatasetWorkbench({
                       />
                       {name || `Column ${index + 1}`}
                     </label>
-                    <small>
-                      {variable?.quantity_kind?.replaceAll("_", " ") ??
-                        "Source text"}{" "}
-                      ·{" "}
-                      {representation === "canonical"
-                        ? (variable?.canonical_unit ?? "unit unresolved")
-                        : (variable?.original_unit ??
-                          "source unit not reported")}
-                    </small>
-                    <small>
-                      {variable?.missing_reason
-                        ? `Missing: ${variable.missing_reason}`
-                        : (variable?.qualifier ?? variable?.status)}
-                    </small>
+                    {(variable?.quantity_kind ||
+                      variable?.missing_reason ||
+                      variable?.status === "unresolved") && (
+                      <small>
+                        {variable.quantity_kind?.replaceAll("_", " ")}
+                        {(representation === "canonical"
+                          ? variable.canonical_unit
+                          : variable.original_unit) &&
+                          ` · ${representation === "canonical" ? variable.canonical_unit : variable.original_unit}`}
+                        {variable.missing_reason
+                          ? ` · Missing: ${variable.missing_reason}`
+                          : variable.status === "unresolved"
+                            ? " · Meaning or unit needs review"
+                            : ""}
+                      </small>
+                    )}
                   </div>
                 );
               })
@@ -352,8 +613,7 @@ export function DatasetWorkbench({
               <div>
                 <h2>{asset?.file_name ?? "Choose a retained dataset"}</h2>
                 <p className={styles.caption}>
-                  Snapshot {snapshotId.slice(0, 16)} · original and normalized
-                  values remain separate.
+                  {dossier.data?.acronym || accession} · NASA source data
                 </p>
               </div>
               {asset && (
@@ -362,7 +622,7 @@ export function DatasetWorkbench({
                   onClick={() => onInput?.(asset)}
                 >
                   <Plus size={14} />
-                  Use as execution input
+                  Use in Python & shell
                 </button>
               )}
             </div>
@@ -381,13 +641,13 @@ export function DatasetWorkbench({
                   {result?.independent_run_count ?? "not established"}
                 </strong>
               </span>
-              {stale && (
+              {stale && result && (
                 <strong className={styles.warning}>
                   Inputs changed — recalculate
                 </strong>
               )}
             </div>
-            <nav className={styles.tabs} aria-label="Dataset workspace">
+            <nav className={styles.tabs} aria-label="Dataset views">
               {["table", "charts", "quality", "original"].map((value) => (
                 <button
                   key={value}
@@ -399,159 +659,197 @@ export function DatasetWorkbench({
                 </button>
               ))}
             </nav>
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                void execute();
-              }}
-              className={styles.fields}
-            >
-              <label className={styles.field}>
-                Value representation
-                <select
-                  aria-label="Value representation"
-                  value={representation}
-                  onChange={(event) => {
-                    setRepresentation(
-                      event.target.value as "original" | "canonical",
-                    );
-                    changed();
-                  }}
+            {!asset && !dossier.loading && (
+              <div className={styles.empty}>
+                <h3>No data table is available here yet</h3>
+                <p>
+                  You can still read this investigation’s objectives and
+                  original source files. Choose another investigation to work
+                  with a retained table.
+                </p>
+                <Link
+                  className="button"
+                  href={`/app/investigations/${accession}?snapshot=${snapshotId}`}
                 >
-                  <option value="canonical">Reviewed canonical values</option>
-                  <option value="original">Original source text</option>
-                </select>
-              </label>
-              <label className={styles.field}>
-                Physical source rows
-                <input
-                  value={rows}
-                  onChange={(event) => {
-                    setRows(event.target.value);
-                    changed();
-                  }}
-                  placeholder="All records, or 2, 3, 4"
-                />
-              </label>
-              <label className={styles.field}>
-                Group records by
-                <select
-                  value={group}
-                  onChange={(event) => {
-                    setGroup(event.target.value);
-                    changed();
-                  }}
-                >
-                  <option value="">No grouping</option>
-                  {columns.map((index) => (
-                    <option value={index} key={index}>
-                      {records.data?.headers[index]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className={styles.field}>
-                Summary operation
-                <select
-                  value={aggregate}
-                  onChange={(event) => {
-                    setAggregate(event.target.value);
-                    changed();
-                  }}
-                >
-                  {[
-                    "none",
-                    "mean",
-                    "minimum",
-                    "maximum",
-                    "sum",
-                    "standard_deviation",
-                  ].map((value) => (
-                    <option value={value} key={value}>
-                      {value === "none"
-                        ? "Preserve individual records"
-                        : value.replaceAll("_", " ")}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <div className={`${styles.inline} ${styles.full}`}>
-                <label className={styles.field}>
-                  Filter variable
-                  <select
-                    value={filterColumn}
-                    onChange={(event) =>
-                      setFilterColumn(Number(event.target.value))
-                    }
-                  >
-                    {records.data?.headers.map((name, index) => (
-                      <option key={index} value={index}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className={styles.field}>
-                  Exact original value
-                  <input
-                    value={filterValue}
-                    onChange={(event) => setFilterValue(event.target.value)}
-                  />
-                </label>
-                <button
-                  type="button"
-                  className="button button-small"
-                  onClick={() => {
-                    setFilters((previous) => [
-                      ...(previous ?? []),
-                      {
-                        column: filterColumn,
-                        operation: "equals",
-                        value: filterValue,
-                        representation: "original",
-                      },
-                    ]);
-                    changed();
-                  }}
-                >
-                  <Filter size={14} />
-                  Add filter
-                </button>
+                  Open investigation <ArrowRight size={16} />
+                </Link>
               </div>
-              {(filters ?? []).map((filter, index) => (
-                <div className={styles.row} key={index}>
-                  <span>
-                    {records.data?.headers[filter.column]} ={" "}
-                    {readable(filter.value)}
-                  </span>
-                  <button
-                    type="button"
-                    className="text-button"
-                    onClick={() => {
-                      setFilters((previous) =>
-                        previous?.filter((_, item) => item !== index),
+            )}
+            {dossier.error && (
+              <p className={styles.error} role="alert">
+                {dossier.error}
+              </p>
+            )}
+            {records.error && (
+              <p className={styles.error} role="alert">
+                {records.error}{" "}
+                <button className="text-button" onClick={records.reload}>
+                  Retry data
+                </button>
+              </p>
+            )}
+            {asset && (
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void execute();
+                }}
+                className={styles.fields}
+              >
+                <label className={styles.field}>
+                  Value representation
+                  <select
+                    aria-label="Value representation"
+                    value={representation}
+                    onChange={(event) => {
+                      setRepresentation(
+                        event.target.value as "original" | "canonical",
                       );
                       changed();
                     }}
                   >
-                    Remove filter
+                    <option value="canonical">Reviewed canonical values</option>
+                    <option value="original">Original source text</option>
+                  </select>
+                </label>
+                <details className={`${styles.details} ${styles.full}`}>
+                  <summary>Filter, group or summarize data</summary>
+                  <div className={styles.fields}>
+                    <label className={styles.field}>
+                      Source rows
+                      <input
+                        value={rows}
+                        onChange={(event) => {
+                          setRows(event.target.value);
+                          changed();
+                        }}
+                        placeholder="All records, or 2, 3, 4"
+                      />
+                    </label>
+                    <label className={styles.field}>
+                      Group records by
+                      <select
+                        value={group}
+                        onChange={(event) => {
+                          setGroup(event.target.value);
+                          changed();
+                        }}
+                      >
+                        <option value="">No grouping</option>
+                        {columns.map((index) => (
+                          <option value={index} key={index}>
+                            {records.data?.headers[index]}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className={styles.field}>
+                      Summary operation
+                      <select
+                        value={aggregate}
+                        onChange={(event) => {
+                          setAggregate(event.target.value);
+                          changed();
+                        }}
+                      >
+                        {[
+                          "none",
+                          "mean",
+                          "minimum",
+                          "maximum",
+                          "sum",
+                          "standard_deviation",
+                        ].map((value) => (
+                          <option value={value} key={value}>
+                            {value === "none"
+                              ? "Preserve individual records"
+                              : value.replaceAll("_", " ")}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className={`${styles.inline} ${styles.full}`}>
+                      <label className={styles.field}>
+                        Filter variable
+                        <select
+                          value={filterColumn}
+                          onChange={(event) =>
+                            setFilterColumn(Number(event.target.value))
+                          }
+                        >
+                          {records.data?.headers.map((name, index) => (
+                            <option key={index} value={index}>
+                              {name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className={styles.field}>
+                        Exact original value
+                        <input
+                          value={filterValue}
+                          onChange={(event) =>
+                            setFilterValue(event.target.value)
+                          }
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        className="button button-small"
+                        onClick={() => {
+                          setFilters((previous) => [
+                            ...(previous ?? []),
+                            {
+                              column: filterColumn,
+                              operation: "equals",
+                              value: filterValue,
+                              representation: "original",
+                            },
+                          ]);
+                          changed();
+                        }}
+                      >
+                        <Filter size={14} />
+                        Add filter
+                      </button>
+                    </div>
+                    {(filters ?? []).map((filter, index) => (
+                      <div className={styles.row} key={index}>
+                        <span>
+                          {records.data?.headers[filter.column]} ={" "}
+                          {readable(filter.value)}
+                        </span>
+                        <button
+                          type="button"
+                          className="text-button"
+                          onClick={() => {
+                            setFilters((previous) =>
+                              previous?.filter((_, item) => item !== index),
+                            );
+                            changed();
+                          }}
+                        >
+                          Remove filter
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+                <div className={`${styles.actions} ${styles.full}`}>
+                  <button
+                    type="submit"
+                    disabled={busy || !asset || records.loading}
+                    className="button button-primary"
+                  >
+                    {busy ? "Computing selected values…" : "Apply selection"}
+                  </button>
+                  <button type="button" className="button" onClick={save}>
+                    <Save size={15} />
+                    Save analysis
                   </button>
                 </div>
-              ))}
-              <div className={`${styles.actions} ${styles.full}`}>
-                <button
-                  type="submit"
-                  disabled={busy || !asset || records.loading}
-                  className="button button-primary"
-                >
-                  {busy ? "Computing selected values…" : "Apply selection"}
-                </button>
-                <button type="button" className="button" onClick={save}>
-                  <Save size={15} />
-                  Save analysis
-                </button>
-              </div>
-            </form>
+              </form>
+            )}
             {error && (
               <p className={styles.error} role="alert">
                 {error}
@@ -597,14 +895,26 @@ export function DatasetWorkbench({
               </>
             ) : (
               <div className={styles.empty}>
-                <h3>Inspect a frozen source selection</h3>
+                <h3>Select variables to preview your data</h3>
                 <p>
-                  Select variables and apply your filters. Unknown quantities
-                  remain unavailable; source rows are not assumed to be
-                  independent runs.
+                  Choose columns in the Variables list, then apply your
+                  selection. You can chart or export the result. Original source
+                  values remain available in the Original tab.
                 </p>
               </div>
             ))}
+          {tab === "charts" && !spec && (
+            <div className={styles.empty}>
+              <h3>Choose the data for your chart</h3>
+              <p>
+                Select variables and apply your selection first. Then choose
+                axes and draw a figure.
+              </p>
+              <button className="button" onClick={() => setTab("table")}>
+                Back to data selection
+              </button>
+            </div>
+          )}
           {tab === "charts" && spec && (
             <section className={styles.surface}>
               <h2>Scientific chart</h2>
