@@ -84,7 +84,7 @@ export function ArtifactView({
             </span>
           )}
         </div>
-        <ArtifactView value={value.content} />
+        <ArtifactView value={value.content} summarize={summarize} />
         <EnvelopeQualifications value={value} />
         <RecordDetails value={value} />
       </section>
@@ -123,6 +123,9 @@ export function ArtifactView({
         </p>
       )}
       {typeof value.definition === "string" && <p>{value.definition}</p>}
+      {typeof value.interpretation === "string" && (
+        <p>{value.interpretation}</p>
+      )}
       {typeof value.text === "string" && (
         <blockquote className="source-quote">{value.text}</blockquote>
       )}

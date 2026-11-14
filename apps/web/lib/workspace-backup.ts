@@ -237,7 +237,13 @@ export async function restoreCompleteWorkspace(
     }
   }
   const remap = (value: unknown): unknown => {
-    if (typeof value === "string") return ids.get(value) ?? value;
+    if (typeof value === "string") {
+      if (ids.has(value)) return ids.get(value);
+      const target = /^artifact:([^:]+):revision:(\d+)$/.exec(value);
+      return target && ids.has(target[1])
+        ? `artifact:${ids.get(target[1])}:revision:${target[2]}`
+        : value;
+    }
     if (Array.isArray(value)) return value.map(remap);
     if (value && typeof value === "object")
       return Object.fromEntries(

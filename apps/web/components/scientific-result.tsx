@@ -19,6 +19,12 @@ export function ScientificResultSummary({ value }: { value: unknown }) {
     : isRecord(measure.central_output_interval)
       ? measure.central_output_interval
       : null;
+  const request = isRecord(measure.request) ? measure.request : {};
+  const outputUnits = Array.isArray(request.output_units)
+    ? request.output_units.map((unit) =>
+        typeof unit === "string" ? unit : "Unit not reported",
+      )
+    : [];
   const stats = [
     "signed_slope",
     "intercept_at_interval_start",
@@ -27,6 +33,7 @@ export function ScientificResultSummary({ value }: { value: unknown }) {
     "point_count",
     "independent_run_count",
     "root_mean_square_residual",
+    "coefficient_of_determination",
     "residual_lag_one_correlation",
     "slope_standard_error",
     "training_count",
@@ -100,12 +107,18 @@ export function ScientificResultSummary({ value }: { value: unknown }) {
                 {["signed_slope", "slope_standard_error"].includes(key) &&
                 typeof measure.unit === "string"
                   ? ` ${measure.unit}`
-                  : key === "root_mean_square_residual" &&
+                  : [
+                        "root_mean_square_residual",
+                        "intercept_at_interval_start",
+                      ].includes(key) &&
                       typeof measure.residual_unit === "string"
                     ? ` ${measure.residual_unit}`
-                    : key.endsWith("_seconds")
-                      ? " s"
-                      : ""}
+                    : key === "standard_deviation" &&
+                        typeof measure.unit === "string"
+                      ? ` ${measure.unit}`
+                      : key.endsWith("_seconds")
+                        ? " s"
+                        : ""}
               </dd>
             </div>
           ))}
@@ -123,6 +136,17 @@ export function ScientificResultSummary({ value }: { value: unknown }) {
         .map((key) => (
           <section key={key}>
             <h3>{key.replaceAll("_", " ")}</h3>
+            {key === "output_covariance" && (
+              <p className={styles.caption}>
+                Output row/column units:{" "}
+                {outputUnits.length
+                  ? outputUnits
+                      .map((unit, index) => `${index + 1}: ${unit}`)
+                      .join("; ")
+                  : "Not reported"}
+                . Entry (i, j) has the product of output i and output j units.
+              </p>
+            )}
             {isRecord(measure[key]) ? (
               <dl>
                 {Object.entries(measure[key]).map(([name, item]) => (
@@ -135,7 +159,12 @@ export function ScientificResultSummary({ value }: { value: unknown }) {
             ) : Array.isArray(measure[key]) ? (
               <ol>
                 {measure[key].map((item: unknown, index: number) => (
-                  <li key={index}>{readable(item)}</li>
+                  <li key={index}>
+                    {readable(item)}
+                    {key === "output_standard_uncertainty"
+                      ? ` ${outputUnits[index] ?? "Unit not reported"}`
+                      : ""}
+                  </li>
                 ))}
               </ol>
             ) : (
