@@ -98,7 +98,12 @@ def source_plot(spec: dict, data: dict, columns: dict) -> dict:
         "independent-run count unresolved. "
         f"Source: {data['asset']['accession']} {data['asset']['sha256'][:12]}.",
     }
+    if spec.get("caption"):
+        plot["caption"] += " Interpretive note: " + spec["caption"]
     if spec["response_columns"]:
+        plot["y_label"] = "Separate source responses" + (
+            f" [{spec['y_unit']}]" if spec["y_unit"] else ""
+        )
         plot["transformations"].append(
             {
                 "method_id": "named-response-series-view-v1",
@@ -320,22 +325,31 @@ def vega_lite(plot: dict) -> dict:
         mark = "point"
     else:
         mark = "bar" if kind == "bar" else "point"
+    labels = {plot["x"]: plot["x_label"], plot["y"]: plot["y_label"]}
+    if plot.get("z"):
+        labels[plot["z"]] = plot["z_label"]
+    tooltip_fields = [
+        plot["x"],
+        plot["y"],
+        *([plot["z"]] if plot.get("z") else []),
+        "source_row",
+        "row_kind",
+        "source_locator",
+        "job_id",
+        "interval_level",
+        "interval_interpretation",
+        "_series",
+        "_response_column",
+        "split",
+        "measurement_status",
+    ]
     fields["tooltip"] = [
-        {"field": key, "type": "nominal"}
-        for key in dict.fromkeys(
-            [
-                plot["x"],
-                plot["y"],
-                "source_row",
-                "source_locator",
-                "job_id",
-                "interval_interpretation",
-                "_series",
-                "_response_column",
-                "split",
-                "measurement_status",
-            ]
-        )
+        {
+            "field": key,
+            "type": "nominal",
+            "title": labels.get(key, key.strip("_").replace("_", " ")),
+        }
+        for key in dict.fromkeys(tooltip_fields)
     ]
     layers = [{"mark": mark, "encoding": fields}]
     if kind == "categorical_map":
@@ -406,13 +420,24 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
             raise ValueError(
                 "Method charts require completed registered calculations owned by this browser."
             )
-        result = record["result"].get("result", record["result"])
+        envelope = record["result"].get("result", record["result"])
+        result = envelope.get("measurement", envelope)
+        context = result.get("context")
+        declared_snapshot = context.get("source_snapshot") if isinstance(context, dict) else None
+        source_snapshot = envelope.get("provenance", {}).get("snapshot_id")
+        if any(
+            value is not None and value != record["snapshot_id"]
+            for value in (declared_snapshot, source_snapshot)
+        ):
+            raise ValueError("Stored method provenance differs from its frozen job snapshot.")
         job_id, status = str(record["id"]), result.get("status")
         provenance.append(
             {
                 "job_id": job_id,
                 "snapshot_id": record["snapshot_id"],
                 "calculation": result,
+                "source_provenance": envelope.get("provenance"),
+                "provenance_contract": envelope.get("provenance_contract"),
                 "resources": record["result"].get("resources"),
             }
         )
@@ -569,6 +594,29 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
             "intervals and limitations are retained. Distinct runs remain distinct series."
         ),
     }
+    anchors = [
+        source
+        for item in provenance
+        for source in item["calculation"].get("context", {}).get("sources", [])
+    ]
+    methods = list(
+        dict.fromkeys(
+            item["calculation"].get("method_id", "registered-method") for item in provenance
+        )
+    )
+    plot["caption"] += (
+        " Methods: "
+        + ", ".join(methods)
+        + ". Snapshot: "
+        + records[0]["snapshot_id"][:12]
+        + ". Sources: "
+        + "; ".join(
+            str(source.get("source_id", "")) + ":" + str(source.get("locator", ""))[:80]
+            for source in anchors[:3]
+        )
+    )
+    if len(anchors) > 3:
+        plot["caption"] += f"; {len(anchors) - 3} additional frozen anchors in provenance."
     if view == "interval":
         plot.update({"lower": "lower", "upper": "upper"})
         if spec["x_scale"] == "log":

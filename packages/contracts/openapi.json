@@ -1966,16 +1966,24 @@
               "gt",
               "gte",
               "contains",
-              "missing"
+              "missing",
+              "present"
             ],
             "title": "Operator",
             "type": "string"
           },
           "quantity_kind": {
-            "maxLength": 128,
-            "minLength": 1,
-            "title": "Quantity Kind",
-            "type": "string"
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantity Kind"
           },
           "source_column": {
             "anyOf": [
@@ -1988,6 +1996,26 @@
               }
             ],
             "title": "Source Column"
+          },
+          "source_value_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "source_reported",
+                  "measurement",
+                  "condition",
+                  "setting",
+                  "derived",
+                  "code",
+                  "not_specified"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Value Kind"
           },
           "unit": {
             "anyOf": [
@@ -2017,7 +2045,6 @@
           }
         },
         "required": [
-          "quantity_kind",
           "operator"
         ],
         "title": "FieldPredicate",
@@ -2447,6 +2474,32 @@
               }
             ],
             "title": "Availability"
+          },
+          "catalog_facets": {
+            "additionalProperties": {
+              "items": {
+                "maxLength": 1000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 32,
+              "type": "array"
+            },
+            "maxProperties": 8,
+            "propertyNames": {
+              "enum": [
+                "purpose",
+                "fuel_phase",
+                "material",
+                "facility",
+                "sensor",
+                "outcome",
+                "publication",
+                "review_state"
+              ]
+            },
+            "title": "Catalog Facets",
+            "type": "object"
           },
           "cursor": {
             "anyOf": [
@@ -3465,6 +3518,32 @@
             "maxItems": 24,
             "title": "Accessions",
             "type": "array"
+          },
+          "catalog_facets": {
+            "additionalProperties": {
+              "items": {
+                "maxLength": 1000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 32,
+              "type": "array"
+            },
+            "maxProperties": 8,
+            "propertyNames": {
+              "enum": [
+                "purpose",
+                "fuel_phase",
+                "material",
+                "facility",
+                "sensor",
+                "outcome",
+                "publication",
+                "review_state"
+              ]
+            },
+            "title": "Catalog Facets",
+            "type": "object"
           },
           "cursor": {
             "anyOf": [

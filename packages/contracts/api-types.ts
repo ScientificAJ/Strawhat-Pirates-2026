@@ -2199,11 +2199,13 @@ export interface components {
              * Operator
              * @enum {string}
              */
-            operator: "eq" | "lt" | "lte" | "gt" | "gte" | "contains" | "missing";
+            operator: "eq" | "lt" | "lte" | "gt" | "gte" | "contains" | "missing" | "present";
             /** Quantity Kind */
-            quantity_kind: string;
+            quantity_kind?: string | null;
             /** Source Column */
             source_column?: string | null;
+            /** Source Value Kind */
+            source_value_kind?: ("source_reported" | "measurement" | "condition" | "setting" | "derived" | "code" | "not_specified") | null;
             /** Unit */
             unit?: string | null;
             /** Value */
@@ -2355,6 +2357,10 @@ export interface components {
             accessions: string[];
             /** Availability */
             availability?: ("catalog_only" | "assets_available" | "interpreted_table") | null;
+            /** Catalog Facets */
+            catalog_facets?: {
+                [key: string]: string[];
+            };
             /** Cursor */
             cursor?: string | null;
             /** Hardware */
@@ -2701,6 +2707,10 @@ export interface components {
              * @default []
              */
             accessions: string[];
+            /** Catalog Facets */
+            catalog_facets?: {
+                [key: string]: string[];
+            };
             /** Cursor */
             cursor?: string | null;
             /**

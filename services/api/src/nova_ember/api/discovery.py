@@ -38,7 +38,7 @@ from nova_ember.adapters.refresh import (
     refresh_public_sources as refresh_sources_callback,
 )
 from nova_ember.adapters.supporting import workbook_cells
-from nova_ember.domain.records import RowKind, SourceField
+from nova_ember.domain.records import RowKind, SourceField, SourceValueKind
 from nova_ember.evidence.changes import manifest_changes, snapshot_changes
 from nova_ember.evidence.contracts import (
     Accession,
@@ -61,6 +61,13 @@ from nova_ember.evidence.research import (
 )
 from pydantic import Field, model_validator
 
+from .catalog_facets import (
+    ANNOTATION_VERSION,
+    FacetName,
+    classifications,
+    facet_counts,
+    matches_facets,
+)
 from .config import Settings
 from .repository import Corpus, MissingSource, public_asset, public_investigation
 
@@ -103,17 +110,27 @@ FACILITY_ALIASES = {
 
 
 class FieldPredicate(Contract):
-    quantity_kind: str = Field(min_length=1, max_length=128)
+    quantity_kind: str | None = Field(default=None, min_length=1, max_length=128)
     source_column: str | None = Field(default=None, max_length=256)
     location: str | None = Field(default=None, max_length=128)
     basis: str | None = Field(default=None, max_length=128)
-    operator: Literal["eq", "lt", "lte", "gt", "gte", "contains", "missing"]
+    operator: Literal["eq", "lt", "lte", "gt", "gte", "contains", "missing", "present"]
     value: Annotated[float, Field(strict=True)] | str | None = None
     unit: str | None = Field(default=None, max_length=64)
     include_missing: bool = False
+    source_value_kind: SourceValueKind | None = None
 
     @model_validator(mode="after")
     def validate_value(self) -> FieldPredicate:
+        if self.quantity_kind is None and (
+            not self.source_column
+            or self.operator not in {"contains", "present"}
+            or self.unit is not None
+        ):
+            raise ValueError(
+                "An unclassified field requires its exact source column and "
+                "a text/presence rule without inferred units."
+            )
         if self.operator in {"eq", "lt", "lte", "gt", "gte"}:
             if not isinstance(self.value, float) or self.unit is None:
                 raise ValueError(
@@ -123,8 +140,13 @@ class FieldPredicate(Contract):
             if not isinstance(self.value, str) or not self.value or len(self.value) > 256:
                 raise ValueError("Text predicates require a nonempty bounded text value.")
         elif self.value is not None:
-            raise ValueError("A missingness predicate has no comparison value.")
+            raise ValueError("A presence/missingness predicate has no comparison value.")
         return self
+
+
+CatalogFacetValues = Annotated[str, Field(min_length=1, max_length=1000)]
+CatalogFacetOptions = Annotated[tuple[CatalogFacetValues, ...], Field(max_length=32)]
+CatalogFacetSelection = dict[FacetName, CatalogFacetOptions]
 
 
 class RecordQuery(Contract):
@@ -133,6 +155,7 @@ class RecordQuery(Contract):
     text: str = Field(default="", max_length=500)
     row_kinds: tuple[RowKind, ...] = Field(default=(), max_length=9)
     predicates: tuple[FieldPredicate, ...] = Field(default=(), max_length=20)
+    catalog_facets: CatalogFacetSelection = Field(default_factory=dict, max_length=8)
     limit: int = Field(default=50, ge=1, le=100)
     cursor: str | None = Field(default=None, max_length=300)
 
@@ -145,6 +168,7 @@ class InvestigationQuery(Contract):
     platform: str | None = Field(default=None, max_length=256)
     license: Literal["CC0-1.0", "unknown"] | None = None
     availability: Literal["catalog_only", "assets_available", "interpreted_table"] | None = None
+    catalog_facets: CatalogFacetSelection = Field(default_factory=dict, max_length=8)
     limit: int = Field(default=50, ge=1, le=100)
     cursor: str | None = Field(default=None, max_length=300)
 
@@ -228,6 +252,11 @@ def _cursor_page(
 
 
 def _field_matches(field: SourceField, predicate: FieldPredicate) -> bool:
+    if (
+        predicate.source_value_kind is not None
+        and field.source_value_kind != predicate.source_value_kind
+    ):
+        return False
     if field.quantity_kind != predicate.quantity_kind:
         return False
     if predicate.source_column is not None and field.source_column != predicate.source_column:
@@ -238,6 +267,12 @@ def _field_matches(field: SourceField, predicate: FieldPredicate) -> bool:
         return False
     if predicate.operator == "contains":
         return str(predicate.value).casefold() in field.raw_text.casefold()
+    if predicate.operator == "present":
+        if predicate.unit is None:
+            return bool(field.raw_text.strip()) and field.missing_reason is None
+        if field.canonical_value is None:
+            return predicate.include_missing
+        return field.canonical_unit == predicate.unit
     missing = field.canonical_value is None
     if predicate.operator == "missing":
         return missing
@@ -914,14 +949,36 @@ class Discovery:
             **result,
         }
 
+    def catalog_classifications(self, snapshot: dict) -> dict:
+        catalog = {}
+        for record in snapshot["manifest"]["investigations"]:
+
+            def anchor(field: str, record: dict = record) -> dict:
+                return self.metadata_anchor(snapshot["snapshot_id"], record, field).model_dump(
+                    mode="json"
+                )
+
+            catalog[record["accession"]] = classifications(
+                record,
+                self._metadata(record),
+                anchor,
+                FACILITY_ALIASES,
+            )
+        return catalog
+
     def matching_records(self, query: RecordQuery) -> tuple[list[dict], list[dict], dict]:
         snapshot = self.corpus.snapshot(query.snapshot_id)
+        catalog = self.catalog_classifications(snapshot) if query.catalog_facets else None
         matches = []
         checked_assets = []
         for asset in sorted(
             snapshot["manifest"]["assets"], key=lambda item: (item["accession"], item["file_name"])
         ):
             if query.accessions and asset["accession"] not in query.accessions:
+                continue
+            if catalog is not None and not matches_facets(
+                catalog[asset["accession"]], query.catalog_facets
+            ):
                 continue
             if not asset["file_name"].endswith(".csv") or not asset.get("encoding"):
                 continue
@@ -967,9 +1024,28 @@ class Discovery:
         return matches, checked_assets, snapshot
 
     def query_records(self, query: RecordQuery) -> dict:
-        matches, checked_assets, snapshot = self.matching_records(query)
+        base, checked_assets, snapshot = self.matching_records(
+            query.model_copy(update={"catalog_facets": {}})
+        )
+        catalog = self.catalog_classifications(snapshot)
+        matches = [
+            item
+            for item in base
+            if matches_facets(catalog[item["accession"]], query.catalog_facets)
+        ]
+        page = _cursor_page(matches, query, snapshot["snapshot_id"])
         return {
-            **_cursor_page(matches, query, snapshot["snapshot_id"]),
+            **page,
+            "catalog_facets": facet_counts(
+                catalog,
+                [item["accession"] for item in base],
+                query.catalog_facets,
+                "source_records",
+            ),
+            "catalog_classifications": {
+                item["accession"]: catalog[item["accession"]] for item in page["items"]
+            },
+            "catalog_annotation_version": ANNOTATION_VERSION,
             "grain": "source_records",
             "independent_run_count": None,
             "sources_checked": checked_assets,
@@ -1002,6 +1078,7 @@ class Discovery:
 
     def query_investigations(self, query: InvestigationQuery) -> dict:
         snapshot = self.corpus.snapshot(query.snapshot_id)
+        catalog = self.catalog_classifications(snapshot)
         assets_by_id: dict[str, list[dict]] = {}
         for asset in snapshot["manifest"]["assets"]:
             assets_by_id.setdefault(asset["accession"], []).append(asset)
@@ -1059,8 +1136,25 @@ class Discovery:
                     ),
                 }
             )
+        base = matches
+        matches = [
+            item
+            for item in base
+            if matches_facets(catalog[item["accession"]], query.catalog_facets)
+        ]
+        page = _cursor_page(matches, query, snapshot["snapshot_id"])
         return {
-            **_cursor_page(matches, query, snapshot["snapshot_id"]),
+            **page,
+            "catalog_facets": facet_counts(
+                catalog,
+                [item["accession"] for item in base],
+                query.catalog_facets,
+                "investigations",
+            ),
+            "catalog_classifications": {
+                item["accession"]: catalog[item["accession"]] for item in page["items"]
+            },
+            "catalog_annotation_version": ANNOTATION_VERSION,
             "retrieval_method": "typed-literal-discovery-v1",
             "ranking": "Title then accession; relevance/applicability policies are separate.",
         }

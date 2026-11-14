@@ -319,3 +319,36 @@ def test_histogram_export_uses_approved_log_scale_and_paired_labels_reject_it(mo
             x_type="quantitative",
             x_scale="log",
         )
+
+
+def test_real_image_method_envelope_exposes_original_boundary_with_retained_lineage():
+    from nova_ember.analysis.media import measure_image
+    from test_media_methods import image_bytes, request
+
+    content = image_bytes()
+    result = measure_image(request(content), content)
+    record = method_record(result)
+    lineage = {"snapshot_id": "a" * 64, "source_sha256": result.source_sha256}
+    record["result"]["result"] = {
+        "measurement": result.model_dump(mode="json"),
+        "provenance": lineage,
+        "provenance_contract": "Original source and frame identity checked before measurement.",
+    }
+    chart = method_plot(
+        MethodChartSpec(
+            title="Original-pixel boundary", job_ids=[record["id"]], view="boundary"
+        ).model_dump(mode="json"),
+        [record],
+    )
+    assert [row["x"] for row in chart["plot"]["rows"]] == [6] * 6
+    assert [row["y"] for row in chart["plot"]["rows"]] == [2, 3, 4, 5, 6, 7]
+    assert chart["provenance"][0]["source_provenance"] == lineage
+    assert figure_bytes(chart, "png").startswith(b"\x89PNG")
+    lineage["snapshot_id"] = "b" * 64
+    with pytest.raises(ValueError, match="frozen job snapshot"):
+        method_plot(
+            MethodChartSpec(
+                title="Invalid source", job_ids=[record["id"]], view="boundary"
+            ).model_dump(mode="json"),
+            [record],
+        )
