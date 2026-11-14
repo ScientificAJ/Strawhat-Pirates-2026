@@ -19,6 +19,7 @@ import {
   Settings,
   Activity,
   Map,
+  UsersRound,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -213,6 +214,12 @@ export function Shell({
     }
   }
   const utilityDestinations = [
+    {
+      id: "agents",
+      title: "Agents",
+      href: "/app/agents",
+      icon: UsersRound,
+    },
     {
       id: "dashboards",
       title: "Dashboards",

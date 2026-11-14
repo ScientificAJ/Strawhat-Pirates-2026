@@ -24,6 +24,7 @@ export default async function Page({
       "compare",
       "lab",
       "agent",
+      "agents",
       "cases",
       "help",
       "runs",

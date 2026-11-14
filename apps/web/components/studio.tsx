@@ -30,6 +30,11 @@ import { rememberJob } from "../lib/private-jobs";
 import { readPreferences } from "../lib/workspace-backup";
 import { useWorkspacePreferences } from "../lib/workspace-preferences";
 import {
+  freezeAgent,
+  validateAgentProfile,
+  type AgentSelection,
+} from "../lib/agent-profiles";
+import {
   deleteDocument,
   listDocuments,
   readDocument,
@@ -70,7 +75,20 @@ export type ResearchStudioProps = {
   onSessionChange?: (id: string) => void;
   onExpand?: (id: string) => void;
   onSaveArtifact?: (artifact: StudioArtifact) => void | Promise<void>;
+  agentProfile?: AgentSelection;
 };
+
+function scopedSessions(
+  documents: WorkspaceDocument<StudioSession>[],
+  agentId?: string,
+) {
+  return documents.filter((document) =>
+    agentId
+      ? document.kind === "agent_session" &&
+        document.data.agent?.profile_id === agentId
+      : document.kind === "studio_session" && !document.data.agent,
+  );
+}
 
 function parsedEvents(text: string): JsonRecord[] {
   return text.split("\n\n").flatMap((block) => {
@@ -109,9 +127,15 @@ export function ResearchStudio({
   onSessionChange,
   onExpand,
   onSaveArtifact,
+  agentProfile,
 }: ResearchStudioProps) {
   const router = useRouter();
   const preferences = useWorkspacePreferences();
+  const initialAgent = useRef(
+    agentProfile ? freezeAgent(agentProfile) : undefined,
+  );
+  const agentMode = Boolean(initialAgent.current);
+  const sessionKind = agentMode ? "agent_session" : "studio_session";
   const [session, setSession] = useState<StudioSession | null>(null);
   const [documents, setDocuments] = useState<
     WorkspaceDocument<StudioSession>[]
@@ -178,7 +202,7 @@ export function ResearchStudio({
         const stored = await saveDocument<StudioSession>(
           {
             id: value.id,
-            kind: "studio_session",
+            kind: sessionKind,
             title: value.title,
             snapshot_id: value.context.snapshot_id,
             data: value,
@@ -201,7 +225,7 @@ export function ResearchStudio({
       setError(message(failure));
       throw failure;
     }
-  }, []);
+  }, [sessionKind]);
 
   useEffect(() => {
     // The parent remembers a newly opened local session before its debounced
@@ -210,23 +234,34 @@ export function ResearchStudio({
     let active = true;
     async function load() {
       try {
-        const list = await listDocuments<StudioSession>("studio_session");
+        const list = scopedSessions(
+          await listDocuments<StudioSession>(sessionKind),
+          initialAgent.current?.id,
+        );
         const doc = sessionId
           ? await readDocument<StudioSession>(sessionId)
-          : (list[0] ?? null);
+          : agentMode
+            ? null
+            : (list[0] ?? null);
+        if (doc && !scopedSessions([doc], initialAgent.current?.id).length)
+          throw new Error(
+            "Open this conversation from its matching research or agent library.",
+          );
+        if (doc?.data.agent)
+          validateAgentProfile(doc.data.agent.frozen.profile);
         const defaults = await readPreferences();
         if (!active) return;
         let next =
-          doc?.kind === "studio_session"
+          doc?.kind === sessionKind
             ? doc.data
-            : newSession(snapshotId, incoming.current);
+            : newSession(snapshotId, incoming.current, initialAgent.current);
         if (!doc)
           next = {
             ...next,
             summary_depth: defaults.summary_depth,
             availability_scope: defaults.evidence_scope,
           };
-        if (intentId) {
+        if (intentId && !agentMode) {
           const intent = await readDocument<JsonRecord>(intentId);
           if (
             intent?.kind === "studio_intent" &&
@@ -281,8 +316,7 @@ export function ResearchStudio({
             }
           }
         }
-        saved.current =
-          doc?.kind === "studio_session" && !intentId ? doc : null;
+        saved.current = doc?.kind === sessionKind && !intentId ? doc : null;
         lastSaved.current = doc && !intentId ? JSON.stringify(next) : "";
         setDocuments(list);
         setSession(next);
@@ -290,7 +324,7 @@ export function ResearchStudio({
         onSessionRef.current?.(next.id);
       } catch (failure) {
         if (active) {
-          setSession(newSession(snapshotId, context));
+          setSession(newSession(snapshotId, context, initialAgent.current));
           setError(message(failure));
           setStorageStatus(
             "Browser storage unavailable — export before leaving",
@@ -302,7 +336,7 @@ export function ResearchStudio({
     return () => {
       active = false;
     };
-  }, [sessionId, snapshotId, intentId]);
+  }, [sessionId, snapshotId, intentId, sessionKind, agentMode]);
   useEffect(() => {
     if (!visible) setVoiceOpen(false);
   }, [visible]);
@@ -328,14 +362,16 @@ export function ResearchStudio({
   }, [persist]);
   useEffect(() => {
     const changed = () => {
-      void listDocuments<StudioSession>("studio_session")
-        .then(setDocuments)
+      void listDocuments<StudioSession>(sessionKind)
+        .then((documents) =>
+          setDocuments(scopedSessions(documents, initialAgent.current?.id)),
+        )
         .catch((failure) => setError(message(failure)));
     };
     window.addEventListener("nova-ember-workspace-changed", changed);
     return () =>
       window.removeEventListener("nova-ember-workspace-changed", changed);
-  }, []);
+  }, [sessionKind]);
   useEffect(() => {
     const controller = new AbortController();
     void Promise.all([
@@ -466,6 +502,7 @@ export function ResearchStudio({
   const tabs = [
     "Dashboard",
     "Figures",
+    "Simulations",
     "Tables",
     "Evidence",
     "Code",
@@ -540,6 +577,7 @@ export function ResearchStudio({
       role,
       history: selectedHistory(session.turns),
       images: session.image ? [session.image] : [],
+      ...(session.agent ? { agent_profile: session.agent.frozen.profile } : {}),
     };
     const turn: StudioTurn = {
       id: crypto.randomUUID(),
@@ -639,13 +677,21 @@ export function ResearchStudio({
     doc?: WorkspaceDocument<StudioSession>,
     fork = false,
   ) {
+    if (doc && !scopedSessions([doc], initialAgent.current?.id).length) {
+      setError(
+        "Choose a conversation from this agent’s saved session library.",
+      );
+      return;
+    }
     try {
+      if (doc?.data.agent) validateAgentProfile(doc.data.agent.frozen.profile);
       await persist();
-    } catch {
+    } catch (reason) {
+      setError(message(reason));
       return;
     }
     let next = doc?.data ?? {
-      ...newSession(snapshotId, context),
+      ...newSession(snapshotId, context, initialAgent.current),
       summary_depth: preferences.summary_depth,
       availability_scope: preferences.evidence_scope,
     };
@@ -840,11 +886,37 @@ export function ResearchStudio({
     >
       <header className={styles.header}>
         <div>
-          <h1>{compact ? "Ask Nova Ember" : "Research Studio"}</h1>
+          <h1>
+            {session.agent?.frozen.profile.name ??
+              (compact ? "Ask Nova Ember" : "Research Studio")}
+          </h1>
           <p>
             Evidence, calculations and interpretation in one inspectable
             conversation.
           </p>
+          {session.agent && (
+            <details className={styles.agentConfiguration}>
+              <summary>Agent configuration for this conversation</summary>
+              <p>
+                A frozen copy of the role and skills is kept with this chat.
+                Source, numerical and approval rules continue to apply.
+              </p>
+              <strong>Agent instructions</strong>
+              <pre>{session.agent.frozen.profile.instructions}</pre>
+              {session.agent.frozen.profile.skills.map((skill) => (
+                <div key={skill.name}>
+                  <strong>{skill.name}</strong>
+                  <pre>{skill.instructions}</pre>
+                </div>
+              ))}
+              <p>
+                Tool groups:{" "}
+                {session.agent.frozen.profile.capabilities.join(", ")}.
+                Configuration is user-provided guidance, separate from
+                scientific evidence.
+              </p>
+            </details>
+          )}
         </div>
         <div className={styles.actions}>
           <button
@@ -1065,7 +1137,11 @@ export function ResearchStudio({
             )}
             {session.turns.map((turn) => (
               <div key={turn.id}>
-                <ResearchMessage turn={turn} onEvidence={evidence} />
+                <ResearchMessage
+                  turn={turn}
+                  onEvidence={evidence}
+                  assistantName={session.agent?.frozen.profile.name}
+                />
                 {turn.status === "submission_unconfirmed" && (
                   <button
                     className="button"
@@ -1303,13 +1379,15 @@ export function ResearchStudio({
               >
                 <ImagePlus size={16} /> Attach
               </button>
-              <button
-                className="button button-small"
-                onClick={() => setVoiceOpen(!voiceOpen)}
-                aria-expanded={voiceOpen}
-              >
-                Live voice
-              </button>
+              {!agentMode && (
+                <button
+                  className="button button-small"
+                  onClick={() => setVoiceOpen(!voiceOpen)}
+                  aria-expanded={voiceOpen}
+                >
+                  Live voice
+                </button>
+              )}
               <button
                 className={styles.textButton}
                 onClick={() => setPlanOpen(!planOpen)}
@@ -1409,8 +1487,8 @@ export function ResearchStudio({
                 {requestLimit === null
                   ? "the server's current limit"
                   : `$${requestLimit.toFixed(2)}`}
-                . Unconfirmed charges remain reserved. Voice has a separate
-                displayed lease.
+                . Unconfirmed charges remain reserved.
+                {!agentMode && " Voice has a separate displayed lease."}
               </p>
             </details>
             {capability === false && (
@@ -1467,7 +1545,11 @@ export function ResearchStudio({
                   </label>
                 )}
                 {artifact && (
-                  <ArtifactCanvas artifact={artifact} onSave={saveArtifact} />
+                  <ArtifactCanvas
+                    key={artifact.id}
+                    artifact={artifact}
+                    onSave={saveArtifact}
+                  />
                 )}
               </>
             ) : (
@@ -1539,7 +1621,7 @@ export function ResearchStudio({
           ))}
         </section>
       )}
-      {voiceOpen && (
+      {!agentMode && voiceOpen && (
         <VoiceConsole
           context={session.context}
           images={

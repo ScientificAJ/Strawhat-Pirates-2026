@@ -50,6 +50,10 @@ const ResearchStudio = dynamic(
   () => import("./studio").then((module) => module.ResearchStudio),
   { loading },
 );
+const AgentWorkshop = dynamic(
+  () => import("./agent-workshop").then((module) => module.AgentWorkshop),
+  { loading },
+);
 const ContextualAssistant = dynamic(() =>
   import("./contextual-assistant").then((module) => module.ContextualAssistant),
 );
@@ -381,7 +385,9 @@ function WorkspaceContent({
           </div>
         </section>
       )}
-      {snapshotError && !ready ? (
+      {section === "agents" ? (
+        <AgentWorkshop snapshotId={snapshot} context={context ?? undefined} />
+      ) : snapshotError && !ready ? (
         <ErrorState message={snapshotError} retry={retrySnapshot} />
       ) : !ready ? (
         <LoadingRows label="Opening the source snapshot" />

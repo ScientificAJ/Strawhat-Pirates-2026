@@ -1,5 +1,6 @@
 import type { components } from "../../../packages/contracts/api-types";
 import { rememberJob } from "./private-jobs";
+import type { AgentSelection, CustomAgentProfile } from "./agent-profiles";
 
 export type WorkspaceContext = components["schemas"]["WorkspaceContext"];
 export type ResearchInput = components["schemas"]["ResearchRequest"];
@@ -46,6 +47,11 @@ export type StudioSession = {
   summary_depth: "brief" | "technical" | "methods";
   availability_scope: "retained" | "catalog";
   conversation_width: number;
+  agent?: {
+    profile_id: string;
+    profile_revision: number;
+    frozen: { profile: CustomAgentProfile };
+  };
 };
 
 export function object(value: unknown): JsonRecord {
@@ -107,10 +113,11 @@ export function freshContext(snapshot: string): WorkspaceContext {
 export function newSession(
   snapshot: string,
   context?: WorkspaceContext,
+  agent?: AgentSelection,
 ): StudioSession {
   return {
     id: crypto.randomUUID(),
-    title: "Untitled research",
+    title: agent ? `${agent.profile.name} research` : "Untitled research",
     context: context ?? freshContext(snapshot),
     draft: "",
     plan: "",
@@ -125,6 +132,15 @@ export function newSession(
     summary_depth: "technical",
     availability_scope: "retained",
     conversation_width: 42,
+    ...(agent
+      ? {
+          agent: {
+            profile_id: agent.id,
+            profile_revision: agent.revision,
+            frozen: { profile: structuredClone(agent.profile) },
+          },
+        }
+      : {}),
   };
 }
 export function selectedHistory(
@@ -136,11 +152,28 @@ export function selectedHistory(
   const candidates = turns.flatMap((turn) => {
     const answer = object(turn.result?.answer);
     const claims = records(answer.claims)
-      .map((claim) => String(claim.statement ?? ""))
+      .map((claim) =>
+        [
+          String(claim.statement ?? ""),
+          ...strings(claim.limitations).map(
+            (limit) => `Qualification: ${limit}`,
+          ),
+        ].join("\n"),
+      )
+      .join("\n");
+    const response = [
+      claims,
+      ...strings(answer.limitations).map((limit) => `Limit: ${limit}`),
+      ...strings(answer.contradictions).map((item) => `Unresolved: ${item}`),
+      ...strings(answer.next_actions).map(
+        (action) => `Next research step: ${action}`,
+      ),
+    ]
+      .filter(Boolean)
       .join("\n");
     return [
       { role: "user" as const, text: turn.question },
-      ...(claims ? [{ role: "assistant" as const, text: claims }] : []),
+      ...(response ? [{ role: "assistant" as const, text: response }] : []),
     ];
   });
   for (const turn of candidates.reverse()) {
@@ -157,7 +190,9 @@ export function sessionArtifacts(session: StudioSession): StudioArtifact[] {
     records(turn.result?.facts).map((fact) => {
       const content = object(fact.content);
       let kind = "Evidence";
-      if (content.plot || content.vega_lite) kind = "Figures";
+      if (content.artifact_type === "educational_simulation")
+        kind = "Simulations";
+      else if (content.plot || content.vega_lite) kind = "Figures";
       else if (content.dashboard || content.components) kind = "Dashboard";
       else if (
         content.values ||
