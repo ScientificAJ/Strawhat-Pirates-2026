@@ -1,0 +1,161 @@
+.simulation {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  margin-top: 20px;
+}
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.heading h2 {
+  margin-bottom: 4px;
+}
+.heading p,
+.help {
+  color: var(--secondary);
+  font-size: 0.8125rem;
+  margin-bottom: 0;
+  max-width: 72ch;
+}
+.qualification {
+  background: var(--subtle);
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  margin: 0;
+}
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.inputs label,
+.playback label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+.inputs input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--boundary);
+  border-radius: 7px;
+  padding: 9px 11px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.actions,
+.playback {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.inputs .actions {
+  grid-column: 1 / -1;
+}
+.playback label {
+  flex: 1;
+  min-width: 140px;
+}
+.playback input {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--action);
+}
+.values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 16px 0;
+  border-block: 1px solid var(--divider);
+}
+.values dt {
+  color: var(--secondary);
+  font-size: 0.8125rem;
+}
+.values dd {
+  margin: 4px 0 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.details {
+  padding: 14px 0;
+  border-top: 1px solid var(--divider);
+  font-size: 0.8125rem;
+}
+.details summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 550;
+}
+.details p {
+  max-width: 72ch;
+}
+.details pre {
+  padding: 14px;
+  background: var(--subtle);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font:
+    0.75rem/1.7 "IBM Plex Mono",
+    monospace;
+  border-radius: 7px;
+}
+.details code {
+  overflow-wrap: anywhere;
+}
+.details h3 {
+  margin-top: 20px;
+  font-size: 0.9375rem;
+}
+.table {
+  overflow: auto;
+  max-height: 320px;
+}
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.table th,
+.table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--divider);
+  white-space: nowrap;
+}
+.table caption {
+  text-align: left;
+  color: var(--secondary);
+  padding-bottom: 10px;
+  white-space: normal;
+}
+.error {
+  color: var(--danger);
+  background: var(--danger-wash);
+  padding: 12px;
+  border-radius: 7px;
+}
+.warning {
+  color: var(--caution);
+  background: var(--caution-wash);
+  padding: 12px;
+  border-radius: 7px;
+}
+@media (max-width: 639px) {
+  .inputs,
+  .values {
+    grid-template-columns: 1fr;
+  }
+  .heading h2 {
+    font-size: 1rem;
+  }
+}

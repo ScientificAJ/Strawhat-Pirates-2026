@@ -1,8 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Notice } from "./chrome";
+import {
+  isDropletVisualization,
+  isSourceDropletVisualization,
+} from "../lib/simulation";
+
+const DropletSimulation = dynamic(
+  () =>
+    import("./droplet-simulation").then((module) => module.DropletSimulation),
+  {
+    loading: () => <p role="status">Opening the prepared visualization…</p>,
+  },
+);
+
+function PreparedSimulation({
+  value,
+}: {
+  value: import("../lib/simulation").DropletVisualization;
+}) {
+  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  return (
+    <section
+      className="artifact-record"
+      aria-label="Prepared droplet simulation"
+    >
+      <h3>
+        {isSourceDropletVisualization(value)
+          ? "FLEX-007 source-parameterized simulation"
+          : "Prepared droplet simulation"}
+      </h3>
+      <p>
+        {isSourceDropletVisualization(value)
+          ? "Prepared from the retained test-sheet parameters with their exact source anchors."
+          : "Prepared from your explicitly assigned initial diameter and burning constant."}{" "}
+        The D²-law calculation contains {value.point_count} model states. Open
+        it to inspect the trajectory, parameter provenance and scientific
+        detail; playback starts paused.
+      </p>
+      <button
+        ref={trigger}
+        className="button"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
+        {open ? "Close prepared simulation" : "Open prepared simulation"}
+      </button>
+      {open && (
+        <DropletSimulation
+          snapshotId={value.context.source_snapshot ?? ""}
+          accession={value.request.investigation_accession ?? undefined}
+          initialResult={value}
+          onClose={() => {
+            setOpen(false);
+            trigger.current?.focus();
+          }}
+        />
+      )}
+    </section>
+  );
+}
 
 const ScientificChart = dynamic(
   () => import("./scientific-chart").then((module) => module.ScientificChart),
@@ -47,6 +107,10 @@ export function ArtifactView({
   summarize?: boolean;
 }) {
   if (!isRecord(value)) return <p>{text(value)}</p>;
+  if (isDropletVisualization(value))
+    return (
+      <PreparedSimulation key={JSON.stringify(value.request)} value={value} />
+    );
   if ("vega_lite" in value) return <ScientificChart chart={value} />;
   const nestedResult = isRecord(value.result)
     ? value.result

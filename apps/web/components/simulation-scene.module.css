@@ -1,0 +1,74 @@
+.scene {
+  min-width: 0;
+  width: 100%;
+}
+.viewport {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 8 / 5;
+  min-height: 220px;
+  max-height: 400px;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #0b111b;
+}
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+.canvasMount {
+  position: absolute;
+  inset: 0;
+}
+.canvasMount[hidden] {
+  display: none;
+}
+.canvas:active {
+  cursor: grabbing;
+}
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  padding: 24px;
+  margin: 0;
+  color: #c9d4e4;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  text-align: center;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.hint {
+  margin-right: auto;
+  color: var(--secondary);
+  font-size: 0.75rem;
+}
+.controls button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface);
+  font-size: 0.75rem;
+}
+.controls button:hover:not(:disabled) {
+  background: var(--subtle);
+}
+@media (max-width: 479px) {
+  .hint {
+    width: 100%;
+  }
+}

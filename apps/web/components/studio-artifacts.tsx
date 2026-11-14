@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { ArtifactView } from "./artifact-view";
 import { downloadJson } from "../lib/api";
+import { isDropletVisualization } from "../lib/simulation";
 import {
   object,
   records,
@@ -34,13 +35,18 @@ function sourceUrl(value: unknown): string | undefined {
 export function ResearchMessage({
   turn,
   onEvidence,
+  assistantName = "Nova Ember",
 }: {
   turn: StudioTurn;
   onEvidence: (id: string) => void;
+  assistantName?: string;
 }) {
   const answer = object(turn.result?.answer);
   const claims = records(answer.claims);
   const limits = strings(answer.limitations);
+  const simulations = records(turn.result?.facts).filter((fact) =>
+    isDropletVisualization(fact.content),
+  );
   const [copied, setCopied] = useState(false);
   async function copy() {
     const text = claims
@@ -64,7 +70,7 @@ export function ResearchMessage({
       </div>
       <div className={styles.response}>
         <div className={styles.messageHeading}>
-          <strong>Nova Ember</strong>
+          <strong>{assistantName}</strong>
           <span className={styles.status}>
             {turn.status.replaceAll("_", " ")}
             {turn.result?.status && turn.result.status !== "completed"
@@ -153,15 +159,20 @@ export function ResearchMessage({
           </div>
         )}
         {strings(answer.next_actions).length > 0 && (
-          <details>
-            <summary>Suggested next steps</summary>
+          <section aria-label="Next research steps">
+            <h3>Next research steps</h3>
             <ul>
               {strings(answer.next_actions).map((value) => (
                 <li key={value}>{value}</li>
               ))}
             </ul>
-          </details>
+          </section>
         )}
+        {simulations.map((fact) => (
+          <section key={String(fact.id)} aria-label="Prepared simulation">
+            <ArtifactView value={fact.content} />
+          </section>
+        ))}
         {(turn.events.length > 0 ||
           records(turn.result?.actions).length > 0) && (
           <details className={styles.activity}>

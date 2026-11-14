@@ -258,6 +258,7 @@ test("separate local workspaces preserve an already open tab and keyboard naviga
     "data-theme",
     "dark",
   );
+  await expect(page.locator(".header-search kbd")).toHaveText("Commands");
   await page.keyboard.press("Control+k");
   await expect(
     page.getByRole("dialog", { name: "Command palette", exact: true }),

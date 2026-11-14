@@ -22,6 +22,7 @@ import { RawTable } from "./catalog";
 import { useWorkspacePreferences } from "../lib/workspace-preferences";
 import { RetainedFormatView } from "./retained-format-view";
 import { InvestigationWatch } from "./investigation-watch";
+import { SimulationLauncher } from "./simulation-launcher";
 import {
   Anchor,
   Empty,
@@ -413,6 +414,13 @@ export function InvestigationDossier({
             )}
           </aside>
         </div>
+      )}
+      {["overview", "methods"].includes(section) && (
+        <SimulationLauncher
+          key={`${accession}:${snapshotId}`}
+          accession={accession}
+          snapshotId={snapshotId}
+        />
       )}
       {section === "runs" && (
         <>
