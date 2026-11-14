@@ -12,7 +12,7 @@ The distinctive product idea has three connected signatures:
 2. **Condition difference:** a comparison makes material, geometry, oxygen, pressure, flow, gravity, sensor, protocol, and endpoint differences visible before polished charts can imply an invalid equivalence.
 3. **A reusable research workspace created through conversation:** the agent produces real, versioned dashboards, charts, datasets, code, evidence objects, and research cases that users can inspect and operate without continuing the conversation.
 
-These signatures connect the entire application: investigation discovery, individual runs and measurements, scenario assessment, prevention, detector blind spots, extinction auditing, media analysis, modeling, contradiction review, research planning, collaboration, teaching, Earth applications, and reproducible export. All features F01–F20 and all product, scientific, engineering, and UI requirements below remain part of the implementation target.
+These signatures connect the entire application: investigation discovery, individual runs and measurements, scenario assessment, prevention, detector blind spots, extinction auditing, media analysis, modeling, contradiction review, research planning, personal research cases, teaching, Earth applications, and reproducible export. The feature inventory keeps F01–F20 stable; F19 covers a single researcher's notebook, revisions and evidence updates.
 
 ## How this brief is organized
 
@@ -22,12 +22,12 @@ The source wording, examples, tables, equations, scientific distinctions, invest
 
 | Document or evidence | Role |
 |---|---|
-| [Complete implementation plan](IMPLEMENTATION_PLAN.md) | Dependency-ordered implementation of the entire platform, including accounts, secure keys, services, integration, Google Cloud hosting, acceptance, and operations |
+| [Implementation plan](IMPLEMENTATION_PLAN.md) | Build order, scientific checks, personal workspaces, provider setup when needed, and hosting qualifications |
 | [Original product science engineering and UI UX specification](https://chatgpt.com/space/page_aec4307255548191b89cceb60f6d0007) | Supplied foundation for A1–A65, retained in this brief |
 | [Original scientific and engineering plan](https://chatgpt.com/space/page_0525d144642081918b584ff977558690) | Supplied foundation for B1–B20, F01–F20, methods, and the empirical audit, retained in this brief |
 | [Reconciled decisions](#reconciled-decisions) | Active resolutions of the source differences |
 | [Source and data verification](#source-and-data-verification) and [empirical audit](#b-appendix) | Current checks, complete inventory, source versions, file hashes, schemas, and structural observations |
-| [Selected architecture](#selected-architecture) and [deployment implementation](IMPLEMENTATION_PLAN.md#w03--build-google-cloud-infrastructure-and-service-identities) | Google Cloud topology, external integrations, credential custody, and deployment work |
+| [Selected architecture](#selected-architecture) | One application host, a project-run analysis environment, and the conditions for choosing a host |
 | [Specified palette](#a41) | All 13 opaque sRGB contrast pairs were independently recalculated; rendered accessibility still requires implementation checks |
 | [Challenge overview](challenge.md) and [official challenge](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/) | Challenge identity, stated purpose, and official source |
 | [Project engineering instructions](AGENTS.md) | Coding skills, working standards, verification, and Git delivery rules |
@@ -50,8 +50,8 @@ The two supplied Pages are [Flame in Freefall Product Science Engineering and UI
 | Research Studio and contextual assistance | Full-page conversation/artifact studio, context-aware panel, explicit selected-view sharing, live voice, interruption, correction, and persistent text/evidence outputs |
 | Generated research dashboards | Typed components, inspectable queries, explicit linked filters, manual editing, preview/revision review, concurrency protection, live-query/frozen versions, and export |
 | Evidence relationships and scientific planning | Assumption ledger, contradiction workbench, coverage/gap maps, hypothesis records, informative next-observation proposals, and conclusion-change analysis |
-| Collaboration and review | Private/public research workspaces, membership and artifact permissions, shared cases/scenarios, anchored comments, curation, scientific review, publication, revocation, and notifications |
-| Open and reproducible research | Reports, JSON, CSV/Parquet, figures, notebooks/scripts, citations, licenses, frozen inputs, method/model versions, public read-only APIs, and the future MCP tool adapter |
+| Personal research notebook | Save a case or scenario, attach notes to exact evidence, compare and freeze revisions, inspect source changes on return, and export or restore files. |
+| Open and reproducible research | Reports, JSON, CSV/Parquet, figures, notebooks/scripts, citations, licenses, frozen inputs, method/model versions, public read-only API and MCP access |
 | Learning and terrestrial transfer | Layered explanations, glossary, teaching cases, reproducible exercises, and evidence-backed Earth-application collections |
 | Complete interface and operations | All A39–A65 screens, responsive layouts, themes, density, accessible interaction, motion, states, budgets, jobs, settings, stewardship, backups, monitoring, and service-failure recovery |
 
@@ -59,25 +59,24 @@ Scientific evidence gates govern the meaning and validation state of results; th
 
 ## Selected architecture
 
-The scientific domain remains a modular application with shared typed contracts. API traffic, continuous workflow polling, finite trusted computation, and untrusted generated code have separate runtime responsibilities and trust boundaries.
+Start locally. Serve the web interface and scientific API from one HTTPS origin, with a supervised worker and PostgreSQL on the same Linux host. A request never needs a NASA or OpenAI account belonging to the visitor. The team supplies the model key when live AI is integrated.
 
-| Responsibility | Selected implementation |
+| Responsibility | How it works |
 |---|---|
-| Web | Next.js 16.4.6, React 19.3.1, strict TypeScript, Node.js 24 LTS, pnpm; containerized on Cloud Run |
-| Scientific API | Python 3.13, FastAPI, Pydantic 2, SQLAlchemy 2, psycopg 3, Alembic; Cloud Run service |
-| Identity and membership | Google Cloud Identity Platform with Firebase client/Admin SDKs; independently enforced workspace, sharing, review, and execution permissions |
-| Canonical data and hybrid search | Cloud SQL PostgreSQL 17, relational provenance, full-text search, pgvector, least-privilege roles, and tested row-level policies where appropriate |
-| Scientific files and artifacts | Private versioned Cloud Storage, immutable object identities/generations, application SHA-256, lifecycle policies, authorized delivery, and Parquet/Arrow extracts |
-| Durable research workflows | Temporal Cloud and Python workers in Cloud Run worker pools; current standalone OpenAI Agents integration |
-| Trusted finite and heavy work | Registered Cloud Run jobs and Google Cloud Batch profiles for ingestion, media extraction, training, exports, Cantera, and validated FDS work |
-| Untrusted analysis | E2B isolated Python/shell templates; no production credentials, denied outbound/public traffic, bounded resources, and brokered input/output |
-| Model services | OpenAI Responses and Agents SDK, Decisions, embeddings, and GPT-Live; evaluated TypeSafe Jev and open-model adapters retain their source-defined roles |
-| Scientific and operational tools | Pint, NumPy/SciPy, Polars/DuckDB, PyMC/ArviZ/statsmodels/scikit-learn, FFmpeg/OpenCV, Cantera, MLflow, OpenTelemetry, Langfuse, and Sentry |
-| Secret custody and delivery | Secret Manager, distinct service identities, Artifact Registry, Terraform, GitHub Actions, and short-lived Workload Identity Federation |
+| Interface and API | Next.js/React/TypeScript and Python/FastAPI share versioned contracts. A scientist can discover, inspect, compare, calculate, save and export directly; Studio and voice call those same tools. |
+| Personal work | Browser storage holds settings, drafts, saved queries, frozen cohorts, scenarios, cases, sessions and dashboards. Back up to a file and import on another device. Compare watched sources with public release metadata on return. There is no cloud sync or case-sharing service. |
+| Private remote tasks | Only selected inputs leave the browser for requested analysis, upload or voice. An opaque browser credential protects that visitor’s job events, results and downloads until expiry or deletion. No public visitor can write the canonical corpus. |
+| Data and search | A scheduled importer uses the NASA PSI catalog, versioned manifests and selective file acquisition; NTRS and other primary sources supply supporting evidence. PostgreSQL handles relationships, full text and pgvector retrieval. Keep content-addressed originals and artifacts on persistent disk, Parquet/Arrow for analytical subsets, and a restorable copy on separate storage. |
+| Jobs and models | One worker consumes persistent PostgreSQL jobs for acquisition, scientific analysis, training, media and exports. The same database keeps job progress, checks, model versions and source references. Use a larger project-controlled worker only if a measured trusted workload needs it. |
+| Python and shell | The worker launches the project's pinned scientific environment directly on qualified Linux compute. Each exploratory session is isolated from the app, credentials, other workspaces and the network; no external execution API or sandbox subscription. See [A21](#a21). |
+| AI and voice | OpenAI is the only required model integration: grounded text and image work, semantic retrieval, bounded classifications, and live voice. Typed tools and independent evidence checks determine what may be reported. |
+| Operations | One release configuration, redacted logs, resource and spend limits, job status, backup and rollback. Use a temporary copy with separate data for release tests. |
 
-Google Cloud hosts the first-party web, API, workers, trusted computation, database, and scientific storage. OpenAI, Temporal Cloud, and E2B remain selected external integrations rather than being silently removed during the hosting change. The implementation plan includes accounts, access, quotas, costs, secure key preparation, runtime secret bindings, and verification for each service.
+**Hosting decision, 14 November 2026.** No host has been selected or provisioned. The signed-in [Space Apps Global Offers](https://www.spaceappschallenge.org/2026/global-offers/) list GoDaddy Registry/Porkbun, Google Cloud and Azure. The GoDaddy listing advertises a non-premium domain, hosting and SSL for one year; the [partner terms](https://www.spaceapps.earth/scholarship-terms) specify domain registration and renewal, not a hosting tier or card-free checkout. Use it for a domain if useful; Python, workers, disk and isolation support are unverified. The listed [Google trial](https://docs.cloud.google.com/free/docs/free-cloud-features) offers eligible new customers $300 for 90 days, requires payment verification and restricts GPUs. The listed [Azure free account](https://azure.microsoft.com/en-us/free/free-account-faq/) offers eligible new customers $200 for 30 days and requires a qualifying payment card. Separately, [Azure for Students](https://azure.microsoft.com/en-us/pricing/offers/ms-azr-0170p/) offers eligible full-time students aged 18+ $100 for 12 months without a card. Team eligibility, VM capacity and continuing costs are unverified. Hosting credits are not a budget for the direct OpenAI API.
 
-The secure OpenAI setup tools available in this environment support organization/project selection and encrypted local key provisioning. During API-backed implementation, use that confirmed setup flow and an ignored local destination; never ask for a key in chat or expose it in logs, screenshots, source, Terraform values, browser bundles, or image layers. Transfer/configure cloud runtime custody through an authorized Secret Manager step and verify the intended service identities. This brief and its plan do not claim that a key, billing balance, account entitlement, cloud resource, or deployed application already exists.
+Choose at deployment time: check an eligible no-card student offer or existing suitable compute first; otherwise present the owner with the specific host, terms, cost, expiry and alternative before enabling any cloud or billing integration. Qualify persistent storage, concurrent research and analysis, the local execution boundary, restore and voice connectivity on the actual host. A static site can publish an evidence snapshot but cannot host the whole application.
+
+For live AI, use the **OpenAI Developers** plugin's secure setup flow at the integration milestone to reuse or create a scoped project key and confirm its ignored local destination. Place the key only in the model-calling backend's secret configuration, outside Git, browser bundles, logs, and research environments. No key setup or provider activation is part of this documentation revision.
 
 ## Reconciled decisions
 
@@ -85,7 +84,7 @@ The secure OpenAI setup tools available in this environment support organization
 |---|---|
 | Product identity | Nova Ember is the project name and application wordmark, selected on 14 November 2026. StrawHat Pirates remains the team name; Flame in Freefall remains the official challenge title. Retain original source titles and URLs. |
 | Complete target | Preserve every feature and the detailed A/B contracts; order work by dependencies and evidence, without substituting a smaller MVP |
-| Hosting | Google Cloud replaces the earlier first-party Vercel/AWS deployment choices; provider-independent responsibilities remain |
+| Hosting | One portable Linux deployment; offer eligibility, budget, local execution support and the owner's decision determine the host. No mandatory cloud provider. |
 | Data status | The 24-record PSI inventory, 15 sampled file hashes, and three manifest hashes were independently reproduced on 14 November 2026; full scientific interpretation remains source-specific work |
 | Ranking | `question-relevance-v1` retains B's .30/.25/.25/.10/.10 heuristic; `scenario-applicability-v1` retains A's .25/.20/.20/.20/.15 heuristic; both are inspectable product policies, not safety probabilities |
 | Sandbox budgets | Default commands/cells are capped at 60 seconds; a separately approved extended-cell profile permits 90 seconds; a five-minute lease renews only within authorized cumulative runtime/spend limits |
@@ -95,12 +94,14 @@ The secure OpenAI setup tools available in this environment support organization
 | Repository | A's canonical `services/workers` and explicit domain/analysis/data-adapters/evidence/modeling/agent-tools/contracts packages; B's broader package names map to those responsibilities |
 | Tools and context | One typed tool registry; distinguish search/read, proposal/validation/save, run/cohort comparison, applicability/domain checks, and exploration/registered fitting. Client `ViewContext` is resolved into an authorized server `WorkspaceContext` |
 | UI | A39–A65 resolve the previous open visual-design questions. Preserve Ignition Glass, flame identity, Inter/IBM Plex Mono, the six-destination shell, full Studio/contextual assistance, tokens, screens, interactions, and acceptance tests |
-| Current provider contracts | Verify and lock the actual compatible endpoint/model/SDK set; use current Temporal standalone packaging and GPT-Live APIs; preserve all adapters and scientific behavior |
-| Permission vocabulary | Reader/researcher/curator/reviewer/administrator workspace roles and Viewer/Commenter/Editor/Reviewer artifact grants are separate, explicitly enforced dimensions |
+| Model integration | OpenAI supplies the live endpoints. Lock and evaluate the actual available model/SDK versions. Keep deterministic workflows and reproducible exports available without paid model credentials. |
+| Scientific status | Notes or corrections apply to a specific personal revision. Support depends on the source and validation evidence; annotations do not establish accuracy. |
 | Evaluation units | The 95-percent fully-supported-answer development threshold is distinct from 98-percent supported-claim and accepted-field precision; no known critical scientific or authorization failure is accepted |
 | Scientific integrity | Investigation/run/measurement independence, composition basis/location, endpoint meaning, uncertainty, model domain, and source provenance remain enforceable contracts |
 | Cost and status | Dated provider-price examples remain estimates requiring current recheck. Research verification, implementation, hosting, latency, model validation, and submission are distinct states; no resources or keys are claimed as created |
 | Attribution and competition | Use the configured owner identity and add no assistant/bot Git authors or co-author markers. Preserve licenses, citations, scientific origin labels, and any competition-required tool-use declarations or generated-media acknowledgments/watermarks |
+
+**Change of plan, 14 November 2026:** the earlier Google-managed stack, Temporal, E2B, additional model providers and multi-user review workflow are superseded. Original source documents and dated data observations remain available. “Checked” or “validated” below means that the stated evidence or method-specific tests support a result in its stated domain. Record precisely which checks ran. Researchers can inspect or annotate their own work; no one has to invite a collaborator or obtain sign-off. If the checks cannot establish a value or meaning, leave it unresolved.
 
 The original source-era ranking policies are intentionally retained as different scientific-discovery views. Permission checks and mandatory exact filters run first; hybrid retrieval produces candidates; applicability rules determine permitted analytical use. A high semantic score cannot override a hard incompatibility.
 
@@ -118,7 +119,7 @@ All 13 opaque palette contrast pairs in A41 were independently recalculated and 
 
 ## Full implementation and completion
 
-[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) carries the start-to-finish work packages: development foundation; identities, keys and accounts; reproducible Google Cloud infrastructure; complete evidence ingestion and curation; deterministic research workflows; every scientific/data/media/modeling capability; all UI screens and states; the research agent, dashboard builder, contextual and live interaction; collaboration and exports; security and evaluation; production deployment; and ongoing operational verification.
+[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) starts with real, versioned NASA inputs, then discovery, comparison, calculations and local save/export. Studio, locally executed code, voice, personal research cases and hosted delivery build on those verified paths. The complete F01–F20 and A39–A65 workflows remain traceable to acceptance checks.
 
 The plan's ordering is a dependency graph for implementing everything. Evidence and software are checked at the level of the claim being made. A successful code commit, provider connection, image build, or hosted health endpoint cannot stand in for a correctly authorized research workflow or a scientifically supported result.
 
@@ -142,7 +143,7 @@ The word **SI** follows the challenge terminology. The product should describe i
 
 ### A1.1 The central product loop
 
-A user defines a question or scenario. The system retrieves relevant investigations and individual runs. The user or agent creates a cohort, checks comparability, explores measurements, and invokes an approved calculation or model. The system produces findings with source anchors and applicability limits. The user saves an evidence-backed research case, shares it for review, or exports a reproducibility package.
+A user defines a question or scenario. The system retrieves relevant investigations and individual runs. The user or agent creates a cohort, checks comparability, explores measurements, and invokes an approved calculation or model. The system produces findings with source anchors and applicability limits. The user saves an evidence-backed research case, annotates or freezes a revision, or exports a reproducibility package.
 
 Every stage remains accessible without chat. Natural language is an additional control surface over the same functions, not an alternative database with different answers.
 
@@ -205,7 +206,7 @@ The primary users are aerospace researchers and engineers, professors, graduate 
 
 **Suppression research:** inspect FLEX runs and publications, separate fuel and droplet conditions, analyze an appropriate extinction endpoint, and explain why a droplet result does not automatically specify a cabin suppression system.
 
-**Research planning:** identify an evidence gap, formulate competing hypotheses, propose informative measurements, estimate which experimental conditions would best discriminate between models, and export the proposal for qualified review.
+**Research planning:** identify an evidence gap, formulate competing hypotheses, propose informative measurements, estimate which experimental conditions would best discriminate between models, and export the proposal with its assumptions, falsifiers and limits.
 
 **Education:** open an investigation overview, view an authentic example, inspect one real run, reproduce a documented calculation, and switch to deeper technical explanation without losing the original source context.
 
@@ -227,7 +228,7 @@ The product consists of connected workspaces. This section defines their functio
 | Evidence and relationships | Claims, source links, hardware relationships, contradictions, dependencies |
 | Controls and technology | Prevention, detection, suppression, recovery, terrestrial transfer, equipment-specific evidence |
 | Research cases and exports | Saved conclusions, review, reports, citations, reproducibility bundles |
-| Data stewardship | Ingestion, metadata conflicts, extraction review, quality checks, release approval |
+| Data stewardship | Ingestion, source conflicts, inspectable corrections, quality checks, and versioned snapshots |
 
 A persistent research context links these workspaces: selected scenario, corpus snapshot, investigation set, cohort, units, and analysis history. Moving from a chart to a source document should not discard the selected run or filter.
 
@@ -280,6 +281,8 @@ Facet counts must use the same corpus snapshot and permission scope as the resul
 Support exact acronyms and identifiers, full-text scientific terminology, synonyms, semantic questions, and combinations with hard filters. Preserve exact matches for names such as CFI and CFI-G instead of collapsing them through semantic similarity.
 
 Users can save a query, freeze its result set into a versioned cohort, collect investigations for reading, or compare selected runs. A saved query can change when the corpus changes; a frozen cohort cannot. Both objects should be available because they serve different scientific purposes.
+
+Save these objects in the current browser without registration. A workspace backup preserves both the query and the exact IDs and versions of any frozen cohort. If a referenced version becomes unavailable, show its identifier and status on restore.
 
 <a id="a6"></a>
 
@@ -542,7 +545,7 @@ For interactive viewing, use bounded downsampling that preserves important extre
 
 Support frame navigation, annotated regions, calibration references, sensor synchronization, and comparison of compatible views. Derived quantities can include front position, projected flame area, droplet diameter, or other measurable features when the image formation and calibration permit them.
 
-The initial pipeline uses classical image processing and human-reviewed segmentation. A vision model can propose regions or identify candidate frames, but it cannot silently establish a temperature, physical scale, or chemical state from an uncalibrated image.
+The initial pipeline uses classical image processing with masks checked against annotated reference frames and calibration. Keep optional manual inspection and mask corrections. If a method lacks an independent reference or fails its validation, show the candidate track without reporting a validated physical measurement. A vision model can propose regions or identify candidate frames, but it cannot silently establish a temperature, physical scale, or chemical state from an uncalibrated image.
 
 Perspective, distortion, pixel scale, occlusion, exposure, saturation, background subtraction, and frame timing must be considered. Two-color pyrometry or tomography requires the appropriate instrument response and method; ordinary RGB color is not a thermometer.
 
@@ -568,11 +571,11 @@ The creation pipeline is: resolve the question and context, retrieve the availab
 
 Shared filters and selections propagate only through explicit, unit-compatible bindings. Selecting a run may update its measurement chart and source summary; it must not silently filter an unrelated investigation using a coincidentally similar column name. Filters disclose which components they affect. The same empty selection cannot mean “all runs” in one component and “no runs” in another without an explicit rule.
 
-Users can inspect, edit, duplicate, freeze, and export a dashboard without using the agent. The agent proposes revisions as a meaningful change set, identifying added sources, changed filters, removed artifacts, new assumptions, and affected conclusions. Saving changes to an existing shared dashboard requires authorization and optimistic concurrency checks. The agent cannot silently overwrite another researcher’s edits.
+Users can inspect, edit, duplicate, freeze, and export a dashboard without using the agent. The agent proposes revisions as a meaningful change set, identifying added sources, changed filters, removed artifacts, new assumptions, and affected conclusions. Compare the base revision before applying a proposal: a result from an older tab or agent run must never overwrite the researcher’s latest edits.
 
-A dashboard can operate as a live saved query or a frozen research artifact. A live dashboard identifies the current corpus release and highlights source changes; a frozen dashboard retains the exact inputs and results used for the research case. Converting between these modes is an explicit action. A public dashboard cannot contain inaccessible private evidence or expose private source text through summaries, tooltips, exports, or cached computations.
+A dashboard can operate as a live saved query or a frozen research artifact. A live dashboard identifies the current corpus release and highlights source changes; a frozen dashboard retains the exact inputs and results used for the research case. Converting between these modes is an explicit action. Public examples use public evidence only. Personal dashboards stay in the browser; export only the selected, permitted data and show what the file will contain.
 
-Acceptance tests cover a dashboard composed from real evidence, a component with unavailable data, linked filters across compatible datasets, prevention of incompatible bindings, reproducible export, permission changes, concurrent edits, and source-version updates. The agent-created and manually created versions of an equivalent dashboard must return the same numerical results.
+Acceptance tests cover a dashboard composed from real evidence, a component with unavailable data, linked filters across compatible datasets, prevention of incompatible bindings, reproducible export, expired private job access, a stale model proposal after a manual edit, and source-version updates. The agent-created and manually created versions of an equivalent dashboard must return the same numerical results.
 
 <a id="a14"></a>
 
@@ -600,7 +603,7 @@ The agent can identify hidden assumptions and suggest sensitivity analyses. It c
 
 Preserve competing assertions and their sources. Classify disagreements as metadata conflict, different experimental conditions, different endpoint definitions, measurement uncertainty, model disagreement, or unresolved scientific conflict.
 
-A reviewer can adjudicate a metadata field while retaining the original source text. Scientific disagreement need not be forced into a single answer. The output may explain that two apparently contradictory findings concern different regimes.
+Anyone can compare the source assertions and suggest a correction with its evidence. A change to the public corpus retains the original text, the supporting reference and a new version. If the sources do not resolve the disagreement, keep both assertions. The output may explain that two apparently contradictory findings concern different regimes.
 
 ### A14.4 Evidence coverage and gap map
 
@@ -694,7 +697,7 @@ The public AWS NASA PSI registry describes a bucket, but its listed resource des
 
 ## A16 Data ingestion and stewardship pipeline
 
-The ingestion pipeline is a scientific production system. It must be at least as carefully designed as the agent.
+The importer preserves the path from NASA's original file to each displayed value. A failed or incomplete import must not replace the last usable snapshot.
 
 ### A16.1 Processing stages
 
@@ -708,7 +711,7 @@ The ingestion pipeline is a scientific production system. It must be at least as
 
 **Normalize:** map units, names, controlled vocabularies, experiment identifiers, and conditions while retaining raw representations. Never silently correct an impossible value.
 
-**Review:** adjudicate critical ambiguities, source conflicts, endpoint labels, and uncertain extraction. Separate automated checks from human review.
+**Check:** compare critical fields and endpoint labels against source anchors, protocols and independent references. Keep ambiguous extractions as proposals and unresolved conflicts visible. Optional corrections include their evidence and origin; they do not substitute for passing the applicable checks.
 
 **Release:** create an immutable corpus snapshot with a manifest, quality results, known limitations, licensing information, and versioned transformation code.
 
@@ -720,7 +723,7 @@ A sensor named explicitly in a structured column should be parsed and mapped thr
 
 AI is appropriate for interpreting an unstructured methods paragraph, proposing a synonym mapping, identifying candidate table headers, or suggesting that two descriptions refer to related apparatus. The output is a typed proposal with exact source spans and an abstention option.
 
-Critical fields include material identity, composition basis, pressure type, geometry, gravity conditions, endpoint, and sensor calibration. These receive stricter review than descriptive tags because mistakes can change scientific conclusions.
+Critical fields include material identity, composition basis, pressure type, geometry, gravity conditions, endpoint, and sensor calibration. These receive stricter source and validation checks than descriptive tags because mistakes can change scientific conclusions.
 
 ### A16.3 Quality checks
 
@@ -761,7 +764,7 @@ Use a relational canonical model for identity, conditions, provenance, and workf
 | Model and model version | Training snapshot, target, domain, validation, calibration, mechanism or algorithm and approval status |
 | Dashboard and dashboard revision | Typed scientific components, source and artifact dependencies, shared filters, selection bindings, live or frozen mode, ownership and change history |
 | Scenario and research case | Assumptions, selected evidence, conclusions, review, exports and dependency graph |
-| Workspace and audit event | Ownership, access membership, actions, approvals, publication and immutable change history |
+| Personal workspace and activity | Browser-local settings, cases, notes and revisions; provenance and event history for explicitly requested server jobs |
 
 ### A17.2 Numerical value contract
 
@@ -781,7 +784,7 @@ An imputed value belongs to a derived analysis record, not the canonical measure
 
 ### A17.4 Storage boundaries
 
-PostgreSQL stores canonical metadata, normalized scalar conditions, source anchors, relationships, permissions, and research state. Parquet stores large tabular measurements. HDF5 or original scientific formats remain preserved where present, with normalized extracts generated only as needed. Images and video stay in object storage with indexed metadata and derived assets.
+PostgreSQL stores canonical metadata, normalized scalar conditions, source anchors, relationships, private job ownership and temporary execution state. The browser stores private workspace state by default. Parquet stores large tabular measurements. HDF5 or original scientific formats remain preserved where present, with normalized extracts generated only as needed. Images and video stay in immutable files with indexed metadata and derived assets.
 
 A materialized search record is a projection, not the canonical scientific record. Rebuilding the search index must not change the facts, citations, or review status.
 
@@ -797,11 +800,11 @@ Use one lead research agent and a small set of specialist roles invoked when use
 
 The coordinator decomposes a research question, selects relevant tools, maintains the scenario and cohort, and produces a concise action plan. The verification stage checks source support, numerical consistency, domain restrictions, and unresolved contradictions. Agreement between two AI agents is not independent scientific validation.
 
-Use the OpenAI Responses API and the Python OpenAI Agents SDK. Durable jobs and approvals are handled through Temporal rather than adding multiple overlapping agent frameworks. Current Temporal documentation provides an OpenAI Agents SDK integration; new integration packaging must follow the current standalone package documentation rather than outdated import examples. [S17, S25]
+Use the OpenAI Responses API and the Python OpenAI Agents SDK. The application worker persists job steps, approvals and evidence references in PostgreSQL, including when a model request or tool execution is interrupted. [S17]
 
 ### A18.2 Model allocation
 
-The selected lead model is **gpt-6-astra** for complex synthesis, competing explanations, analysis planning, and final research-case assessment. **gpt-6.1-sol** handles routine source-grounded summaries, extraction proposals, and less demanding tool-assisted tasks. **gpt-6-luna through the Decisions API** handles approved bounded classifications. These are chosen from the current official model documentation, not asserted to be universally best for combustion research before evaluation. [S15, S16, S18]
+The selected lead model is **gpt-6-astra** for complex synthesis, competing explanations, analysis planning, and final research-case assessment. **gpt-6.1-sol** handles routine source-grounded summaries, extraction proposals, and less demanding tool-assisted tasks. Use structured responses for bounded classifications; evaluate **gpt-6-luna through the Decisions API** only if available and useful on the same project. These are chosen from the current official model documentation, not asserted to be universally best for combustion research before evaluation. [S15, S16, S18]
 
 All production roles require domain-specific evaluation. A model upgrade is a versioned change with regression tests. Use dated snapshots when the provider exposes them; otherwise record the exact model identifier, request metadata, and deployment date, and treat provider drift as an operational risk.
 
@@ -841,7 +844,7 @@ Tool schemas include workspace, corpus snapshot, entity versions, purpose, row a
 
 ### A18.4 Execution policy
 
-Read-only searches and small registered calculations can run under the user’s active request. Expensive computation, broad exports, publishing, changing shared cases, and promoting extracted metadata require appropriate confirmation or role-based approval.
+Routine searches and small registered calculations run immediately. Show the requester the cost or scope before expensive work, including private data in an export, or replacing a personal revision. Changing a public source mapping requires write access and a traceable correction. None of these actions calls an outside reviewer.
 
 The agent can retry recoverable technical errors within a bounded budget. It cannot keep changing a scientific question until it obtains a pleasing result. Failed analyses are logged and reported with the part that failed.
 
@@ -849,11 +852,9 @@ A research session records sources, tool requests, returned data, code, assumpti
 
 <a id="a19"></a>
 
-## A19 Decisions API Jev and deterministic microdecisions
+## A19 Bounded decisions and deterministic scientific rules
 
-The user’s idea of using specialized decision models is useful when the task is genuinely semantic and bounded. It is counterproductive when a database query or parser can answer exactly.
-
-OpenAI’s Decisions API supports bounded questions through a dedicated endpoint and currently documents gpt-6-luna as its supported model. TypeSafe’s Jev provides typed decision behavior; its October 2026 release notes identify Jev 1.14.0 and describe some capabilities as experimental. Valid output types do not guarantee factual correctness. [S18, S19]
+Use a parser or registered function when the input determines the answer. For a genuinely semantic choice, ask the existing OpenAI integration for a typed answer with an explicit unknown option. A valid schema does not make a label scientifically correct.
 
 ### A19.1 Decision allocation
 
@@ -863,15 +864,15 @@ OpenAI’s Decisions API supports bounded questions through a dedicated endpoint
 | Convert units | Pint and tested numerical code | Dimensional validation rather than probabilistic arithmetic |
 | Identify an explicitly named sensor in a table | Parser and controlled vocabulary | Source already contains the answer structurally |
 | Extract a sensor from an unstructured methods paragraph | Structured extraction with evidence spans, then validation | Requires reading context, not merely selecting an unsupported label |
-| Route a question to detection versus suppression tools | Decisions API with an unknown option | Bounded semantic choice with limited consequences |
-| Propose research-purpose tags | Decisions API or evaluated Jev challenger | Useful classification, retained as a proposal until accepted |
-| Resolve contradictory source values | Curator review supported by retrieval | A classifier should not silently adjudicate scientific truth |
+| Route a question to detection versus suppression tools | Bounded OpenAI classification with an unknown option | Limited semantic choice; retain the original question |
+| Propose research-purpose tags | Structured classification and source span | A proposed tag is not a measurement |
+| Resolve contradictory source values | Compare source assertions and record substantiated corrections | If the sources cannot resolve a conflict, retain it; a classifier cannot settle it |
 | Decide whether a model is inside its registered domain | Deterministic domain checks | Must not depend on model mood or wording |
-| Approve a safety conclusion | Qualified human review and evidence checks | Not a microdecision suitable for automatic classification |
+| Establish a conclusion's support | Evidence anchors, applicability checks and documented limits | The app cannot certify spacecraft safety |
 
 ### A19.2 Provider decision
 
-Use OpenAI Decisions as the initial bounded-decision provider to reduce integration overhead. Implement a narrow provider interface so **Jev 1.14.0** can be benchmarked as a challenger for the same tasks. Do not call both for every decision, and do not make experimental Jev image or long-context features a critical scientific dependency.
+Start with the existing OpenAI connection. A dedicated Decisions endpoint is an optional optimization only after it passes the same tests for the same task and has a measured benefit. No second provider account or challenger implementation is required. [S18]
 
 The benchmark measures task accuracy, abstention behavior, confusion by class, latency, cost, and stability under paraphrase. Labels are established from a reviewed dataset, not by asking another language model to be the unquestioned judge.
 
@@ -915,11 +916,11 @@ The agent receives a small, isolated analysis environment because executable cal
 
 ### A21.1 Selected execution environment
 
-Use an **E2B isolated sandbox** with a versioned Python template for untrusted agent-authored code. Explicitly require denied outbound access (`allow_internet_access=False`) and denied public traffic (`allow_public_traffic=False`), using a locked compatible SDK; current public-traffic guidance recommends Python e2b 2.60.0 or later. Transfer authorized frozen inputs and outputs through the backend broker rather than expecting a no-egress sandbox to fetch signed storage URLs itself. Isolation must be tested rather than assumed from a product name. [S26]
+Run the researcher's or agent's Python and bounded shell directly on project-controlled Linux compute. The worker starts a disposable sandbox using a local isolation runtime such as [gVisor/runsc](https://gvisor.dev/docs/), with a pinned scientific image, a read-only copy of the selected inputs, and a size-limited writable work area. Guests receive no network, public listener, host control socket, credentials, other jobs' files or access to the application database. Check artifact types, sizes and hashes on return. This uses installed software, not a hosted sandbox or an OpenAI code-execution endpoint. Qualify actual package compatibility and isolation on the chosen host. If unavailable, show the reason and retain the pending work; never fall back to executing generated commands in the API or the worker's own shell.
 
-Interactive policy targets are two virtual CPUs, approximately four GiB of memory, and 60 seconds for an ordinary command or cell. A separately approved extended-cell profile permits 90 seconds. A five-minute session lease can renew only when the task still has explicitly authorized cumulative runtime and spend remaining; renewal is not an unlimited timeout bypass. Bound input files, output size, process count, and storage. These are application limits to validate against the selected template and account, not claims about a particular free tier.
+Interactive policy targets are two virtual CPUs, approximately four GiB of memory, and 60 seconds for an ordinary command or cell. A separately approved extended-cell profile permits 90 seconds. A five-minute session lease can renew only when the task still has explicitly authorized cumulative runtime and spend remaining; renewal is not an unlimited timeout bypass. Bound input files, output size, process count, and storage. These are application limits to validate against the actual host and runtime, not assumptions about a hosting offer.
 
-A separate trusted worker executes reviewed long-running modeling jobs. Increasing a notebook timeout must not become a way to bypass the controlled modeling pipeline.
+The same trusted worker can schedule long-running registered profiles in their separately locked environments. Run a profile on larger project-controlled compute only where needed and authorized. Interactive notebook limits never grant access to the trusted modeling environment.
 
 ### A21.2 Input and dependency policy
 
@@ -957,10 +958,10 @@ The concrete technologies below are the baseline. Exact dependency resolution, s
 | JavaScript runtime and package management | Node.js 24 LTS and pnpm with committed lockfile | Reproducible builds and predictable supported runtime |
 | Scientific API | Python 3.13, FastAPI, Pydantic 2 | One typed scientific service layer close to the numerical ecosystem |
 | Database access | SQLAlchemy 2 and psycopg 3, versioned SQL migrations | Explicit transaction and schema control |
-| Canonical database | Cloud SQL for PostgreSQL 17 with the available vector extension | Relational scientific records, transactions, provenance, full-text/vector retrieval, and tested workspace isolation on Google Cloud |
-| Authentication | Google Cloud Identity Platform with Firebase client/Admin SDKs | Managed sign-in with server-side token verification and separate application-level authorization |
+| Canonical database | PostgreSQL 17 on the app host | Transactions, scientific relationships, job state, permissions and provenance; no managed database required |
+| Private job access | An opaque server-issued browser credential for requested remote operations | No registration or sign-in. Check ownership of private jobs, events, artifacts and downloads; public evidence is open. |
 | Search | PostgreSQL full-text search, pgvector, reciprocal-rank fusion | Exact terminology plus semantic retrieval without a separate search cluster initially |
-| Object storage | Private versioned Google Cloud Storage buckets with immutable object identities | Original and derived scientific assets, generation identifiers, application SHA-256, controlled delivery, and lifecycle policies |
+| Scientific files | Immutable, content-addressed storage on persistent disk, with an independent backup | Preserve originals, frozen inputs and results; authorize delivery and verify hashes on restore |
 | Large-data analysis | DuckDB, Polars, Arrow and Parquet | Efficient subset queries and transformations without loading all media into the database |
 | Scientific arrays | NumPy, SciPy, xarray and h5py as required by source formats | Standard numerical and multidimensional data handling |
 | Units and schemas | Pint, Pydantic and Pandera | Unit-aware calculations and typed dataset validation |
@@ -968,7 +969,7 @@ The concrete technologies below are the baseline. Exact dependency resolution, s
 | Visualization engine | Vega-Lite 6, with a restricted specification validator | Reproducible charts that the agent can safely propose |
 | Evidence relationship engine | Relational edge tables and recursive queries; Cytoscape.js only when a relationship view is needed | Preserve graph semantics without introducing a second canonical database |
 
-Next.js and React release records support the named starting versions. FastAPI supports the typed scientific API approach. Cloud SQL, PostgreSQL policies, Identity Platform verification, and hybrid retrieval require their own explicit configuration and tests. The earlier Supabase deployment selection is replaced by the Google Cloud identity/database arrangement; the PostgreSQL hybrid-search pattern remains applicable. [S21, S22, S23, S24, S32]
+Verify the web/API version combination and lock it at the first build. Test PostgreSQL permissions and hybrid retrieval against the actual research data; a hosted database or identity service is not needed for either. [S21, S22, S24, S32]
 
 Do not add Neo4j, Elasticsearch, Kafka, Kubernetes, and a second vector store before measured requirements justify them. The data model should permit later migration, but initial operational complexity should be spent on scientific quality rather than redundant infrastructure.
 
@@ -978,38 +979,31 @@ Do not add Neo4j, Elasticsearch, Kafka, Kubernetes, and a second vector store be
 |---|---|---|
 | Lead reasoning | OpenAI gpt-6-astra through Responses | Complex evidence synthesis and planning, subject to domain evaluation |
 | Routine language work | OpenAI gpt-6.1-sol | Lower-cost source-grounded work with escalation on difficult cases |
-| Bounded decisions | OpenAI Decisions with gpt-6-luna | Typed semantic classification where deterministic code is insufficient |
-| Decision challenger | TypeSafe Jev 1.14.0 behind an adapter | Benchmarkable alternative, not an additional mandatory dependency |
+| Bounded decisions | Deterministic rules first, then typed OpenAI classification with abstention | Test extraction, routing and tags against independent reference labels |
 | Embeddings | text-embedding-3-large with 1536 output dimensions | Deliberate quality and index-size tradeoff; evaluate against exact-search baselines |
 | Agent framework | OpenAI Agents SDK for Python | Typed tools, bounded roles, handoffs and tracing |
-| Durable orchestration | Temporal Cloud, Python SDK, and standalone temporalio-openai-agents integration | Retryable jobs, approvals, cancellation, and recoverable workflows; continuous pollers run in Cloud Run worker pools |
-| Untrusted analysis | E2B with pinned Python image and denied network egress | Separate generated code from application infrastructure |
+| Job execution | Supervised Python worker with PostgreSQL jobs, attempts and ordered events | Recover progress, explicit user confirmations, cancellation and artifact publication after reconnect or restart |
+| Exploratory code | Local, disposable sandbox with pinned Python/shell environment and no network | Real execution on project hardware without a sandbox provider; see [A21](#a21) |
 | Statistics | scikit-learn and PyMC | Interpretable baselines and explicit uncertainty modeling |
 | Chemistry | Cantera 3.2 | Appropriate kinetics, thermodynamics and transport calculations |
-| Model tracking | MLflow | Model versions, experiments, artifacts and deployment status |
+| Model tracking | Versioned PostgreSQL records plus immutable local artifacts | Preserve model cards, frozen inputs, evaluation results, registered domain, status and history |
 | Optional voice | gpt-live-1 with delegated backend reasoning | Live conversation without creating a separate scientific truth system |
 
 OpenAI documents embedding dimension reduction; the chosen 1536-dimensional representation is an application choice that must be evaluated on this corpus. It is not a claim that a shorter embedding is always as accurate as the full representation. [S27]
 
 ### A22.3 Deployment and engineering tools
 
-Deploy the public Next.js web application and FastAPI scientific API as containerized Google Cloud Run services behind the selected HTTPS application origin. Run continuous Temporal pollers in Cloud Run worker pools with explicitly configured active instances. Use Cloud Run jobs for suitable finite trusted tasks and Google Cloud Batch for long, resource-intensive, GPU, video, training, or solver jobs. Use Cloud SQL PostgreSQL 17 for the canonical database, Identity Platform for sign-in, and private versioned Cloud Storage for scientific assets. Temporal Cloud coordinates durable work; E2B remains the isolated execution provider for untrusted research code. This replaces the earlier first-party Vercel/AWS hosting choices without removing their responsibilities. The [selected architecture](#selected-architecture) and [implementation plan](IMPLEMENTATION_PLAN.md) define the actual service, identity, networking, and delivery work.
+Use one repeatable configuration for Next.js, FastAPI, PostgreSQL and the worker. Serve the UI and API through the same HTTPS origin; only the application needs public ingress. Keep the persistent data directory separate from builds. A host timer schedules bounded NASA refreshes. Test a release against a disposable database and file tree before promoting the same build.
 
-Choose co-located Google Cloud service regions where practical and explicitly measure external-provider latency and egress. Confirm worker-pool availability, database/vector versions, quotas, organization data-location requirements, and billing before provisioning; us-central1 is a planning default, not an assertion that the account and every service are ready. Do not assume that independent free tiers compose into an adequate production system.
+Track queue age, failed imports, model usage, spend, disk and backup age in the app's existing records and redacted logs. Protect the keys used by the backend. Budget paid and expensive tasks globally as well as by browser/workspace, so a new anonymous browser cannot reset the app's total budget. Keep an independent backup of the database and referenced files; demonstrate restoring and rerunning a frozen case.
 
-Use OpenTelemetry for end-to-end operational traces, Langfuse for AI tool and prompt observability with redaction, Sentry for application errors, and MLflow for scientific model artifacts. Each has a distinct role; avoid storing the same sensitive payload in all four systems.
-
-Use pytest and Hypothesis for Python correctness, Vitest for client logic, Playwright for end-to-end workflows, and automated accessibility checks. Use GitHub Actions for tests, dependency review, license inventory, secret scanning, container scanning, and signed build artifacts.
-
-Infrastructure configuration is versioned. Development uses local containers and a reduced corpus snapshot. Production and demonstration environments do not share writable databases or credentials.
+Use pytest and Hypothesis for numerical and data checks, Vitest for client behavior, and Playwright plus accessibility checks for end-to-end research tasks. Test hosting capacity, host isolation, libraries, restart, recovery and cost before choosing a provider. Eligibility and billing decisions belong at deployment; see the [hosting decision](#selected-architecture).
 
 ### A22.4 Portability and service independence
 
 The core scientific functions must remain usable without a paid AI call: browsing, filtering, source inspection, comparison rules, registered calculations, cached reviewed summaries, and exports.
 
-Provide a documented open-model adapter as a portability path, not a claim of equivalent performance. Qwen3-32B is a concrete Apache-2.0 model candidate for that adapter; its license is documented in the model card. Any deployment and use must also satisfy the competition’s affiliation and third-party-material requirements, and the model must pass the same application evaluations before receiving scientific tool privileges. [S38, S39]
-
-The default remains the selected OpenAI stack. An open-model adapter is not an automatic fallback that quietly lowers answer quality during an outage. When no evaluated model is available, the application falls back to non-agent scientific workflows.
+Keep tool contracts, original model outputs, evaluation fixtures and scientific code portable. If live AI is unavailable, explain the limitation and continue with the public evidence and calculation workflows. Changing a model would require the same measured quality and scientific checks; an outage must not trigger an untested substitute.
 
 <a id="a23"></a>
 
@@ -1019,7 +1013,7 @@ Use a modular monolith for the scientific application domain, with separate proc
 
 ### A23.1 Request path
 
-The browser sends a typed request to the application API. The API verifies identity and workspace access, resolves the requested corpus snapshot, and creates an operation context. Simple queries execute through the data layer. Agent work enters the agent coordinator. Long-running ingestion or computation becomes a durable job.
+A public lookup resolves the requested corpus snapshot without identifying the visitor. For a private remote action the API also checks the device credential and ownership of that specific job or temporary artifact. Simple queries use the data layer; Studio uses the same tools. Long-running ingestion or computation returns a durable job ID.
 
 The coordinator can retrieve evidence, invoke registered calculations, and request sandbox execution. All outputs pass through schema and permission checks before becoming application artifacts. A generated conclusion is stored with its evidence and processing lineage.
 
@@ -1027,11 +1021,11 @@ The browser receives ordered progress events and artifact references. It does no
 
 ### A23.2 Durable workflows
 
-Temporal owns job lifecycle: queued, running, awaiting approval, completed, failed, cancelled, and partially completed. Model calls and external I/O occur in appropriate activities or the documented agent integration, not as uncontrolled nondeterministic operations inside replayed workflow logic. [S25]
+PostgreSQL stores jobs, steps, attempts, approvals and numbered events. The worker leases work, records progress and checks cancellation before publishing. Restart recovers expired leases; reconnect replays persisted events. Record uncertain outcomes of external calls rather than reissuing a potentially charged request blindly. The UI distinguishes queued, running, awaiting user confirmation, completed, failed, cancelled and partial work.
 
 Activities are idempotent where possible. Retrying a job must not create duplicate corpus releases, publish a report twice, or charge repeatedly without visibility. Exactly-once side effects are not assumed merely because a workflow engine exists.
 
-Large files and model artifacts stay in object storage. Workflow history stores references and hashes, not huge raw payloads. Long-lived sessions must manage history growth and retain the source records needed for audit.
+Large files and model artifacts stay in the content-addressed file store. Workflow history stores references and hashes, not huge raw payloads. Long-lived sessions must manage history growth and retain the source records needed for audit.
 
 ### A23.3 State and caching
 
@@ -1054,22 +1048,19 @@ The API is contract-first. OpenAPI is generated from Pydantic schemas, and the T
 | GET /v1/investigations | Search and filter investigations with a specified snapshot |
 | GET /v1/investigations/{id}/versions/{version} | Retrieve a versioned dossier |
 | POST /v1/runs/query | Execute typed run filters and return a bounded result |
-| POST /v1/cohorts | Freeze a selection and its provenance |
+| POST /v1/cohorts | Resolve selected public records to exact versions and hashes for a cohort saved by the browser |
 | POST /v1/comparisons | Produce a comparability assessment and condition differences |
 | POST /v1/analyses | Start a registered calculation or sandbox analysis |
 | POST /v1/dashboards/validate | Validate a proposed dashboard specification, dependencies, bindings, permissions and estimated cost |
-| POST /v1/dashboards | Create an authorized dashboard from a validated specification |
-| GET /v1/dashboards/{id}/revisions/{revision} | Retrieve a versioned research dashboard and its artifact dependencies |
-| POST /v1/dashboards/{id}/revisions | Save a reviewed change set with an expected revision and concurrency checks |
 | GET /v1/models | List models, targets, domains and validation states |
 | POST /v1/models/{id}/check-domain | Evaluate applicability before inference |
 | POST /v1/models/{id}/predict | Run a versioned model after passing policy checks |
 | POST /v1/agent/runs | Start a bounded agent task with explicit application context |
 | GET /v1/jobs/{id}/events | Stream job progress and artifact events |
-| POST /v1/cases/{id}/exports | Produce a report or reproducibility bundle |
-| POST /v1/review-items | Propose a metadata correction or scientific review item |
+| POST /v1/exports | For exports needing server computation, process only the frozen inputs selected by the researcher; return a temporary private job |
+| GET /v1/snapshots/{version}/changes | Read the public change list. The browser matches it to watched sources without uploading a private case. |
 
-These are proposed application endpoints, not claims about NASA’s repository API.
+These are proposed app endpoints, not NASA endpoints. Creating, saving, annotating, freezing and reopening personal cases or dashboards are browser operations. The same typed revision and provenance contracts apply when importing a file or applying a Studio suggestion. Producing a report does not publish a case online.
 
 ### A24.2 Scientific claim contract
 
@@ -1111,17 +1102,15 @@ Keep raw scientific archives outside the source repository unless small and expl
 
 ## A25 Security privacy and adversarial resilience
 
-Scientific correctness and software security interact. A compromised source, cross-workspace leak, or prompt-injected document can corrupt a research conclusion even if the language model sounds careful.
+Scientific correctness and privacy matter wherever a source, calculation, or model result enters a personal case. Preserve provenance and restrict access to private processing inputs and results.
 
 ### A25.1 Authorization
 
-Use workspace membership and roles for reader, researcher, curator, reviewer, and administrator. Enforce authorization at the API, database, object-store broker, search layer, and job executor.
+The public corpus, read-only research API and MCP queries, and personal browser workspace work without registration. Save cases in the browser. When a researcher requests private remote processing, the server issues an opaque, high-entropy credential for that browser in a secure HttpOnly cookie. Use it only for that browser’s private jobs, uploads, voice sessions, and temporary results. A submitted job receives only the selected inputs. The originating browser can reconnect after a tab closes to inspect, cancel, download, or delete the job and its results before expiry.
 
-Workspace roles govern membership responsibilities. Artifact-specific Viewer, Commenter, Editor, and Reviewer grants govern sharing and review on the named artifact; they are separate permission dimensions, resolved through one explicit authorization policy. A shared artifact never grants unrelated workspace access or execution privileges.
+Check ownership on private reads and writes, event streams, uploads, and downloads. Check that a job still exists and has not been canceled before recording a result. A private job address alone grants no access. Keep server credentials out of browser bundles and execution environments. The public read-only interfaces expose released NASA evidence and registered methods; only the project maintainer can release a change to the public corpus. Personal corrections stay in the researcher’s case.
 
-Use verified Identity Platform identities and application-owned workspace membership for authorization. Cloud SQL runtime roles must be least-privilege and non-bypass; use reviewed PostgreSQL row-level policies as defense in depth where appropriate. Set any transaction-local user/workspace claims from verified server context and reset them safely through pooled transactions. Do not use editable user metadata as authority. Views, background jobs, exports, and security-definer functions require explicit review. Migration/admin credentials never reach the browser or sandbox, and they are not a shortcut for user-facing queries. [S23]
-
-The scientific corpus may be public while user research cases are private. An agent working in a private case must not publish its contents to a public summary cache. Search retrieval must apply permissions before model context is assembled.
+Send the selected evidence to the assistant within the stated scope. Keep personal analysis, notes, and transient results out of public search indexes, summary caches and external read APIs.
 
 ### A25.2 Prompt injection
 
@@ -1139,9 +1128,9 @@ Network fetchers use an allowlist or constrained destination policy, block priva
 
 ### A25.4 Privacy and retention
 
-Collect only information needed for research collaboration. Screen and microphone access are opt-in. Private files are not used to improve shared extraction models or public summaries without explicit permission.
+Collect only what a requested calculation, model call, or voice session needs. Screen and microphone access are separate, explicit choices. Keep private files out of public summaries and extraction training.
 
-Retention rules distinguish source assets, private uploads, transient audio, screenshots, model-provider requests, audit events, and derived artifacts. Deleting a private case triggers deletion or access revocation across its derived artifacts, indexes, caches, and permitted logs, subject to clearly stated audit-retention requirements.
+Document distinct retention periods for transient uploads, audio, screenshots, provider requests, job results, and operational logs. Show which inputs an action sends, its expiry, and how to delete temporary server data earlier from the originating browser. Remove expired private artifacts and their derived caches, and disclose any applicable backup/provider retention. A local case deletion, a remote job deletion, and deletion of a downloaded backup are separate actions. Offer deletion of outstanding remote work before a browser reset removes its credential. A downloaded file remains under its holder’s control.
 
 Do not promise zero provider retention unless the actual account and API configuration support it. Record the selected service data policies as part of deployment review.
 
@@ -1155,20 +1144,20 @@ The release standard is evidence of correct behavior, not the number of features
 
 Build a development subset covering at least 300 critical extracted fields, 100 research questions, 30 misleading or adversarial questions, and representative comparison/modeling tasks. The full acceptance benchmark expands to at least 1,000 labeled field extractions and 300 representative research tasks, stratified across solids, droplets, gases, aerosols, hardware, units, endpoints, missingness, and domain mismatch. Preserve a held-out portion and explicit adversarial cases. Include all major scientific families in discovery tests and the deeply normalized families in calculation tests.
 
-Review labels independently where practical and adjudicate disagreements. Keep development and final evaluation cases separate. A single person repeatedly rewriting prompts against the same tiny test set does not establish general reliability.
+Ground expected answers in independent source passages, published reference analyses or known-answer calculations. Keep conflicting or ambiguous labels explicit; do not count them as correct by default. Keep development and final evaluation cases separate. Rewriting prompts against the same small test set does not establish general reliability.
 
 ### A26.2 Core gates
 
 | Area | Proposed release gate |
 |---|---|
 | Source traceability | Every published scientific claim has a resolvable evidence or calculation anchor |
-| Critical extraction | All released critical values have deterministic validation or documented human review; report sampled error rates rather than hiding them |
+| Critical extraction | Each released critical value passes the relevant deterministic checks or is substantiated by a documented independent reference with exact source context. Ambiguous values stay unresolved. Report sampled error rates. |
 | Numerical integrity | Registered calculations pass unit, boundary, dimensional, and reference-value tests |
 | Citation validity | No fabricated source identifiers, nonexistent files, or invented quoted values in the acceptance set |
 | Scientific boundaries | All mandatory adversarial cases preserve measured versus modeled distinctions and unsupported-domain abstention |
-| Retrieval | Report recall and ranking quality against scientist-reviewed relevant sets, stratified by investigation and query type |
+| Retrieval | Report recall and ranking quality against independently source-labeled relevant sets, by investigation and query type. Record label provenance; model agreement is not ground truth. |
 | Agent task quality | Target at least 95 percent fully supported answers on the reviewed benchmark, with sample size and uncertainty reported |
-| Authorization | Cross-user, cross-workspace, cache, export and artifact-access tests pass |
+| Private data | A second browser cannot read another browser's uploads, job state, events, downloads or cached results |
 | Reproducibility | Each release demonstration can be rerun from its frozen inputs and environment |
 | Human usability | Representative users complete discovery, inspection, comparison, and export tasks without agent assistance |
 
@@ -1188,7 +1177,7 @@ Each predictive model has its own scientific acceptance criteria, set before fin
 
 Require a model card, independent-unit split, held-out performance, calibration assessment where relevant, sensitivity analysis, failure examples, domain definition, and explicit unsupported uses. For mechanistic models, include numerical convergence and comparison with relevant measurements.
 
-Model promotion requires an authorized review. The agent can assemble the evidence package but cannot approve its own model for a more consequential use.
+Register a model version for a specific use only when its recorded validation meets criteria fixed before final testing. If support is absent or inconclusive, keep it exploratory or unavailable and explain why. Neither the agent nor a manual status change can override those checks.
 
 <a id="a27"></a>
 
@@ -1200,7 +1189,7 @@ Set initial targets of p95 under 500 milliseconds for indexed filter queries on 
 
 Separate time to first useful evidence from time to complete an analysis. A scientist should see which sources were found and whether data is available before a lengthy computation completes.
 
-Keep large media on demand. Use thumbnails and selected clips for exploration, signed range-capable downloads where supported, and server-side subset queries for large tables. The application should not download an entire archive merely to populate an experiment overview.
+Keep large media on demand. Use thumbnails and selected clips for exploration, permission-checked range downloads where supported, and server-side subset queries for large tables. The application should not download an entire archive merely to populate an experiment overview.
 
 ### A27.2 Failure behavior
 
@@ -1208,11 +1197,11 @@ When an AI provider fails, retain browsing, filtering, source access, calculatio
 
 When computation fails, return the failure stage, available partial artifacts, and whether any conclusions remain valid. A successful tool invocation is not proof that the resulting analysis passed scientific checks.
 
-Backups must include metadata, manifests, review decisions, and object references. Perform restoration drills. A database backup without its corresponding scientific assets is not a complete recovery plan.
+Back up the public corpus manifests, source and method versions, calibration and model artifacts, and corresponding database records together. Restore them away from the live data and rerun a frozen analysis. The user's own workspace backup is separate; a server backup cannot recover browser-only notes.
 
 ### A27.3 Cost model
 
-Track cost by research session, ingestion job, model role, dataset, and export. The main variables are model tokens, decision requests, sandbox duration, trusted compute, storage, media transfer, database workload, and observability retention.
+Track cost by research session, ingestion job, model role, dataset, and export. The main variables are model tokens, decision requests, local execution time, trusted compute, storage, media transfer, database workload, and observability retention.
 
 The cost estimator uses the currently configured provider rate sheet and actual usage categories. It must include cached-input and reasoning or output charges where applicable rather than counting only the text visible to the user. Provider prices and account limits are configuration, not hardcoded scientific facts. [S28]
 
@@ -1224,19 +1213,19 @@ Users can choose standard and deep-analysis budgets. The system estimates expens
 
 Operational traces identify slow queries, queue delays, failed parsers, extraction conflicts, model calls, sandbox failures, missing citations, and stale dependencies. Scientific quality metrics are separate from uptime and latency.
 
-Logs use identifiers and redacted summaries by default. Sensitive source text is not copied indiscriminately into every observability system. Reviewers can inspect a research trace through authorized application records.
+Use identifiers and redacted summaries in operational logs. The researcher can inspect the inputs and evidence for their own analysis without private source text appearing in public diagnostics.
 
 <a id="a28"></a>
 
-## A28 Collaboration reports and reproducibility bundles
+## A28 Personal research cases, reports and reproducibility bundles
 
-A research case is the durable unit of collaboration. It contains the question, scenario, assumptions, selected and excluded evidence, analyses, claims, unresolved issues, reviews, and final research conclusions.
+A research case contains the question, scenario, assumptions, selected and excluded evidence, analyses, claims, personal notes, unresolved issues, and conclusions. Save the case privately in this browser. To move it between devices, export and import a portable workspace backup. The researcher chooses separately whether to give anyone a file outside the app.
 
-Users can comment on a claim, source anchor, figure, or assumption. Reviewers can request changes and record a disposition. A reviewed version is frozen; later edits create a new version that requires renewed review where the change affects conclusions.
+The researcher can annotate a claim, source anchor, figure, or assumption and record a proposed correction beside its source, reason, and version. Keep original assertions visible. Freeze a revision for reuse or export. Changed evidence marks dependent conclusions stale and proposes a successor; frozen revisions retain their original inputs.
 
 ### A28.1 Export formats
 
-Provide a human-readable report, CSV or Parquet data subsets, a machine-readable JSON manifest, a runnable Python script or notebook, chart specifications, and bibliographic references. The report identifies the corpus snapshot, analysis versions, assumptions, unsupported transfers, and review status.
+Provide a human-readable report, CSV or Parquet data subsets, a machine-readable JSON manifest, a runnable Python script or notebook, chart specifications, and bibliographic references. The report identifies the corpus snapshot, analysis versions, assumptions, unsupported transfers, and any source checks or unresolved comments attached to that revision.
 
 The reproducibility bundle includes source identifiers and hashes, transformation code, model or mechanism version, package lock, environment description, seeds, execution parameters, resulting tables and figures, and known limitations. Include original assets only when their license and size permit redistribution; otherwise include verified acquisition instructions and checksums.
 
@@ -1244,9 +1233,7 @@ An exported conclusion retains its applicability passport. Removing the limitati
 
 ### A28.2 Evidence updates
 
-Users may explicitly subscribe to changes affecting a saved case. The application can detect a new dataset version, retracted or corrected source, changed metadata, or improved model validation and identify which conclusions need review.
-
-A refresh creates a proposed case revision. It does not silently overwrite a signed-off analysis. Monitoring is an opt-in product capability, not an automatic task enabled merely because a user opened a case.
+A researcher can choose **Watch evidence** for a case or **Check for changes** once. Store watched source, model, and version IDs locally. On the next visit with connectivity, compare them against the public release manifest. Show new datasets, source corrections or retractions, metadata changes, and revised model validation beside the conclusions they affect. Record the last successful check, preserve unread changes in the local workspace, and allow the watch to be turned off. Checks run while the app is open; a refresh proposes a new revision and leaves the frozen analysis intact.
 
 <a id="a29"></a>
 
@@ -1292,7 +1279,7 @@ Exit criterion: the agent completes representative tasks with supported claims, 
 
 Deliver one or more narrow model families only after the dataset-readiness and evaluation gates pass. Reproduce a documented analysis before extending to new scenarios. Add domain checks and uncertainty before a general prediction feature is exposed.
 
-Exit criterion: a model has a reviewed intended-use statement and held-out validation. Unsupported partial-gravity predictions remain unavailable unless supported by an appropriate validation program.
+Exit criterion: a model has a documented intended use and passing held-out validation for that use. Unsupported partial-gravity predictions remain unavailable unless supported by an appropriate validation program.
 
 ### A30.5 Gate E Advanced research system
 
@@ -1312,18 +1299,14 @@ A fully functioning abstention with a useful explanation is a scientific feature
 
 ## A31 Build work packages and dependency order
 
-### A31.1 Work package ownership
+### A31.1 Build order
 
-The following roles can be combined when the team is smaller. They describe responsibilities, not assumed team members.
+1. Take real PSI files from manifest to anchored, checked values. Publish coverage and unresolved fields.
+2. Build discovery, comparison, registered methods, personal cases and reproducible exports on those records.
+3. Connect Studio and voice to the same tools; add direct isolated analysis, modeling and media workflows against real fixtures.
+4. Run the scientific and interface checks throughout. Qualify the chosen host with a real workload and a restore before release.
 
-| Work package | Deliverables | Depends on |
-|---|---|---|
-| Scientific data lead | Corpus inventory, adapters, source anchors, quality checks, reviewed fixtures | Official source access |
-| Domain and modeling lead | Ontology, endpoint definitions, comparability rules, calculations, model gates | Data contracts and representative files |
-| Backend and security lead | API, authorization, jobs, object broker, audit, exports | Schema and tool contracts |
-| Agent engineering lead | Coordinator, model routing, evidence checks, sandbox integration, evaluations | Typed API and approved analysis functions |
-| Application lead | Explorer, detail workflows, comparison, cases, chart integration | Stable contracts and real fixtures |
-| Verification and delivery lead | End-to-end testing, documentation, licenses, demo and reproducibility | All work packages |
+These are units of work. One developer can complete them without assigning leads or waiting for sign-off.
 
 ### A31.2 Critical path
 
@@ -1417,7 +1400,7 @@ The requirement mapping follows the user-supplied NASA challenge and preserves i
 | Live mode | Optional interface over the same backend | A separate voice agent with looser rules creates inconsistent answers |
 | Microdecisions | Deterministic rules first, bounded models second | Typed AI output is not proof of factual correctness |
 | Agent design | One coordinator with constrained specialist roles | A large mandatory agent swarm adds failure paths and duplicated work |
-| Frameworks | Agents SDK plus Temporal lifecycle | Simultaneously using multiple orchestration frameworks creates avoidable complexity |
+| Workflows | Agents SDK for tools; PostgreSQL jobs and a local worker for execution | No separate workflow service is needed for restart, progress or cancellation |
 | Sandbox | Isolated, no-secret, no-egress execution | Running generated code in the API server is an unacceptable trust boundary |
 | Storage | Relational metadata plus immutable scientific assets | A vector database alone cannot serve as the scientific record |
 | Modeling | Narrow models validated for explicit endpoints | A universal spacecraft fire predictor is unsupported by the available heterogeneous evidence |
@@ -1452,7 +1435,7 @@ For a participant under 18, check the current submission rules concerning recogn
 | Missing calibration or uncertainty | False precision | Preserve missingness, restrict derived measurement and prediction claims |
 | Repeated measures leak across splits | Inflated model performance | Independent-unit grouping and held-out campaigns |
 | Domain shift | Misleading habitat prediction | Applicability passport, combination-aware domain checks, abstention |
-| AI invents evidence | Persuasive but unsupported results | Structured claims, anchor validation, numerical verification and human review |
+| AI invents evidence | Persuasive but unsupported results | Resolve exact anchors, verify calculations and units, qualify or withhold unsupported claims |
 | Prompt injection or generated code escapes scope | Data exposure or compromised output | Tool permissions, isolated execution, denied network, no secrets |
 | Cross-workspace caching leaks data | Privacy breach | Permission-scoped retrieval, cache and artifact keys, adversarial tests |
 | Vendor model or API changes | Behavior drift and broken integrations | Version recording, regression evaluation, provider adapters and non-agent fallback |
@@ -1467,7 +1450,7 @@ A release is complete when the supported corpus is explicitly identified; the na
 
 The demonstration release must include an investigation explorer, detailed experiment records, evidence-linked summaries, meaningful filtering, at least one scientifically valid comparison, an executable analysis with inspectable inputs and outputs, a useful unsupported-domain response, and a reproducible case export.
 
-The full research release additionally requires broader corpus coverage, controlled image and time-series analysis, qualified model families, evidence-gap and contradiction workflows, collaborative review, operational resilience, and evaluated contextual or live assistance.
+The full research release additionally requires broader corpus coverage, controlled image and time-series analysis, qualified model families, evidence-gap and contradiction workflows, personal notes and frozen case revisions, operational resilience, and evaluated contextual or live assistance.
 
 The guiding standard is straightforward: **the application should make it easier to reach a defensible conclusion, easier to see why a conclusion is limited, and easier for another scientist to check the work.** Maximum ambition belongs in the capability target. Maximum rigor belongs in every result.
 
@@ -1517,7 +1500,7 @@ The following references support external factual statements and technology capa
 
 **S18.** [OpenAI Decisions API guide](https://developers.openai.com/api/docs/guides/decisions). Bounded classification capabilities and supported model documentation.
 
-**S19.** [TypeSafe Jev 1.14 release notes](https://typesafe.ai/blog/jev-1-14). Version-specific capabilities and explicitly experimental features. Vendor performance claims are not treated as independent validation.
+**S19.** [TypeSafe Jev 1.14 release notes](https://typesafe.ai/blog/jev-1-14). Historical provider comparison; not an implementation dependency.
 
 **S20.** [OpenAI GPT-Live delegation documentation](https://developers.openai.com/api/docs/guides/live-delegation). Separation of live conversation from backend reasoning and tools.
 
@@ -1525,13 +1508,13 @@ The following references support external factual statements and technology capa
 
 **S22.** [React official release records](https://github.com/react/react/releases). React 19.3.1 starting version and compatibility verification.
 
-**S23.** [Cloud SQL PostgreSQL deployment and connectivity](https://docs.cloud.google.com/sql/docs/postgres/connect-run), [Identity Platform sign-in](https://docs.cloud.google.com/identity-platform/docs/web/google), and [Firebase server ID-token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens). Current database/identity platform references; workspace authorization and tested PostgreSQL policies remain application responsibilities. The earlier Supabase-specific JWT/helper assumptions are superseded.
+**S23.** [Cloud SQL PostgreSQL deployment and connectivity](https://docs.cloud.google.com/sql/docs/postgres/connect-run), [Identity Platform sign-in](https://docs.cloud.google.com/identity-platform/docs/web/google), and [Firebase server ID-token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens). Historical managed deployment alternatives; the current design uses PostgreSQL on the selected host and has no app accounts.
 
 **S24.** [Supabase hybrid search documentation](https://supabase.com/docs/guides/ai/hybrid-search). Full-text and vector retrieval with rank fusion.
 
-**S25.** [Temporal OpenAI Agents integration documentation](https://docs.temporal.io/develop/python/integrations/openai-agents) and [Temporal Python SDK releases](https://github.com/temporalio/sdk-python/releases). Durable agent execution and current integration-package changes.
+**S25.** [Temporal OpenAI Agents integration documentation](https://docs.temporal.io/develop/python/integrations/openai-agents) and [Temporal Python SDK releases](https://github.com/temporalio/sdk-python/releases). Source-era references for a superseded hosted workflow design.
 
-**S26.** [E2B network access controls](https://e2b.dev/docs/network/internet-access). Sandbox networking configuration; the application must test its own isolation policy.
+**S26.** [E2B network access controls](https://e2b.dev/docs/network/internet-access). Historical provider reference; execution now uses project-controlled Linux. See [gVisor architecture and security](https://gvisor.dev/docs/architecture_guide/security/) and [application compatibility](https://gvisor.dev/docs/user_guide/compatibility/) for runtime qualification.
 
 **S27.** [OpenAI embedding guide](https://developers.openai.com/api/docs/guides/embeddings). Embedding models and configurable output dimensions.
 
@@ -1557,7 +1540,7 @@ The following references support external factual statements and technology capa
 
 **S37.** [NASA BASS-II summary report record](https://ntrs.nasa.gov/citations/20210011385). Primary methods and investigation context to prioritize during detailed ingestion.
 
-**S38.** [Qwen3-32B model card](https://huggingface.co/Qwen/Qwen3-32B). Concrete open-model portability candidate and stated Apache-2.0 license. Inclusion is not a recommendation to ignore applicable competition restrictions or a claim of validated scientific performance.
+**S38.** [Qwen3-32B model card](https://huggingface.co/Qwen/Qwen3-32B). Historical portability research; no additional model endpoint is required.
 
 ### Competition rules
 
@@ -1601,7 +1584,7 @@ A restrained flame mark connects these experiences visually. It is a brand illus
 
 ### A40.1 Product naming and voice
 
-Use **Nova Ember** as both the project name and the in-application wordmark, preserving its spelling and space. Apply it consistently in the public introduction, About view, loading shell, sign-in screen, reports, sharing previews, and presentation mode. Where space permits only the mark, retain Nova Ember as its accessible name. Flame in Freefall identifies the official NASA challenge; StrawHat Pirates identifies the team. Trademark and domain clearance are not established by this specification.
+Use **Nova Ember** as both the project name and the in-application wordmark, preserving its spelling and space. Apply it consistently in the public introduction, About view, loading shell, workspace recovery, reports, export previews, and presentation mode. Where space permits only the mark, retain Nova Ember as its accessible name. Flame in Freefall identifies the official NASA challenge; StrawHat Pirates identifies the team. Trademark and domain clearance are not established by this specification.
 
 The descriptive line is **Combustion research, made clear.** A supporting public sentence is: **Explore experiments, compare conditions, and build evidence-backed fire safety insights.** Avoid claims such as “Predict any spacecraft fire,” “NASA-approved intelligence,” or “The world’s safest AI.”
 
@@ -1627,7 +1610,7 @@ Public and onboarding compositions may use one generous flame illustration. The 
 
 The product mark identifies the app; it is not a badge that a result is certified. NASA attribution belongs beside the relevant data source and in project credits, without suggesting endorsement. Provider logos are absent from the main scientific workspace unless needed for transparent service information.
 
-Use the same identity in the loading shell, sign-in screen, report cover, favicon, sharing preview, and presentation mode. Reports use a restrained one-color header and preserve source attribution. Do not stamp large promotional gradients over scientific figures.
+Use the same identity in the loading shell, workspace recovery, report cover, favicon, export preview, and presentation mode. Reports use a restrained one-color header and preserve source attribution. Do not stamp large promotional gradients over scientific figures.
 
 <a id="a41"></a>
 
@@ -1798,9 +1781,9 @@ The app uses a stable desktop shell and a simplified responsive shell. Scientist
 
 Use six primary destinations: **Overview, Investigations, Compare, Laboratory, AI Studio, and Research cases**. The Laboratory contains Data, Scenarios, Models, and Evidence as secondary destinations. Controls and Earth applications are discoverable from Investigations and Evidence, not hidden in an unrelated marketing section.
 
-The lower utility area contains Jobs, Data coverage, Help, and Settings. Data stewardship appears only for authorized roles. Keep role-sensitive controls out of ordinary navigation rather than showing a wall of unusable administrative links.
+The lower utility area contains Jobs, Data coverage, Help, and Settings. The researcher can open a discrepancy beside the source and record a local note. The maintainer’s controls for changing the public corpus appear only in the maintenance view.
 
-The navigation rail contains the compact wordmark, workspace switcher, destination groups, a concise job indicator, and account controls. The main header contains breadcrumbs, the current research context, search, and the contextual assistant entry point.
+The navigation rail contains the compact wordmark, local workspace switcher, destination groups, a concise job indicator, and backup controls. Label the active workspace **On this device**. The main header contains breadcrumbs, the current research context, search, and the contextual assistant entry point.
 
 ### A44.2 Route and deep-link contract
 
@@ -1818,12 +1801,12 @@ The navigation rail contains the compact wordmark, workspace switcher, destinati
 | /app/lab/evidence | Relationships, contradictions and gaps |
 | /app/agent/:sessionId | Full-page AI Research Studio |
 | /app/dashboards/:id | Saved research dashboard |
-| /app/cases/:id | Research case, reviews and exports |
+| /app/cases/:id | Research case, source checks, comments and exports |
 | /app/jobs | Computation and ingestion activity |
 | /app/settings | Preferences, privacy, workspace and budget |
-| /app/stewardship | Authorized data-review workflows |
+| /app/stewardship | Data quality, source comparisons and records of corpus corrections |
 
-Public, non-sensitive filters can be URL-encoded. Private questions, document titles, credentials, and confidential scenario values must not be copied into query strings. Share private context through permission-checked saved identifiers.
+Public, non-sensitive filters can be URL-encoded. Private questions, document titles, credentials, and confidential scenario values must not be copied into query strings. A local case address reopens the saved case in the same browser profile. On another device, offer to import the researcher’s workspace backup.
 
 ### A44.3 Persistent research context
 
@@ -1893,7 +1876,7 @@ The first screen should expose real research content before the user scrolls. Do
 
 **Evidence coverage** communicates investigation families and available condition combinations, with a clear distinction between metadata-only and analysis-ready records. Selecting a region applies an inspectable filter to the explorer.
 
-**Continue research** shows a saved case title, its scenario, last action, and unresolved review item. It does not display a generic productivity streak.
+**Continue research** shows a saved case title, its scenario, last action, and any unresolved question or comment.
 
 **Relevant investigations** explains relevance to the current scenario or question. With no scenario selected, label the section “Explore investigations,” not “Recommended for your mission.”
 
@@ -1901,7 +1884,7 @@ The first screen should expose real research content before the user scrolls. Do
 
 ### A46.3 First-use and empty states
 
-A first-time visitor can browse the public corpus without completing an elaborate onboarding form. Sign-in appears when saving private work or using a capability that actually requires an account.
+A first-time visitor can browse, compare, and save a private case directly in this browser. The first save confirms where it lives and offers **Back up workspace**. A returning visitor can resume local work immediately. To continue on another device, restore a portable backup there. If browser storage fails, show the unsaved state and offer a download while the draft is still available.
 
 A short optional introduction teaches three actions: open an investigation, inspect a source, and compare compatible runs. Use the real application rather than an unskippable carousel of marketing slides. Sample research cases are labeled as examples and use verified data or clearly identified test fixtures.
 
@@ -1961,7 +1944,7 @@ Use five principal sections: **Overview, Runs and conditions, Findings, Methods 
 
 Keep a concise human-readable overview visible without invoking a fresh model call. Provide Brief, Technical, and Methods summary modes. A scenario-specific interpretation is a separate action that names the scenario and evidence version.
 
-Each generated summary shows “Model synthesis,” the supporting evidence set, and review status. Citations open an evidence inspector anchored to the selected statement. A review badge is specific about what was reviewed; it does not imply that every future regenerated sentence has been checked.
+Each generated summary shows “Model synthesis,” the supporting evidence set, and which source checks were performed. Citations open an evidence inspector anchored to the selected statement. Attach a source-check note to the specific statement and version it covers; newly generated text does not inherit it.
 
 Objectives and findings remain visually distinct. For a record without results, the Findings section explicitly says that results are not available in the selected corpus rather than filling the space with inferred conclusions.
 
@@ -1997,7 +1980,7 @@ The chart region follows the matrix. Shared axes are used only when quantities a
 
 Selecting a condition row highlights the runs and charts affected by that difference. A contextual explanation identifies why the dimension matters to the chosen comparison without asserting causation from a visual difference alone.
 
-A reviewer can attach a note to a mismatch. A proposed normalization opens its assumptions and expected effect before execution. Exploratory overrides remain visibly labeled in the saved comparison and every exported result.
+Anyone working on a comparison can attach a note to a mismatch. A proposed normalization opens its assumptions and expected effect before execution. Exploratory overrides remain visibly labeled in the saved comparison and every exported result.
 
 ### A49.3 Ranking interaction
 
@@ -2027,11 +2010,11 @@ A tool action is represented as a compact activity item: searching a named corpu
 
 Generated charts and tables are real artifact objects with Open, Inspect data, Save, and Export actions. Copying a number includes its unit and optional provenance, not merely a visually formatted string.
 
-### A50.3 Planning and approval
+### A50.3 Planning and confirming actions
 
-For a complex task, show a short editable task plan and what will be read or executed. Routine read-only actions proceed within the active request. Costly computation, shared edits, broad exports, and publishing display an approval card with consequences, scope, estimated resource use, and Cancel.
+For a complex task, show a short editable task plan and what will be read or executed. Routine lookups, local saves and computations within the chosen budget need no extra prompt. Ask the researcher to confirm a new cost limit, a proposed replacement of saved work, or the inclusion of private inputs in a remote job. Show the affected material, estimated resource use where relevant, and Cancel.
 
-Approval is not bundled into a vague “Continue” button. The action label should name the consequence, such as Run analysis or Publish case. The least destructive option remains easy to choose.
+Name the action, such as **Run analysis** or **Replace draft**, and make cancellation easy. If an action cannot run within the remaining public budget, return any completed work and show the limit.
 
 ### A50.4 Streaming and completion
 
@@ -2101,9 +2084,9 @@ Shared filters show which components they affect. A component that cannot honor 
 
 A request such as “Add a plot of oxygen coverage and explain missing conditions” produces a change set. Highlight added, changed, and removed components in a review state. The user can accept the entire change or individual independent changes.
 
-Revision history preserves author, inputs, sources, and the prior layout. A pending agent revision does not overwrite concurrent manual work. A conflict offers a comparison and merge decision rather than discarding one version.
+Revision history preserves inputs, sources, prior layout, and whether the researcher edited it directly or accepted an assistant proposal. A pending proposal must not overwrite the researcher’s edits, including edits in another tab. If the saved revision changed, compare the two versions and offer to keep both.
 
-Live-query and frozen dashboards use different labels. The app does not update a published figure behind the user’s back. Export uses the saved revision, not a transient unsaved arrangement.
+Live-query and frozen dashboards use different labels. A frozen figure retains its source version. Export uses the saved revision, not a transient unsaved arrangement.
 
 <a id="a53"></a>
 
@@ -2121,7 +2104,7 @@ A transformation history records operations in order. Users can inspect, disable
 
 The code surface uses a readable editor, explicit environment information, input files, a Run control, resource limits, and a separate output region. An expandable provenance area connects outputs to the executed code and environment.
 
-No auto-execution occurs while typing or opening a shared case. Agent-generated code is presented as proposed code until execution policy permits it. Errors show the relevant line and a useful explanation without exposing backend secrets.
+No auto-execution occurs while typing or opening an imported case. Agent-generated code is presented as proposed code until execution policy permits it. Errors show the relevant line and a useful explanation without exposing backend secrets.
 
 Provide an accessible plain-text editing fallback. Keyboard navigation must allow leaving the editor without an undocumented escape sequence. Copy and export preserve code exactly; formatting must not alter a scientific constant.
 
@@ -2131,7 +2114,7 @@ For a run with video and sensor traces, show a main media region above or beside
 
 Controls include play, pause, step frame, playback speed, time entry, and interval selection. A frame-step control works by keyboard. Playback does not auto-start when a result opens.
 
-Annotations use a separate layer with owner, method, units, and review status. Turning annotations off reveals the original image. A selected region can be sent to the assistant, measured through an approved method, or attached to a research case.
+Annotations use a separate layer with author label, method, units, and any source-check notes for that version. Turning annotations off reveals the original image. A selected region can be sent to the assistant, measured through a registered method, or attached to a research case.
 
 ### A53.4 Quality view
 
@@ -2181,7 +2164,7 @@ Provide a synchronized list alternative for graph content, keyboard traversal, s
 
 ### A55.2 Contradiction workbench
 
-Place competing assertions side by side with their source context and versions. Below, show the affected fields and downstream analyses. Authorized reviewers can retain both, resolve a metadata issue, or request further evidence.
+Place competing assertions side by side with their source context and versions. Below, show the affected fields and downstream analyses. The researcher can retain both, record the missing evidence, or attach a personal correction with its source. A later correction in a public corpus release preserves the earlier assertions.
 
 A resolution requires a reason and supporting anchor. The visual design does not imply that the newer or more polished source is automatically correct. Unresolved conflict remains visible wherever it affects interpretation.
 
@@ -2205,21 +2188,19 @@ Glossary terms open on click or keyboard focus, not hover alone. Equations have 
 
 <a id="a56"></a>
 
-## A56 Research cases collaboration and operational screens
+## A56 Personal research cases, exports and operational screens
 
 ### A56.1 Research case editor
 
-The case editor uses a document-centered layout with an outline, the report body, and an optional evidence or review pane. The outline covers Question, Scenario, Evidence, Analysis, Findings, Limitations, Review, and Reproducibility.
+The case editor uses a document-centered layout with an outline, the report body, and an optional evidence or notes pane. The outline covers Question, Scenario, Evidence, Analysis, Findings, Limitations, Source checks and notes, and Reproducibility.
 
-Claims and artifacts are linked objects, not disconnected pasted screenshots. Editing a source-dependent assumption marks affected sections as stale. Reviewed versions are frozen and visibly different from drafts.
+Claims and artifacts link to their evidence. Editing a source-dependent assumption marks affected sections as stale. A frozen revision records its inputs and remains visibly different from the editable draft.
 
-The main actions are Save revision, Request review, and Export. Publishing is separate from saving. A public-link preview identifies exactly what will be accessible and excludes private sources unless their permissions allow publication.
+The main actions are **Save revision**, **Add note**, and **Export**. Save writes to the active local workspace. An export preview identifies the exact frozen revision, scientific qualifications, and assets the file will contain. Keep private notes and raw attachments out of a portable research report unless the researcher chooses to include them and their licenses permit it.
 
-### A56.2 Review and sharing
+### A56.2 Notes and corrections
 
-Comments attach to a claim, figure, source anchor, or assumption. Use a margin indicator and a focused thread rather than adding permanent chat bubbles throughout the report. Review outcomes are Accepted, Changes requested, or Unresolved, with a reason and reviewer identity.
-
-Sharing controls explain Viewer, Commenter, Editor, and Reviewer permissions in plain language. Display inherited access where relevant. Revoking a link is an explicit action with a result message; copying a link does not change permissions.
+Attach a personal note to a claim, figure, source anchor, or assumption. A margin indicator opens the note and the exact revision it refers to. For a correction, show the original value beside the researcher’s proposed value, reason, and source; mark unresolved questions explicitly. The researcher can edit a draft, freeze it, or include selected notes in a downloaded file.
 
 ### A56.3 Export preview
 
@@ -2229,21 +2210,23 @@ The user cannot accidentally export a polished conclusion while omitting its cri
 
 ### A56.4 Jobs and activity
 
-Jobs show the actual stages, elapsed time, initiating user, source snapshot, resource use where available, and cancellation status. Separate queued, running, awaiting approval, completed, failed, cancelled, and partially completed.
+Jobs show the actual stages, elapsed time, initiating device or workspace, source snapshot, resource use where available, and cancellation status. Separate queued, running, waiting for the user’s decision, completed, failed, cancelled, and partially completed. A visitor can follow a private remote job after closing and reopening the tab. Explain which selected inputs were sent, where the result lives, and when it expires. Adding a result to a local case does not upload the case.
 
 A job failure offers stage-specific retry when safe. The app must not imply that closing the page cancels server work, or that cancelling a browser request necessarily stopped computation. Present the confirmed backend state.
 
-### A56.5 Upload and stewardship
+### A56.5 Uploads and data quality
 
-The upload flow identifies files, scope, permissions, licensing, and intended use before processing. Show validation results and unsupported formats early. Large uploads can resume where supported, and users can remove an accidental file before submission.
+The upload flow identifies files, their intended use, licensing, processing location, and expiry before submission. Show validation results and unsupported formats early. Large uploads can resume where supported, and the researcher can remove an accidental file before submission.
 
-The curator screen is a high-density review queue with the source on one side and proposed normalized fields on the other. Differences, units, evidence spans, and automated checks are visible. Keyboard-efficient review is supported, but bulk acceptance cannot bypass critical-field checks.
+The data-quality view places the source beside normalized fields, with differences, units, evidence spans and automated checks visible. Support keyboard navigation through discrepancies. A personal correction stays in the case. Public corpus changes come from the project’s ingestion and release process, preserving the old value and rationale. An unresolved field stays qualified or unavailable for the calculations that require it.
 
-### A56.6 Settings and account states
+### A56.6 Settings, devices and recovery
 
-Settings groups are Appearance and accessibility, Research preferences, AI and budgets, Privacy and retention, Notifications, Workspace access, and Account. Research preferences include units, density, summary depth, and default evidence scope.
+Settings groups are Appearance and accessibility, Research preferences, AI and budgets, Privacy and retention, Evidence watches, and Workspace backups. Research preferences include units, density, summary depth, and default evidence scope. Settings distinguish workspace data on this browser from temporary processing inputs and results on the server.
 
-Authentication screens preserve the originating task. Session expiration does not erase a draft. Reauthentication, offline mode, read-only access, permission denial, and account deletion each have distinct explanations. Do not use the same generic error screen for all of them.
+Offer **Back up workspace** and **Restore workspace** with a versioned private file. Import previews its contents, retains frozen references, flags missing assets, and preserves existing drafts on conflict. Backups include saved results and exclude credentials and live server jobs. Show the date of the last backup. A restored workspace is an independent copy with no automatic synchronization.
+
+Anyone using the same browser profile can see its saved work. Clearing site data, losing the device, private browsing, or browser storage eviction can erase it. Show these limits next to backup and deletion controls. Distinguish offline, read-only, missing local data, expired job credentials, and expired or deleted remote results. Preserve locally authored drafts when remote access expires. Before **Clear this browser**, offer to back up local work and delete temporary server data while the credential is still present.
 
 <a id="a57"></a>
 
@@ -2268,7 +2251,7 @@ Build a small set of carefully specified primitives and scientific components. A
 | Figure container | Title, plot, units, legend, uncertainty, caption, data and provenance actions |
 | Applicability summary | Supported conditions, mismatches, unknowns, and consequence for use |
 | Agent activity item | Real tool action, status, useful inputs, result and retry or cancellation where valid |
-| Approval card | Action, consequences, scope, cost estimate when available, approve and cancel |
+| Action confirmation | Consequence, scope, cost estimate when available, named action and cancel |
 | Dashboard component | Typed artifact, dependencies, filter binding, stale state and revision |
 | Empty state | Cause, scope, useful next action and no invented content |
 | Error state | What failed, what remains available, recovery and reference identifier |
@@ -2288,9 +2271,9 @@ Virtualize large datasets only when needed, with a paginated accessible alternat
 
 ### A57.2 Status vocabulary
 
-Use precise labels such as Raw files available, Metadata only, Human-reviewed extraction, Model synthesis, Outside model domain, and Requires review. Avoid ambiguous labels such as Trusted, Verified science, or Safe unless the exact verification scope is stated.
+Use precise labels such as Raw files available, Metadata only, Source-checked field, Model synthesis, Outside model domain, and Unresolved source conflict. A source-checked field links to the original value and the check performed. Avoid broad claims such as Trusted, Verified science, or Safe.
 
-A citation badge identifies provenance, not certainty. A human-review badge includes the reviewed version. Proposed metadata is visibly distinct from released canonical data.
+A citation badge identifies provenance. Any optional check records the evidence, method, and version it covers. Proposed metadata is visibly distinct from released canonical data.
 
 <a id="a58"></a>
 
@@ -2421,9 +2404,9 @@ Details expand within a stable hierarchy. Important scientific limitations are n
 
 Inline field errors identify the field and corrective action. A page-level error summarizes the failure and what is still usable. Preserve unsaved inputs after recoverable failures.
 
-AI context, microphone state, screen sharing, private-source scope, and publication status are continuously understandable. A consent dialog must not use visual emphasis to trick the user into sharing more than necessary.
+AI context, microphone state, screen sharing, selected private inputs, and remote processing status are continuously understandable. A consent dialog must not use visual emphasis to trick the user into sharing more than necessary.
 
-Provide Undo for reversible layout and collection changes. Deleting source data, publishing a case, and revoking access require clear consequences and confirmed outcomes. A toast alone is insufficient for an important security or data-loss event.
+Provide Undo for reversible layout and collection changes. Clearly explain the effects of deleting a local case, resetting the workspace, or removing a temporary server result, and confirm the outcome. A toast alone is insufficient for an important data-loss event.
 
 <a id="a62"></a>
 
@@ -2459,7 +2442,7 @@ Each token change is reviewed for contrast, meaning, and regression impact. No s
 
 ### A62.3 State ownership
 
-The URL owns safe shareable navigation and filter state. The server owns corpus versions, models, permissions, cases, dashboard revisions, and jobs. Local component state owns temporary popovers and unsent input. Persistent user preferences own theme, density, reduced effects, and default units.
+The URL owns safe shareable navigation and filter state. IndexedDB holds private cases, draft and frozen dashboard revisions, saved searches, collections, scenarios, notes, selections, conversation history, forks, watched evidence, and unsent drafts subject to the researcher’s retention settings. Store preferences such as theme, density, reduced effects, shortcuts, default units and AI budgets in this browser. The server owns public corpus and model versions and temporary private job inputs, status, and outputs. A tab or assistant proposal that edits a stale draft must show the difference or offer a fork. Temporary UI state owns open popovers and current focus.
 
 Agent-generated interface changes are typed proposals. The frontend renders a reviewed component registry; it never evaluates arbitrary model-generated JavaScript or HTML in the application origin.
 
@@ -2471,7 +2454,7 @@ Keep the initial shell lightweight. Load code editing, graph rendering, heavy ch
 
 Use workers or backend processing for expensive transformations. Abort obsolete filter requests, discard out-of-order responses, and show the actual active query. Avoid unnecessary re-rendering of large tables when a chat token arrives.
 
-Design cache keys around workspace, permissions, corpus snapshot, scenario and cohort version. A visually convenient cache must not leak another user’s private research. Log out and permission changes invalidate sensitive cached data.
+Scope public cache entries to the corpus snapshot, scenario and cohort version. Store local case results under their workspace and revision. Keep private server responses out of public caches; expire them with the job. A result explicitly saved to a local case remains available with its inputs and provenance. Restoring a backup restores those saved artifacts without restoring temporary server access.
 
 <a id="a63"></a>
 
@@ -2498,6 +2481,8 @@ Screenshot regression covers stable structural components. Scientific charts als
 Use representative researchers, engineers, and students for formative testing. Initial rounds can be small and iterative; they do not establish universal usability. Record task success, time, errors, misunderstood scientific states, and recovery behavior.
 
 Required tasks include finding an investigation under specified conditions, opening its source, identifying an unknown variable, comparing two runs, spotting an incompatible comparison, checking an AI citation, reviewing a dashboard change, cancelling an analysis, and exporting a reproducible case.
+
+In one browser, save a case, annotate an exact source, freeze a cohort, and back up an unsent draft. Restore the file in a fresh browser, check pinned IDs and notes, and confirm that the original copy is unchanged when the restored draft is edited. Resume a private job in its originating browser after closing the tab; a second browser with only that job’s URL must get no private content. Verify the submitted inputs exclude unrelated drafts, deleted or expired results stop being served, and an evidence watch on return proposes a revision without changing the frozen case.
 
 An especially important test asks the user to distinguish a measured result, a model prediction, and an AI synthesis. Another asks whether a green completed job means the scenario is safe. Any confusion here requires redesign, not a disclaimer hidden in Help.
 
@@ -2534,7 +2519,7 @@ A strong visual moment must survive three tests: it communicates something usefu
 
 The implementation handoff consists of this screen specification, the token source, the component inventory, responsive rules, state matrix, scientific visualization rules, content examples, accessibility behavior, and acceptance tests.
 
-Before visual implementation is signed off, produce and review high-fidelity compositions for Overview, Investigation explorer, Investigation detail, Comparison, AI Studio, Scenario and Model results, Data laboratory, and Research case review. Include narrow-screen variants of the principal workflows and component states, not just desktop hero screens.
+Produce high-fidelity compositions for Overview, Investigation explorer, Investigation detail, Comparison, AI Studio, Scenario and Model results, Data laboratory, and Research case notes and export. Include narrow-screen variants of the principal workflows and component states.
 
 The logo requires final vector artwork and small-size review. The UI requires actual browser rendering and interaction testing. Those are implementation deliverables; this specification establishes the design decisions and specifications rather than claiming that a prototype or finished visual asset already exists.
 
@@ -2702,7 +2687,7 @@ Support exact and semantic search across investigations, experiments, materials,
 
 Numeric filters operate on normalized structured quantities. A natural-language request compiles to a typed filter that can be inspected and edited. Missing values have their own state. A query for measured airflow must not silently match a fan setting.
 
-Provide saved searches, reusable filters, collections, and version-specific links. Search results expose the reason for matching, important mismatches, and whether quantitative data are available.
+Provide saved searches, reusable filters, collections and version-specific links to public evidence. Search results expose match reasons, material mismatches and quantitative data availability. Personal selections stay in this browser and move through deliberate backup and restore.
 
 ### F02 Investigation overviews and detailed experiment records
 
@@ -2732,7 +2717,7 @@ Scenario output includes relevant studies, condition coverage, mismatches, usabl
 
 Expose separate judgments for question relevance, physical applicability, evidence support, and data readiness. Allow users to sort on each and inspect the components.
 
-A versioned relevance heuristic can provide a default order. The question-relevance-v1 policy uses 30% question/outcome match, 25% material/geometry match, 25% environment match, 10% measurement match, and 10% scale/protocol match. The separate scenario-applicability-v1 policy in A8.2 uses its own endpoint/material/atmosphere/flow-gravity/apparatus dimensions and weights; the two policies answer different questions. These weights are product choices to calibrate against expert rankings, not scientific constants.
+A versioned relevance heuristic can provide a default order. The question-relevance-v1 policy uses 30% question/outcome match, 25% material/geometry match, 25% environment match, 10% measurement match, and 10% scale/protocol match. The separate scenario-applicability-v1 policy in A8.2 uses its own endpoint/material/atmosphere/flow-gravity/apparatus dimensions and weights; the two policies answer different questions. These weights are product choices to calibrate against source-supported reference rankings and optional domain feedback, not scientific constants.
 
 Critical incompatibilities should trigger a visible applicability restriction even when semantic relevance is high. Missing conditions receive an unknown state rather than a fictitious similarity. The formula, normalization, tie-breaks, and policy for unknowns must be recorded with every saved ranking.
 
@@ -2826,17 +2811,17 @@ Provide an Earth-application research collection linking NASA findings to detect
 
 Fine-water-mist, detector, and firefighter-equipment stories from the challenge become evidence-backed resource entries. They are not numerical performance guarantees derived from unrelated PSI trials.
 
-### F19 Collaboration and review
+### F19 Personal research cases, notes and revisions
 
-Support private and public research projects, saved collections, shared scenarios, comments tied to evidence, curator corrections, model-review records, and immutable versions of published analyses. Workspace roles are reader, researcher, curator, reviewer, and administrator; artifact Viewer, Commenter, Editor, and Reviewer grants are separate permissions enforced through the same authorization policy. Sharing is explicit; a source being public does not make a user's annotations public.
+Keep collections, scenarios, dashboards, research cases and their immutable revisions in the current browser. Attach personal observations and source-backed corrections to a claim, figure, assumption or exact evidence anchor. Retain the old value, proposal, reason, evidence and timestamp. A correction to a personal case leaves the public corpus unchanged.
 
-Reviewers can correct an extraction while preserving the original source, earlier value, explanation, and author. Downstream summaries and models are marked stale when their evidence changes.
+Let the researcher watch a case on this device. When they return, compare its dependencies with the latest public snapshot, highlight changes and propose a new local revision. Preserve the old version until the researcher chooses what to adopt. A portable workspace backup moves this work to another browser. An exported research package is an independent copy the researcher can send to someone else.
 
 ### F20 Export and open research
 
 Export CSV, Parquet, JSON metadata, notebooks, scripts, scientific figures, evidence briefs, and citation files. A complete reproducibility bundle includes source URLs and licenses, dataset and file hashes, row selection, methods, environment lock, model card, prompts and model IDs where applicable, results, and limitations.
 
-Provide a documented read-only API for approved catalog and evidence queries. A future MCP adapter can expose the same typed tools to external research assistants without creating a second source of truth.
+Expose the documented read-only API for catalog and evidence queries and a thin read-only MCP adapter over the same typed operations. Both use the same source records, version rules and access limits.
 
 <a id="b5"></a>
 
@@ -2862,7 +2847,7 @@ The central distinction is investigation versus run versus measurement. Do not s
 | Model | Outcome, features, validation domain, dataset groups, metrics, mechanism dependencies |
 | Scenario | Research question and target operating conditions with sources and assumptions |
 | Control candidate | Mechanism, evidence, applicability, trade-offs, required validation |
-| Project/artifact | Ownership, access, collaborators, immutable versions, publication status |
+| Personal case/artifact | Local revision ID, frozen dependencies, annotations, source-change watches, export status |
 
 ### Quantity contract
 
@@ -2882,7 +2867,7 @@ Derived quantities have a directed dependency graph to source measurements. Dupl
 
 ## B6 Ingestion and provenance architecture
 
-The pipeline is discover, retrieve, hash, classify, parse, normalize, validate, review, index, and version.
+Discover, retrieve, hash, classify, parse, normalize and validate the data. Publish an immutable indexed release with any unresolved fields and optional correction notes.
 
 1. Discover public investigation records and approved file manifests. Capture the query and retrieval timestamp.
 
@@ -2896,7 +2881,7 @@ The pipeline is discover, retrieve, hash, classify, parse, normalize, validate, 
 
 6. Use deterministic native-content readers first where they preserve the required structure. Use Docling for document structure, text, tables, layout and provenance where appropriate, supplemented by targeted OCR/vision when necessary. Retain page/cell anchors. [Docling document model](https://docling-project.github.io/docling/concepts/docling_document/).
 
-7. Apply controlled vocabulary and unit mappings. Preserve original labels. Ambiguous mappings become review tasks.
+7. Apply versioned vocabularies and unit mappings. Preserve original labels and flag ambiguous fields as unresolved for inspection.
 
 8. Validate composition sums, plausible units, time ordering, identifiers, duplicate lineage, inconsistent units, and source conflicts. Physical checks flag records; they do not erase unusual real phenomena.
 
@@ -2916,7 +2901,7 @@ The system does not assume an AWS open-data bucket is a complete mirror of combu
 
 ### Storage strategy
 
-Cloud SQL PostgreSQL holds entities, permissions, provenance, source spans, metadata, and compact results. Cloud Storage holds immutable originals, large measurements, media, and generated artifacts. Curated tables use Apache Parquet and Arrow. Preserve original HDF5, MATLAB, images, and other formats when supplied; normalize through documented adapters rather than claiming every dataset uses the same format.
+Keep canonical entities, source spans, provenance, public metadata, job records and temporary job ownership in the application’s PostgreSQL database. Store immutable originals, large measurements, media and artifacts on a persistent filesystem under content hashes. Serve public files by stable IDs and protect private job files until expiry. Keep curated extracts in Parquet/Arrow and preserve the original HDF5, MATLAB, images and other supplied formats. Archive the database and referenced public files together.
 
 Partition curated measurements by investigation, snapshot, run, and channel as appropriate. Use bounded scientific queries over selected Parquet assets. Large media are streamed or downloaded on demand; previews and extracted features retain their parent asset and method.
 
@@ -3028,7 +3013,7 @@ A registered model may issue a scientific prediction only when all of these chec
 
 4. The joint input combination has adequate support. Being inside each variable's separate minimum and maximum is insufficient.
 
-5. The model version has passed grouped held-out evaluation and diagnostic review.
+5. The model version has passed grouped held-out evaluation and its documented diagnostic criteria.
 
 6. Prediction uncertainty is supported by that evaluation, and material uncertainties are disclosed.
 
@@ -3046,7 +3031,7 @@ Use campaign, apparatus, material batch, run, and investigation groups according
 
 Classification evaluation includes discrimination and calibration, Brier score/log loss, relevant class errors, and subgroup performance. Regression evaluation includes errors in physical units, bias, residual structure, and interval coverage. Time-to-event models need censoring-aware evaluation. Mechanistic models need conservation checks, solver verification, numerical convergence, and validation against independent experiments. Report sample sizes and uncertainty in evaluation metrics.
 
-Model cards record purpose, inputs, training/validation sources, excluded domains, assumptions, mechanisms, metrics, failure cases, review, and version history. Use NASA-STD-7009B and NASA-HDBK-7009B as credibility guidance; do not claim certification or NASA approval. [NASA standard](https://standards.nasa.gov/standard/NASA/NASA-STD-7009); [NASA handbook](https://standards.nasa.gov/standard/NASA/NASA-HDBK-7009).
+Model cards record purpose, inputs, training/validation sources, excluded domains, assumptions, mechanisms, metrics, failure cases, validation results, optional feedback and version history. Use NASA-STD-7009B and NASA-HDBK-7009B as credibility guidance; do not claim certification or NASA approval. [NASA standard](https://standards.nasa.gov/standard/NASA/NASA-STD-7009); [NASA handbook](https://standards.nasa.gov/standard/NASA/NASA-HDBK-7009).
 
 ### Causal and risk interpretation
 
@@ -3090,9 +3075,9 @@ Every comparison, synthesized conclusion, and registered prediction can produce 
 
 - Strongest supporting evidence, strongest consequential mismatch, and what additional data would change the assessment.
 
-- Version of the applicability rules and reviewer decisions.
+- Version of the applicability rules, measured support and any recorded assessment or correction.
 
-This is a structured scientific judgment, not a certification label. The program can detect explicit mismatches automatically; qualified review establishes uncertain transfer assumptions.
+Document the rules, source evidence and assumptions behind each transfer. Evidence can establish comparability or expose a mismatch. An unsupported transfer remains unknown regardless of who suggested it.
 
 <a id="b10"></a>
 
@@ -3100,7 +3085,7 @@ This is a structured scientific judgment, not a certification label. The program
 
 ### Orchestration
 
-Use the OpenAI Responses API with the OpenAI Agents SDK for Python. Keep the scientific database, tool authorization, calculation services, context, and provenance under application control. Use Temporal for durable execution. Do not add a second agent framework for the same orchestration responsibilities. [OpenAI agent implementation options](https://developers.openai.com/api/docs/guides/agents.md).
+Use one backend OpenAI integration for Responses, embeddings and live voice. The Python coordinator can use the Agents SDK with its typed scientific tools. Its state, tool permissions, checkpoints and provenance belong to the application. Long activities persist in the PostgreSQL job queue. At implementation time use the OpenAI Developers plugin’s secure key setup flow to configure the server key. [OpenAI agent implementation options](https://developers.openai.com/api/docs/guides/agents.md).
 
 One coordinator handles ordinary questions. It calls specialist tools or parallel subtasks when the question benefits from independent literature retrieval, data analysis, and scientific review. Cap depth, concurrent branches, tool calls, elapsed time, and spend. A larger number of agents does not automatically improve scientific reliability.
 
@@ -3109,28 +3094,28 @@ One coordinator handles ordinary questions. It calls specialist tools or paralle
 | Main scientific coordinator and complex synthesis | gpt-6-astra through Responses; high reasoning by default for difficult research tasks | Highest-capability selected reasoning tier; source- and tool-grounded work |
 | Expensive difficult verification | gpt-6-astra with a supported high-effort reasoning profile, selectively | Reserve additional work for consequential ambiguity or complex analysis; use the configured endpoint's supported effort values |
 | Structured extraction, bounded tool subtasks, code drafting | gpt-6.1-sol through Responses with Structured Outputs | Strong tool/code capability with lower routine cost |
-| Typed semantic microdecisions | gpt-6-luna through Decisions | Bounded predicate, categorical choice, and rubric scoring |
+| Typed semantic decisions | Deterministic mappings first, then a bounded structured OpenAI response | Editable categories and routing, including unknown |
 | Embedding retrieval | text-embedding-3-large with dimensions=1536 | Semantic retrieval quality with a practical Postgres vector index footprint |
 | Voice interaction | gpt-live-1 via Live sessions/WebRTC | Full-duplex voice and delegation to the same scientific backend |
 | Exact filters, units, arithmetic, permissions, persistence | Deterministic code | These operations have explicit verifiable semantics |
 
-These are selected baselines checked against current documentation, not a claim that the application has been integrated or benchmarked. Store exact returned model version/snapshot information when available, provider configuration, prompt version, and request parameters. Re-evaluate model updates against a locked benchmark before promotion. [OpenAI model catalog](https://developers.openai.com/api/docs/models.md); [embedding dimensions](https://developers.openai.com/api/docs/guides/embeddings.md).
+These model names are dated candidates. Verify entitlement, capability, supported settings and price on the project’s OpenAI account when integrating. Record the actual model ID or snapshot, prompt version, configuration and parameters with each result. Evaluate model changes against the locked benchmark. [OpenAI model catalog](https://developers.openai.com/api/docs/models.md); [embedding dimensions](https://developers.openai.com/api/docs/guides/embeddings.md).
 
 ### Role boundaries
 
 The evidence specialist retrieves passages and structured data. The data specialist proposes mappings and queries. The analysis specialist selects registered calculations or drafts exploratory code. The scientific reviewer checks sources, units, endpoints, applicability, and interpretation. The artifact specialist produces validated dashboard and export specifications.
 
-These are bounded roles within one orchestrated system. They are not independent authorities. Agreement between two models is not an independent experimental replication. Critical numerical checks are deterministic and important scientific assertions are evaluated against source evidence and expert-reviewed benchmarks.
+These bounded roles share one tool registry and do not add model providers or review staff. Critical values must agree with calculations, primary sources and independently sourced reference cases. Agreement between multiple model outputs adds no independent experimental evidence.
 
-### Jev and Decisions
+### Bounded classification
 
-Select OpenAI Decisions as the default semantic decision service. Its current interface supports predicate, choice, and score outputs using gpt-6-luna. Arbitrary extraction objects and explanations belong in Responses with Structured Outputs. [Decisions documentation](https://developers.openai.com/api/docs/guides/decisions.md).
+Use dictionaries and typed rules for known categories. For an ambiguous classification, request a structured answer with source locators and an explicit unknown option through the same OpenAI integration. An OpenAI Decisions call is optional if available and demonstrably useful on the task. Classifications and the rest of the app must work without this separate endpoint.
 
 Good uses include identifying a table's role, recognizing whether a passage discusses suppression, mapping a clearly described sensor to a controlled category, prioritizing a potentially contradictory claim for review, and routing a question to an approved workflow.
 
 For the user's sensor example, first read structured instrument metadata; then match canonical names/aliases; then retrieve the methods passage; finally use schema-constrained extraction if needed. A semantic classifier may suggest the category, but the retained source span establishes the evidence. An ambiguous abbreviation remains unresolved.
 
-Jev is a legitimate alternative behind a small DecisionProvider interface. Benchmark it on the same labeled questions for quality, calibration, abstention, latency, and total cost before adopting it. Do not operate two interchangeable providers without a demonstrated advantage. Jev's confidence describes concentration of model outputs and must not be treated as a calibrated probability of scientific correctness. [TypeSafe/Jev documentation](https://docs.typesafe.ai/introduction); [confidence interpretation](https://docs.typesafe.ai/confidence).
+The earlier source specifications considered TypeSafe/Jev and an alternative Qwen endpoint. These are historical comparisons. The project requires no second model service, account, adapter, evaluation campaign or fallback credential.
 
 Calibrate acceptance/review thresholds on labeled examples, separately by task. Permit abstention. Do not allow a decision score to authorize access, repair a scientific unit, establish a safety limit, or make a validated prediction.
 
@@ -3156,15 +3141,15 @@ Keep privileged instruction and verified-result appends on the trusted server si
 
 ## B11 The Python and command sandbox
 
-Choose E2B Code Interpreter with a custom, versioned scientific environment. Pin the operating-system image and package lock, including NumPy, SciPy, pandas/Polars, DuckDB, Pint, Matplotlib, seaborn, statsmodels, scikit-learn, PyMC, and the approved file readers. Separate heavier Cantera/FDS environments when required.
+Run real Python and bounded shell commands directly on the project’s Linux host in a fresh, project-owned sandbox, launched by the worker through a fixed local launcher. Use an isolation runtime such as gVisor/runsc after verifying compatibility on the chosen host. Pin the OS image, approved utilities and scientific package lock, including NumPy, SciPy, pandas/Polars, DuckDB, Pint, Matplotlib, seaborn, statsmodels, scikit-learn, PyMC and required file readers. Trusted Cantera/FDS jobs have their own environments. [gVisor architecture](https://gvisor.dev/docs/architecture_guide/intro/).
 
-The ordinary interactive profile is a proposed 2 vCPU, 4 GiB memory, and 60 seconds per command or cell. A separately approved extended-cell profile permits 90 seconds. A five-minute session lease renews only within explicitly authorized cumulative runtime and spend limits. Set dataset, output, process, and storage caps. These are configuration decisions to test, not vendor capacity guarantees. Larger approved jobs run through separate trusted Cloud Run jobs or Google Cloud Batch profiles with explicit resource and spend limits.
+Start by testing the proposed interactive profile of 2 vCPU, 4 GiB and 60 seconds per command or cell. Keep the optional 90-second extended profile, five-minute renewable lease and per-task cumulative limit. Bound input, output, disk, memory and processes as well as total concurrent work. The same worker runs registered, trusted heavy jobs in separately sized profiles when the host has capacity.
 
-Disable outbound internet and public inbound access explicitly using the locked SDK's `allow_internet_access=False` and `allow_public_traffic=False` controls; do not rely on a provider default. Current public-traffic guidance recommends Python e2b 2.60.0 or later. Supply authorized frozen data through the backend file/control broker, with a read-only manifest and writable temporary/output directories. A no-egress sandbox cannot fetch a Cloud Storage signed URL itself. It receives no production database credentials, Google Cloud credentials, user session tokens, or model API keys. [E2B custom templates](https://docs.e2b.dev/code-interpreting/customize-template); [outbound controls](https://docs.e2b.dev/network/internet-access); [public-access controls](https://docs.e2b.dev/network/restrict-public-access).
+For each run, stage only the authorized, hash-checked data as read-only, and supply disposable scratch and output directories. Deny network access and host mounts, runtime sockets, database sessions, private browser credentials and OpenAI or operator credentials. Enforce resource limits outside the guest. Test the isolation, cleanup and quotas on the actual host before enabling public execution. A failed check makes the runner unavailable with a clear reason. Never send generated commands to the API process or host shell, or redirect them to a hosted sandbox.
 
-Permit Python and bounded shell use inside the isolated environment for inspecting the copied dataset and running approved installed utilities. Package installation or external retrieval happens through a controlled environment-build/fetch service, not arbitrary runtime internet access. Review and scan returned files before publication; never execute generated HTML or JavaScript in the main application's trust context.
+Permit Python and bounded shell use in the sandbox for inspecting copied data and running preinstalled tools. Additional packages enter through a pinned environment rebuild. Validate the returned files before making them available, and render generated figures without executing arbitrary HTML or JavaScript in the application origin.
 
-For every execution, capture code, inputs, hashes, environment digest, seed, resource use, outputs, errors, and interpretation. Exploratory analysis is saved as exploratory. Promotion to a registered scientific method requires code review, reference cases, semantic checks, and validation. Killing a session must also prevent late output from being published into a canceled analysis.
+Capture code, inputs, hashes, environment digest, seed, resource use, outputs, errors and interpretation for every run. Keep exploratory results labeled. A method becomes registered when its versioned contract, reference cases, semantics and validation support the intended use. Canceling or killing a session also blocks late artifact publication.
 
 For normal dataset queries, the agent submits a typed QuerySpec that compiles to parameterized queries. It never receives arbitrary production SQL access. Free-form SQL is permitted only over authorized copies in the sandbox, with DuckDB file/network/extension access constrained and resource limits enforced.
 
@@ -3176,11 +3161,11 @@ The following is the implementation baseline. Exact dependency patches and conta
 
 | Layer | Selection | Decision rationale |
 |---|---|---|
-| Web application | Next.js 16.4.6 App Router, React 19.3.1, strict TypeScript, Node.js 24 LTS | Typed application, server/client separation, streaming, and the verified starting framework generation; lock and test compatible patched dependencies |
+| Web application | Next.js/React, strict TypeScript and Node.js, served at one public HTTPS origin with FastAPI | Keep the complete research interface and direct links. Pin compatible versions at implementation. |
 | Client data state | TanStack Query and TanStack Table | Explicit query caching and structured table operations; the backend retains scientific authority |
 | API | Python 3.13, FastAPI, Pydantic 2, SQLAlchemy 2, Alembic | One scientific language for parsing, analysis, modeling, and agent tools; generated OpenAPI schemas |
-| Primary database | Cloud SQL PostgreSQL 17, pgvector/full-text search, tested least-privilege access policies | Relational scientific/provenance model, transactions, and full-text/vector retrieval on Google Cloud |
-| Raw and artifact storage | Private Google Cloud Storage with versioning and immutable object identities/generations | Large media, source files, reproducibility artifacts, lifecycle policies, signed access, and application content hashes |
+| Primary database | One local PostgreSQL instance with full-text search and pgvector | Scientific records, relationships, model versions, jobs, temporary browser ownership and passage retrieval share one transactional store |
+| Raw and artifact storage | Persistent project-owned files addressed by SHA-256, plus versioned manifests | Scientific originals, large data and reproducible outputs are served by authorized ID and backed up with the database |
 | Curated scientific data | Apache Parquet/Arrow, Polars, DuckDB | Efficient filtering and analysis without loading entire files into application memory |
 | Documents and format readers | Docling, openpyxl, h5py, scipy.io, format-specific readers as needed | Preserve document structure and support actual source formats |
 | Scientific quantities | Pint, NumPy, SciPy, Pandera | Units, numerical methods, explicit schemas and validation |
@@ -3190,19 +3175,19 @@ The following is the implementation baseline. Exact dependency patches and conta
 | Scientific chart specifications | Restricted ChartSpec compiled to Vega-Lite 6; Matplotlib for exported figures | Declarative reproducible charts and publication-quality exports |
 | Relationship analysis | Typed relational edge tables; Cytoscape.js for an optional interactive evidence graph | Hardware/claim/data lineage without adding a graph database prematurely |
 | Agent runtime | OpenAI Responses API and Agents SDK Python | Typed tool execution and application-owned state |
-| Workflow durability | Temporal Cloud, Python workers in Cloud Run worker pools, and the standalone temporalio-openai-agents integration | Retries, timeouts, cancellation, and durable long-running analysis/ingestion with explicitly active pollers |
-| Interactive computation | E2B custom Code Interpreter environment | Isolated Python/shell execution with explicit network and resource controls |
-| Heavy computation | Google Cloud Batch and suitable finite Cloud Run jobs using approved container profiles | Resource-limited solver, training, video, and export work beyond interactive budgets |
-| Observability | OpenTelemetry, Langfuse, Sentry | Correlated tool/model/job traces, evaluation, application errors |
-| Deployment | Google Cloud Run web/API services, worker pools, jobs/Batch, Cloud SQL, Identity Platform, and Cloud Storage | Independently scale web/API, continuous workflow polling, trusted compute, and storage while retaining the modular scientific domain |
-| Delivery | GitHub Actions, Terraform, uv, pnpm, container registry | Reproducible builds, infrastructure configuration, signed/reviewed release artifacts |
+| Workflow durability | PostgreSQL jobs, attempts, checkpoints and ordered progress events, executed by a restartable Python worker | Resumable operations, deduplicated publication, cancellation and bounded retries |
+| Interactive computation | Fresh local Linux sandbox for each guest session with a tested project-owned isolation runtime | Real Python and bounded shell on frozen inputs with no external execution account |
+| Heavy computation | Registered trusted worker profiles for model fitting, scientific solvers, media and exports | Pin the environment and control CPU, GPU if actually available, memory and disk per task |
+| Diagnostics | Redacted application and job logs with shared run IDs, scientific validation reports and a local model registry | Diagnose failed operations and reproduce results without monitoring or tracking accounts |
+| Deployment | A project-controlled Linux host with TLS, persistent storage and recoverable backups. Verify hosting eligibility, capacity and sandbox support before selecting it. | One origin for the public web app and API, with private database, worker and local executor |
+| Delivery | uv, pnpm, locked dependencies, a repeatable build/start command and on-demand test/deployment scripts | Reproduce local and hosted releases with the same version manifest |
 | Verification | pytest, Hypothesis, Pandera, Vitest, Playwright, scientific golden cases | Numerical, schema, permission, tool, and user-workflow checks |
 
 Next.js 16's release documentation establishes the selected framework generation and React integration. The precise version set must still pass the project compatibility build. [Next.js release](https://nextjs.org/blog/next-16).
 
 ### Deliberate exclusions
 
-Do not introduce Neo4j, a separate vector database, Kubernetes, multiple agent frameworks, or a streaming data bus without a measured requirement. The target is ambitious scientific behavior with a maintainable system. Relational edges, Cloud SQL Postgres hybrid search, Cloud Storage, Temporal, and a small number of deployments cover the initial full product architecture.
+Use relational edges for lineage, PostgreSQL for retrieval and jobs, and immutable files for scientific artifacts. The development stack runs locally without cloud projects, a managed workflow engine, identity provider or external observability system. Assess a dedicated component only if a measured limitation requires it.
 
 Do not train a custom foundation model as a prerequisite. Retrieval, canonical data, typed tools, a strong general model, curated scientific calculations, and model evaluation address the problem more directly. Fine-tuning is considered only after a recurring measured failure and a suitable licensed training set justify it.
 
@@ -3210,26 +3195,28 @@ Do not train a custom foundation model as a prerequisite. Retrieval, canonical d
 
 ```mermaid
 flowchart TD
-    W["Web application and live session"] --> A["Authenticated API"]
-    A --> P["Cloud SQL PostgreSQL: entities, access, provenance"]
-    A --> T["Temporal research workflows"]
+    W["Public web app and Live session"] --> A["Same-origin FastAPI: public evidence and owner-only jobs"]
+    A --> P["PostgreSQL: science, jobs, attempts and events"]
+    T["Project worker"] --> P
     T --> O["OpenAI coordinator and bounded tasks"]
     O --> Q["Typed scientific tools"]
     Q --> P
     Q --> D["Parquet queries and registered calculations"]
-    Q --> X["Isolated Python or batch execution"]
-    D --> S["Cloud Storage: sources, measurements, artifacts"]
-    X --> B["Trusted worker: brokered file transfer"]
+    Q --> B["Worker: stage authorized copies and validate returned artifacts"]
+    D --> S["Persistent immutable sources, measurements and artifacts"]
+    B --> X["Project-hosted isolated Python and shell"]
     B --> S
+    T --> H["Trusted registered solvers, models and media jobs"]
+    H --> S
     Q --> V["Scientific and authorization checks"]
     V --> R["Versioned answers, charts, exports"]
     R --> W
-    I["PSI and approved source adapters"] --> C["Parse, normalize, validate, review"]
+    I["PSI and approved source adapters"] --> C["Parse, normalize, validate and version"]
     C --> P
     C --> S
 ```
 
-The diagram describes responsibilities, not an instruction to deploy a microservice for every box. Start with a modular API and worker application. Isolated compute is a distinct trust boundary.
+The public web app and API share one origin. Long jobs run outside web requests. The launcher for untrusted Python and shell has a distinct local isolation boundary even when it shares a physical host with the worker. Published public records can be read without identifying the visitor.
 
 <a id="b13"></a>
 
@@ -3250,9 +3237,9 @@ The diagram describes responsibilities, not an instruction to deploy a microserv
 | run_model | Run the registered prediction gate, then return predictions, intervals, diagnostics, and domain status |
 | run_python | Creates a bounded sandbox analysis on authorized data copies |
 | propose_chart / propose_dashboard / save_dashboard | Validate a proposed specification against data, units, aggregation, permissions, and approved components; saving a dashboard is a separate authorized revision operation |
-| save_artifact / export_case | Save a versioned artifact or produce a case/evidence reproducibility package with inherited access controls |
+| save_artifact / export_case | Save a versioned artifact locally or produce a case/evidence bundle containing only the selected, permitted material |
 
-The server injects the authenticated principal, project scope, and allowed resources. The model cannot broaden these by supplying a different user ID or object path. All tools return explicit success/partial/error state, source references, versions, units, quality flags, and limitations where relevant.
+The server checks that each tool reads public sources or temporary job materials belonging to the initiating browser. It verifies the opaque, expiring owner credential itself and never sends it in prompts. A model cannot gain access by supplying a different job ID or file path. Tools return status, source references, versions, units, quality flags and applicable limits.
 
 ### Example internal contracts
 
@@ -3281,19 +3268,19 @@ An answer object contains question/context version, claims, source locators, cal
 
 ### API surface
 
-Version the public API under /v1. Resources include investigations, runs, sources, snapshots, queries, comparisons, scenarios, models, analyses, agent runs, artifacts, exports, projects, reviews, and dataset quality issues. Retrieval is read-only; mutation endpoints require the appropriate role and an idempotency key where duplicate execution would matter.
+Provide public read-only /v1 queries for investigations, sources, snapshots, comparisons, scientific methods and model metadata. Budgeted first-party analysis and voice operations use the initiating browser’s job scope and an idempotency key where a retry could duplicate work. Local case, dashboard and note revisions use the same typed schemas in browser storage.
 
-Provide schema-generated client types, pagination, conditional requests/version IDs, bounded query sizes, structured errors, and an export job resource. File responses use short-lived signed URLs after access checks. Do not persist expiring URLs as permanent scientific citations.
+Provide schema-generated clients, cursor pagination, conditional reads, bounded queries, structured errors and export jobs. Serve files through an access-checked stable asset ID with range support when available. Re-resolve expiring NASA download URLs as needed and cite the stable accession and file version.
 
 ### Workflow design
 
-Temporal owns job execution progress. Cloud SQL PostgreSQL owns scientific records, permissions, and artifact metadata. Cloud Storage owns large payloads. A workflow stores references and small metadata instead of whole videos or dataframes in history.
+PostgreSQL stores jobs, attempts, checkpoints, target resource revisions and ordered events alongside the scientific records. Jobs refer to immutable files by ID and hash. The worker claims ready stages with short database transactions and expiring leases. A restart recovers incomplete stages and preserves completed ones.
 
-Use the standalone `temporalio-openai-agents` integration with compatible locked SDK versions and current `temporalio.openai_agents` imports. The current integration requires Python 3.10+ and Temporal SDK 1.33+, or SDK 1.34+ for split-directory/editable/layered installations. Model calls and external I/O tools run as activities; use activity-backed tools for functions that perform I/O. Side effects must not run directly in replayed workflow code. Do not wrap an opaque, long, multistep agent session in one activity and claim step-level durability. [Temporal integration](https://docs.temporal.io/develop/python/integrations/openai-agents.md).
+Persist the inputs, intended external action and attempt ID before sending a model request or starting a solver. Record its result or an ambiguous completion. Commit validated artifact references, revision updates and final events together, checking the active attempt and cancellation state. Preserve the user’s decision for operations that exceed the selected budget.
 
 Retries use bounded exponential backoff, error classification, and idempotency. An invalid scientific schema is not repaired by repeatedly calling the same service forever. A model request that completes but loses its network response may incur another charge on retry; record attempts and deduplicate artifact publication.
 
-Configure provider request timeout, activity start-to-close timeout, overall workflow budget, and retry policy together by task class. Difficult Astra reasoning jobs require an explicit longer profile; an integration default must not repeatedly terminate and rebill a legitimate long computation.
+Match network timeout, stage lease/heartbeat and total run budget to the task. Give deep synthesis and long solver jobs distinct profiles. Reconciliation inspects abandoned attempts before resubmission to prevent uncontrolled duplicate charges.
 
 ### Streaming and cancellation
 
@@ -3301,7 +3288,7 @@ Use server-sent events for task progress and results. Persist significant events
 
 A retried model attempt starts a new stream attempt so partial text from two answers is not concatenated. Stream phases such as retrieving, checking units, computing, and verifying; do not stream unsupported scientific conclusions as final facts before checks finish.
 
-Cancellation propagates to the workflow, model request where supported, sandbox, and batch job. A publication fence prevents late results from becoming the active artifact after cancellation. Already completed work can remain as a canceled-job audit record. The interface must distinguish stop speaking, stop response generation, and cancel computation.
+Cancellation reaches the worker, model request where supported, local sandbox or trusted compute process. The API confirms backend state, fences late results and preserves completed work as an inactive record. The UI distinguishes stopping speech, stopping text generation and canceling a computation.
 
 <a id="b14"></a>
 
@@ -3311,9 +3298,9 @@ Cancellation propagates to the workflow, model request where supported, sandbox,
 
 Public scientific data can still contain malicious document instructions, links, or embedded code. Treat PDFs, metadata, comments, and extracted text as evidence, never as developer instructions. An agent reading a paper must not gain permission to execute code from that paper or upload private project content to its links.
 
-Require authenticated, server-verified Identity Platform identities for private research workspaces. Verify token signature, issuer, audience, expiry, and required revocation state, then independently enforce workspace membership and artifact grants. Use user-scoped application access or transaction-scoped verified claims with least-privilege, non-bypass Cloud SQL roles and reviewed PostgreSQL policies where appropriate. Migration and administrative credentials are restricted to their scoped operations and must not be a shortcut for user-facing queries.
+Browsing, analysis and private drafts need no account. Keep personal work and settings in this browser. For an explicitly requested server job, generate an opaque, expiring browser ownership credential and store only the necessary uploaded inputs, selected context, progress and outputs until expiry. The server checks ownership on every private read, cancel, resume or download. Never place the credential in a public URL. Canonical corpus writes use a separate maintainer path.
 
-Authorization is repeated for underlying assets, sources, derived datasets, and exports. A public NASA source does not make a private analysis, annotation, or conversation public. Do not allow a cached result from one project to leak into another. Cache keys include scope and snapshot.
+A downloaded backup can restore the workspace in another browser. Clearing the only copy can erase the workspace, and people using the same browser profile can see its contents. Explain backup, deletion and temporary job expiry. An exported file has its own independent life: a later local change or deletion cannot recall or update other copies.
 
 ### Source and file handling
 
@@ -3325,13 +3312,13 @@ Source licenses are recorded per asset. Public access is not a universal redistr
 
 Validate ChartSpec and DashboardSpec against an approved grammar. Reject arbitrary script execution, remote data fetches, external URLs in executable expressions, and misleading incompatible-unit aggregation. Render untrusted HTML only in an appropriately isolated viewer if it is supported at all. Static scientific figures are generated by trusted rendering tools or the isolated analysis environment.
 
-Sandbox code has no production network or credentials. Build execution limits and external permissions into the platform, rather than relying on the model to remember them. Sharing, deleting source material, modifying roles, and running unusually expensive jobs are explicit actions governed by project policy.
+Sandbox code has no production network or credentials. Enforce execution limits outside the guest. Confirm unusually expensive requests, permanent deletion and any action that moves a chosen private file to the server.
 
 ### AI data handling
 
-Send the minimum relevant source passages and selected data to model providers. Store project retention settings, redact secrets, and avoid logging full private files or tokens in observability systems. OpenAI's documentation distinguishes API training policy, application state, and abuse-monitoring retention; store=false must not be described as a universal zero-retention guarantee. [API data controls](https://developers.openai.com/api/docs/guides/your-data.md).
+Send the minimum relevant source passages and selected data to the OpenAI API, only for the selected task. Store project retention settings, redact secrets, and avoid logging full private files or tokens in application logs. OpenAI's documentation distinguishes API training policy, application state, and abuse-monitoring retention; store=false must not be described as a universal zero-retention guarantee. [API data controls](https://developers.openai.com/api/docs/guides/your-data.md).
 
-Record who initiated analyses, what data were read, what was generated, and what was shared. Audit records should preserve useful scientific provenance without becoming a second unbounded store of sensitive conversations.
+Record the operation, selected sources, versions, dependencies and outputs in the user’s personal analysis record. Temporary server records include only what the job needs for delivery and recovery. Limit retention for job inputs, results, voice transcripts and logs. Preserve scientific lineage in locally saved artifacts and exports.
 
 <a id="b15"></a>
 
@@ -3341,9 +3328,9 @@ The following are proposed engineering targets and release gates. They are not m
 
 ### Evaluation corpus
 
-Create an expert-adjudicated benchmark covering at least 300 representative research tasks and 1,000 labeled field extractions, stratified across solids, droplets, gaseous flames, aerosols, hardware, units, endpoints, missing data, and domain mismatch. Preserve a held-out portion that is not used for prompt or threshold tuning. Add adversarial examples and each important failure discovered in production.
+Build a benchmark of at least 300 representative research tasks and 1,000 labeled field extractions. Include the development subsets of 100 research questions, 30 misleading questions and 300 critical fields. Derive reference answers from exact source anchors and independent calculations, stratify across solids, droplets, gases, aerosols, hardware, units, endpoints, missing data and domain mismatch, and reserve a locked held-out portion. Include adversarial examples and consequential failures found in use.
 
-Include simple lookups, complex cross-study synthesis, unsupported questions, ambiguous species/units, calibration-dependent fields, mixed row roles, contradictory sources, inaccessible assets, prompt injection, and incomplete data. Have more than one reviewer adjudicate important labels and record disagreements rather than manufacturing perfect ground truth.
+Include lookups, cross-study synthesis, unsupported questions, ambiguous species or units, calibration-dependent fields, mixed row roles, contradictions, inaccessible assets, prompt injection and incomplete data. Report unresolved labels with their evidence. Contributors may supply a source-backed correction or expert judgment. A named reviewer is optional.
 
 ### Acceptance matrix
 
@@ -3351,13 +3338,14 @@ Include simple lookups, complex cross-study synthesis, unsupported questions, am
 |---|---|
 | Source traceability | Every displayed factual scientific claim resolves to an evidence anchor; quantitative claims additionally resolve to source measurements or a saved calculation/model artifact |
 | Citation correctness | At least 98% supported-claim precision on the defined benchmark; no known consequential citation mismatch in release cases |
+| Complete answers | At least 95% fully supported answers on the defined benchmark, with sample size, interval and consequential failures reported |
 | Critical extraction | Zero unresolved material unit, composition-location, or endpoint errors in the curated release datasets; unresolved fields remain blocked |
 | General field extraction | At least 98% precision on high-confidence auto-accepted fields, with coverage and abstention also reported |
 | Applicability | Every registered prediction passes the documented gate; out-of-domain cases receive the correct classification |
-| Retrieval | Expert-labeled recall@10 and ranking agreement reported by task family; choose thresholds from actual baseline results |
+| Retrieval | Source-labeled recall@10 and reference ranking agreement reported by task family, with thresholds chosen from measured baselines and optional expert comparisons |
 | Scientific calculations | Dimensional checks, reference-case agreement, uncertainty semantics, and method-specific numerical tolerances |
 | Reproducibility | Every released analysis reruns from its bundle; numerical tolerances specified where exact bitwise identity is unrealistic |
-| Permissions | No cross-project access in the tested role/resource matrix; no production credentials in sandbox artifacts |
+| Private data | Two independent browsers cannot read or cancel each other’s jobs or files. Expired credentials fail. Isolated code cannot read production credentials. |
 | Cancellation/retries | No duplicate publication; canceled tasks cannot publish an active result |
 | Voice | Numeric/name/condition fidelity measured against the authoritative result; voice cannot replace the source-linked record |
 | Accessibility | Keyboard-operable workflows, screen-reader names, text alternatives for scientific figures, and accessible export tables |
@@ -3367,9 +3355,9 @@ Percentages require confidence intervals and denominator disclosure. A small tes
 
 ### What to test
 
-Unit tests cover conversions, missingness, schema contracts, query compilation, ranking policies, and scientific calculations. Property tests cover unit round trips, composition constraints, schema invariants, bounded queries, and idempotency. Integration tests exercise real file adapters, RLS, storage authorization, agent tool schemas, retries, cancellation, and artifact lineage. End-to-end tests cover the representative research workflows.
+Unit tests cover conversions, missingness, schema contracts, query compilation, rankings and scientific calculations. Property tests cover round trips, composition, bounded queries and idempotency. Integration tests exercise real adapters, database and file access checks, temporary browser-owned jobs and expiry, local sandbox containment and cleanup, retries, cancellation and artifact lineage. Exercise representative workflows through the public app.
 
-Scientific golden cases reproduce published or independently calculated results with source-specific tolerances. Evaluation includes human review of explanations and model failure cases. LLM judges may triage long outputs, but they do not replace factual benchmarks, numerical checks, or qualified scientific review.
+Scientific golden cases reproduce published or independently calculated results within source-specific tolerances. Evaluate explanations against cited passages and model failure cases against held-out evidence. Optional human feedback can expose a bad assumption. A model judge can triage cases, but its agreement cannot establish a measurement or pass a failed validation.
 
 Before enabling a new model or prompt, replay the benchmark, compare cost and latency, inspect regressions, and canary a limited workload. Rollback retains earlier configuration and artifacts. Users should be able to identify which version produced a saved answer.
 
@@ -3383,15 +3371,15 @@ Target cached catalog/filter responses below 500 ms at the 95th percentile for t
 
 Cache immutable source files, parsed documents, embeddings, verified summaries, and deterministic calculations by content and method version. Scope project caches by authorization. Prefetch only likely small dependencies. Use cursor pagination and bounded tabular previews; do not send millions of points to the browser by default.
 
-Support graceful degradation: discovery, structured filters, sources, saved analyses, and exports remain available if the AI provider is down. A failed chart-generation call should not erase the dataset selection. A failed telemetry service should not fail an otherwise valid analysis.
+During an OpenAI outage, keep discovery, filters, referenced sources, direct calculations, saved analyses and exports available. A failed chart request must preserve the selection and draft. Keep the last successful NASA snapshot while a source refresh is unavailable.
 
 ### Cost model
 
-Track cost per completed research task and per ingestion snapshot. Separate model input, output/reasoning, embedding, voice, sandbox runtime, batch compute, storage, database, and network egress. Store actual usage from providers and reconcile it; estimated token counts are useful for budgeting but not authoritative invoices.
+Track OpenAI text, reasoning, embedding and voice usage per supported task. Record local Python, solver and import time, disk use, selected asset transfer and hosting cost separately. Reconcile usage with actual bills where relevant. Estimate significant requests in advance and enforce a server-side total budget for public access.
 
 As an illustrative model-call calculation using the documented uncached rates, 20,000 input tokens and 4,000 total billed output tokens, including any billed reasoning tokens, cost about $0.40 with gpt-6-astra or $0.08 with gpt-6.1-sol. More output/reasoning tokens, additional calls, long-context pricing rules, and infrastructure can change the task total. Ten minutes of gpt-live-1 costs $0.50 for the voice session, plus backend usage. These are dated examples, not a fixed project quote. [Astra pricing](https://developers.openai.com/api/docs/models/gpt-6-astra.md); [Sol pricing](https://developers.openai.com/api/docs/models/gpt-6.1-sol.md); [Live pricing](https://developers.openai.com/api/docs/models/gpt-live-1.md).
 
-Set adjustable per-request, per-project, and global budgets. Route bounded routine work to Sol/Decisions and reserve deeper Astra work for questions that benefit from it. Reuse a shared document in one decision batch where questions are independent. Do not reuse a Responses-token price for a different API without checking that API's pricing.
+Limit usage per request, browser and across the whole deployment. Run exact rules locally, use routine OpenAI calls for grounded text or bounded semantic labels and reserve higher-effort reasoning for work that needs it. Apply rate and concurrency limits to costly anonymous requests. Preserve partial results and identify quota exhaustion.
 
 Do not mirror 13.50 TB as a default deployment step. Metadata, small methods/calibration files, selected traces, and precomputed previews support the product while large assets are retrieved on demand. Storage and egress estimates use the actual selected assets and current provider prices during deployment planning.
 
@@ -3399,7 +3387,7 @@ Do not mirror 13.50 TB as a default deployment step. Metadata, small methods/cal
 
 Maintain daily metadata refresh with a bounded connector rate, content-hash changes, schema contract monitoring, retries, and a visible last-successful-refresh time. Schedule expensive reanalysis only for affected dependencies. Keep curated snapshots available through upstream outages.
 
-Use database backups and point-in-time recovery where enabled, versioned object storage, restore exercises, secret rotation, infrastructure review, dependency updates, and incident records. Define ownership for scientific data issues separately from infrastructure outages. A corrected unit invalidates downstream scientific results even if every server remains healthy.
+Back up the public science database, source manifests, model versions and immutable files it references. Restore them together and rerun a research case from its portable bundle against the recovered snapshot. Respect the expiry of private transient data during recovery. Keep a working rollback path, an independent backup copy and a way to disable paid work. A corrected unit invalidates derived science even when every process is healthy.
 
 Do not claim byte-identical LLM regeneration or exact cross-hardware numerical reproducibility. Preserve the original generated response and artifacts; make deterministic analysis reproducible within documented tolerances and capture all relevant versions.
 
@@ -3412,15 +3400,15 @@ Do not claim byte-identical LLM regeneration or exact cross-hardware numerical r
 | Path | Responsibility |
 |---|---|
 | apps/web | Next.js application, typed API client, context capture, scientific artifact rendering |
-| services/api | FastAPI routes, authentication, authorization, tool gateway, event streaming |
-| services/workers | Temporal workflows, ingestion, agent activities, trusted computation, and export jobs |
+| services/api | Public FastAPI, temporary job ownership checks, typed tools, downloads and event streaming |
+| services/workers | PostgreSQL job claims, checkpointing, ingestion, agent steps, trusted computation, source change manifests and exports |
 | packages/contracts | Versioned JSON schemas/OpenAPI-generated types and common scientific contracts |
 | packages/domain, packages/analysis, packages/modeling | Scientific entities, units, calculations, uncertainty, applicability, training/inference, and model contracts |
 | packages/data-adapters | PSI/NTRS adapters, format readers, mapping versions, and source validation |
-| packages/agent-tools | Roles, typed tools, prompt versions, provider routing, policies, and answer contracts |
+| packages/agent-tools | Scientific roles and tools, OpenAI configuration, prompt versions, budget policies and answer contracts |
 | sandboxes/python-analysis and infra/jobs | Pinned isolated Python environment and reviewed trusted solver/job images, lockfiles, and manifests |
-| evals | Expert benchmark, golden analyses, adversarial cases, model/prompt evaluations |
-| infra | Terraform, deployment configuration, job profiles, observability configuration |
+| evals | Source-labeled benchmarks, independent known-answer analyses, adversarial cases and held-out model/prompt evaluation |
+| infra | One-host deployment/startup, backup and restore instructions, local job and sandbox profiles |
 | docs | Data dictionary, architecture decisions, model cards, licensing, AI disclosure, reproducibility instructions |
 
 ### Delivery sequence
@@ -3433,19 +3421,19 @@ The full target remains all features F01–F20. Build in dependency order rather
 | B: Scientific exploration | Discovery, filters, overviews, run records, hardware relations, comparisons, scenario records, ranking, applicability | Researchers can complete representative evidence-finding tasks without AI assistance |
 | C: Agentic vertical workflow | Main agent, typed retrieval/query tools, context snapshots, source-bound answers, safe Python, chart generation, reproducibility export | One complete question-to-reproduced-answer workflow passes scientific and permission checks |
 | D: Quantitative methods | Calibrated trace/video extraction, registered calculations, uncertainty propagation, detector/outcome interpretation | At least one source-specific analysis reproduces an independently established reference result |
-| E: Validated models | Grouped datasets, baseline/hierarchical models, evaluation, applicability gates, model cards | Each enabled model separately passes its scientific release gate |
-| F: Full research platform | Contradiction explorer, next-measurement planner, mitigation briefs, collaboration/review, source-update impact, Earth collections, live voice | Full target workflows meet the acceptance matrix and demonstrate useful researcher outcomes |
-| G: Expansion | New partial-gravity releases, approved external datasets, additional material families, mechanistic/batch studies, API/MCP use | New sources and models enter through the same provenance, license, and scientific gates |
+| E: Validated models | Grouped datasets, baseline/hierarchical models, evaluation, applicability gates and model cards | Each enabled model passes its evidence and validation criteria for a stated use. Unsupported endpoints keep inspection, exploratory and gap workflows. |
+| F: Full research platform | Contradiction explorer, next-measurement planner, mitigation briefs, personal research notes/revisions, source-change watch, Earth collections, live voice, API/MCP | A visitor can complete and reproduce each supported workflow without an account or another participant. |
+| G: Extension of coverage | New partial-gravity releases, external datasets and additional material families | New sources pass the same provenance, licensing and scientific checks. |
 
 Stages B and C can proceed in parallel after stable contracts exist. UI implementation proceeds against the selected A39–A65 design system, screen contracts, and state matrices; no additional unresolved overall visual direction is implied. Modeling preparation can begin early, but scientific prediction release depends on source interpretation and validation.
 
 ### Workstreams
 
-For planning, assume four build roles plus a combustion-science reviewer: data/provenance; scientific methods/evaluation; backend/agents/infrastructure; and web/workflow integration. The roles can be combined if the team is smaller. The reviewer should adjudicate source mappings, endpoints, applicability, and consequential interpretation rather than merely proofread generated text.
+Organize work around data/provenance, methods/evaluation, backend/agent execution and the web workflows. One person can cover several areas. Calibrations, endpoint identities, applicability and consequential claims are checked against source records, independent references and held-out evidence. Invite domain feedback where it helps and preserve an unknown when the evidence is insufficient.
 
 The first implementation tasks are to establish contracts, build the PSI adapter, load the verified catalog, and make one investigation family fully traceable. FLEX is useful for event/censoring work; BASS-II for material/flow calibration; SAME-R for instrumentation and detector interpretation. Work on all three as separate adapters rather than flattening their scientific differences into one generic CSV import.
 
-Do not commit to a validated predictive system solely by elapsed hackathon hours. Each gate names the evidence required. A full production platform with expert-reviewed models is a sustained engineering and research effort; the hackathon submission should show its working core and clearly identify the remaining validation work.
+Report each supported result and each unresolved empirical question separately. A hackathon demonstration can show a real, reproducible research workflow before every intended model has enough independent data for a validated prediction. The full feature inventory still applies.
 
 ### Hackathon demonstration
 
@@ -3497,7 +3485,7 @@ Use an Apache-2.0 license for original application code, preserve third-party li
 
 Official organizer guidance permits AI and requires disclosure of its use. It also specifies labeling for generated media/code/data and restrictions on generated content using NASA branding. Include an AI-use statement that identifies assistance in code, summaries, classification, charts, and any generated media, and keeps measured NASA data distinct from AI-created material. [Official organizer guidance](https://github.com/nasa/spaceapps/discussions/1849). The specific image/video watermark and audio/code/data descriptive-text/metadata requirements are stated in A35; they do not require an AI Git co-author or bot contributor.
 
-The same guidance requires at least one NASA source from the selected challenge's Resources list for Global Awards eligibility. PSI is the core challenge dataset, but the Resources tab itself did not return usable contents during this research. Verify and record the exact listed resource before freezing the submission checklist; this is the remaining source-verification item, not a reason to stop engineering work.
+The organizer guidance calls for a NASA source from the selected challenge’s Resources list for Global Awards eligibility. The dated source check in this brief recovered the listed [PSI Data Repository: Combustion Science](https://psi.nasa.gov/physci/repo/search?q=combustion). Cite the exact resource and recheck the organizer’s list and submission requirements at submission time.
 
 Use the official current legal/submission requirements when preparing the actual submission. The indexed official terms support open publication and attribution obligations; the plan does not assert that every submission field or eligibility rule was exhaustively audited. [Official legal terms](https://www.spaceappschallenge.org/legal/).
 
@@ -3519,18 +3507,18 @@ Maintain README with purpose and working scope; architecture decisions; DATA_SOU
 | How is lunar/Mars transfer handled? | Explicit applicability, external literature, joint condition coverage, validated models where available, labeled gaps otherwise |
 | Should a screenshot be the agent's main context? | Structured state is primary; user-scoped image capture supplements it |
 | Is live voice included? | Yes as a full-target feature; structured results remain authoritative and voice fidelity is evaluated |
-| What semantic decision API is selected? | OpenAI Decisions initially; Jev is an evaluated alternative behind the same bounded interface |
-| Is arbitrary Python supported? | Yes in a controlled data-scoped sandbox with reproducible artifacts and scientific review gates |
+| How are semantic decisions made? | Deterministic rules for known categories, then a bounded OpenAI classification when necessary. Keep the cited evidence and unknown state. |
+| Is arbitrary Python supported? | Real Python and bounded shell are planned in a fresh project-hosted sandbox with frozen inputs, enforced limits and reproducible outputs. |
 | How much PSI data is ingested? | Metadata and relations for all verified combustion records; small source files and selected raw data, with lazy retrieval of large assets |
-| How is correctness established? | Source provenance, physical semantics, deterministic checks, independent reference analyses, grouped validation, and expert review |
+| How is correctness established? | Source provenance, physical semantics, deterministic checks, independent reference analyses, grouped validation and explicit unsupported cases. Researchers may contribute corrections or comments. |
 | How is the product made distinctive? | Applicability records, extinction audit, detector blind spots, contradiction resolution, research-gap planning, and reproducible evidence bundles |
-| What remains open? | Final vector artwork and rendered design acceptance; project/account access, deployment credentials, regions, quotas and budgets; and source/model questions requiring further empirical validation. The overall UI/brand and Google Cloud hosting direction are selected in this master brief. |
+| What remains open? | The rendered design, measured quality and latency, actual OpenAI model entitlement, data/model support, and hosting eligibility, terms, runtime capacity and owner choice. No hosting resource is assumed provisioned. |
 
 <a id="b20"></a>
 
 ## B20 Status of this deliverable
 
-The supplied baselines establish primary-source research, targeted public PSI inspection, product and feature contracts, scientific methods, architecture, delivery sequence, and design decisions. The current verification independently reproduced the 24-record combustion inventory, 15 sampled file hashes, and three manifest hashes, and checked the selected provider/deployment contracts. See the linked research records for the exact evidence and remaining gaps.
+These are implementation decisions and research specifications. The dated evidence pass reproduced the 24-record combustion inventory, 15 sampled file hashes and three manifest hashes. The scientific audit below documents those observations and their limits. The current local-host, single-researcher and OpenAI design supersedes the original managed-service proposal. Its operation, capacity and cost still require implementation and testing.
 
 Not claimed as completed: a deployed application, full validation of the raw archive, completed calibration of every channel, trained validated predictive models, measured application latency, or competition submission. The following empirical appendix records what was actually inspected and how.
 
