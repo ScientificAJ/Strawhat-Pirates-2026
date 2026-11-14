@@ -45,7 +45,7 @@ The two supplied Pages are [Flame in Freefall Product Science Engineering and UI
 | Scientific data and media laboratory | Tables, time series, calibrated image/video measurements, synchronized traces, reviewed transformations, condition coverage, scientific figures, and quality views |
 | Prevention, detection, suppression, and recovery | Material/configuration evidence, detector blind spots, smoke/dust instrument lineage, extinction audits, candidate control tradeoffs, and post-fire research context |
 | Quantitative methods | Unit-aware calculations, flame-spread and droplet methods, event/censoring definitions, detector metrics, derived dimensionless quantities, and explicit uncertainty propagation |
-| Modeling laboratory | Interpretable baselines, hierarchical and other justified statistical models, registered inference, Cantera, qualified FDS research, validation/domain checks, diagnostics, and model cards |
+| Modeling laboratory | Fit flame-front speed or droplet burning rate from a calibrated trace; inspect the data, interval, residuals and uncertainty. At most one small run-level regression can offer predictions after independent validation. |
 | Scientific intelligence | One lead coordinator and useful bounded specialist roles; source-grounded extraction and synthesis; registered tools; typed scientific claims; verified calculations and artifacts |
 | Research Studio and contextual assistance | Full-page conversation/artifact studio, context-aware panel, explicit selected-view sharing, live voice, interruption, correction, and persistent text/evidence outputs |
 | Generated research dashboards | Typed components, inspectable queries, explicit linked filters, manual editing, preview/revision review, concurrency protection, live-query/frozen versions, and export |
@@ -67,8 +67,8 @@ Start locally. Serve the web interface and scientific API from one HTTPS origin,
 | Personal work | Browser storage holds settings, drafts, saved queries, frozen cohorts, scenarios, cases, sessions and dashboards. Back up to a file and import on another device. Compare watched sources with public release metadata on return. There is no cloud sync or case-sharing service. |
 | Private remote tasks | Only selected inputs leave the browser for requested analysis, upload or voice. An opaque browser credential protects that visitor’s job events, results and downloads until expiry or deletion. No public visitor can write the canonical corpus. |
 | Data and search | A scheduled importer uses the NASA PSI catalog, versioned manifests and selective file acquisition; NTRS and other primary sources supply supporting evidence. PostgreSQL handles relationships, full text and pgvector retrieval. Keep content-addressed originals and artifacts on persistent disk, Parquet/Arrow for analytical subsets, and a restorable copy on separate storage. |
-| Jobs and models | One worker consumes persistent PostgreSQL jobs for acquisition, scientific analysis, training, media and exports. The same database keeps job progress, checks, model versions and source references. Use a larger project-controlled worker only if a measured trusted workload needs it. |
-| Python and shell | The worker launches the project's pinned scientific environment directly on qualified Linux compute. Each exploratory session is isolated from the app, credentials, other workspaces and the network; no external execution API or sandbox subscription. See [A21](#a21). |
+| Jobs and models | One worker uses PostgreSQL jobs for acquisition, analysis, media and exports. Fixed-method fits run one at a time on its existing CPU. The database records progress, checks, method versions and sources. |
+| Python and shell | The worker runs the pinned scientific environment with self-hosted gVisor on existing or included Linux capacity. No separate execution provider or per-use sandbox fee. Qualify host compatibility and capacity before enabling it. See [A21](#a21). |
 | AI and voice | OpenAI is the only required model integration: grounded text and image work, semantic retrieval, bounded classifications, and live voice. Typed tools and independent evidence checks determine what may be reported. |
 | Operations | One release configuration, redacted logs, resource and spend limits, job status, backup and rollback. Use a temporary copy with separate data for release tests. |
 
@@ -83,13 +83,13 @@ For live AI, use the **OpenAI Developers** plugin's secure setup flow at the int
 | Decision | Active contract |
 |---|---|
 | Product identity | Nova Ember is the project name and application wordmark, selected on 14 November 2026. StrawHat Pirates remains the team name; Flame in Freefall remains the official challenge title. Retain original source titles and URLs. |
-| Complete target | Preserve every feature and the detailed A/B contracts; order work by dependencies and evidence, without substituting a smaller MVP |
+| Complete target | Implement F01–F20 as defined here, including the limited F14 workbench in A11. Sequence work by dependencies and available evidence. |
 | Hosting | One portable Linux deployment; offer eligibility, budget, local execution support and the owner's decision determine the host. No mandatory cloud provider. |
 | Data status | The 24-record PSI inventory, 15 sampled file hashes, and three manifest hashes were independently reproduced on 14 November 2026; full scientific interpretation remains source-specific work |
 | Ranking | `question-relevance-v1` retains B's .30/.25/.25/.10/.10 heuristic; `scenario-applicability-v1` retains A's .25/.20/.20/.20/.15 heuristic; both are inspectable product policies, not safety probabilities |
 | Sandbox budgets | Default commands/cells are capped at 60 seconds; a separately approved extended-cell profile permits 90 seconds; a five-minute lease renews only within authorized cumulative runtime/spend limits |
 | Evaluation | A's 100-question/300-field/30-adversarial set is a development subset; B's at-least-300-task/1,000-field stratified benchmark is the full acceptance target; answer-level support and claim/extraction precision remain distinct metrics |
-| Models | Simple reference baselines and justified hierarchical candidates are both retained, evaluated on grouped independent units, and promoted for an explicit intended use |
+| Models | Two descriptive fits reuse registered measurements. A single predefined regression may predict one endpoint only if independent held-out evaluation and checks on the joint conditions support that use. No solver service or heavy training. |
 | Parsing | Deterministic format-specific readers first; Docling for appropriate structure/layout recovery; targeted OCR/vision where required; source anchors and raw representations remain intact |
 | Repository | A's canonical `services/workers` and explicit domain/analysis/data-adapters/evidence/modeling/agent-tools/contracts packages; B's broader package names map to those responsibilities |
 | Tools and context | One typed tool registry; distinguish search/read, proposal/validation/save, run/cohort comparison, applicability/domain checks, and exploration/registered fitting. Client `ViewContext` is resolved into an authorized server `WorkspaceContext` |
@@ -102,6 +102,8 @@ For live AI, use the **OpenAI Developers** plugin's secure setup flow at the int
 | Attribution and competition | Use the configured owner identity and add no assistant/bot Git authors or co-author markers. Preserve licenses, citations, scientific origin labels, and any competition-required tool-use declarations or generated-media acknowledgments/watermarks |
 
 **Change of plan, 14 November 2026:** the earlier Google-managed stack, Temporal, E2B, additional model providers and multi-user review workflow are superseded. Original source documents and dated data observations remain available. “Checked” or “validated” below means that the stated evidence or method-specific tests support a result in its stated domain. Record precisely which checks ran. Researchers can inspect or annotate their own work; no one has to invite a collaborator or obtain sign-off. If the checks cannot establish a value or meaning, leave it unresolved.
+
+**Workbench scope, 14 November 2026:** F13 uses the application's existing or included compute, with no paid execution fallback. F14 replaces the earlier advanced training and simulation plan with [two descriptive fits and one conditional prediction](#a11). Published simulation results remain available as source evidence.
 
 The original source-era ranking policies are intentionally retained as different scientific-discovery views. Permission checks and mandatory exact filters run first; hybrid retrieval produces candidates; applicability rules determine permitted analytical use. A high semantic score cannot override a hard incompatibility.
 
@@ -224,7 +226,7 @@ The product consists of connected workspaces. This section defines their functio
 | Comparison workspace | Cohort construction, condition differences, comparability assessment, linked analyses |
 | Scenario workspace | Mission-relevant assumptions, applicability assessment, evidence coverage, safety research questions |
 | Data laboratory | Tables, time series, images and video, transformations, statistics, chart construction |
-| Modeling laboratory | Registered models, domain checks, uncertainty, validation, parameter studies |
+| Modeling laboratory | Select a calibrated trace and interval, inspect and export a descriptive fit, or check whether the registered run-level regression supports a scenario |
 | Evidence and relationships | Claims, source links, hardware relationships, contradictions, dependencies |
 | Controls and technology | Prevention, detection, suppression, recovery, terrestrial transfer, equipment-specific evidence |
 | Research cases and exports | Saved conclusions, review, reports, citations, reproducibility bundles |
@@ -432,11 +434,11 @@ FM2 is included as a tracked investigation and supplementary source of research 
 
 ## A11 Modeling laboratory and calculation strategy
 
-The modeling laboratory should be ambitious in methods and conservative in the scope of its claims. Its purpose is to make scientifically supportable prediction accessible, not to fit one universal model to every combustion experiment.
+The laboratory answers two questions from measured data: how fast did this flame front travel, and how fast did this droplet’s squared diameter decrease? Both results describe an observed interval. Predicting an outcome for another run requires separate evidence.
 
-### A11.1 Separate model families
+### A11.1 Keep experimental endpoints distinct
 
-| Model family | Possible endpoint | Essential restriction |
+| Evidence family | Endpoint to inspect | Restriction on interpretation |
 |---|---|---|
 | Solid-fuel flammability | Sustained burning or an experiment-defined flammability boundary | Specific material, geometry, protocol, and atmosphere |
 | Flame spread | Spread rate, front position, or growth over time | Compatible geometry, flow relation, and measurement definition |
@@ -449,17 +451,17 @@ A model of sustained burning following a controlled ignition is not a model of s
 
 ### A11.2 Data readiness gate
 
-Training requires a defined prediction target, a defensible mapping from source records to labels, a documented population of independent runs, usable explanatory variables, explicit exclusions, and an assessment of missingness and measurement quality. If essential input variables or outcomes cannot be reconstructed, the dataset remains useful for exploration but is not promoted into predictive training.
+A within-run fit requires a calibrated trace, a defined clock and units, and a source-supported interpretation of the selected interval. A predictive regression also requires a prespecified endpoint and predictor, a defensible mapping to independent experimental runs, explicit exclusions, and checks on missingness and measurement quality. Other endpoints in A11.1 remain available for discovery, comparison and the registered calculations they support.
 
-The first modeling task is to reproduce a documented result or trend in a well-characterized subset, not to maximize a machine-learning leaderboard metric across incompatible experiments.
+Start by reproducing a documented result in a well-characterized subset. Record why each trace, run and interval qualifies; keep the underlying points available when a fit cannot be justified.
 
 ### A11.3 Selected statistical approach
 
-Begin with interpretable baselines: generalized linear models for appropriate categorical outcomes, simple regression or mechanistic fits for well-defined continuous outcomes, and Gaussian-process models for small, structured datasets where their assumptions are defensible. Use hierarchical Bayesian models when partial pooling across related campaigns is supported by the experimental structure.
+Reuse the registered measurement methods. For flame-front spread, fit calibrated front position against time over the selected interval and report the signed slope in length/time with its direction. For a droplet, fit measured diameter squared against time within an established burning regime; report the negative slope as the burning-rate constant in length²/time. Plot the source points and residuals, record interval selection and exclusions, and report an uncertainty interval only if its assumptions, including dependence within a trace, are defensible.
 
-Use scikit-learn for baseline estimation and evaluation and PyMC for hierarchical models and uncertainty analysis. Prior and posterior predictive checks are mandatory for Bayesian models; posterior intervals alone do not demonstrate model adequacy. PyMC’s documentation describes these checks as part of model assessment. [S35]
+For prediction, allow at most one predefined linear regression with one predictor and one continuous endpoint in a frozen cohort of comparable independent runs. Record the scientific rationale, baseline and intended domain before evaluation. If there is no qualifying cohort or the regression fails its checks, the two descriptive methods remain available on eligible measurements.
 
-A more flexible tree-based model can be evaluated as a challenger when enough independent data exists. A neural surrogate or physics-informed model is a later option, not the default simply because it sounds advanced. It must outperform the baseline on held-out, scientifically meaningful tests and preserve appropriate uncertainty behavior.
+Use the existing numerical libraries and worker, independent of both OpenAI and the interactive sandbox. Initial engineering limits are one fit at a time, one CPU thread, 30 seconds elapsed and 512 MiB total for the fitting child including its libraries and descendants. Measure actual fit and import costs on the intended host. If a limit is reached, report it; the scientist can explicitly select and freeze a smaller interval or cohort. Never trim data silently or label a partial result complete.
 
 Do not impose monotonic effects of airflow or gravity without evidence. Do not use a global model to hide distinct regimes. Treat chamber, campaign, material batch, and shared apparatus as possible sources of dependence.
 
@@ -467,7 +469,7 @@ Do not impose monotonic effects of airflow or gravity without evidence. Do not u
 
 Split by independent runs or campaigns, never by random frames from the same video. Evaluate leave-campaign-out and, where the intended use requires it, leave-investigation-out transfer. Fit preprocessing, feature selection, and calibration only within training folds. Keep the final test set untouched until model selection is complete.
 
-For classification, report class balance, sensitivity, specificity, precision-recall behavior, Brier score, and calibration with uncertainty. For regression, report errors in meaningful units, residual structure, prediction-interval behavior, and performance by condition group. For boundary estimation, assess the boundary and its uncertainty, not just overall classification accuracy.
+For a descriptive fit, check the estimated slope and units against known-answer examples and inspect residual structure in the selected time window. For the optional prediction, report held-out errors and bias in physical units against the prespecified baseline, performance by condition group and interval behavior. A good within-run fit cannot establish accuracy on a new run.
 
 An experiment stopped before extinction is not an observed extinction time. Below-detection measurements, aborted runs, incomplete videos, and endpoint ambiguity require appropriate censoring or exclusion logic. Missing data handling must be fitted and documented; an imputation must never appear as a measured value.
 
@@ -475,19 +477,15 @@ An experiment stopped before extinction is not an observed extinction time. Belo
 
 A registered model specifies admissible materials, mixtures, geometry, pressure, oxygen, flow, gravity conditions, endpoint definitions, and required metadata. Domain checking evaluates both individual ranges and combinations of conditions. Being inside every marginal minimum and maximum does not establish that a combination was tested.
 
-The inference response reports whether the case is within domain, near a boundary, outside domain, or indeterminate because inputs are missing. Out-of-domain requests return no validated numerical prediction. They can return nearby evidence, an exploratory result explicitly separated from validated inference, and the additional measurements needed to support transfer.
+The inference response reports whether the case is within domain, near a boundary, outside domain, or indeterminate because inputs are missing. If the requested combination lacks validation, return no numerical prediction. Show nearby evidence and identify the measurements needed to support transfer.
 
-Conformal or Bayesian intervals do not automatically remain reliable under domain shift. The application must not use an uncertainty band to cosmetically legitimize unsupported extrapolation.
+An interval estimated in one regime does not establish accuracy in another. Keep uncertainty in the observations, uncertainty of the fitted slope, and any prediction interval separately labeled.
 
-### A11.6 Mechanistic calculations and simulation
+### A11.6 Published simulations as evidence
 
-Use **Cantera 3.2** as the initial chemistry and transport calculation engine for appropriate gas-phase and reduced-order problems. It provides thermodynamic, kinetic, transport, reactor, and one-dimensional flame capabilities. It is not a complete model of spacecraft solid-fuel pyrolysis, enclosure radiation, or cabin-scale fire propagation. [S30]
+NASA investigations and supporting publications may include simulations. Show them beside the corresponding measurements with distinct labels and source anchors. Where reported, retain the solver and version, mechanism, assumptions, boundary conditions, numerical settings, convergence evidence and comparisons with experiments. Mark omissions as unknown; agreement at one condition does not validate another.
 
-Every mechanistic run records the mechanism file and version, species and reactions, transport model, numerical tolerances, boundary conditions, and validation evidence. A mechanism valid for one fuel, pressure, or temperature range is not presumed valid elsewhere.
-
-CFD integration is an advanced research capability with its own verification program. NIST FDS is a candidate for applicable fire-dynamics questions, but its suitability for the particular microgravity, combustion, and radiation problem must be established, not assumed from its existence as a fire simulator. Mesh, timestep, conservation, numerical convergence, and experimental comparisons must be documented. [S31]
-
-The product must not use the term “digital twin” for a generic simulation with no validated connection to a specific physical system.
+Running chemistry or CFD solvers such as Cantera or FDS, training neural or hierarchical models, and scheduling parameter sweeps are outside F14. Scientists can still discover, inspect, compare and export computational studies already in the corpus.
 
 <a id="a12"></a>
 
@@ -761,7 +759,7 @@ Use a relational canonical model for identity, conditions, provenance, and workf
 | Evidence anchor | Page and bounding box, table and cell, row and column, frame and region, or time interval |
 | Claim and claim evidence | Statement, type, applicable conditions, supporting and conflicting anchors, review status |
 | Cohort and analysis | Frozen selection, transformations, code, parameters, inputs, outputs, execution environment and logs |
-| Model and model version | Training snapshot, target, domain, validation, calibration, mechanism or algorithm and approval status |
+| Model and model version | Frozen trace or run cohort, method, endpoint, conditions, diagnostics, interval meaning, and evidence for any predictive use |
 | Dashboard and dashboard revision | Typed scientific components, source and artifact dependencies, shared filters, selection bindings, live or frozen mode, ownership and change history |
 | Scenario and research case | Assumptions, selected evidence, conclusions, review, exports and dependency graph |
 | Personal workspace and activity | Browser-local settings, cases, notes and revisions; provenance and event history for explicitly requested server jobs |
@@ -831,8 +829,8 @@ All production roles require domain-specific evaluation. A model upgrade is a ve
 | run_python | Execute analysis in an isolated, bounded sandbox |
 | list_models | Find registered models and their supported domains |
 | check_model_domain | Evaluate input completeness and applicability before inference |
-| fit_registered_model | Fit an approved model profile with prescribed independent-unit evaluation |
-| run_model | Execute an approved model under a recorded contract |
+| fit_registered_model | Run one of the two descriptive methods, or the predefined regression on a qualifying independent-run cohort |
+| run_model | Return an in-domain prediction only for a regression that passed its recorded validation; otherwise explain the missing support |
 | save_artifact | Save a versioned authorized scientific artifact with its provenance |
 | assess_evidence | Assemble support, contradictions and applicability without inventing a confidence percentage |
 | propose_case_update | Draft changes to a research case for user review |
@@ -910,17 +908,17 @@ The contextual assistant uses a restrained blue-core flame mark within a labeled
 
 <a id="a21"></a>
 
-## A21 Controlled Python sandbox
+## A21 Interactive Python and shell
 
 The agent receives a small, isolated analysis environment because executable calculations are valuable. It does not receive access to the production host, unrestricted credentials, or an open network by default.
 
 ### A21.1 Selected execution environment
 
-Run the researcher's or agent's Python and bounded shell directly on project-controlled Linux compute. The worker starts a disposable sandbox using a local isolation runtime such as [gVisor/runsc](https://gvisor.dev/docs/), with a pinned scientific image, a read-only copy of the selected inputs, and a size-limited writable work area. Guests receive no network, public listener, host control socket, credentials, other jobs' files or access to the application database. Check artifact types, sizes and hashes on return. This uses installed software, not a hosted sandbox or an OpenAI code-execution endpoint. Qualify actual package compatibility and isolation on the chosen host. If unavailable, show the reason and retain the pending work; never fall back to executing generated commands in the API or the worker's own shell.
+Run the researcher's or agent's Python and bounded shell on the app's Linux host using [gVisor/runsc](https://gvisor.dev/docs/), distributed under the [Apache 2.0 license](https://github.com/google/gvisor/blob/master/LICENSE). There is no execution-service account, card, API key or per-session fee. Use existing or included resources; electricity, storage and hosting can still cost money. Verify [platform support](https://gvisor.dev/docs/user_guide/platforms/), package compatibility, capacity and isolation on the actual host. The worker starts a disposable pinned image with read-only selected inputs and limited scratch space. Guests have no network, host sockets, credentials, other jobs' files or database access. Check output types, sizes and hashes. If the host cannot support a session at no additional charge, show the reason and keep the code and inputs exportable. No paid fallback or execution in the host shell.
 
-Interactive policy targets are two virtual CPUs, approximately four GiB of memory, and 60 seconds for an ordinary command or cell. A separately approved extended-cell profile permits 90 seconds. A five-minute session lease can renew only when the task still has explicitly authorized cumulative runtime and spend remaining; renewal is not an unlimited timeout bypass. Bound input files, output size, process count, and storage. These are application limits to validate against the actual host and runtime, not assumptions about a hosting offer.
+Start with one interactive session at a time. Treat two virtual CPUs and about four GiB as upper limits, not reserved capacity or a minimum host size. A smaller allocation qualifies if both Python and shell reproduce the representative analyses and the app remains responsive. Record the tested allocation. Keep the 60-second command/cell limit, the separately enabled 90-second profile and the five-minute renewable session lease within the cumulative task limit. Bound input and output sizes, process count and storage.
 
-The same trusted worker can schedule long-running registered profiles in their separately locked environments. Run a profile on larger project-controlled compute only where needed and authorized. Interactive notebook limits never grant access to the trusted modeling environment.
+The same worker schedules trusted calculations, media and exports separately from interactive sessions. The fixed fits in A11 use their own smaller CPU limits and remain available when interactive execution is unavailable.
 
 ### A21.2 Input and dependency policy
 
@@ -983,9 +981,8 @@ Do not add Neo4j, Elasticsearch, Kafka, Kubernetes, and a second vector store be
 | Embeddings | text-embedding-3-large with 1536 output dimensions | Deliberate quality and index-size tradeoff; evaluate against exact-search baselines |
 | Agent framework | OpenAI Agents SDK for Python | Typed tools, bounded roles, handoffs and tracing |
 | Job execution | Supervised Python worker with PostgreSQL jobs, attempts and ordered events | Recover progress, explicit user confirmations, cancellation and artifact publication after reconnect or restart |
-| Exploratory code | Local, disposable sandbox with pinned Python/shell environment and no network | Real execution on project hardware without a sandbox provider; see [A21](#a21) |
-| Statistics | scikit-learn and PyMC | Interpretable baselines and explicit uncertainty modeling |
-| Chemistry | Cantera 3.2 | Appropriate kinetics, thermodynamics and transport calculations |
+| Exploratory code | Local gVisor/runsc with pinned Python and shell | Use included CPU capacity and a disposable workspace; no execution provider. See [A21](#a21). |
+| Fitting | Existing NumPy/SciPy stack on the CPU worker | Reuse the two registered measurement methods and evaluate at most one predefined regression; no extra modeling runtime. |
 | Model tracking | Versioned PostgreSQL records plus immutable local artifacts | Preserve model cards, frozen inputs, evaluation results, registered domain, status and history |
 | Optional voice | gpt-live-1 with delegated backend reasoning | Live conversation without creating a separate scientific truth system |
 
@@ -1088,7 +1085,7 @@ packages/agent-tools        Typed tool definitions and policies
 packages/analysis           Registered numerical methods
 packages/data-adapters      Investigation-specific importers
 packages/evidence           Claim anchors and provenance logic
-packages/modeling           Training, domain checks and inference
+packages/modeling           Registered fit profiles, domain checks and conditional inference
 sandboxes/python-analysis   Pinned isolated execution image
 infra                       Deployment configuration and policies
 evals                       Reviewed evaluation cases and scoring
@@ -1175,7 +1172,7 @@ It must return an incomplete-coverage explanation when a source is unavailable, 
 
 Each predictive model has its own scientific acceptance criteria, set before final testing and reviewed for the intended use. There is no universal error threshold that makes every combustion model useful.
 
-Require a model card, independent-unit split, held-out performance, calibration assessment where relevant, sensitivity analysis, failure examples, domain definition, and explicit unsupported uses. For mechanistic models, include numerical convergence and comparison with relevant measurements.
+For the proposed predictive regression, require a model card, independent-unit split, held-out performance, calibration assessment where relevant, sensitivity analysis, failure examples, domain definition, and explicit unsupported uses. For the two descriptive methods, test known slopes, units, interval selection, measurement assumptions and refusal on unsuitable data; never count these checks as validation of a new-run prediction.
 
 Register a model version for a specific use only when its recorded validation meets criteria fixed before final testing. If support is absent or inconclusive, keep it exploratory or unavailable and explain why. Neither the agent nor a manual status change can override those checks.
 
@@ -1275,15 +1272,15 @@ Deliver the coordinator, typed tools, bounded decision routing, evidence verific
 
 Exit criterion: the agent completes representative tasks with supported claims, correct calculations, controlled costs, and no permission bypasses.
 
-### A30.4 Gate D Validated modeling
+### A30.4 Gate D Measured fits and conditional prediction
 
-Deliver one or more narrow model families only after the dataset-readiness and evaluation gates pass. Reproduce a documented analysis before extending to new scenarios. Add domain checks and uncertainty before a general prediction feature is exposed.
+Deliver both descriptive fit workflows: users can select an eligible measured interval, inspect diagnostics and export a result, or see a precise reason no fit can be reported. Test the proposed regression only if a compatible independent-run cohort exists.
 
-Exit criterion: a model has a documented intended use and passing held-out validation for that use. Unsupported partial-gravity predictions remain unavailable unless supported by an appropriate validation program.
+Exit criterion: known-answer tests, source-linked reruns and unsupported cases pass on the CPU budget. Publish a predictive result only after passing the separate held-out and domain checks. Absence of supporting data is a valid documented outcome, including for partial gravity.
 
 ### A30.5 Gate E Advanced research system
 
-Add image-derived measurements, evidence-gap analysis, next-informative-investigation proposals, contradiction review, advanced mechanistic work, and broader corpus coverage. Introduce live voice once the underlying workflows are reliable.
+Add image-derived measurements, evidence-gap analysis, next-informative-investigation proposals, contradiction review, and broader corpus coverage, including published computational evidence. Introduce live voice once the underlying workflows are reliable.
 
 Exit criterion: advanced features improve real scientific tasks and preserve the same source, domain, and reproducibility contracts.
 
@@ -1362,7 +1359,7 @@ No demonstration should use synthetic values while presenting them as NASA measu
 | Rank investigations | Separate relevance, applicability and modeling-readiness policies | Ranking explanation and sensitivity tests |
 | Interpret findings | Scenario-aware synthesis and applicability passports | Unsupported transfers are identified |
 | Identify crew-environment relevance | Scenario workspace and safety-purpose taxonomy | Relevant studies retrieved for representative habitat questions |
-| Support predictive modeling | Exportable cohorts, endpoint definitions, model laboratory and domain gates | Reproducible model-development package |
+| Support predictive modeling | Exportable independent-run cohorts, defined endpoints, a predefined candidate regression and domain checks | Reproducible inputs and diagnostics; held-out evidence for any numerical prediction or an explicit reason to abstain |
 | Inform future controls | Prevention, detection, suppression and recovery evidence workspace | Equipment and condition-specific research brief |
 | Show objectives | Separate objective and result fields | Planned studies do not acquire fabricated outcomes |
 | Show fuels and dimensions | Material, specimen and geometry entities | Original units and source anchors retained |
@@ -1403,7 +1400,7 @@ The requirement mapping follows the user-supplied NASA challenge and preserves i
 | Workflows | Agents SDK for tools; PostgreSQL jobs and a local worker for execution | No separate workflow service is needed for restart, progress or cancellation |
 | Sandbox | Isolated, no-secret, no-egress execution | Running generated code in the API server is an unacceptable trust boundary |
 | Storage | Relational metadata plus immutable scientific assets | A vector database alone cannot serve as the scientific record |
-| Modeling | Narrow models validated for explicit endpoints | A universal spacecraft fire predictor is unsupported by the available heterogeneous evidence |
+| Modeling | Two descriptive trace fits and at most one evidence-qualified run-level regression | Training a general fire predictor or running new simulations is outside the research workbench’s scope |
 | Ambition | Full capability roadmap with evidence gates | Either a tiny unambitious viewer or an unvalidated all-knowing simulator misses the objective |
 | Visual design | White-first, flame-inspired design with restrained glass, explicit scientific states, and a complete responsive screen system in Sections A39 through A65 | Excessive translucency, ornamental dashboards, hidden navigation, and spectacle that obscures evidence |
 
@@ -1450,7 +1447,7 @@ A release is complete when the supported corpus is explicitly identified; the na
 
 The demonstration release must include an investigation explorer, detailed experiment records, evidence-linked summaries, meaningful filtering, at least one scientifically valid comparison, an executable analysis with inspectable inputs and outputs, a useful unsupported-domain response, and a reproducible case export.
 
-The full research release additionally requires broader corpus coverage, controlled image and time-series analysis, qualified model families, evidence-gap and contradiction workflows, personal notes and frozen case revisions, operational resilience, and evaluated contextual or live assistance.
+The full research release additionally requires broader corpus coverage, controlled image and time-series analysis, both descriptive fit workflows with honest refusals, evidence-gap and contradiction workflows, personal notes and frozen case revisions, operational resilience, and evaluated contextual or live assistance. A predictive regression is available only where independent evidence supports it.
 
 The guiding standard is straightforward: **the application should make it easier to reach a defensible conclusion, easier to see why a conclusion is limited, and easier for another scientist to check the work.** Maximum ambition belongs in the capability target. Maximum rigor belongs in every result.
 
@@ -1524,9 +1521,9 @@ The following references support external factual statements and technology capa
 
 **S29.** [NASA fine-water-mist fire suppression research record](https://ntrs.nasa.gov/citations/20100001376). A supplementary suppression-technology evidence thread, distinct from droplet gas-dilution experiments.
 
-**S30.** [Cantera stable reference documentation](https://www.cantera.org/stable/reference/index.html). Chemistry, thermodynamics, transport and supported calculation domains.
+**S30.** [Cantera stable reference documentation](https://www.cantera.org/stable/reference/index.html). Background for interpreting source-reported calculations; no runtime integration.
 
-**S31.** [NIST Fire Dynamics Simulator documentation and manuals](https://pages.nist.gov/fds-smv/manuals.html). Candidate advanced simulation infrastructure requiring problem-specific validation.
+**S31.** [NIST Fire Dynamics Simulator documentation and manuals](https://pages.nist.gov/fds-smv/manuals.html). Background for interpreting published simulations; no FDS jobs in the application.
 
 **S32.** [FastAPI documentation](https://fastapi.tiangolo.com/). Typed API and OpenAPI contract implementation.
 
@@ -1534,7 +1531,7 @@ The following references support external factual statements and technology capa
 
 **S34.** [DuckDB documentation](https://duckdb.org/docs/stable/). Analytical queries over scientific table extracts.
 
-**S35.** [PyMC prior and posterior predictive checks](https://www.pymc.io/projects/docs/en/stable/learn/core_notebooks/posterior_predictive.html). Bayesian model checking.
+**S35.** [PyMC prior and posterior predictive checks](https://www.pymc.io/projects/docs/en/stable/learn/core_notebooks/posterior_predictive.html). Reference from the earlier modeling proposal; PyMC is not a project dependency.
 
 **S36.** [Vega-Lite documentation](https://vega.github.io/vega-lite/). Declarative interactive chart specifications.
 
@@ -2140,15 +2137,15 @@ Validate individual fields and cross-field constraints. An incomplete field is d
 
 The preview shows matching evidence, meaningful mismatches, unknown conditions, and available registered analyses. Use a condition matrix and explanatory text rather than an alluring “Mission safety: 92 percent” gauge.
 
-Changes to assumptions can update the preview after validation, but expensive modeling requires explicit execution. Show the previous result as stale until the new result completes.
+Changing assumptions updates the evidence preview. A fit or eligible prediction runs on explicit request. Mark the previous result stale while it no longer matches the selected inputs.
 
 ### A54.3 Model detail and inference
 
-A model page opens with its predicted endpoint, supported domain, validation state, source dataset, and version. Training details and diagnostics are expandable, but intended use and unsupported use remain visible.
+Open a measured trace with its source, units, calibration and fit method visible. Let the researcher select the time window, see the original points and fitted line, and inspect residuals, exclusions and the meaning of any interval. Identify it as a fit to this run. If calibration or regime is missing, keep the trace visible and explain what prevents the fit.
 
-The inference sequence is Input, Domain check, Execution, Results. A failed domain check offers nearby evidence and missing requirements. It does not show a disabled green prediction card waiting to be bypassed.
+For a proposed prediction, show its endpoint, intended use, supported conditions, held-out evaluation and version. The sequence is Input, Domain check, Execution, Results. If no regression qualifies or the conditions fail the check, show the missing support and nearby evidence.
 
-Results include the predicted quantity, units, interval definition, applicability, validation context, and supporting diagnostics. Compare scenarios through matched panels with their changed assumptions visible. Exported figures preserve the model version and interval meaning.
+A qualified prediction shows the quantity in physical units, interval meaning, applicability and validation evidence. Compare scenarios through matched panels with changed assumptions visible. Exported figures preserve source IDs, inputs, fit or model version, and interval meaning.
 
 <a id="a55"></a>
 
@@ -2777,15 +2774,15 @@ Live voice uses the same scientific tool backend. It supports interruption, foll
 
 ### F13 Reproducible Python research workspace
 
-Provide a small isolated computation environment containing authorized data copies, a manifest, and preinstalled scientific packages. The agent can inspect files, run Python and bounded shell commands, make figures, and produce notebooks.
+Provide real Python and bounded shell through the project’s own local gVisor/runsc environment on qualified Linux compute. Run it without a separate vendor, account, card or execution fee. Supply frozen, authorized data copies, a manifest and scientific packages. If this host cannot run the sandbox within available resources, show the unavailable state and offer the script or notebook and manifest for download.
 
 Each run saves code, data hashes, environment/image version, seed, outputs, errors, and assumptions. Generated code is inspectable. A successful execution is not sufficient to validate a scientific conclusion; output semantics and applicability are checked separately.
 
 ### F14 Modeling workbench
 
-Offer deterministic calculations, statistical model fitting, registered prediction models, and advanced mechanistic adapters. Every model has a declared outcome, inputs, units, training/validation data, supported domain, diagnostics, and uncertainty behavior.
+Offer two descriptive fits on calibrated observations: front position versus time, and squared droplet diameter versus time in a verified burning regime. Show the selected data, fitted slope, residuals, units, uncertainty or its limitation, and a reproducible method record. The trusted scientific worker runs F14 directly without F13 or OpenAI.
 
-Prediction is enabled only when the required scientific and evaluation gates pass. Unsupported conditions return an evidence gap and a research route. The workbench can still help prepare a dataset or compare literature when a numerical prediction is not defensible.
+At most one predefined, one-predictor linear regression may produce a run-level estimate on a compatible curated cohort. Require independently grouped validation, defensible uncertainty and support for the joint target conditions. Otherwise return the fit refusal or evidence gap. Users can still inspect and compare the source evidence, including published simulations.
 
 ### F15 Contradictions and evidence gaps
 
@@ -2844,7 +2841,7 @@ The central distinction is investigation versus run versus measurement. Do not s
 | Outcome | Explicit event definition, observed value/category, censoring and validity |
 | Claim | Statement, claim type, supporting/opposing sources, applicable conditions, review state |
 | Analysis | Input snapshot, method, code/image hashes, parameters, seed, outputs, diagnostics |
-| Model | Outcome, features, validation domain, dataset groups, metrics, mechanism dependencies |
+| Model | Published model source/type and conditions, or local regression outcome, predictor, applicable domain, independent validation groups, metrics and version |
 | Scenario | Research question and target operating conditions with sources and assumptions |
 | Control candidate | Mechanism, evidence, applicability, trade-offs, required validation |
 | Personal case/artifact | Local revision ID, frozen dependencies, annotations, source-change watches, export status |
@@ -2983,61 +2980,34 @@ If a source does not report uncertainty, label it unreported. Sensitivity ranges
 
 ## B8 Modeling strategy and scientific release gates
 
-### Model families
+### Two descriptive fits
 
-| Research outcome | Model candidate or registered method | Key requirements |
+Run both methods on a frozen selection using the definitions in B7. Each result opens the exact source rows or calibrated frames, interval, units, calibration record, time base, exclusions, method version, observations and residuals.
+
+| Method | Inputs and result | When to withhold the fit |
 |---|---|---|
-| Sustained burning under a defined protocol | Logistic/GLM reference baseline plus a hierarchical logistic regression candidate in PyMC | Labeled outcomes, comparable exposure/termination, material and apparatus grouping |
-| Flame-spread rate | Hierarchical regression, with a Gaussian-process alternative when justified | Calibrated rates, geometry and condition coverage, grouped validation |
-| Time to extinction | Survival or competing-risk model appropriate to the endpoint | Censoring mechanism, event times, termination reason, repeated-trial structure |
-| Detector response | Instrument-specific regression/classification or survival model | Reference smoke conditions, timing, thresholds, calibration, negative controls for false positives |
-| Droplet burning coefficients | Registered physical fits plus hierarchical condition models | Valid fitted regime, time/diameter calibration, support and mixture conditions |
-| Mechanistic chemical response | Cantera reactor or supported one-dimensional flame models | Appropriate chemical mechanism, transport, boundary conditions, validation data |
-| Selected enclosure heat/smoke transport | An optional NIST FDS adapter after regime-specific validation | Geometry, ventilation, material/source terms, mesh/time convergence, credible low-gravity validation |
+| Flame-front spread | Fit calibrated front position against actual time over one defensible interval. The slope measures the speed of the declared front over that interval. | Missing calibration, unknown time base, inconsistent front definition, insufficient distinct time points, or an interval or residual pattern inconsistent with the method. |
+| Droplet burning | Fit calibrated squared diameter against time within one verified, physically applicable regime. Report the negative slope as the burning coefficient with units of length²/time. | Unresolved diameter/units, support or timing, a regime change, or a segment unsuitable for a linear fit. Retain failed fits and source diagnostics. |
 
-Retain simple reference baselines and the justified hierarchical candidates in the table. Start with models whose parameters, failure modes, and validation can be examined; compare candidates with the simple baselines and promote partial pooling only when the experimental grouping supports it. Larger neural models, physics-informed networks, and neural operators are research extensions only when data volume, independent validation, and a demonstrable improvement justify them. A tiny number of investigation-level summaries is not a foundation-model training corpus.
+These slopes describe measurements from the selected run. They do not predict behavior on another run or in a lunar environment. Distinguish measurement uncertainty and within-run residual scatter from between-run variability. Repeated frames are correlated and add no independent experimental replicates. Derive an uncertainty interval only when its assumptions and calibration information support it. Otherwise identify the missing information, show residuals when available, and withhold a claim that needs the unavailable uncertainty. Check each method against independently known slopes, physical units and invalid-input cases.
 
-Cantera provides chemical-kinetics and supported flame calculations; it is not a complete arbitrary solid-material spacecraft-fire simulator. NIST describes FDS as a large-eddy simulation model for low-speed flows emphasizing heat and smoke transport. Changing a gravity parameter alone does not validate either a prediction or the model's applicability to laminar, low-gravity, radiative, or cool-flame regimes. [Cantera documentation](https://cantera.org/stable/reference/onedim/index.html); [NIST FDS](https://pages.nist.gov/fds/).
+### Optional run-level regression
 
-Use physical constraints only where justified. Do not enforce global monotonic dependence on airflow or gravity. Record all priors, constraints, feature transforms, and excluded runs. An electric-field-driven flow analogy is a distinct forcing condition, not a physical lunar-gravity measurement. [NASA E-FIELD investigation](https://science.nasa.gov/biological-physical/investigations/e-field-flames/).
+At most one predefined simple linear regression may relate a specified continuous outcome to one specified predictor on a frozen, curated cohort. Fix the endpoint, protocol, units, predictor, exclusions, independent groups and acceptance criteria before evaluation. Use independent run-level observations and withhold entire relevant specimen, campaign or investigation groups for evaluation. Fit any preprocessing only on training data. Multiple channels, repeated frames or publications about one experiment cannot supply independent validation groups.
 
-### Prediction gate
+Record sample and group counts, held-out residuals, bias, error in physical units, baseline comparison, and interval coverage and uncertainty where support exists. Check endpoint, units, material, geometry, apparatus and regime compatibility and joint support of the actual requested conditions. A value inside each separate range does not establish a supported combination. Without enough independent groups, adequate held-out performance, defensible prediction uncertainty and a matching domain, return a specific evidence gap without a predicted value. The descriptive methods still work for suitable individual runs. Freeze the inputs, code, method, diagnostics, limitations and results for reproduction.
 
-A registered model may issue a scientific prediction only when all of these checks pass:
+### Compute and acceptance
 
-1. The requested outcome matches the model's trained endpoint and observation protocol.
+F14 uses fixed numerical functions in the trusted worker. It does not invoke the exploratory sandbox, a model API or a new simulation. The proposed profile is one CPU thread, one fit at a time, a 30-second elapsed limit per fit and 512 MiB for its child process. Verify these limits on the intended host with representative data. If a fit exceeds its resource budget, preserve the selection and report what exceeded it. Let the researcher deliberately choose a scientifically defensible smaller cohort or interval as a new operation, retaining the original. Never silently drop samples, reduce validation or widen the budget to manufacture a result.
 
-2. Required inputs, units, composition locations, and physical meanings are known.
-
-3. Categorical compatibility is established for fuel/material, geometry, apparatus assumptions, and relevant regime.
-
-4. The joint input combination has adequate support. Being inside each variable's separate minimum and maximum is insufficient.
-
-5. The model version has passed grouped held-out evaluation and its documented diagnostic criteria.
-
-6. Prediction uncertainty is supported by that evaluation, and material uncertainties are disclosed.
-
-7. Input data, model, environment, and method versions are frozen and traceable.
-
-8. The output clearly identifies whether it is a validated-domain prediction or a separately authorized exploratory extrapolation.
-
-The default scientific result outside the supported domain is an applicability explanation and an evidence gap. A researcher may deliberately run an extrapolation for investigation, but the artifact retains that classification and cannot inherit a validated prediction label.
-
-### Validation and leakage prevention
-
-Define the unit of independence before splitting data. Frames from one video, channels from one run, repeated use of one specimen, and papers reusing the same data do not constitute independent validation sets.
-
-Use campaign, apparatus, material batch, run, and investigation groups according to the model's intended generalization. Use nested grouped cross-validation when tuning models, then a locked evaluation set. Fit preprocessing, imputation, normalization, and feature selection only on training partitions. Use leave-one-investigation-out evaluation when claiming transfer between investigations. [GroupKFold documentation](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html).
-
-Classification evaluation includes discrimination and calibration, Brier score/log loss, relevant class errors, and subgroup performance. Regression evaluation includes errors in physical units, bias, residual structure, and interval coverage. Time-to-event models need censoring-aware evaluation. Mechanistic models need conservation checks, solver verification, numerical convergence, and validation against independent experiments. Report sample sizes and uncertainty in evaluation metrics.
-
-Model cards record purpose, inputs, training/validation sources, excluded domains, assumptions, mechanisms, metrics, failure cases, validation results, optional feedback and version history. Use NASA-STD-7009B and NASA-HDBK-7009B as credibility guidance; do not claim certification or NASA approval. [NASA standard](https://standards.nasa.gov/standard/NASA/NASA-STD-7009); [NASA handbook](https://standards.nasa.gov/standard/NASA/NASA-HDBK-7009).
+Keep published NASA simulations as source-labeled, versioned scientific evidence with their original conditions, assumptions, uncertainty and validation information. Their numerical outputs do not become experimental observations. Changing a gravity parameter does not validate transfer to another gravity regime. Likewise electric-field-driven flow is a distinct physical forcing. [NASA E-FIELD investigation](https://science.nasa.gov/biological-physical/investigations/e-field-flames/). Use NASA-STD-7009B and NASA-HDBK-7009B as credibility references. [NASA standard](https://standards.nasa.gov/standard/NASA/NASA-STD-7009); [NASA handbook](https://standards.nasa.gov/standard/NASA/NASA-HDBK-7009).
 
 ### Causal and risk interpretation
 
 Matched comparisons and regression describe relationships under their assumptions. An agent cannot label a correlational sensitivity plot as proof that changing one parameter will cause a particular reduction in fire risk. Record confounders, interventions, and causal assumptions explicitly when causal analysis is attempted.
 
-PSI can support conditional statements about ignition, sustained burning, spread, extinction, aerosol production, and detector response in tested conditions. A quantitative assessment of operational fire risk additionally needs information about ignition opportunities, exposure, configuration, controls, reliability, crew/system response, and consequences. The platform therefore produces research evidence and separately scoped hazard models rather than one invented universal safety score.
+PSI can support conditional statements about ignition, sustained burning, spread, extinction, aerosol production, and detector response in tested conditions. A quantitative assessment of operational fire risk additionally needs information about ignition opportunities, exposure, configuration, controls, reliability, crew/system response, and consequences. Report the supporting research evidence and its limits. A universal risk score cannot be derived from these measurements alone.
 
 <a id="b9"></a>
 
@@ -3071,7 +3041,7 @@ Every comparison, synthesized conclusion, and registered prediction can produce 
 
 - Fuel/material, geometry, gravity, atmosphere, flow, scale, hardware, and endpoint checks.
 
-- Whether the result supports direct comparison, qualitative analogy, model-domain prediction, or exploratory extrapolation.
+- Whether the result supports direct comparison, qualitative analogy, or the optional regression within its validated domain. Explicitly label unsupported transfer and any separately sourced extrapolation.
 
 - Strongest supporting evidence, strongest consequential mismatch, and what additional data would change the assessment.
 
@@ -3141,11 +3111,11 @@ Keep privileged instruction and verified-result appends on the trusted server si
 
 ## B11 The Python and command sandbox
 
-Run real Python and bounded shell commands directly on the project’s Linux host in a fresh, project-owned sandbox, launched by the worker through a fixed local launcher. Use an isolation runtime such as gVisor/runsc after verifying compatibility on the chosen host. Pin the OS image, approved utilities and scientific package lock, including NumPy, SciPy, pandas/Polars, DuckDB, Pint, Matplotlib, seaborn, statsmodels, scikit-learn, PyMC and required file readers. Trusted Cantera/FDS jobs have their own environments. [gVisor architecture](https://gvisor.dev/docs/architecture_guide/intro/).
+Use open-source gVisor’s runsc locally on project-controlled Linux compute for real Python and bounded shell. There is no runtime license fee, separate service, vendor account, card or per-execution fee. The host still supplies CPU, memory, disk and power, and any host charges need their own budget. Pin the runtime, operating-system image, utilities and small scientific package set for the supported commands and reproducible scripts. [gVisor license](https://github.com/google/gvisor/blob/master/LICENSE); [runtime platform requirements](https://gvisor.dev/docs/user_guide/platforms/).
 
-Start by testing the proposed interactive profile of 2 vCPU, 4 GiB and 60 seconds per command or cell. Keep the optional 90-second extended profile, five-minute renewable lease and per-task cumulative limit. Bound input, output, disk, memory and processes as well as total concurrent work. The same worker runs registered, trusted heavy jobs in separately sized profiles when the host has capacity.
+Use A21’s tested allocation for one interactive session: up to 2 vCPU and about 4 GiB, 60 seconds per ordinary command or cell, an optional 90-second profile, a five-minute renewable lease and a cumulative task limit. Verify Python, shell and application responsiveness at the chosen allocation. F14 uses a separate trusted path with its own smaller limits.
 
-For each run, stage only the authorized, hash-checked data as read-only, and supply disposable scratch and output directories. Deny network access and host mounts, runtime sockets, database sessions, private browser credentials and OpenAI or operator credentials. Enforce resource limits outside the guest. Test the isolation, cleanup and quotas on the actual host before enabling public execution. A failed check makes the runner unavailable with a clear reason. Never send generated commands to the API process or host shell, or redirect them to a hosted sandbox.
+For each run, stage only the authorized, hash-checked data as read-only, and supply disposable scratch and output directories. Deny network access and host mounts, runtime sockets, database sessions, private browser credentials and OpenAI or operator credentials. Enforce resource limits outside the guest. Test the isolation, cleanup and quotas on the actual host before enabling public execution. If isolation fails or suitable free execution capacity is unavailable, disable execution, explain why and offer the script or notebook and its reproducibility manifest for download. Never send generated commands to the API process or host shell, or redirect them to a hosted sandbox.
 
 Permit Python and bounded shell use in the sandbox for inspecting copied data and running preinstalled tools. Additional packages enter through a pinned environment rebuild. Validate the returned files before making them available, and render generated figures without executing arbitrary HTML or JavaScript in the application origin.
 
@@ -3169,15 +3139,14 @@ The following is the implementation baseline. Exact dependency patches and conta
 | Curated scientific data | Apache Parquet/Arrow, Polars, DuckDB | Efficient filtering and analysis without loading entire files into application memory |
 | Documents and format readers | Docling, openpyxl, h5py, scipy.io, format-specific readers as needed | Preserve document structure and support actual source formats |
 | Scientific quantities | Pint, NumPy, SciPy, Pandera | Units, numerical methods, explicit schemas and validation |
-| Statistical modeling | PyMC, ArviZ, statsmodels, scikit-learn | Hierarchical uncertainty, diagnostics, baselines, grouped evaluation |
-| Mechanistic adapters | Cantera 3.2; separately packaged FDS where validated | Explicit model scope and isolated solver environments |
+| Curve fits and optional regression | Fixed single-threaded numerical functions using NumPy/SciPy | Two descriptive slopes, residuals and meaningful uncertainty. At most one predefined, independently validated run-level regression. |
 | Video/measurement extraction | FFmpeg and OpenCV, with reviewed source-specific methods | Frame/time calibration, reproducible transforms, validated feature extraction |
 | Scientific chart specifications | Restricted ChartSpec compiled to Vega-Lite 6; Matplotlib for exported figures | Declarative reproducible charts and publication-quality exports |
 | Relationship analysis | Typed relational edge tables; Cytoscape.js for an optional interactive evidence graph | Hardware/claim/data lineage without adding a graph database prematurely |
 | Agent runtime | OpenAI Responses API and Agents SDK Python | Typed tool execution and application-owned state |
 | Workflow durability | PostgreSQL jobs, attempts, checkpoints and ordered progress events, executed by a restartable Python worker | Resumable operations, deduplicated publication, cancellation and bounded retries |
-| Interactive computation | Fresh local Linux sandbox for each guest session with a tested project-owned isolation runtime | Real Python and bounded shell on frozen inputs with no external execution account |
-| Heavy computation | Registered trusted worker profiles for model fitting, scientific solvers, media and exports | Pin the environment and control CPU, GPU if actually available, memory and disk per task |
+| Interactive computation | Free and open-source local gVisor/runsc | Frozen inputs and actual isolated Python/shell when available. Export the script if execution is unavailable. |
+| Trusted work | F14’s resource-limited CPU child, plus separate media, acquisition and export jobs | Bound each task independently. A scientific fit does not consume the interactive sandbox or a model API. |
 | Diagnostics | Redacted application and job logs with shared run IDs, scientific validation reports and a local model registry | Diagnose failed operations and reproduce results without monitoring or tracking accounts |
 | Deployment | A project-controlled Linux host with TLS, persistent storage and recoverable backups. Verify hosting eligibility, capacity and sandbox support before selecting it. | One origin for the public web app and API, with private database, worker and local executor |
 | Delivery | uv, pnpm, locked dependencies, a repeatable build/start command and on-demand test/deployment scripts | Reproduce local and hosted releases with the same version manifest |
@@ -3189,7 +3158,7 @@ Next.js 16's release documentation establishes the selected framework generation
 
 Use relational edges for lineage, PostgreSQL for retrieval and jobs, and immutable files for scientific artifacts. The development stack runs locally without cloud projects, a managed workflow engine, identity provider or external observability system. Assess a dedicated component only if a measured limitation requires it.
 
-Do not train a custom foundation model as a prerequisite. Retrieval, canonical data, typed tools, a strong general model, curated scientific calculations, and model evaluation address the problem more directly. Fine-tuning is considered only after a recurring measured failure and a suitable licensed training set justify it.
+Keep scientific fitting to the registered methods in B8. Retain reproducibility and labeled source evidence for previously published modeling studies. The software does not run new scientific simulations or train a foundation model.
 
 ### Logical architecture
 
@@ -3206,7 +3175,7 @@ flowchart TD
     D --> S["Persistent immutable sources, measurements and artifacts"]
     B --> X["Project-hosted isolated Python and shell"]
     B --> S
-    T --> H["Trusted registered solvers, models and media jobs"]
+    T --> H["Trusted CPU fits, media processing and exports"]
     H --> S
     Q --> V["Scientific and authorization checks"]
     V --> R["Versioned answers, charts, exports"]
@@ -3233,9 +3202,9 @@ The public web app and API share one origin. Long jobs run outside web requests.
 | compare_runs / compare_cohort | Compare explicitly selected runs or a frozen cohort; return matching/differing/unknown conditions and machine-readable pooling eligibility |
 | check_applicability / check_model_domain | Apply versioned evidence applicability rules or the stricter registered-model domain check to target conditions |
 | compute_quantity | Execute a registered calculation by method ID with typed quantities and uncertainty inputs |
-| fit_registered_model | Fits an approved model profile on a frozen dataset with prescribed grouped evaluation |
-| run_model | Run the registered prediction gate, then return predictions, intervals, diagnostics, and domain status |
-| run_python | Creates a bounded sandbox analysis on authorized data copies |
+| fit_registered_model | Dispatch one of the two fixed descriptive fits or the optional predefined run-level regression with its grouped evaluation and compute limits. |
+| run_model | Only the eligible, validated run-level regression may produce a prediction. Return the domain decision, diagnostics and uncertainty, or a specific refusal. |
+| run_python | Runs the frozen selection in the local F13 sandbox when qualified capacity is available. Otherwise offers script/notebook and manifest export. |
 | propose_chart / propose_dashboard / save_dashboard | Validate a proposed specification against data, units, aggregation, permissions, and approved components; saving a dashboard is a separate authorized revision operation |
 | save_artifact / export_case | Save a versioned artifact locally or produce a case/evidence bundle containing only the selected, permitted material |
 
@@ -3276,11 +3245,11 @@ Provide schema-generated clients, cursor pagination, conditional reads, bounded 
 
 PostgreSQL stores jobs, attempts, checkpoints, target resource revisions and ordered events alongside the scientific records. Jobs refer to immutable files by ID and hash. The worker claims ready stages with short database transactions and expiring leases. A restart recovers incomplete stages and preserves completed ones.
 
-Persist the inputs, intended external action and attempt ID before sending a model request or starting a solver. Record its result or an ambiguous completion. Commit validated artifact references, revision updates and final events together, checking the active attempt and cancellation state. Preserve the user’s decision for operations that exceed the selected budget.
+Persist the inputs, intended external action and attempt ID before sending a model request or starting a trusted fit. Record its result or an ambiguous completion. Commit validated artifact references, revision updates and final events together, checking the active attempt and cancellation state. Preserve the user’s decision for operations that exceed the selected budget.
 
 Retries use bounded exponential backoff, error classification, and idempotency. An invalid scientific schema is not repaired by repeatedly calling the same service forever. A model request that completes but loses its network response may incur another charge on retry; record attempts and deduplicate artifact publication.
 
-Match network timeout, stage lease/heartbeat and total run budget to the task. Give deep synthesis and long solver jobs distinct profiles. Reconciliation inspects abandoned attempts before resubmission to prevent uncontrolled duplicate charges.
+Match network timeout, stage lease/heartbeat and total run budget to the task. Give live synthesis and bounded local fits distinct profiles. Reconciliation inspects abandoned attempts before resubmission to prevent uncontrolled duplicate charges.
 
 ### Streaming and cancellation
 
@@ -3341,7 +3310,7 @@ Include lookups, cross-study synthesis, unsupported questions, ambiguous species
 | Complete answers | At least 95% fully supported answers on the defined benchmark, with sample size, interval and consequential failures reported |
 | Critical extraction | Zero unresolved material unit, composition-location, or endpoint errors in the curated release datasets; unresolved fields remain blocked |
 | General field extraction | At least 98% precision on high-confidence auto-accepted fields, with coverage and abstention also reported |
-| Applicability | Every registered prediction passes the documented gate; out-of-domain cases receive the correct classification |
+| Applicability | Withhold unsupported fits and out-of-domain predictions. Require grouped held-out evidence and joint-domain support for the optional regression. |
 | Retrieval | Source-labeled recall@10 and reference ranking agreement reported by task family, with thresholds chosen from measured baselines and optional expert comparisons |
 | Scientific calculations | Dimensional checks, reference-case agreement, uncertainty semantics, and method-specific numerical tolerances |
 | Reproducibility | Every released analysis reruns from its bundle; numerical tolerances specified where exact bitwise identity is unrealistic |
@@ -3349,13 +3318,13 @@ Include lookups, cross-study synthesis, unsupported questions, ambiguous species
 | Cancellation/retries | No duplicate publication; canceled tasks cannot publish an active result |
 | Voice | Numeric/name/condition fidelity measured against the authoritative result; voice cannot replace the source-linked record |
 | Accessibility | Keyboard-operable workflows, screen-reader names, text alternatives for scientific figures, and accessible export tables |
-| Availability | Core browse/filter/open-saved-analysis workflows remain usable when model services are unavailable |
+| Availability | Core browsing, saved work and supported F14 fits are independent of OpenAI. Test F14 with the F13 runner disabled and with no model credentials. When F13 cannot run, export its script without claiming execution. |
 
 Percentages require confidence intervals and denominator disclosure. A small test set with zero errors does not prove an error-free system. The highest-consequence defects are release blockers even if an aggregate score looks good.
 
 ### What to test
 
-Unit tests cover conversions, missingness, schema contracts, query compilation, rankings and scientific calculations. Property tests cover round trips, composition, bounded queries and idempotency. Integration tests exercise real adapters, database and file access checks, temporary browser-owned jobs and expiry, local sandbox containment and cleanup, retries, cancellation and artifact lineage. Exercise representative workflows through the public app.
+Unit tests cover conversions, missingness, schema contracts, query compilation, rankings and scientific calculations. Property tests cover round trips, composition, bounded queries and idempotency. Integration tests exercise real adapters, database and file access checks, temporary browser-owned jobs and expiry, local sandbox containment and cleanup, retries, cancellation and artifact lineage. Exercise representative workflows through the public app. Check known slopes and wrong time bases for both descriptive fits. Test the optional regression with repeated runs, incompatible conditions and absent measurement uncertainty. Exercise timeout, memory exhaustion, cancellation and queueing a second fit. Confirm inputs, labels and thresholds remain unchanged when the worker refuses a request.
 
 Scientific golden cases reproduce published or independently calculated results within source-specific tolerances. Evaluate explanations against cited passages and model failure cases against held-out evidence. Optional human feedback can expose a bad assumption. A model judge can triage cases, but its agreement cannot establish a measurement or pass a failed validation.
 
@@ -3375,7 +3344,7 @@ During an OpenAI outage, keep discovery, filters, referenced sources, direct cal
 
 ### Cost model
 
-Track OpenAI text, reasoning, embedding and voice usage per supported task. Record local Python, solver and import time, disk use, selected asset transfer and hosting cost separately. Reconcile usage with actual bills where relevant. Estimate significant requests in advance and enforce a server-side total budget for public access.
+Track OpenAI text, reasoning, embedding and voice usage per supported task. Record local sandbox, trusted fit and import time, disk use, selected asset transfer and hosting cost separately. Reconcile usage with actual bills where relevant. Estimate significant requests in advance and enforce a server-side total budget for public access.
 
 As an illustrative model-call calculation using the documented uncached rates, 20,000 input tokens and 4,000 total billed output tokens, including any billed reasoning tokens, cost about $0.40 with gpt-6-astra or $0.08 with gpt-6.1-sol. More output/reasoning tokens, additional calls, long-context pricing rules, and infrastructure can change the task total. Ten minutes of gpt-live-1 costs $0.50 for the voice session, plus backend usage. These are dated examples, not a fixed project quote. [Astra pricing](https://developers.openai.com/api/docs/models/gpt-6-astra.md); [Sol pricing](https://developers.openai.com/api/docs/models/gpt-6.1-sol.md); [Live pricing](https://developers.openai.com/api/docs/models/gpt-live-1.md).
 
@@ -3403,10 +3372,10 @@ Do not claim byte-identical LLM regeneration or exact cross-hardware numerical r
 | services/api | Public FastAPI, temporary job ownership checks, typed tools, downloads and event streaming |
 | services/workers | PostgreSQL job claims, checkpointing, ingestion, agent steps, trusted computation, source change manifests and exports |
 | packages/contracts | Versioned JSON schemas/OpenAPI-generated types and common scientific contracts |
-| packages/domain, packages/analysis, packages/modeling | Scientific entities, units, calculations, uncertainty, applicability, training/inference, and model contracts |
+| packages/domain, packages/analysis, packages/modeling | Entities, units, calculations, uncertainty, applicability, two descriptive fits and the optional run-level regression |
 | packages/data-adapters | PSI/NTRS adapters, format readers, mapping versions, and source validation |
 | packages/agent-tools | Scientific roles and tools, OpenAI configuration, prompt versions, budget policies and answer contracts |
-| sandboxes/python-analysis and infra/jobs | Pinned isolated Python environment and reviewed trusted solver/job images, lockfiles, and manifests |
+| sandboxes/python-analysis and infra/jobs | Pinned local gVisor/runsc environment and separate trusted worker job definitions, locks and manifests |
 | evals | Source-labeled benchmarks, independent known-answer analyses, adversarial cases and held-out model/prompt evaluation |
 | infra | One-host deployment/startup, backup and restore instructions, local job and sandbox profiles |
 | docs | Data dictionary, architecture decisions, model cards, licensing, AI disclosure, reproducibility instructions |
@@ -3421,7 +3390,7 @@ The full target remains all features F01–F20. Build in dependency order rather
 | B: Scientific exploration | Discovery, filters, overviews, run records, hardware relations, comparisons, scenario records, ranking, applicability | Researchers can complete representative evidence-finding tasks without AI assistance |
 | C: Agentic vertical workflow | Main agent, typed retrieval/query tools, context snapshots, source-bound answers, safe Python, chart generation, reproducibility export | One complete question-to-reproduced-answer workflow passes scientific and permission checks |
 | D: Quantitative methods | Calibrated trace/video extraction, registered calculations, uncertainty propagation, detector/outcome interpretation | At least one source-specific analysis reproduces an independently established reference result |
-| E: Validated models | Grouped datasets, baseline/hierarchical models, evaluation, applicability gates and model cards | Each enabled model passes its evidence and validation criteria for a stated use. Unsupported endpoints keep inspection, exploratory and gap workflows. |
+| E: Lightweight fits | Traceable front-position and squared-diameter fits with residuals. Optionally validate one predefined run-level regression on a compatible curated cohort. | Demonstrate independent known-answer fits, resource and domain refusals and uncertainty handling. The optional regression can return a gap when held-out evidence is insufficient. |
 | F: Full research platform | Contradiction explorer, next-measurement planner, mitigation briefs, personal research notes/revisions, source-change watch, Earth collections, live voice, API/MCP | A visitor can complete and reproduce each supported workflow without an account or another participant. |
 | G: Extension of coverage | New partial-gravity releases, external datasets and additional material families | New sources pass the same provenance, licensing and scientific checks. |
 
@@ -3433,7 +3402,7 @@ Organize work around data/provenance, methods/evaluation, backend/agent executio
 
 The first implementation tasks are to establish contracts, build the PSI adapter, load the verified catalog, and make one investigation family fully traceable. FLEX is useful for event/censoring work; BASS-II for material/flow calibration; SAME-R for instrumentation and detector interpretation. Work on all three as separate adapters rather than flattening their scientific differences into one generic CSV import.
 
-Report each supported result and each unresolved empirical question separately. A hackathon demonstration can show a real, reproducible research workflow before every intended model has enough independent data for a validated prediction. The full feature inventory still applies.
+Report each supported result and each unresolved empirical question separately. A hackathon demonstration can show a real, reproducible research workflow even if the optional regression lacks enough independent runs for validation. The full feature inventory still applies.
 
 ### Hackathon demonstration
 
@@ -3462,7 +3431,7 @@ The most persuasive result is a defensible research answer that survives inspect
 | Challenge consideration | Product coverage |
 |---|---|
 | Relevant investigations for crew environments | Scenario research, explainable ranking, applicability records, material/detection/suppression collections |
-| Extract data for predictive modeling | Source adapters, typed conditions/outcomes, calibrated series, exports, grouped datasets, model registry |
+| Extract data for predictive modeling | Source adapters, typed conditions and outcomes, calibrated series, exportable grouped datasets and domain evidence for the optional regression |
 | Next-generation controls and equipment | Detector analysis, extinction audit, mitigation evidence briefs, hardware lineage, research planning |
 | Experimental objectives | Structured investigation overview with source-linked summary |
 | Fuel, sample shape and dimensions | Material/sample ontology and geometry-aware comparisons |
@@ -3504,11 +3473,11 @@ Maintain README with purpose and working scope; architecture decisions; DATA_SOU
 | Should AI participate throughout? | Yes, through context-aware assistance, extraction, retrieval, synthesis, analysis, artifacts, review, and research planning |
 | Should AI perform every operation? | Exact scientific and authorization operations are implemented as tested deterministic tools |
 | Should every experiment receive one fire-risk score? | No universal score; separate relevance, applicability, evidence quality, data readiness, and defined model outcomes |
-| How is lunar/Mars transfer handled? | Explicit applicability, external literature, joint condition coverage, validated models where available, labeled gaps otherwise |
+| How is lunar/Mars transfer handled? | Explicit conditions, external literature and measured coverage. The optional regression can return a value only within its validated joint domain. Unsupported transfers remain documented gaps. |
 | Should a screenshot be the agent's main context? | Structured state is primary; user-scoped image capture supplements it |
 | Is live voice included? | Yes as a full-target feature; structured results remain authoritative and voice fidelity is evaluated |
 | How are semantic decisions made? | Deterministic rules for known categories, then a bounded OpenAI classification when necessary. Keep the cited evidence and unknown state. |
-| Is arbitrary Python supported? | Real Python and bounded shell are planned in a fresh project-hosted sandbox with frozen inputs, enforced limits and reproducible outputs. |
+| Is arbitrary Python supported? | Real Python and bounded shell run inside free local gVisor/runsc on qualified available compute. Otherwise, the researcher can export code and the manifest. |
 | How much PSI data is ingested? | Metadata and relations for all verified combustion records; small source files and selected raw data, with lazy retrieval of large assets |
 | How is correctness established? | Source provenance, physical semantics, deterministic checks, independent reference analyses, grouped validation and explicit unsupported cases. Researchers may contribute corrections or comments. |
 | How is the product made distinctive? | Applicability records, extinction audit, detector blind spots, contradiction resolution, research-gap planning, and reproducible evidence bundles |

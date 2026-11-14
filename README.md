@@ -6,6 +6,8 @@ Nova Ember is team **StrawHat Pirates**' project for the **2026 NASA Space Apps 
 
 The planned application connects NASA combustion evidence with investigation discovery, condition-aware comparisons, reproducible analysis, and source-linked research cases to support fire-safety research for human space exploration.
 
+Researchers will be able to run Python and shell on the app’s own Linux host without a separate execution service. The modeling workbench will use the same host to fit measured flame-front and droplet traces. Prediction for a new run requires separate validation against independent experiments.
+
 This repository currently contains the product, scientific, engineering, and experience specifications and the implementation plan. Application implementation, scientific validation, and deployment remain planned work.
 
 - [Master brief](MASTER_BRIEF.md): product scope, scientific contracts, architecture, interface requirements, and empirical data audit.
