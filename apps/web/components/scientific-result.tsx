@@ -20,6 +20,7 @@ export function ScientificResultSummary({ value }: { value: unknown }) {
       ? measure.central_output_interval
       : null;
   const request = isRecord(measure.request) ? measure.request : {};
+  const protocol = isRecord(request.protocol) ? request.protocol : {};
   const outputUnits = Array.isArray(request.output_units)
     ? request.output_units.map((unit) =>
         typeof unit === "string" ? unit : "Unit not reported",
@@ -136,6 +137,14 @@ export function ScientificResultSummary({ value }: { value: unknown }) {
         .map((key) => (
           <section key={key}>
             <h3>{key.replaceAll("_", " ")}</h3>
+            {["held_out_metrics", "held_out_baseline_metrics"].includes(
+              key,
+            ) && (
+              <p className={styles.caption}>
+                RMSE, mean absolute error and signed bias use the declared
+                endpoint unit: {readable(protocol.endpoint_unit)}.
+              </p>
+            )}
             {key === "output_covariance" && (
               <p className={styles.caption}>
                 Output row/column units:{" "}

@@ -163,12 +163,23 @@ def test_registered_fit_views_keep_true_values_residuals_and_interval_meaning():
     chart = method_plot(spec.model_dump(mode="json"), [record])
     assert chart["plot"]["rows"][2]["y"] == pytest.approx(0.009)
     assert chart["plot"]["rows"][2]["fitted"] == pytest.approx(0.009)
+    assert chart["data"]["value_origin"] == "registered_calculation"
+    assert chart["data"]["columns"][0] == {
+        "key": "x",
+        "title": "Time",
+        "units": ["s"],
+        "source_index": None,
+    }
+    assert chart["data"]["columns"][1]["units"] == ["m"]
+    assert chart["data"]["columns"][1]["source_index"] is None
     assert chart["provenance"][0]["calculation"]["context"]["input_origin"] == "synthetic_reference"
     assert b"<svg" in figure_bytes(chart)
     interval_chart = method_plot(
         spec.model_copy(update={"view": "interval"}).model_dump(mode="json"), [record]
     )
     row = interval_chart["plot"]["rows"][0]
+    assert interval_chart["data"]["columns"][0]["units"] == []
+    assert interval_chart["data"]["columns"][1]["units"] == ["m/s"]
     assert row["interval_level"] == 0.95
     assert row["interval_interpretation"] == result.interval.interpretation
     assert row["lower"] == result.interval.lower
@@ -342,6 +353,7 @@ def test_real_image_method_envelope_exposes_original_boundary_with_retained_line
     )
     assert [row["x"] for row in chart["plot"]["rows"]] == [6] * 6
     assert [row["y"] for row in chart["plot"]["rows"]] == [2, 3, 4, 5, 6, 7]
+    assert [column["units"] for column in chart["data"]["columns"]] == [["pixel"], ["pixel"]]
     assert chart["provenance"][0]["source_provenance"] == lineage
     assert figure_bytes(chart, "png").startswith(b"\x89PNG")
     lineage["snapshot_id"] = "b" * 64

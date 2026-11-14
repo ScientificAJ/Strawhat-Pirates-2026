@@ -411,7 +411,7 @@ def vega_lite(plot: dict) -> dict:
 
 def method_plot(spec: dict, records: list[dict]) -> dict:
     """Compile checked stored method outputs, retaining source interval semantics."""
-    rows, provenance, units = [], [], set()
+    rows, provenance, units, x_units = [], [], set(), set()
     view = spec["view"]
     x_label, y_label = "Time [s]", "Measurement"
     fitted = None
@@ -469,6 +469,7 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
                 )
                 x_label = "Stored descriptive fit"
             else:
+                x_units.add("s")
                 for order, point in enumerate(result["points"]):
                     rows.append(
                         {
@@ -487,6 +488,7 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
         }:
             unit = result["request"]["protocol"]["endpoint_unit"]
             units.add(unit)
+            x_units.add(unit)
             x_label, y_label = (
                 f"{'Predicted' if view == 'residual' else 'Observed'} [{unit}]",
                 f"{'Residual' if view == 'residual' else 'Predicted'} [{unit}]",
@@ -527,6 +529,7 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
             )
         elif result.get("method_id") == "explicit-pixel-clock-calibration-v1" and view == "track":
             units.add("m")
+            x_units.add("s")
             y_label = "Calibrated coordinate or candidate [m]"
             segment = 0
             for order, point in enumerate(result["points"]):
@@ -549,6 +552,7 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
             and view == "boundary"
         ):
             units.add("pixel")
+            x_units.add("pixel")
             x_label, y_label = "Original frame x [pixel]", "Original frame y [pixel]"
             for order, point in enumerate(result["boundary_pixels"]):
                 rows.append(
@@ -565,7 +569,7 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
             raise ValueError(
                 "The stored method result does not support this chart view; no values are inferred."
             )
-    if len(units) != 1:
+    if len(units) != 1 or len(x_units) > 1:
         raise ValueError(
             "Method comparisons require the same quantity unit; no implicit conversion or pooling."
         )
@@ -591,7 +595,8 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
         ],
         "caption": (
             "Stored registered calculations; source assumptions, exclusions, "
-            "intervals and limitations are retained. Distinct runs remain distinct series."
+            "intervals and limitations are retained. Distinct calculation jobs remain separate "
+            "series; their count does not establish independent experimental runs."
         ),
     }
     anchors = [
@@ -631,9 +636,20 @@ def method_plot(spec: dict, records: list[dict]) -> dict:
             "accession": "registered-analysis",
         },
         "columns": [
-            {"key": "x", "units": [], "source_index": 0},
-            {"key": "y", "units": list(units), "source_index": 1},
+            {
+                "key": "x",
+                "title": x_label.split(" [", 1)[0],
+                "units": sorted(x_units),
+                "source_index": None,
+            },
+            {
+                "key": "y",
+                "title": y_label.split(" [", 1)[0],
+                "units": sorted(units),
+                "source_index": None,
+            },
         ],
+        "value_origin": "registered_calculation",
         "values": rows,
         "total_source_records": len(rows),
         "returned_source_records": len(rows),

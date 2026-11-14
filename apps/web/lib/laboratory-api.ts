@@ -26,6 +26,8 @@ export type QueryResult = {
   total_source_records: number;
   returned_source_records: number;
   independent_run_count: number | null;
+  value_origin?: "registered_calculation";
+  grain?: string;
   limitations?: string[];
   truncated?: boolean;
   adapter_status?: string;

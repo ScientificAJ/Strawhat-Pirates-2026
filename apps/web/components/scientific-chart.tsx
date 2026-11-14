@@ -48,6 +48,17 @@ export function ScientificValues({
   onSelect?: (row: Record<string, unknown>) => void;
 }) {
   const columns = data.columns;
+  const calculated =
+    data.value_origin === "registered_calculation" ||
+    data.asset.accession === "registered-analysis";
+  const aggregated =
+    data.grain === "descriptive_source_records" ||
+    data.values.some((row) => row.row_kind === "aggregate_summary");
+  const rowLabel = calculated
+    ? "Point / source locator"
+    : aggregated
+      ? "Contributing source rows"
+      : "Source row";
   const [page, setPage] = useState(0);
   const [copyStatus, setCopyStatus] = useState("");
   useEffect(() => setPage(0), [data]);
@@ -81,7 +92,7 @@ export function ScientificValues({
               )
               .then(() =>
                 setCopyStatus(
-                  "Exact selected values, source rows and units copied.",
+                  "Exact selected values, recorded locators and units copied.",
                 ),
               )
               .catch(() =>
@@ -91,7 +102,7 @@ export function ScientificValues({
               )
           }
         >
-          Copy selected source rows
+          {calculated ? "Copy calculated values" : "Copy selected source rows"}
         </button>
         {copyStatus && <span role="status">{copyStatus}</span>}
       </div>
@@ -102,12 +113,16 @@ export function ScientificValues({
       >
         <table>
           <caption className="visually-hidden">
-            Source values with original source-row identifiers. Missing values
-            are not zero.
+            {calculated
+              ? "Calculated coordinates and recorded source locators. Display point numbers are not original source rows."
+              : aggregated
+                ? "Source-record aggregates with the physical source rows contributing to each group."
+                : "Source values with original source-row identifiers."}{" "}
+            Missing values are not zero.
           </caption>
           <thead>
             <tr>
-              <th scope="col">Source row</th>
+              <th scope="col">{rowLabel}</th>
               {columns.map((column) => (
                 <th scope="col" key={column.key}>
                   {column.display_title ?? column.title ?? column.key}
@@ -119,25 +134,36 @@ export function ScientificValues({
             </tr>
           </thead>
           <tbody>
-            {data.values.slice(page * 50, (page + 1) * 50).map((row, index) => (
-              <tr key={`${readable(row.source_row)}-${index}`}>
-                <th scope="row">
-                  {onSelect ? (
-                    <button
-                      onClick={() => onSelect(row)}
-                      aria-label={`Select source row ${readable(row.source_row ?? index + 1)}`}
-                    >
-                      {readable(row.source_row ?? index + 1)}
-                    </button>
-                  ) : (
-                    readable(row.source_row ?? row.source_locator ?? index + 1)
-                  )}
-                </th>
-                {columns.map((column) => (
-                  <td key={column.key}>{readable(row[column.key])}</td>
-                ))}
-              </tr>
-            ))}
+            {data.values.slice(page * 50, (page + 1) * 50).map((row, index) => {
+              const locator = aggregated
+                ? Array.isArray(row.source_rows)
+                  ? row.source_rows.join(", ")
+                  : "Not reported"
+                : (row.source_row ??
+                  row.source_locator ??
+                  (calculated
+                    ? `Point ${page * 50 + index + 1}`
+                    : "Not reported"));
+              return (
+                <tr key={`${readable(row.source_row)}-${index}`}>
+                  <th scope="row">
+                    {onSelect ? (
+                      <button
+                        onClick={() => onSelect(row)}
+                        aria-label={`Select ${rowLabel.toLowerCase()} ${readable(locator)}`}
+                      >
+                        {readable(locator)}
+                      </button>
+                    ) : (
+                      readable(locator)
+                    )}
+                  </th>
+                  {columns.map((column) => (
+                    <td key={column.key}>{readable(row[column.key])}</td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {data.values.length > 50 && (
@@ -572,11 +598,19 @@ function ScientificChartView({
         <dl>
           <dt>Snapshot</dt>
           <dd className="mono hash-value">{chart.data.snapshot_id}</dd>
-          <dt>Source</dt>
+          <dt>
+            {chart.data.value_origin === "registered_calculation"
+              ? "Calculation provenance digest"
+              : "Source"}
+          </dt>
           <dd>
             {chart.data.asset.accession} · {chart.data.asset.sha256}
           </dd>
-          <dt>Source records</dt>
+          <dt>
+            {chart.data.value_origin === "registered_calculation"
+              ? "Calculated coordinates"
+              : "Source records"}
+          </dt>
           <dd>
             {chart.data.total_source_records}; independent experimental runs:{" "}
             {chart.data.independent_run_count ?? "not established"}
