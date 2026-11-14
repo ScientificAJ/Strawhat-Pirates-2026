@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "source_snapshot_sha256": "fb60f9f747f8d6f5863c9933584b6385ab530e9e1a077fbcd6ad2c67af74fc54",
+  "captured_at": "2026-11-14T14:32:05.405816+00:00",
+  "assets": [
+    {
+      "id": "PSI-25:v1:PSI-25_Representative Image(s)_BASS-II_flame testing.jpg",
+      "accession": "PSI-25",
+      "investigation_version": 4,
+      "file_name": "PSI-25_Representative Image(s)_BASS-II_flame testing.jpg",
+      "file_version": 1,
+      "path": "assets/PSI-25_Representative Image(s)_BASS-II_flame testing.jpg",
+      "sha256": "aa0bf2369cf77833e95e353519e634ab5cbb5b2918db08849e9bde82267aade3",
+      "byte_size": 37525,
+      "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-25/download?file=PSI-25_Representative+Image%28s%29_BASS-II_flame+testing.jpg&version=1&redirect=false",
+      "fetched_at": "2026-11-14T14:32:08.659859+00:00",
+      "metadata_sha256": "b9234754db5da651ad27d888af082b889d07210b018e543369662f065b4ec2da",
+      "manifest_sha256": "5a05f22b397fdecc4ff0a26356c64b87b086f0c2cc86b9ba21e531a461703e16",
+      "manifest_entry": {
+        "ChecksumAlgorithm": "",
+        "ETag": "",
+        "StorageClass": "",
+        "bytes_size": 37525,
+        "directory": false,
+        "files": [],
+        "id": "6924805f7f6aa6a83021067f",
+        "key": "psi-data/PSI-25/Representative Image(s)/PSI-25_Representative Image(s)_BASS-II_flame testing.jpg",
+        "restricted": false,
+        "restrictedAccess": false,
+        "size": "36.65 KB",
+        "sortingCategory": "Representative Image(s)",
+        "status": "active",
+        "subcategory": "",
+        "updated": "Mon, 24 Nov 2025 23:57:19 GMT",
+        "version": 1,
+        "visible": true
+      },
+      "doi": "10.60555/4qc4-de67",
+      "license": "CC0-1.0",
+      "license_scope": "investigation_metadata",
+      "encoding": null,
+      "kind": "representative_image",
+      "example_role": "repository_representative_image",
+      "source_run_association": null,
+      "media": {
+        "status": "source_metadata_available",
+        "sha256": "aa0bf2369cf77833e95e353519e634ab5cbb5b2918db08849e9bde82267aade3",
+        "media_type": "image/jpeg",
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "mjpeg",
+            "width": 1200,
+            "height": 797,
+            "media_kind": "still_image"
+          }
+        ],
+        "format": {
+          "format_name": "image2"
+        },
+        "spatial_calibration": null,
+        "time_origin": null,
+        "measurement_ready": false,
+        "reader_id": "ffprobe-container-v1",
+        "limitations": [
+          "Codec timestamps/timebase do not establish camera/experiment-clock synchronization.",
+          "Pixels alone do not establish scale, temperature, extinction or derived metrics.",
+          "Frame counts and file names are not independent experimental-run counts.",
+          "No camera exposure or frame cadence is established by this still-image profile."
+        ]
+      },
+      "media_type": "image/jpeg"
+    },
+    {
+      "id": "PSI-69:v1:PSI-69_Raw Data_Droplet View Movie.mp4",
+      "accession": "PSI-69",
+      "investigation_version": 5,
+      "file_name": "PSI-69_Raw Data_Droplet View Movie.mp4",
+      "file_version": 1,
+      "path": "assets/PSI-69_Raw Data_Droplet View Movie.mp4",
+      "sha256": "141c84f5e91ea8c1d580f2465abde70651991e400fd2b39e55414423423e595c",
+      "byte_size": 2786355,
+      "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-69/download?file=PSI-69_Raw+Data_Droplet+View+Movie.mp4&version=1&redirect=false",
+      "fetched_at": "2026-11-14T14:32:16.011382+00:00",
+      "metadata_sha256": "a2d8ec5d0e9ad1060f6ecc7a850598634cc5519c373ae70462bf76c31fc8731c",
+      "manifest_sha256": "5cca53f5d693a85dd73706de2060d25e1b42b9cbff400641336a7375a6eaa3bf",
+      "manifest_entry": {
+        "ChecksumAlgorithm": "",
+        "ETag": "",
+        "StorageClass": "",
+        "bytes_size": 2786355.0,
+        "directory": false,
+        "files": [],
+        "id": "684344b99e44646b7402707d",
+        "key": "psi-data/PSI-69/Raw Data/PSI-69_Raw Data_Droplet View Movie.mp4",
+        "restricted": false,
+        "restrictedAccess": false,
+        "size": "2.66 MB",
+        "sortingCategory": "Raw Data",
+        "status": "active",
+        "subcategory": "Reduced Gravity/Heptane/Flex-007",
+        "updated": "Sat, 07 Jun 2025 03:42:49 GMT",
+        "version": 1,
+        "visible": true
+      },
+      "doi": "10.60555/mbq8-0451",
+      "license": "CC0-1.0",
+      "license_scope": "investigation_metadata",
+      "encoding": null,
+      "kind": "source_video",
+      "example_role": "source_associated_view",
+      "source_run_association": "FLEX-007 (source manifest subcategory)",
+      "media": {
+        "status": "source_metadata_available",
+        "sha256": "141c84f5e91ea8c1d580f2465abde70651991e400fd2b39e55414423423e595c",
+        "media_type": "video/mp4",
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "duration": "32.149333",
+            "nb_frames": "1507"
+          },
+          {
+            "index": 1,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 720,
+            "height": 480,
+            "r_frame_rate": "60000/1001",
+            "avg_frame_rate": "60000/1001",
+            "time_base": "1/60000",
+            "duration": "32.165467",
+            "nb_frames": "1928"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "32.165467"
+        },
+        "spatial_calibration": null,
+        "time_origin": null,
+        "measurement_ready": false,
+        "reader_id": "ffprobe-container-v1",
+        "limitations": [
+          "Codec timestamps/timebase do not establish camera/experiment-clock synchronization.",
+          "Pixels alone do not establish scale, temperature, extinction or derived metrics.",
+          "Frame counts and file names are not independent experimental-run counts."
+        ]
+      },
+      "media_type": "video/mp4"
+    },
+    {
+      "id": "PSI-69:v1:PSI-69_Raw Data_Flame View Movie.mp4",
+      "accession": "PSI-69",
+      "investigation_version": 5,
+      "file_name": "PSI-69_Raw Data_Flame View Movie.mp4",
+      "file_version": 1,
+      "path": "assets/PSI-69_Raw Data_Flame View Movie.mp4",
+      "sha256": "2f48e79ed61ef42d0b8caeda59964e2f265f548d2372f331d9d5c4400de7a004",
+      "byte_size": 2402393,
+      "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-69/download?file=PSI-69_Raw+Data_Flame+View+Movie.mp4&version=1&redirect=false",
+      "fetched_at": "2026-11-14T14:32:21.932821+00:00",
+      "metadata_sha256": "a2d8ec5d0e9ad1060f6ecc7a850598634cc5519c373ae70462bf76c31fc8731c",
+      "manifest_sha256": "5cca53f5d693a85dd73706de2060d25e1b42b9cbff400641336a7375a6eaa3bf",
+      "manifest_entry": {
+        "ChecksumAlgorithm": "",
+        "ETag": "",
+        "StorageClass": "",
+        "bytes_size": 2402393.0,
+        "directory": false,
+        "files": [],
+        "id": "684344b99e44646b7402707c",
+        "key": "psi-data/PSI-69/Raw Data/PSI-69_Raw Data_Flame View Movie.mp4",
+        "restricted": false,
+        "restrictedAccess": false,
+        "size": "2.29 MB",
+        "sortingCategory": "Raw Data",
+        "status": "active",
+        "subcategory": "Reduced Gravity/Heptane/Flex-007",
+        "updated": "Sat, 07 Jun 2025 03:42:49 GMT",
+        "version": 1,
+        "visible": true
+      },
+      "doi": "10.60555/mbq8-0451",
+      "license": "CC0-1.0",
+      "license_scope": "investigation_metadata",
+      "encoding": null,
+      "kind": "source_video",
+      "example_role": "source_associated_view",
+      "source_run_association": "FLEX-007 (source manifest subcategory)",
+      "media": {
+        "status": "source_metadata_available",
+        "sha256": "2f48e79ed61ef42d0b8caeda59964e2f265f548d2372f331d9d5c4400de7a004",
+        "media_type": "video/mp4",
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "duration": "26.645333",
+            "nb_frames": "1249"
+          },
+          {
+            "index": 1,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 720,
+            "height": 480,
+            "r_frame_rate": "60000/1001",
+            "avg_frame_rate": "60000/1001",
+            "time_base": "1/60000",
+            "duration": "26.659967",
+            "nb_frames": "1598"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "26.659967"
+        },
+        "spatial_calibration": null,
+        "time_origin": null,
+        "measurement_ready": false,
+        "reader_id": "ffprobe-container-v1",
+        "limitations": [
+          "Codec timestamps/timebase do not establish camera/experiment-clock synchronization.",
+          "Pixels alone do not establish scale, temperature, extinction or derived metrics.",
+          "Frame counts and file names are not independent experimental-run counts."
+        ]
+      },
+      "media_type": "video/mp4"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "metadata/PSI-25.json",
+      "sha256": "b9234754db5da651ad27d888af082b889d07210b018e543369662f065b4ec2da",
+      "byte_size": 680348
+    },
+    {
+      "path": "manifests/PSI-25.json",
+      "sha256": "5a05f22b397fdecc4ff0a26356c64b87b086f0c2cc86b9ba21e531a461703e16",
+      "byte_size": 345258
+    },
+    {
+      "path": "metadata/PSI-69.json",
+      "sha256": "a2d8ec5d0e9ad1060f6ecc7a850598634cc5519c373ae70462bf76c31fc8731c",
+      "byte_size": 31770
+    },
+    {
+      "path": "manifests/PSI-69.json",
+      "sha256": "5cca53f5d693a85dd73706de2060d25e1b42b9cbff400641336a7375a6eaa3bf",
+      "byte_size": 3015936
+    }
+  ],
+  "source_contract": "Three selected original NASA media files; no scientific calibration inferred."
+}

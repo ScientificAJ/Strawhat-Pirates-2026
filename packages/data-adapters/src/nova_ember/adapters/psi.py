@@ -21,9 +21,13 @@ from nova_ember.domain.source import RawTable, SourceRow
 
 PSI_BASE_URL = "https://psi.nasa.gov/geode-py/ws"
 CATALOG_URL = f"{PSI_BASE_URL}/repo/search?source=psi&type=investigation&size=200"
-DOWNLOAD_HOSTS = frozenset({"psi.nasa.gov", "psi-repo-prod.s3.amazonaws.com"})
+DOWNLOAD_HOSTS = frozenset(
+    {"psi.nasa.gov", "psi-repo-prod.s3.amazonaws.com", "psi-curation-prod.s3.amazonaws.com"}
+)
 MAX_METADATA_BYTES = 8 * 1024 * 1024
-MAX_MANIFEST_BYTES = 8 * 1024 * 1024
+# SLICE's complete file metadata exceeds 8 MiB; this bound applies to manifests,
+# never to automatic acquisition of the listed scientific assets.
+MAX_MANIFEST_BYTES = 32 * 1024 * 1024
 MAX_ASSET_BYTES = 5 * 1024 * 1024
 
 

@@ -116,6 +116,14 @@ def test_download_destination_must_match_observed_hosts(destination):
         validate_download_url(destination)
 
 
+def test_official_resolver_supports_observed_curation_bucket_without_wildcard():
+    validate_download_url("https://psi-curation-prod.s3.amazonaws.com/source.xlsx")
+    with pytest.raises(SourceUnavailable, match="destination"):
+        validate_download_url(
+            "https://psi-curation-prod.s3.amazonaws.com.attacker.test/source.xlsx"
+        )
+
+
 def test_resolver_quotes_name_and_rejects_paths():
     url = resolver_url("PSI-69", "name with space.csv", 1)
     assert "file=name+with+space.csv" in url

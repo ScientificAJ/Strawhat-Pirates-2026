@@ -3,3 +3,12 @@ tests/fixtures/nasa-psi/assets/** -text -diff
 tests/fixtures/nasa-psi/raw/** -text -diff
 tests/fixtures/nasa-psi/metadata/** -text -diff
 tests/fixtures/nasa-psi/manifests/** -text -diff
+tests/fixtures/nasa-psi-supporting/assets/** -text -diff
+tests/fixtures/nasa-psi-supporting/metadata/** -text -diff
+tests/fixtures/nasa-psi-supporting/manifests/** -text -diff
+tests/fixtures/nasa-psi-media/assets/** -text -diff
+tests/fixtures/nasa-psi-media/metadata/** -text -diff
+tests/fixtures/nasa-psi-media/manifests/** -text -diff
+tests/fixtures/nasa-psi-methods/assets/** -text -diff
+tests/fixtures/nasa-psi-methods/metadata/** -text -diff
+tests/fixtures/nasa-psi-methods/manifests/** -text -diff
