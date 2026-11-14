@@ -3,6 +3,7 @@
 from types import SimpleNamespace
 
 from nova_ember.api import research_tools
+from nova_ember.api.claim_support import numeric_mentions
 from nova_ember.api.discovery import Discovery
 from nova_ember.api.records import CohortInputs
 from nova_ember.api.research import verify_answer
@@ -221,3 +222,35 @@ def test_source_inspection_and_real_selection_calculations_keep_their_origins(mo
     )
     assert len(result["claims"]) == 3
     assert len(result["withheld_claims"]) == 1
+
+
+def test_recognized_caret_units_do_not_create_extra_scientific_values():
+    assert numeric_mentions("The computed K is 0.68 mm^2/s.") == [("0.68", "mm2/s")]
+    assert numeric_mentions("The computed K is 0.68 mm²/s.") == [("0.68", "mm2/s")]
+    assert numeric_mentions("The time is 2 s and the area is 3.3124 mm^2.") == [
+        ("2", "s"),
+        ("3.3124", "mm2"),
+    ]
+    assert ("2.3", None) in numeric_mentions("The area is 3.3124 mm^2.3.")
+    assert ("2.3", None) in numeric_mentions("The computed K is 0.68 mm^2.3/s.")
+    calculation = fact(
+        "calculation",
+        "deterministic_calculation",
+        {
+            "coefficient": {"value": 0.68, "unit": "mm^2/s"},
+            "area": {"value": 3.3124, "unit": "mm^2"},
+        },
+    )
+    result = check(
+        [calculation],
+        [
+            ("The computed K is 0.68 mm^2/s.", "calculated", ["calculation"]),
+            ("The computed K is 0.68 mm²/s.", "calculated", ["calculation"]),
+            ("The computed area is 3.3124 mm^2.", "calculated", ["calculation"]),
+            ("The computed K is 0.68 m^2/s.", "calculated", ["calculation"]),
+            ("The computed K is 0.69 mm^2/s.", "calculated", ["calculation"]),
+            ("The computed K is 0.68 mm^2.3/s.", "calculated", ["calculation"]),
+        ],
+    )
+    assert len(result["claims"]) == 3
+    assert len(result["withheld_claims"]) == 3

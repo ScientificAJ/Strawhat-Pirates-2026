@@ -131,10 +131,21 @@ def numeric_mentions(
     # without changing the positions of physical quantities elsewhere.
     text = re.sub(r"\bPSI-[0-9]+\b", lambda match: " " * len(match.group()), statement)
     result = []
+    unit_spans: list[tuple[int, int]] = []
     for match in NUMBER.finditer(text):
         if any(start <= match.start() < end for start, end in locator_spans or []):
             continue
+        if any(
+            start <= match.start()
+            and (match.end() <= end or (match.end() == end + 1 and text[end : match.end()] == "."))
+            for start, end in unit_spans
+        ):
+            # A recognized caret exponent is part of its scalar's unit. NUMBER
+            # may also absorb the sentence period; fractional exponents remain checked.
+            continue
         unit = UNIT_PATTERN.match(text, match.end())
+        if unit is not None:
+            unit_spans.append(unit.span())
         result.append((match.group(), UNIT_NAMES[unit.group(1)] if unit else None))
     return result
 
