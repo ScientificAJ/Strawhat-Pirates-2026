@@ -1,0 +1,101 @@
+.sources {
+  border-top: 1px solid var(--divider);
+  margin-top: 24px;
+  padding-top: 16px;
+  overflow-wrap: anywhere;
+}
+.sources h3 {
+  margin: 0 0 10px;
+  font-size: 0.9375rem;
+}
+.sources ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+.sources li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 6px;
+  align-items: start;
+}
+.sources p,
+.empty {
+  margin: 2px 0 5px;
+  color: var(--secondary);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+.sources details {
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+.sources summary {
+  cursor: pointer;
+  padding: 4px 0;
+}
+.sources code {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+.citation,
+.sourceTitle {
+  border: 0;
+  background: transparent;
+  color: var(--action);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.citation {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  border-radius: 5px;
+  font-size: 0.8125rem;
+  vertical-align: middle;
+}
+.sourceTitle {
+  min-height: 44px;
+  padding: 5px 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.citation:hover {
+  background: var(--blue-wash);
+}
+.sourceTitle:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.notice {
+  padding: 12px;
+  background: var(--subtle);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+.locationPicker {
+  display: grid;
+  gap: 7px;
+  font-size: 0.8125rem;
+}
+.locationPicker select {
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--boundary);
+  border-radius: 5px;
+  padding: 8px;
+  font: inherit;
+}

@@ -63,6 +63,7 @@ import {
   ResearchMessage,
 } from "./studio-artifacts";
 import { VoiceConsole } from "./voice-console";
+import { useCitationReveal } from "./chat-sources";
 import styles from "./studio.module.css";
 
 export type ResearchStudioProps = {
@@ -807,15 +808,21 @@ export function ResearchStudio({
       setError(message(failure));
     }
   }
-  function evidence(id: string) {
+  function evidence(id: string, hasLocation: boolean) {
     const found = artifacts.find((item) => item.id === id);
     if (found) {
       setTab(found.kind);
       setSelectedArtifact(id);
-      if (compact) void expand();
-      else document.getElementById("studio-artifact-canvas")?.focus();
+      if (compact && !hasLocation) void expand();
+      else if (!compact)
+        document.getElementById("studio-artifact-canvas")?.focus();
     }
   }
+  const { select: selectCitation, reveal: sourceReveal } = useCitationReveal(
+    evidence,
+    session ? `${session.id}:${contextSelection(session.context)}` : undefined,
+    visible,
+  );
 
   if (!session)
     return (
@@ -1139,7 +1146,7 @@ export function ResearchStudio({
               <div key={turn.id}>
                 <ResearchMessage
                   turn={turn}
-                  onEvidence={evidence}
+                  onSelectCitation={selectCitation}
                   assistantName={session.agent?.frozen.profile.name}
                 />
                 {turn.status === "submission_unconfirmed" && (
@@ -1672,6 +1679,7 @@ export function ResearchStudio({
           onClose={() => setVoiceOpen(false)}
         />
       )}
+      {sourceReveal}
     </section>
   );
 }

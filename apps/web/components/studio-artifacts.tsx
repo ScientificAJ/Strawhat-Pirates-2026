@@ -1,17 +1,16 @@
 "use client";
 
-import {
-  ArrowDownToLine,
-  BookOpen,
-  Check,
-  Copy,
-  ExternalLink,
-  Save,
-} from "lucide-react";
+import { ArrowDownToLine, Check, Copy, ExternalLink, Save } from "lucide-react";
 import { useState } from "react";
 import { ArtifactView } from "./artifact-view";
 import { downloadJson } from "../lib/api";
 import { isDropletVisualization } from "../lib/simulation";
+import { chatCitations } from "../lib/chat-sources";
+import {
+  ChatSources,
+  CitationButton,
+  type SelectCitation,
+} from "./chat-sources";
 import {
   object,
   records,
@@ -34,27 +33,53 @@ function sourceUrl(value: unknown): string | undefined {
 
 export function ResearchMessage({
   turn,
-  onEvidence,
+  onSelectCitation,
   assistantName = "Nova Ember",
 }: {
   turn: StudioTurn;
-  onEvidence: (id: string) => void;
+  onSelectCitation: SelectCitation;
   assistantName?: string;
 }) {
   const answer = object(turn.result?.answer);
   const claims = records(answer.claims);
   const limits = strings(answer.limitations);
+  const citations = chatCitations(claims, turn.result?.facts);
+  const citationById = new Map(
+    citations.map((citation) => [citation.id, citation]),
+  );
   const simulations = records(turn.result?.facts).filter((fact) =>
     isDropletVisualization(fact.content),
   );
   const [copied, setCopied] = useState(false);
   async function copy() {
-    const text = claims
+    const body = claims
       .map(
         (claim) =>
-          `${claim.statement}\n${strings(claim.limitations).join("\n")}\nEvidence: ${strings(claim.fact_ids).join(", ")}`,
+          `${claim.statement} ${[...new Set(strings(claim.fact_ids))].map((id) => `[${citationById.get(id)?.number ?? "?"}]`).join(" ")}\n${strings(claim.limitations).join("\n")}`,
       )
       .join("\n\n");
+    const unresolved = strings(answer.contradictions).map(
+      (value) => `Unresolved: ${value}`,
+    );
+    const nextActions = strings(answer.next_actions).map(
+      (value) => `Next research step: ${value}`,
+    );
+    const references = citations
+      .map((citation) =>
+        [
+          `[${citation.number}] ${citation.label} · ${citation.origin}`,
+          `Evidence identifier: ${citation.id}`,
+          ...(citation.calculated
+            ? [
+                "Original source locations identify calculation inputs, not source measurements of the calculated result.",
+              ]
+            : []),
+          ...(citation.scopeNote ? [citation.scopeNote] : []),
+          `Recorded source locations: ${JSON.stringify(citation.anchors)}`,
+        ].join("\n"),
+      )
+      .join("\n\n");
+    const text = `${body}\n\n${[...limits, ...unresolved, ...nextActions].join("\n")}\n\nSources\n${references}`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -91,23 +116,24 @@ export function ResearchMessage({
                 claim.interpretation_status ?? claim.origin ?? "Interpretation",
               ).replaceAll("_", " ")}
             </span>
-            <p>{String(claim.statement ?? "")}</p>
+            <p>
+              {String(claim.statement ?? "")}{" "}
+              {[...new Set(strings(claim.fact_ids))].map((id) => {
+                const citation = citationById.get(id);
+                return citation ? (
+                  <CitationButton
+                    key={id}
+                    citation={citation}
+                    onSelect={onSelectCitation}
+                  />
+                ) : null;
+              })}
+            </p>
             {strings(claim.limitations).map((limit) => (
               <p className={styles.qualification} key={limit}>
                 {limit}
               </p>
             ))}
-            <div className={styles.evidenceLinks}>
-              {strings(claim.fact_ids).map((id, i) => (
-                <button
-                  className={styles.textButton}
-                  key={id}
-                  onClick={() => onEvidence(id)}
-                >
-                  <BookOpen size={14} /> Evidence {i + 1}
-                </button>
-              ))}
-            </div>
           </section>
         ))}
         {!turn.result && !turn.error && (
@@ -173,6 +199,9 @@ export function ResearchMessage({
             <ArtifactView value={fact.content} />
           </section>
         ))}
+        {turn.result && (
+          <ChatSources citations={citations} onSelect={onSelectCitation} />
+        )}
         {(turn.events.length > 0 ||
           records(turn.result?.actions).length > 0) && (
           <details className={styles.activity}>

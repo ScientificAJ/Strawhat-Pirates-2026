@@ -28,6 +28,7 @@ export type Anchor = {
   end?: number | null;
   member?: string | null;
   member_sha256?: string | null;
+  frame?: number | null;
 };
 export type EvidenceHit = { anchor: Anchor; text: string; field_role?: string };
 export type SourceRead = {
@@ -40,6 +41,8 @@ export type SourceRead = {
   scientific_verification?: string;
   limitation?: string;
   limitations?: string[];
+  content_kind?: string;
+  member?: string;
 };
 
 export function human(value: string | null | undefined) {
@@ -97,18 +100,26 @@ export function useQuery<T>(url: string, body: unknown, enabled = true) {
   };
 }
 export function anchorLabel(anchor: Anchor) {
-  const source = anchor.accession ?? "NTRS " + anchor.document_id;
-  const place =
-    anchor.field ??
-    (anchor.sheet
-      ? anchor.sheet + "!" + anchor.cell
-      : anchor.page
-        ? "page " + anchor.page
-        : anchor.paragraph
-          ? "paragraph " + anchor.paragraph
-          : "source line " +
-            anchor.source_row +
-            (anchor.column != null ? ", column " + (anchor.column + 1) : ""));
+  const source =
+    anchor.accession ??
+    (anchor.document_id ? "NTRS " + anchor.document_id : "Recorded source");
+  let place = "Location not recorded";
+  if (anchor.field) place = anchor.field;
+  else if (anchor.sheet && anchor.cell)
+    place = anchor.sheet + "!" + anchor.cell;
+  else if (anchor.page != null) place = "page " + anchor.page;
+  else if (anchor.paragraph != null) place = "paragraph " + anchor.paragraph;
+  else if (anchor.member) place = "embedded figure " + anchor.member;
+  else if (anchor.frame != null)
+    place = "frame " + anchor.frame + " (zero-based)";
+  else if (anchor.source_row != null) {
+    place = "source line " + anchor.source_row;
+    if (anchor.line_end != null && anchor.line_end !== anchor.source_row)
+      place += "–" + anchor.line_end;
+    if (anchor.column != null) place += ", column " + (anchor.column + 1);
+  }
+  if (anchor.start != null && anchor.end != null)
+    place += ` · characters ${anchor.start}–${anchor.end} (zero-based, end exclusive)`;
   return source + " · " + human(anchor.kind) + " · " + place;
 }
 export function sourceUrl(asset: Asset, snapshotId: string, mode = "raw") {
@@ -157,20 +168,29 @@ export function Limitations({ values }: { values?: string[] }) {
 export function SourceInspector({
   anchor,
   onClose,
+  navigation,
+  contextLabel,
+  returnFocus,
 }: {
   anchor: Anchor | null;
   onClose: () => void;
+  navigation?: React.ReactNode;
+  contextLabel?: string;
+  returnFocus?: HTMLElement | null;
 }) {
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   const closeButton = useRef<HTMLButtonElement>(null);
+  const returnFocusRef = useRef(returnFocus);
+  returnFocusRef.current = returnFocus;
   const result = useQuery<SourceRead>(
     "/v1/evidence/read",
     anchor,
     Boolean(anchor),
   );
+  const open = Boolean(anchor);
   useEffect(() => {
-    if (!anchor) return;
+    if (!open) return;
     const previous =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
@@ -182,11 +202,16 @@ export function SourceInspector({
     window.addEventListener("keydown", close);
     return () => {
       window.removeEventListener("keydown", close);
-      previous?.focus();
+      const target =
+        returnFocusRef.current === undefined
+          ? previous
+          : returnFocusRef.current;
+      if (target?.isConnected) target.focus();
     };
-  }, [anchor]);
+  }, [open]);
   if (!anchor) return null;
-  const data = result.data;
+  const data =
+    result.resolvedRequest === JSON.stringify(anchor) ? result.data : null;
   return (
     <aside
       className={s.inspector}
@@ -208,6 +233,8 @@ export function SourceInspector({
         </button>
       </div>
       <Scope snapshotId={anchor.snapshot_id} />
+      {contextLabel && <p className={s.help}>{contextLabel}</p>}
+      {navigation}
       {result.error ? (
         <ErrorState message={result.error} retry={result.reload} />
       ) : result.loading ? (
@@ -215,10 +242,24 @@ export function SourceInspector({
       ) : (
         data && (
           <>
-            <blockquote className={s.sourceText}>
-              {data.text ||
-                "This source location contains an empty reported value."}
-            </blockquote>
+            {data.content_kind === "source_image" &&
+            data.asset &&
+            data.member ? (
+              <figure>
+                {/* Exact retained bytes are verified by the source reader before display. */}
+                <img
+                  src={`${sourceUrl(data.asset, anchor.snapshot_id, "embedded-figure")}&${new URLSearchParams({ member: data.member })}`}
+                  alt={`Original embedded figure: ${data.member}`}
+                  style={{ display: "block", maxWidth: "100%", height: "auto" }}
+                />
+                <figcaption>{anchorLabel(anchor)}</figcaption>
+              </figure>
+            ) : (
+              <blockquote className={s.sourceText}>
+                {data.text ||
+                  "This source location contains an empty reported value."}
+              </blockquote>
+            )}
             <dl className={s.facts}>
               <div>
                 <dt>Source identity</dt>

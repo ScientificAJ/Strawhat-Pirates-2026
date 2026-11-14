@@ -231,7 +231,13 @@ test("Studio retains named drafts, forks without overwriting, and renders checke
   await expect(
     page.getByRole("heading", { name: "Two records in the offline reference" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Evidence 1", exact: true }).click();
+  await page
+    .getByRole("button", {
+      name: "Source 1: Offline reference table",
+      exact: true,
+    })
+    .first()
+    .click();
   await expect(
     page.getByRole("heading", { name: "Offline reference table" }),
   ).toBeVisible();

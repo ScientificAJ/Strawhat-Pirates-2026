@@ -102,7 +102,11 @@ export function ScientificValues({
               )
           }
         >
-          {calculated ? "Copy calculated values" : "Copy selected source rows"}
+          {calculated
+            ? "Copy calculated values"
+            : aggregated
+              ? "Copy aggregate values"
+              : "Copy selected source rows"}
         </button>
         {copyStatus && <span role="status">{copyStatus}</span>}
       </div>
