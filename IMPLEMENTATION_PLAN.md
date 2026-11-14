@@ -2,7 +2,7 @@
 
 Planning baseline: **14 November 2026**. This is the implementation sequence for the complete product in [MASTER_BRIEF.md](MASTER_BRIEF.md), founded on the supplied [product, science, engineering, and UI specification](https://chatgpt.com/space/page_aec4307255548191b89cceb60f6d0007) and [scientific and engineering plan](https://chatgpt.com/space/page_0525d144642081918b584ff977558690). Their detailed research, feature contracts, visual specification, and empirical audit are retained in the master brief; this plan turns that breadth into executable work packages and acceptance evidence. The master brief includes the [current source checks](MASTER_BRIEF.md#source-and-data-verification), [empirical audit](MASTER_BRIEF.md#b-appendix), and [selected architecture](MASTER_BRIEF.md#selected-architecture).
 
-All work packages are planned. The dated PSI checks establish access and file structure for the inspected sources. Implementation, scientific validation, host eligibility, credentials, live model access and public deployment each need their own evidence. The 14 November 2026 architecture revision supersedes the original cloud provisioning sequence. The feature and screen tables track the complete scientific scope and the single-researcher experience. F19 now covers a personal case, notes, revisions and evidence watches.
+Local implementation is underway. The [14 November first-build report](docs/local-build-2026-11-14.md) records tested behavior and the remaining work for every feature. Unchecked tasks below remain open. The dated PSI checks establish access and file structure for the inspected sources. Implementation, scientific validation, host eligibility, credentials, live model access and public deployment each need their own evidence. The 14 November 2026 architecture revision supersedes the original cloud provisioning sequence. The feature and screen tables track the complete scientific scope and the single-researcher experience. F19 now covers a personal case, notes, revisions and evidence watches.
 
 ## Execution order and completion evidence
 
@@ -34,8 +34,8 @@ Start locally with a real research path: a PSI record, one source-anchored run, 
 
 ## W00 — Make the full brief executable
 
-- [ ] Use the feature table below and W15 screen table as the implementation checklist. Link the relevant scientific method, source and passing check as each capability lands. Include domain refusal, preparation and exploration when available evidence does not support a validated model.
-- [ ] Maintain a dated decision register for dataset rights, endpoint meanings, ranking policies, model release, local execution budgets, storage, and UI composition. Record the original deployment choice as superseded. A host or external integration decision belongs at the milestone that needs it.
+- [x] Use the feature table below and W15 screen table as the implementation checklist. The [build report](docs/local-build-2026-11-14.md) links initial capability evidence and records pending work for F01–F20. Include domain refusal, preparation and exploration when available evidence does not support a validated model.
+- [x] Maintain a [dated decision register](docs/decisions.md) alongside the master brief's decisions for dataset rights, endpoint meanings, ranking policies, model release, local execution budgets, storage, and UI composition. The original deployment choice remains superseded. A host or external integration decision belongs at the milestone that needs it.
 - [ ] Select the first source-backed question, input, expected result and independent check. Estimate concurrency, storage, permitted asset transfers and operating cost with real samples before deciding where to host.
 
 **Evidence:** the first question, an independent expected result, and traceable status for each feature.

@@ -8,7 +8,9 @@ The planned application connects NASA combustion evidence with investigation dis
 
 Researchers will be able to run Python and shell on the app’s own Linux host without a separate execution service. The modeling workbench will use the same host to fit measured flame-front and droplet traces. Prediction for a new run requires separate validation against independent experiments.
 
-This repository currently contains the product, scientific, engineering, and experience specifications and the implementation plan. Application implementation, scientific validation, and deployment remain planned work.
+The first local build supports NASA investigation discovery, original table inspection, a reproducible FLEX analysis, oxygen partial-pressure calculations, conservative comparisons and browser-local research cases. The full scientific application remains in progress; live AI and hosting have not been configured.
+
+Run `pnpm run setup` and `pnpm dev`, then open `http://127.0.0.1:3100`. See [local development](docs/local-development.md) for requirements and checks, and the [first build report](docs/local-build-2026-11-14.md) for verified behavior and remaining work.
 
 - [Master brief](MASTER_BRIEF.md): product scope, scientific contracts, architecture, interface requirements, and empirical data audit.
 - [Implementation plan](IMPLEMENTATION_PLAN.md): dependency-ordered work packages and completion evidence.

@@ -1,0 +1,24 @@
+{
+  "name": "nova-ember",
+  "private": true,
+  "packageManager": "pnpm@11.20.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "setup": "python3 scripts/setup.py",
+    "dev": "python3 scripts/python.py scripts/local.py",
+    "build": "pnpm --filter @nova-ember/web build",
+    "typecheck": "pnpm --filter @nova-ember/web typecheck",
+    "python:typecheck": "python3 scripts/python.py -m mypy services/api/src services/workers/src packages/analysis/src packages/domain/src packages/data-adapters/src scripts",
+    "test:browser": "playwright test",
+    "web:format:check": "prettier --check apps/web",
+    "test": "python3 scripts/python.py -m pytest",
+    "lint": "python3 scripts/python.py -m ruff check .",
+    "format:check": "python3 scripts/python.py -m ruff format --check ."
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "prettier": "3.10.1"
+  }
+}

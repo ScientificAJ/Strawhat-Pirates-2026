@@ -2,6 +2,8 @@
 
 Baseline and research verification date: 14 November 2026.
 
+Local implementation has started. The [first-build report](docs/local-build-2026-11-14.md) records the verified workflow and pending features; this brief remains the complete target specification. OpenAI setup and hosting await the owner's decision at their implementation milestones.
+
 **Build Nova Ember: an evidence-first scientific research environment for understanding fire in reduced gravity.** A researcher should move from a question about materials, atmosphere, smoke detection, suppression, or an experimental mechanism to inspectable NASA evidence, meaningful comparisons, reproducible calculations, appropriately validated models, and a reviewable research case. The product is the complete research workflow, with useful intelligence throughout it and direct scientific controls at every step.
 
 The project and application name is **Nova Ember**, developed by team **StrawHat Pirates** for the NASA Space Apps Challenge **Flame in Freefall**. The name connects space and fire: a nova evokes astronomy, an ember evokes combustion, and “Nova” carries a wordplay nod to November. The selected experience is **Ignition Glass**: a calm, light-first scientific instrument with a restrained flame identity, an equally considered dark theme, precise data presentation, and expressive interaction that clarifies the research.
