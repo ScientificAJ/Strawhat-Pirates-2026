@@ -345,6 +345,8 @@ def measure_image(
         limitations=(
             "Threshold segmentation is a proposal until validated on labeled "
             "source-specific frames.",
+            "The luminance_bt601 option is an 8-bit RGB luma-weighted grayscale transform, "
+            "not a calibrated radiometric luminance measurement.",
             "Image color/intensity does not establish temperature or complete chemical extinction.",
             "Luminous edge, pyrolysis front and char boundary are different physical observables.",
             "Square-pixel planar calibration cannot correct unresolved perspective or "
@@ -498,6 +500,8 @@ def calibrate_pixel_trace(request: PixelTraceRequest) -> PixelTraceResult:
             ) * request.calibration.axis_scale(request.coordinate_axis)
         if not isfinite(value) or not isfinite(time):
             raise ValueError("Calibrated trace exceeds finite numerical range.")
+        if request.observable == "projected_droplet_diameter" and value <= 0:
+            raise ValueError("A positive calibrated diameter underflows the numerical range.")
         points.append(
             CalibratedTracePoint(
                 source_locator=point.source_locator,

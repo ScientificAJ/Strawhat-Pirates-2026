@@ -294,7 +294,7 @@ class ResearchTools:
                         )
                         sources[identity] = {**asset, "snapshot_id": self.context.snapshot_id}
                 for nested in value.values():
-                    if isinstance(nested, (dict, list)):
+                    if isinstance(nested, (BaseModel, dict, list)):
                         walk(nested)
             elif isinstance(value, list):
                 for nested in value:
@@ -474,18 +474,13 @@ class ResearchTools:
         )
 
     def get_investigation(self, inputs: InvestigationInput) -> dict:
-        result = self.corpus.investigation(inputs.accession, self.context.snapshot_id)
+        from .discovery import Discovery
+
+        result = Discovery(self.corpus).dossier(inputs.accession, self.context.snapshot_id)
         return self.fact(
             "Investigation dossier",
             result,
-            [
-                {
-                    "snapshot_id": self.context.snapshot_id,
-                    "accession": inputs.accession,
-                    "version": result["version"],
-                    "kind": "investigation_metadata",
-                }
-            ],
+            self.retained_sources(result),
             limitations=[
                 "Reported objectives and descriptions are distinct from experimental results."
             ],
@@ -609,6 +604,7 @@ class ResearchTools:
                 }
                 for selection in inputs.selections
             ],
+            origin="deterministic_calculation",
             limitations=["Freezing rows establishes neither independence nor pooling eligibility."],
         )
 
@@ -623,7 +619,9 @@ class ResearchTools:
             inputs.method,
             result,
             self.retained_sources(result),
-            origin="deterministic_calculation",
+            origin="deterministic_calculation"
+            if inputs.method == "flex_source_events"
+            else "source_text",
             limitations=result.get("limitations", []),
         )
 

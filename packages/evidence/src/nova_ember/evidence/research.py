@@ -9,6 +9,32 @@ from nova_ember.domain.scientific import COMPARISON_FIELDS
 from .contracts import Claim, ControlCandidate, EarthTransfer, EvidenceRelation, Hypothesis
 
 REQUIRED_COMPARISON_CONDITIONS = COMPARISON_FIELDS
+UNRESOLVED_CONDITION_LABELS = {
+    "",
+    "unknown",
+    "unreported",
+    "not reported",
+    "not measured",
+    "not specified",
+    "not available",
+    "undetermined",
+    "unspecified",
+    "unresolved",
+    "conflicting",
+    "missing",
+    "nan",
+    "n/a",
+    "not applicable",
+}
+
+
+def unresolved_condition(value: object) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str):
+        label = " ".join(value.casefold().replace("_", " ").replace("-", " ").split())
+        return label in UNRESOLVED_CONDITION_LABELS
+    return False
 
 
 def compare_claims(left: Claim, right: Claim) -> dict[str, Any]:
@@ -19,21 +45,7 @@ def compare_claims(left: Claim, right: Claim) -> dict[str, Any]:
     matrix = []
     for dimension in dimensions:
         a, b = left.conditions.get(dimension), right.conditions.get(dimension)
-        missing_labels = {
-            "unknown",
-            "not_reported",
-            "not_measured",
-            "unresolved",
-            "missing",
-            "nan",
-            "n/a",
-            "not applicable",
-            "not_applicable",
-        }
-        absent = any(
-            value is None or (isinstance(value, str) and value.strip().casefold() in missing_labels)
-            for value in (a, b)
-        )
+        absent = any(unresolved_condition(value) for value in (a, b))
         status = "unknown" if absent else "matched" if a == b else "different"
         matrix.append({"dimension": dimension, "left": a, "right": b, "status": status})
     unknown = any(row["status"] == "unknown" for row in matrix)
@@ -138,7 +150,9 @@ def plan_hypothesis(hypothesis: Hypothesis) -> dict[str, Any]:
 
 def assess_control(candidate: ControlCandidate) -> dict[str, Any]:
     unknown = sorted(
-        key for key, value in candidate.applicable_configuration.items() if value is None
+        key
+        for key, value in candidate.applicable_configuration.items()
+        if unresolved_condition(value)
     )
     return {
         "candidate": candidate,
@@ -160,7 +174,9 @@ def assess_transfer(transfer: EarthTransfer) -> dict[str, Any]:
     return {
         "transfer": transfer,
         "unknown_constraints": sorted(
-            key for key, value in transfer.transfer_constraints.items() if value is None
+            key
+            for key, value in transfer.transfer_constraints.items()
+            if unresolved_condition(value)
         ),
         "evidence_status": transfer.status,
         "automatic_equivalence": False,

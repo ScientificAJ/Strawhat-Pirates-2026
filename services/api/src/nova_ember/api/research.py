@@ -32,6 +32,7 @@ from PIL import Image, UnidentifiedImageError
 
 from . import jobs
 from .claim_support import (
+    asserts_measurement,
     check_source_line_locators,
     display_match,
     numeric_evidence,
@@ -178,7 +179,7 @@ def verify_answer(answer: ResearchAnswer, tools: ResearchTools) -> dict:
             and all(fact.origin in {"tool_contract", "model_proposal"} for fact in supporting)
         ):
             reasons.append("An inspected proposal is not a measured source result.")
-        measured = bool(re.search(r"\bmeasured\b", claim.statement, re.I))
+        measured = asserts_measurement(claim.statement)
         if claim.origin == "user_input_summary" and (
             not supporting or any(fact.origin != "user_supplied_input" for fact in supporting)
         ):
@@ -193,14 +194,36 @@ def verify_answer(answer: ResearchAnswer, tools: ResearchTools) -> dict:
             )
         if claim.origin == "source_summary" and not any(source_backed(fact) for fact in supporting):
             reasons.append("A calculation from scenario assumptions is not a source observation.")
-        if claim.origin == "predicted" and not any(
-            fact.origin == "prediction" and fact.content.get("status") == "predicted"
+        calculations = [
+            fact
             for fact in supporting
-        ):
+            if fact.origin == "deterministic_calculation"
+            and fact.content.get("status")
+            not in {"needs_data", "unsupported", "outside_validated_domain", "failed", "incomplete"}
+        ]
+        predictions = [
+            fact
+            for fact in supporting
+            if fact.origin == "prediction" and fact.content.get("status") == "predicted"
+        ]
+        if claim.origin == "calculated" and not calculations:
+            reasons.append("No completed registered calculation supports this statement.")
+        if claim.origin == "predicted" and not predictions:
             reasons.append("No registered, in-domain predictive result supports this statement.")
+        if (
+            measured
+            and claim.origin != "user_input_summary"
+            and not any(
+                numeric_evidence(fact, source_only=True, measured_only=True) for fact in supporting
+            )
+        ):
+            reasons.append("No reviewed source measurement supports this measured assertion.")
+        numeric_facts = {"calculated": calculations, "predicted": predictions}.get(
+            claim.origin, supporting
+        )
         values = [
             value
-            for fact in supporting
+            for fact in numeric_facts
             for value in numeric_evidence(
                 fact,
                 source_only=claim.origin == "source_summary",

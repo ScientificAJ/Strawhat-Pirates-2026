@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from nova_ember.domain.scientific import (
@@ -50,6 +51,18 @@ class ConditionValue(ScientificInput):
             )
         if isinstance(self.value, str) and not self.value.strip():
             raise ValueError("An empty string is not a known scientific condition.")
+        if isinstance(self.value, str):
+            normalized = re.sub(r"[_\s-]+", " ", self.value.strip().casefold())
+            if re.match(
+                r"^(?:unknown|unresolved|unreported|not reported|not measured|not specified|"
+                r"unspecified|not available|undetermined|missing|n/a|not applicable)"
+                r"(?:$|[\s:;,()/])",
+                normalized,
+            ):
+                raise ValueError(
+                    "A missing or unresolved condition needs its explicit status, "
+                    "not a known value."
+                )
         if isinstance(self.value, float) and not self.unit:
             raise ValueError("A numeric condition requires a unit, including 1 for dimensionless.")
         return self

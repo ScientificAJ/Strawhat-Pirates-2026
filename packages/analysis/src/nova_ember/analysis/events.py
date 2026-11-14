@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from math import fsum, isfinite, ulp
 from typing import Literal
 
 from nova_ember.domain.scientific import (
@@ -152,6 +153,8 @@ def detector_timing(request: DetectorTimingRequest) -> DetectorTimingResult | Re
             context=request.context,
         )
     total = request.alarm_time_seconds - request.start_time_seconds
+    if not isfinite(total):
+        raise ValueError("Detector delay exceeds the finite numerical range.")
     if total < 0:
         raise ValueError("Alarm precedes the selected start on the declared synchronized clock.")
     component_names = (
@@ -167,16 +170,21 @@ def detector_timing(request: DetectorTimingRequest) -> DetectorTimingResult | Re
     }
     if components and request.component_timing_reference is None:
         raise ValueError("Component delays need their measurement/synchronization reference.")
-    if sum(components.values()) > total:
+    try:
+        component_total = fsum(components.values())
+    except OverflowError:
+        raise ValueError("Component delays exceed the finite numerical range.") from None
+    remaining = total - component_total
+    # These are arithmetic-rounding bounds, not an assumed measurement uncertainty.
+    rounding_bound = 2 * (ulp(total) + ulp(component_total))
+    if remaining < 0 and (total == 0 or remaining < -rounding_bound):
         raise ValueError("Measured sequential component delays exceed the total declared delay.")
     return DetectorTimingResult(
         context=request.context,
         request=request,
         total_delay_seconds=total,
         measured_components_seconds=components,
-        remaining_unallocated_delay_seconds=total - sum(components.values())
-        if components
-        else None,
+        remaining_unallocated_delay_seconds=max(0.0, remaining) if components else None,
         limitations=(
             "The total is relative to the supplied start event, not necessarily generation onset.",
             "Unreported components remain unknown; remaining delay is not an identified mechanism.",

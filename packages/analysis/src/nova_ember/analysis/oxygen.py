@@ -31,7 +31,7 @@ def oxygen_partial_pressure(
     if fraction_basis not in ("mole", "volume"):
         raise ValueError("Oxygen mass fraction is not interchangeable with mole fraction.")
     value = oxygen_percent / 100 * absolute_pressure
-    if not isfinite(value):
+    if not isfinite(value) or (value == 0 and oxygen_percent != 0):
         raise ValueError("The derived partial pressure is outside the finite numeric range.")
     return {
         "method_id": METHOD_ID,

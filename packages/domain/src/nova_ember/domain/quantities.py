@@ -50,6 +50,14 @@ def convert_source_scalar(raw_number: str, original_unit: str) -> tuple[float, s
     try:
         with localcontext() as context:
             context.traps[Underflow] = True
+            # Retain the supplied significant digits through offset cancellation,
+            # especially on either side of the Celsius absolute-zero boundary.
+            context.prec = max(
+                context.prec,
+                len(number.as_tuple().digits)
+                + len(conversion.factor.as_tuple().digits)
+                + len(conversion.offset.as_tuple().digits),
+            )
             canonical = number * conversion.factor + conversion.offset
         value = float(canonical)
     except DecimalException:

@@ -1,8 +1,21 @@
 """Known-condition evidence relations and source-location contract checks."""
 
 import pytest
-from nova_ember.evidence.contracts import Claim, EvidenceAnchor, EvidenceRelation, Hypothesis
-from nova_ember.evidence.research import compare_claims, invalidated_dependents, plan_hypothesis
+from nova_ember.evidence.contracts import (
+    Claim,
+    ControlCandidate,
+    EarthTransfer,
+    EvidenceAnchor,
+    EvidenceRelation,
+    Hypothesis,
+)
+from nova_ember.evidence.research import (
+    assess_control,
+    assess_transfer,
+    compare_claims,
+    invalidated_dependents,
+    plan_hypothesis,
+)
 from pydantic import ValidationError
 
 HASH = "a" * 64
@@ -146,3 +159,55 @@ def test_hypothesis_keeps_falsifier_and_does_not_invent_information_gain():
     assert result["status"] == "research_proposal"
     assert result["information_gain"] is None
     assert result["hypothesis"].falsifier == hypothesis.falsifier
+
+
+def test_spelled_out_unknown_conditions_never_establish_matched_evidence():
+    original = source_claim("a", 3)
+    for marker in (
+        "not measured",
+        "not_reported",
+        "  NOT   SPECIFIED  ",
+        "conflicting",
+        "unreported",
+        "not_available",
+        "undetermined",
+        "not-measured",
+        "not-available",
+    ):
+        unknown = original.model_copy(
+            update={"conditions": {**original.conditions, "pressure": marker}}
+        )
+        result = compare_claims(unknown, unknown)
+        assert result["status"] == "unresolved"
+        assert (
+            next(row for row in result["condition_matrix"] if row["dimension"] == "pressure")[
+                "status"
+            ]
+            == "unknown"
+        )
+
+
+def test_control_and_transfer_keep_unknown_text_visible_and_zero_known():
+    candidate = ControlCandidate(
+        name="Offline control proposal",
+        mechanism="To be investigated",
+        intended_outcome="Compare endpoints",
+        evidence=(source_claim("a", 3),),
+        applicable_configuration={"pressure": "not measured", "flow": 0.0},
+        limitations=("No operational suitability established",),
+        validation_status="unresolved",
+        necessary_validation=("Characterize pressure",),
+    )
+    result = assess_control(candidate)
+    assert result["unknown_configuration"] == ["pressure"]
+    assert result["operational_suitability"] == "not_established"
+    transfer = EarthTransfer(
+        title="Offline transfer hypothesis",
+        status="research_hypothesis",
+        evidence=candidate.evidence,
+        shared_mechanism="To be investigated",
+        transfer_constraints={"pressure": "not_reported", "flow": "0 m/s"},
+        limitations=("No equivalence established",),
+    )
+    assert assess_transfer(transfer)["unknown_constraints"] == ["pressure"]
+    assert not assess_transfer(transfer)["automatic_equivalence"]

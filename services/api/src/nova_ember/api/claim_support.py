@@ -89,6 +89,13 @@ LINE_RANGE_PART = re.compile(
     rf"(?P<first>{LINE_POSITION})(?:\s*(?:[-–—]|to|through)\s*(?P<last>{LINE_POSITION}))?",
     re.I,
 )
+MEASURED_ASSERTION = re.compile(r"\bmeasured\b", re.I)
+MEASUREMENT_QUALIFICATION = re.compile(
+    r"\b(?:not|no|never|without)\b(?:\s+(?:a|an|the|actual|directly|experimentally|"
+    r"independently|newly|source|reported|validated|yet|itself|contain|contains|"
+    r"establish|establishes|constitute|constitutes|represent|represents)){0,4}\s*$",
+    re.I,
+)
 
 
 @dataclass(frozen=True)
@@ -97,6 +104,18 @@ class NumericEvidence:
     origin: str
     exact_integer: bool
     unit: str | None = None
+
+
+def asserts_measurement(statement: str) -> bool:
+    """Recognize explicit measured wording without turning local negation into an assertion.
+
+    This is a lexical provenance check, not a scientific interpretation of prose.
+    Each occurrence is checked so one negated clause cannot mask a later assertion.
+    """
+    return any(
+        not MEASUREMENT_QUALIFICATION.search(statement[: match.start()])
+        for match in MEASURED_ASSERTION.finditer(statement)
+    )
 
 
 def statement_numbers(statement: str) -> list[str]:

@@ -54,3 +54,14 @@ def test_transformation_formula_retains_scale_and_offset():
 
 def test_real_zero_from_temperature_offset_is_not_numeric_underflow():
     assert convert_source_scalar("-273.15", "degC") == (0.0, "K")
+
+
+def test_celsius_offset_preserves_small_positive_temperature():
+    value, unit = convert_source_scalar("-273.149999999999999999999999999999", "degC")
+    assert value == pytest.approx(1e-30, rel=1e-14, abs=0)
+    assert unit == "K"
+
+
+def test_celsius_offset_does_not_round_below_absolute_zero_into_valid_zero():
+    with pytest.raises(ValueError, match="below absolute zero"):
+        convert_source_scalar("-273.150000000000000000000000000001", "degC")

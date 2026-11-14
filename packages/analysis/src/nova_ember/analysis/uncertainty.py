@@ -168,6 +168,16 @@ class MonteCarloRequest(ScientificInput):
             if self.input_units != expected_units:
                 raise ValueError("Registered oxygen propagation requires mole fraction, Pa and K.")
         checked_covariance(self.covariance, size)
+        denominator_index = {"ratio": 1, "oxygen_molar_density": 2}.get(self.function)
+        if denominator_index is not None:
+            if self.covariance[denominator_index][denominator_index] != 0:
+                raise ValueError(
+                    "This moments-based propagation requires a fixed denominator: a Gaussian "
+                    "denominator with nonzero variance does not generally give finite ratio "
+                    "moments. A bounded justified distribution needs a separate method."
+                )
+            if self.input_means[denominator_index] == 0:
+                raise ValueError("A fixed denominator must be nonzero.")
         return self
 
 
