@@ -382,3 +382,14 @@ The table is a delivery checklist, not a replacement for the preserved detailed 
 - [ ] Demonstrate complete discovery, evidence inspection, comparison, analysis/model gating, agent/context/voice, dashboard, personal notes/revision history and independent export/rerun on the hosted application. Record production behavior, source revision and known unsupported cases. Link the verified workflow, scientific checks, accessibility results, private-access tests and restore result in the release notes. List any remaining gap explicitly.
 
 Completion means the complete research instrument is implemented, integrated, hosted and verified within its documented scientific support. The plan remains open wherever code, access, data review, validation, deployment or recovery evidence is still missing.
+
+
+## 14 November 2026 — Optional model and collaborator follow-up
+
+The owner’s [optional model workspace](docs/source-parameterized-models-2026-11-14.md) extends the earlier no-new-simulation wording for bounded analytical visualizations only. The source-linked FLEX-007 path and explicit-input D² model preserve origins, units, equations, source anchors and limits. Dossier and conversation entry points remain explicit and initially closed. No heavy solver, validated reconstruction or cabin predictor is established.
+
+The [collaborator evaluation](docs/scientific-coworker-evaluation-2026-11-14.md) records actual baseline/revised responses, independent critique, bounded tool execution and claim checks. These scoped additions do not complete unrelated unchecked tasks or whole-product acceptance.
+
+## 15 November 2026 — Optional agent library
+
+The owner authorized a separate [Agents workspace](docs/custom-agents.md) with useful built-in roles, manual profile and reusable-skill creation, and description-based reviewable drafts. Profiles retain bounded role/skill instructions and explicit tool groups. Their conversations preserve frozen configurations and remain separate from core Research Studio. Server scientific, consent and approval controls remain authoritative. Verification for this extension uses focused unit cases, static/build checks and a bounded rendered workflow inspection; the earlier broad suites are not repeated.

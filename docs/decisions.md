@@ -117,3 +117,10 @@ credentials and active job records are excluded. Saving output bytes locally is
 explicit; a downloaded research report includes private notes/data only when
 selected and retains scientific qualifications. No account, sync provider,
 additional execution service or cloud integration is introduced.
+
+
+## 14 November 2026 — Optional source-parameterized model workspace
+
+Reuse the provided observatory’s useful chamber/flame presentation in a bounded, lazily loaded Three.js 0.187.0 view. Keep the MIT notice, exact dependency lock and existing CSS/native-control conventions. Scientific equations live in the shared Python analysis module; the renderer receives calculated states rather than implementing another physical model. No CFD service, new executor, synthetic optical diagnostic or unsupported physics engine is introduced.
+
+Source-linked parameter facts and model calculations have separate origins. Preparing a model returns a closed, non-autoplay artifact; dossier and conversation viewers require explicit opening. See the [model report](source-parameterized-models-2026-11-14.md) and [actual collaborator evaluation](scientific-coworker-evaluation-2026-11-14.md).

@@ -3815,3 +3815,14 @@ Each request was a read-only public file listing through the frontend service. A
 ### Scope and interpretation of the audit
 
 All 24 combustion metadata records were fetched. Full file manifests were fetched for FLEX, BASS-II, and SAME-R. Ten experimental CSVs were downloaded and structurally inspected. Five additional small supporting files were downloaded and hashed; their scientific contents were not analyzed. No bulk scientific archive was downloaded, no full-image corpus was processed, and no model was fit. These observations establish a concrete ingestion path and expose data-cleaning requirements; they do not establish validated predictive performance.
+
+
+## 14 November 2026 — Optional analytical visualization and collaborator follow-up
+
+The owner authorized a bounded, optional source-parameterized droplet visualization alongside evidence and original media, with both experiment-specific Open simulation and prepared conversation artifacts. This extends the earlier exclusion of new simulations only for the inspectable constant-K analytical visualization described in [the model workspace report](docs/source-parameterized-models-2026-11-14.md). The earlier exclusion of heavy solver pipelines and unsupported validated predictions remains. It does not replace F14’s descriptive fits or qualify cabin behavior.
+
+The collaborator should inspect, question, perform supported work and make evidence-qualified judgments, rather than repeat context or transfer available source work back to the researcher. Preserve the rule: never turn incomplete evidence into a confident scientific claim. Describe the actual source reading, stated-unit checks, exact anchors and equations applied before explaining the limits at the inference they affect. The [response evaluation](docs/scientific-coworker-evaluation-2026-11-14.md) preserves actual outcomes and independent critique; one case is not a general benchmark.
+
+## 15 November 2026 — Optional specialized agents
+
+The owner authorized a separate Agents workspace for built-in research roles and personal agents. Users can write role instructions, attach reusable text skills, select available tool groups or describe the configuration they want and review a prepared draft. This is optional: ordinary discovery, analysis and Research Studio remain usable without selecting a specialized agent. Each conversation freezes its role and skills. Custom guidance cannot override scientific evidence checks, input consent or action approvals. [Implementation and boundaries](docs/custom-agents.md).

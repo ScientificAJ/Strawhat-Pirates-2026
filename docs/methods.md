@@ -334,3 +334,8 @@ real process-group timeout, busy/cached behavior, source/context mismatches, and
 actual trusted-child image/trace calculations. Known synthetic anisotropic and
 legacy isotropic cases verify physical positions, areas and diameters without
 claiming NASA experimental calibration. No paid API call is involved.
+
+
+## 14 November 2026 — Optional source-parameterized droplet model
+
+`droplet_d_squared_v1` provides the bounded constant-K D² trajectory and constant-density relative-mass relation described in the [model workspace report](source-parameterized-models-2026-11-14.md). The FLEX-007 endpoint resolves nominal D₀ and kavg from unit-bearing source lines. Assigned-input models retain analyst assumptions. The record separates source parameters, calculated states and illustrative geometry. It does not change registered fits, qualify a predictor or alter source bytes.

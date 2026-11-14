@@ -12,6 +12,10 @@ The [backend report](docs/backend-2026-11-14.md) records scientific methods, sou
 
 The [interface refinement](docs/ui-refinement-2026-11-14.md) adds a restrained wordmark ember, responsive control feedback and System appearance by default, while preserving explicit Light/Dark choices and stable scientific content.
 
+[Optional droplet models](docs/source-parameterized-models-2026-11-14.md) open from relevant experiment dossiers and as prepared artifacts in the research conversation. The FLEX-007 path retains exact test-sheet parameters and anchors; assigned-input models keep their assumptions explicit. The [collaborator evaluation](docs/scientific-coworker-evaluation-2026-11-14.md) records actual response and tool-use evidence.
+
+The separate [Agents workspace](docs/custom-agents.md) offers three built-in research roles, manual profiles, reusable skills and description-based drafts. Each conversation retains its selected configuration; standard Research Studio remains available independently.
+
 Run `pnpm run setup` and `pnpm dev`, then open `http://127.0.0.1:3100`. See [local development](docs/local-development.md) for requirements and checks, and the current backend/frontend reports for implementation evidence. The [first build report](docs/local-build-2026-11-14.md) remains historical.
 
 - [Master brief](MASTER_BRIEF.md): product scope, scientific contracts, architecture, interface requirements, and empirical data audit.
