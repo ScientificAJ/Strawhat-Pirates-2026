@@ -6,6 +6,13 @@ Apply these instructions whenever writing, modifying, or reviewing code in this 
 
 Optimize for readable, modular, correct, efficient, secure, and maintainable code. Keep solutions proportionate to the project's actual requirements. These instructions concern code quality; they do not prescribe a product roadmap, technology stack, or NASA flight-software certification process.
 
+## Required skills
+
+- For coding, debugging, code review, and refactoring, read and apply the installed `karpathy-guidelines` skill before substantive code changes: make assumptions explicit, choose simple solutions, make surgical edits, and define verifiable success criteria.
+- For frontend/UI design, implementation, review, and polish, also read and apply the installed `impeccable` skill and the playbooks relevant to the requested work. Use it for visual quality, accessibility, responsive behavior, and interaction details; do not load it for backend-only or non-UI tasks.
+- Locate skills through the current runtime's skill catalog or user-level skill directory. Read each applicable `SKILL.md` and only the supporting references needed for the task. If a required skill is unavailable, report the precise gap and restore access before dependent work; do not claim to have used it.
+- Apply skills with judgment and proportionate verification. They do not override the user's scope, this project's requirements, or higher-priority instructions, and do not independently authorize hooks, external integrations, deployments, or bypassing approval and sandbox controls.
+
 ## Git delivery and attribution
 
 - The owner authorizes committing and pushing completed project work as part of finishing each task. This replaces the earlier chat-session restriction on commits and pushes. Follow any later instruction to keep a particular task local or uncommitted.
@@ -179,6 +186,8 @@ Choose the simplest implementation that meets correctness and measured resource 
 
 These references explain the principles above; they are background, not a requirement to reread them for every edit.
 
+- [Karpathy Guidelines skill](https://github.com/multica-ai/andrej-karpathy-skills/blob/main/skills/karpathy-guidelines/SKILL.md)
+- [Impeccable Codex skill](https://github.com/pbakaus/impeccable/blob/main/.agents/skills/impeccable/SKILL.md)
 - [Google engineering practices: code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html)
 - [Google engineering practices: small changes](https://google.github.io/eng-practices/review/developer/small-cls.html)
 - [Microsoft architectural principles](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles)
