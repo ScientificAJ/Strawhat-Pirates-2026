@@ -87,10 +87,11 @@ master brief. They are observed website services, not a guaranteed versioned
 public API. The committed source snapshot supports reproducible local work
 without requesting NASA on every application launch.
 
-The current implementation strategy completes the backend, including secure
-OpenAI key setup and inference integration, before completing the frontend.
-Final integrated testing and conditional hosting follow both deliveries;
-host eligibility, terms, capacity and the owner's decision remain unresolved.
+The current product is organized around connected research journeys; see the
+[15 November redesign record](product-redesign-2026-11-15.md) for actual checks and
+limits. Public hosting still needs a selected host, verified entitlement,
+persistence and runtime support. A successful local build does not establish
+public deployment or hosted acceptance.
 The scoped OpenAI key is securely configured in the ignored `.env.local`, with
 backend loading, both reasoning models, embeddings and a synthetic voice session
 verified locally. The startup command does not create credentials or provision

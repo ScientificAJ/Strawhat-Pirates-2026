@@ -2,27 +2,35 @@
 
 **Combustion research, made clear.**
 
-Nova Ember is team **StrawHat Pirates**' project for the **2026 NASA Space Apps Challenge**, addressing [Flame in Freefall](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/).
+Nova Ember helps people explore NASA combustion research for fire-safety questions. Find an investigation, understand what it examines, compare its experimental conditions, inspect the original evidence and work with source-bound data. A research assistant connects explanations and scientific tools to sources; saved conversations, analyses and optional notes support returning to research.
 
-The application connects NASA combustion evidence with investigation discovery, condition-aware comparisons, reproducible analysis, and source-linked research cases to support fire-safety research for human space exploration.
+It is team **StrawHat Pirates**' project for the **2026 NASA Space Apps Challenge**, addressing [Flame in Freefall](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/).
 
-Researchers can run Python and shell in the qualified local gVisor environment without a separate execution service. Registered flame-front and droplet fits use the same host through a distinct bounded scientific worker. Prediction for a new run requires separate validation against independent experiments.
+## Run the application
 
-The [backend report](docs/backend-2026-11-14.md) records scientific methods, source/evidence retrieval, private workflows, exports, local execution and live OpenAI checks. The [frontend report](docs/frontend-2026-11-14.md) records the connected research workbenches, Studio/voice controls, personal cases and portable browser workspace. Final integrated acceptance and conditional hosting remain. No hosting resource has been provisioned.
+Use Node.js 24, pnpm 11.20.0, the project's Python environment and Docker with Compose:
 
-The [interface refinement](docs/ui-refinement-2026-11-14.md) adds a restrained wordmark ember, responsive control feedback and System appearance by default, while preserving explicit Light/Dark choices and stable scientific content.
+```sh
+pnpm run setup
+pnpm dev
+```
 
-[Optional droplet models](docs/source-parameterized-models-2026-11-14.md) open from relevant experiment dossiers and as prepared artifacts in the research conversation. The FLEX-007 path retains exact test-sheet parameters and anchors; assigned-input models keep their assumptions explicit. The [collaborator evaluation](docs/scientific-coworker-evaluation-2026-11-14.md) records actual response and tool-use evidence.
+Open `http://127.0.0.1:3100`. See [local development](docs/local-development.md) for requirements, setup behavior and verification commands. NASA evidence browsing, registered calculations, saving and exports can be used without paid model credentials. Live assistance and voice need the configured backend model service. Python/shell execution requires the qualified isolated runtime described in [execution](docs/execution.md).
 
-The separate [Agents workspace](docs/custom-agents.md) offers three built-in research roles, manual profiles, reusable skills and description-based drafts. Each conversation retains its selected configuration; standard Research Studio remains available independently.
+## Product and scientific scope
 
-The [science and source-traceability review](docs/science-validation-2026-11-15.md) records the formula, unit, uncertainty and evidence checks, corrections and remaining scientific limits. Chat replies include numbered citations and a Sources list linked to recorded evidence locations.
+The [current brief](MASTER_BRIEF.md) organizes the product around research tasks, with automatic continuity and no user-facing workspace setup. The [implementation and acceptance plan](IMPLEMENTATION_PLAN.md) records essential workflows, proportionate verification, the reassessed historical backlog and the remaining release evidence. The former documents are preserved in the [planning archive](docs/archive/README.md).
 
-The [full local verification report](docs/full-product-verification-2026-11-15.md) records the complete backend, browser, execution and static/build results, plus the separate bounded live research check.
+Original source values, units and locations stay attached to interpreted data and derived results. Comparison preserves condition differences. Descriptive fits are separate from validated prediction; safety-control and Earth-transfer research do not establish operational suitability. See [scientific methods](docs/methods.md), [data dictionary](docs/data-dictionary.md), [source inventory](docs/data-sources.md) and the [bounded science review](docs/science-validation-2026-11-15.md).
 
-Run `pnpm run setup` and `pnpm dev`, then open `http://127.0.0.1:3100`. See [local development](docs/local-development.md) for requirements and checks, and the current backend/frontend reports for implementation evidence. The [first build report](docs/local-build-2026-11-14.md) remains historical.
+The [redesign report](docs/product-redesign-2026-11-15.md) records the connected research journeys, rendered checks, a bounded live assistant result and remaining limits. The [earlier full local verification report](docs/full-product-verification-2026-11-15.md) remains evidence for the **pre-redesign** version. Hosted acceptance, actual device/voice behavior, broader scientific evaluation and source-specific gaps need their own evidence; the plan keeps those states distinct.
 
-- [Master brief](MASTER_BRIEF.md): product scope, scientific contracts, architecture, interface requirements, and empirical data audit.
-- [Implementation plan](IMPLEMENTATION_PLAN.md): complete backend, complete frontend, then final testing and conditional hosting; stable requirement references and completion evidence.
-- [Challenge overview](challenge.md): the official challenge title, description, and source.
-- [Engineering instructions](AGENTS.md): coding, verification, and Git delivery practices.
+## Project references
+
+- [Product brief](MASTER_BRIEF.md) and [implementation/acceptance plan](IMPLEMENTATION_PLAN.md)
+- [Demonstration and submission preparation](docs/submission-guide-2026-11-15.md) and [complexity reassessment](docs/complexity-reassessment-2026-11-15.md)
+- [Challenge overview](challenge.md) and [engineering instructions](AGENTS.md)
+- [Backend report](docs/backend-2026-11-14.md), [frontend report](docs/frontend-2026-11-14.md) and [first-build report](docs/local-build-2026-11-14.md), preserved as dated implementation history
+- [Optional descriptive droplet models](docs/source-parameterized-models-2026-11-14.md), [research-role configuration](docs/custom-agents.md) and [voice integration](docs/voice.md)
+
+The repository's original code uses Apache-2.0. Data, publications, media and dependencies retain their own rights and required notices.
