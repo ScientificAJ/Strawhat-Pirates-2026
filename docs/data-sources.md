@@ -1,5 +1,10 @@
 # NASA PSI source collection
 
+The starter-capture observations below are historical. The successor supporting,
+media and method packs, complete manifest discovery, refresh and selective source
+transfers are recorded in [evidence](evidence.md), [the data dictionary](data-dictionary.md)
+and [the backend report](backend-2026-11-14.md). Original capture hashes remain unchanged.
+
 The local starter snapshot is stored in `tests/fixtures/nasa-psi/`. Its JSON index
 contains exact retrieval times, source identifiers, investigation and file versions,
 record-level license assertions, stable resolver URLs, byte lengths and locally
@@ -29,7 +34,10 @@ The adapter uses observed PSI frontend services. These are not a confirmed suppo
 or versioned public API. Schema changes, timeouts, incomplete catalog responses,
 oversized inputs and denied downloads produce an explicit unavailable or incomplete
 state. Requests have a 30-second network timeout; each metadata response is limited
-to 8 MiB, each manifest to 8 MiB, and each selected asset to 5 MiB. The metadata limit
+to 8 MiB, each manifest to 32 MiB, and starter-capture assets to 5 MiB. The manifest
+limit accommodates the observed 9,935,155-byte SLICE manifest. Larger deliberate
+transfers use the separate streaming/cache profile rather than increasing the
+starter-capture limit. The metadata limit
 accommodates the observed 8,127,138-byte s-Flame record. Only three metadata requests
 run concurrently. The acquisition command starts with FLEX and saves completed
 source captures incrementally, so a later source failure does not erase earlier work.

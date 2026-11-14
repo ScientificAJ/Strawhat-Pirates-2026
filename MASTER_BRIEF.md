@@ -2,7 +2,7 @@
 
 Baseline and research verification date: 14 November 2026.
 
-Local implementation has started. The [first-build report](docs/local-build-2026-11-14.md) records the verified workflow and pending features; this brief remains the complete target specification. Continue from the existing implementation: complete the backend, including OpenAI setup, then complete the frontend, then perform final integrated testing and conditional hosting. These are whole-system deliveries, with no intermediate implementation milestones.
+Local implementation has started. The [first-build report](docs/local-build-2026-11-14.md) records the verified workflow and pending features; this brief remains the complete target specification. Continue from the existing implementation: complete the backend, including OpenAI setup, then complete the frontend, then perform final integrated testing and conditional hosting. These are whole-system deliveries, with no intermediate implementation milestones. The complete backend delivery is implemented and locally checked; see the [current backend report](docs/backend-2026-11-14.md) for evidence and source limits. Complete frontend integration, final whole-application acceptance and conditional hosting remain. The first-build report remains historical.
 
 **Build Nova Ember: an evidence-first scientific research environment for understanding fire in reduced gravity.** A researcher should move from a question about materials, atmosphere, smoke detection, suppression, or an experimental mechanism to inspectable NASA evidence, meaningful comparisons, reproducible calculations, appropriately validated models, and a reviewable research case. The product is the complete research workflow, with useful intelligence throughout it and direct scientific controls at every step.
 
@@ -959,7 +959,7 @@ The concrete technologies below are the baseline. Exact dependency resolution, s
 | Web application | Next.js 16.4.6, React 19.3.1, TypeScript strict mode | Mature application structure with a typed client and server boundary; use patched stable releases rather than canary features |
 | JavaScript runtime and package management | Node.js 24 LTS and pnpm with committed lockfile | Reproducible builds and predictable supported runtime |
 | Scientific API | Python 3.13, FastAPI, Pydantic 2 | One typed scientific service layer close to the numerical ecosystem |
-| Database access | SQLAlchemy 2 and psycopg 3, versioned SQL migrations | Explicit transaction and schema control |
+| Database access | psycopg 3 and transactional, checksum-checked SQL migrations | Explicit transactions and schema control without an additional ORM or migration dependency |
 | Canonical database | PostgreSQL 17 on the app host | Transactions, scientific relationships, job state, permissions and provenance; no managed database required |
 | Private job access | An opaque server-issued browser credential for requested remote operations | No registration or sign-in. Check ownership of private jobs, events, artifacts and downloads; public evidence is open. |
 | Search | PostgreSQL full-text search, pgvector, reciprocal-rank fusion | Exact terminology plus semantic retrieval without a separate search cluster initially |
@@ -3136,7 +3136,7 @@ The following is the implementation baseline. Exact dependency patches and conta
 |---|---|---|
 | Web application | Next.js/React, strict TypeScript and Node.js, served at one public HTTPS origin with FastAPI | Keep the complete research interface and direct links. Pin compatible versions at implementation. |
 | Client data state | TanStack Query and TanStack Table | Explicit query caching and structured table operations; the backend retains scientific authority |
-| API | Python 3.13, FastAPI, Pydantic 2, SQLAlchemy 2, Alembic | One scientific language for parsing, analysis, modeling, and agent tools; generated OpenAPI schemas |
+| API | Python 3.13, FastAPI, Pydantic 2, psycopg 3 and checksum-checked SQL migrations | One scientific language for parsing, analysis, modeling, and agent tools; generated OpenAPI schemas |
 | Primary database | One local PostgreSQL instance with full-text search and pgvector | Scientific records, relationships, model versions, jobs, temporary browser ownership and passage retrieval share one transactional store |
 | Raw and artifact storage | Persistent project-owned files addressed by SHA-256, plus versioned manifests | Scientific originals, large data and reproducible outputs are served by authorized ID and backed up with the database |
 | Curated scientific data | Apache Parquet/Arrow, Polars, DuckDB | Efficient filtering and analysis without loading entire files into application memory |

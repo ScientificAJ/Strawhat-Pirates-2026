@@ -13,7 +13,11 @@ pnpm run setup
 pnpm dev
 ```
 
-Setup installs the locked Python and web dependencies. If uv is unavailable,
+Setup installs the locked Python and web dependencies and prepares the local
+gVisor scientific environment with the existing Docker engine. If host qualification
+fails, setup reports that failure and keeps browsing and trusted calculations
+available; interactive execution stays unavailable until preparation succeeds.
+If uv is unavailable,
 it installs version 0.13.8 into the ignored project `.data/tools` directory.
 Python caches and managed interpreters stay under `.data` unless the
 environment already specifies their locations. The pnpm content cache uses
@@ -21,7 +25,9 @@ the system temporary directory; installed dependencies stay in `node_modules`.
 
 Development starts PostgreSQL, applies checksum-checked SQL migrations,
 verifies and imports the checked-in source snapshot, and supervises the API,
-trusted export worker and web app. Open `http://127.0.0.1:3100`. The web app
+scientific worker and web app. The worker handles research, registered calculations,
+media, acquisition and exports; source refresh and transfer use bounded threads in
+that same process. Open `http://127.0.0.1:3100`. The web app
 proxies `/v1/` to the loopback API at port 8100. PostgreSQL binds only to
 `127.0.0.1:55432`. The Compose file contains a local fixture password, not a
 credential suitable for public deployment.
@@ -47,6 +53,7 @@ pnpm lint
 pnpm format:check
 pnpm typecheck
 pnpm python:typecheck
+pnpm contracts:check
 pnpm web:format:check
 pnpm build
 ```
@@ -80,9 +87,33 @@ master brief. They are observed website services, not a guaranteed versioned
 public API. The committed source snapshot supports reproducible local work
 without requesting NASA on every application launch.
 
-OpenAI setup and hosting remain separate later milestones requiring the
-owner's decision. No provider key is needed for local source browsing,
-registered calculations, personal saving or exports. Interactive user code
-requires the planned gVisor environment and is unavailable until that boundary
-is implemented and verified. The trusted worker accepts only defined export
-jobs; it does not execute arbitrary Python or shell.
+The current implementation strategy completes the backend, including secure
+OpenAI key setup and inference integration, before completing the frontend.
+Final integrated testing and conditional hosting follow both deliveries;
+host eligibility, terms, capacity and the owner's decision remain unresolved.
+The scoped OpenAI key is securely configured in the ignored `.env.local`, with
+backend loading, both reasoning models, embeddings and a synthetic voice session
+verified locally. The startup command does not create credentials or provision
+hosting. No provider key is needed for local source browsing, registered
+calculations, personal saving, exports or local Python/shell execution.
+
+Interactive user code runs through the qualified gVisor guest on the existing
+CPU host. It has no network, project tree or provider credentials. The trusted
+worker dispatches only typed operations; submitted Python/shell never runs in the
+host shell or API process. See [execution](execution.md) for the actual qualified
+profile, preparation command, interruption behavior and host limitations.
+Changing the lockfile or runner requires preparing and qualifying that environment
+again. A future host must pass its own qualification; local success does not
+establish hosting eligibility or capacity.
+
+Model capability responses report configuration without making paid health-check
+requests. Reasoning uses GPT-6.1 Sol or Terra according to complexity. Semantic
+indexing and queries use the same OpenAI connection; they cost money when a new
+embedding is needed. Voice and reasoning usage also cost money. Cost reservations
+are conservative estimates, separate from the provider's invoice. Local
+scientific tests do not call OpenAI unless explicitly run as a live check.
+
+`pnpm contracts` rebuilds the checked-in OpenAPI schema and TypeScript contracts
+from the backend without starting services or making model requests. The JSON
+client in `packages/contracts/client.ts` carries the same-origin receipt cookie;
+binary downloads and event streams use their dedicated browser interfaces.

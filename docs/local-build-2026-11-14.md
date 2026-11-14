@@ -1,5 +1,8 @@
 # First local build — 14 November 2026
 
+This is the preserved first-build record. Later backend implementation and
+verification are recorded in [the backend report](backend-2026-11-14.md).
+
 The implementation has started. This report records a working local research
 path, not completion of the full F01–F20 application or the release gates.
 The master brief and implementation plan retain the full target.

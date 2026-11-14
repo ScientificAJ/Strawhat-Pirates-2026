@@ -67,3 +67,26 @@ implementation. Scientific support and prediction validity still depend on
 the original source-specific evidence and tests. The revised delivery strategy
 does not remove scientific checks or treat missing data as a supported result.
 Dated build reports and earlier observed outcomes remain historical evidence.
+
+
+## 14 November 2026 — Backend implementation evidence
+
+The [backend report](backend-2026-11-14.md) supersedes earlier statements that
+OpenAI loading and gVisor were unimplemented. Both reasoning models, embeddings
+and a synthetic voice transport/closure check have now used the configured
+backend connection. Actual local Python/shell, resource limits, interruption and
+restart teardown have been exercised through gVisor. No separate execution
+service or cloud resource was provisioned. Future hosting still requires its own
+eligibility, terms, capacity and owner decision after the frontend and final checks.
+
+Keep the existing psycopg transactions and checksum-checked incremental SQL
+migrations instead of introducing SQLAlchemy/Alembic for the same small schema.
+The master brief and plan now reflect that implementation choice. Scientific
+entities, source history, transaction guarantees and migration verification remain.
+
+Private processing uses temporary browser receipts and existing project storage.
+It does not create an account or a shared workspace. Source/case/model proposals
+remain inspectable, with the scientific meaning of a source-backed judgment
+separate from mechanical source/hash/quotation checks. No external reviewer or
+formal human accuracy approval is introduced. Scientific evidence requirements
+and all product features remain in force.
