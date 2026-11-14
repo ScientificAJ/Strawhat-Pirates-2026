@@ -483,6 +483,8 @@ function Overview({
 }) {
   const [question, setQuestion] = useState("");
   const [draftError, setDraftError] = useState<string | null>(null);
+  const [drafting, setDrafting] = useState(false);
+  const draftingRef = useRef(false);
   const router = useRouter();
   const groups = [
     "Solid fuels and spread",
@@ -504,9 +506,13 @@ function Overview({
       </div>
       <form
         className="question-composer"
+        aria-busy={drafting}
         onSubmit={(event) => {
           event.preventDefault();
-          if (!catalog || !question.trim()) return;
+          if (!catalog || !question.trim() || draftingRef.current) return;
+          draftingRef.current = true;
+          setDrafting(true);
+          setDraftError(null);
           void saveDocument({
             kind: "studio_intent",
             title: question.slice(0, 100),
@@ -518,7 +524,11 @@ function Overview({
             },
           })
             .then((intent) => router.push(`/app/agent?intent=${intent.id}`))
-            .catch((reason) => setDraftError(String(reason)));
+            .catch((reason) => {
+              draftingRef.current = false;
+              setDrafting(false);
+              setDraftError(String(reason));
+            });
         }}
       >
         <label htmlFor="research-question">
@@ -532,8 +542,12 @@ function Overview({
             onChange={(event) => setQuestion(event.target.value)}
             placeholder="Ask a combustion research question; review context before sending"
           />
-          <button className="button button-primary" type="submit">
-            Draft in Studio
+          <button
+            className="button button-primary"
+            type="submit"
+            disabled={!catalog || !question.trim() || drafting}
+          >
+            {drafting ? "Opening draft…" : "Draft in Studio"}
             <ArrowRight size={16} />
           </button>
         </div>
@@ -544,6 +558,9 @@ function Overview({
           <Link href="/app/investigations?q=smoke">Smoke measurements</Link>
         </div>
       </form>
+      <span className="visually-hidden" role="status">
+        {drafting ? "Saving your question and opening a Studio draft." : ""}
+      </span>
       {draftError && <Notice kind="error">{draftError}</Notice>}
       <div className="corpus-strip" aria-live="polite">
         <span>

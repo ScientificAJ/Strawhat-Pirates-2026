@@ -32,6 +32,7 @@ import {
 } from "../lib/local-workspaces";
 import type { Preferences } from "../lib/workspace-backup";
 import type { WorkspaceContext } from "../lib/research-context";
+import { BrandEmber } from "./brand-ember";
 
 export function Mark() {
   return (
@@ -55,6 +56,45 @@ export function Mark() {
         fill="currentColor"
       />
     </svg>
+  );
+}
+
+function Wordmark({
+  reducedMotion,
+  onNavigate,
+}: {
+  reducedMotion: boolean;
+  onNavigate: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  return (
+    <Link
+      href="/app"
+      className="wordmark"
+      aria-label="Nova Ember"
+      onClick={onNavigate}
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setHovered(true);
+      }}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+    >
+      <Mark />
+      <span className="wordmark-text" aria-hidden="true">
+        NOV
+        <span className="wordmark-letter">
+          A
+          <BrandEmber
+            active={hovered || focused}
+            reducedMotion={reducedMotion}
+            className="wordmark-ember"
+          />
+        </span>{" "}
+        EMBER
+      </span>
+    </Link>
   );
 }
 
@@ -116,6 +156,7 @@ export function Shell({
   const [creating, setCreating] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [command, setCommand] = useState("");
+  const commandQuery = command.trim().toLowerCase();
   const commands = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     try {
@@ -212,7 +253,7 @@ export function Shell({
       href: "/app/stewardship",
       icon: BookOpen,
     },
-  ].filter((item) => item.title.toLowerCase().includes(command.toLowerCase()));
+  ].filter((item) => item.title.toLowerCase().includes(commandQuery));
   const navigationRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -303,7 +344,7 @@ export function Shell({
       disabled: false,
       run: () => router.push("/app/cases"),
     },
-  ].filter((item) => item.title.toLowerCase().includes(command.toLowerCase()));
+  ].filter((item) => item.title.toLowerCase().includes(commandQuery));
   return (
     <div
       className="app-shell"
@@ -340,10 +381,10 @@ export function Shell({
         >
           <X size={18} />
         </button>
-        <Link href="/app" className="wordmark" onClick={() => setOpen(false)}>
-          <Mark />
-          <span>Nova Ember</span>
-        </Link>
+        <Wordmark
+          reducedMotion={preferences?.reduce_motion ?? false}
+          onNavigate={() => setOpen(false)}
+        />
         <div className="workspace-switcher">
           <label className="workspace-label" htmlFor="local-workspace">
             <Monitor size={15} />
