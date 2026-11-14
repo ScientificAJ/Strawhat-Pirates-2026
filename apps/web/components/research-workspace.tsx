@@ -100,6 +100,24 @@ export function ResearchWorkspace({
         }),
       );
   }, []);
+  useEffect(() => {
+    const changed = () => {
+      listCases()
+        .then(setCases)
+        .catch((reason: unknown) =>
+          setMessage({
+            text:
+              reason instanceof Error
+                ? reason.message
+                : "Saved cases could not be refreshed.",
+            error: true,
+          }),
+        );
+    };
+    window.addEventListener("nova-ember-workspace-changed", changed);
+    return () =>
+      window.removeEventListener("nova-ember-workspace-changed", changed);
+  }, []);
 
   function toggleTheme() {
     const next = theme === "light" ? "dark" : "light";

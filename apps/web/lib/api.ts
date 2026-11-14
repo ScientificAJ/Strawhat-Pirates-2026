@@ -55,6 +55,49 @@ export type SourceTable = {
   limit: number;
   offset: number;
 };
+export type ScientificField = {
+  column_index: number;
+  source_column: string | null;
+  raw_text: string;
+  quantity_kind: string | null;
+  original_unit: string | null;
+  canonical_value: number | null;
+  canonical_unit: string | null;
+  missing_reason: string | null;
+  qualifier: string | null;
+  status: "text" | "normalized" | "missing" | "unresolved";
+  notes: string[];
+  location: string | null;
+  basis: string | null;
+  source_value_kind?: string;
+  transformation_id?: string | null;
+  transformation_formula?: string | null;
+};
+export type ScientificRecord = {
+  source_row: number;
+  line_end: number;
+  row_kind: string;
+  raw_cells: string[];
+  fields: ScientificField[];
+};
+export type ScientificRecords = {
+  schema_version: 1;
+  adapter_id: string;
+  status: "interpreted" | "schema_unrecognized";
+  snapshot_id: string;
+  asset: Asset;
+  headers: string[];
+  records: ScientificRecord[];
+  row_kind_counts: Record<string, number>;
+  source_record_count: number;
+  independent_run_count: number | null;
+  empty_record_count: number;
+  limitations: string[];
+  refusals: string[];
+  total_records: number;
+  limit: number;
+  offset: number;
+};
 export type EndpointAnalysis = {
   id: string;
   title: string;

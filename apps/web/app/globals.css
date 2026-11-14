@@ -2130,3 +2130,441 @@ summary {
     outline: 1px solid Highlight;
   }
 }
+
+.source-inspector {
+  margin-top: 24px;
+}
+.source-inspector > .source-table-panel {
+  margin-top: 12px;
+}
+.source-view-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.source-view-buttons button[aria-pressed="true"] {
+  background: var(--blue-wash);
+  border-color: var(--action);
+  color: var(--action);
+}
+.source-record-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 22px;
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+.source-record-context strong {
+  color: var(--ink);
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+.row-role-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--divider);
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+.row-role-summary > span {
+  display: inline-flex;
+  gap: 6px;
+}
+.row-role-summary strong {
+  color: var(--ink);
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+.record-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 16px;
+  font-size: 0.8125rem;
+}
+.record-toolbar > label {
+  font-weight: 550;
+}
+.record-toolbar > select,
+.attach-source-controls select {
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid var(--boundary);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.8125rem;
+}
+.record-toolbar > span {
+  color: var(--secondary);
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+.scientific-record-list {
+  border: 1px solid var(--divider);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.scientific-record + .scientific-record {
+  border-top: 1px solid var(--divider);
+}
+.scientific-record > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  font-size: 0.8125rem;
+  font-weight: 450;
+}
+.record-disclosure {
+  color: var(--action);
+  transition: transform 160ms ease-out;
+}
+.scientific-record[open] > summary .record-disclosure {
+  transform: rotate(90deg);
+}
+.scientific-record > summary .mono {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.scientific-record > summary > .record-kind {
+  color: var(--secondary);
+  font-size: 0.75rem;
+}
+.scientific-record > summary:hover {
+  background: var(--canvas);
+}
+.scientific-record[open] > summary {
+  background: var(--blue-wash);
+  border-bottom: 1px solid var(--divider);
+}
+.record-preview {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  max-width: 40%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.record-fields {
+  padding: 16px;
+}
+.field-table,
+.quality-table {
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+}
+.field-table table {
+  min-width: 780px;
+}
+.field-table th,
+.field-table td {
+  padding: 12px;
+  font-size: 0.75rem;
+  vertical-align: top;
+}
+.field-table tbody th {
+  max-width: 200px;
+  font-size: 0.75rem;
+  color: var(--ink);
+}
+.field-table td {
+  min-width: 140px;
+  max-width: 260px;
+  overflow-wrap: anywhere;
+}
+.original-cell {
+  white-space: pre-wrap;
+}
+.field-state {
+  display: block;
+  color: var(--caution);
+  font-size: 0.75rem;
+  margin-bottom: 5px;
+}
+.field-context {
+  display: block;
+  color: var(--secondary);
+  font-size: 0.6875rem;
+  line-height: 1.65;
+  margin-top: 4px;
+}
+.quality-view {
+  padding-top: 22px;
+  color: var(--secondary);
+  font-size: 0.8125rem;
+}
+.quality-view h3 {
+  color: var(--ink);
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+.quality-view h3:not(:first-child) {
+  margin-top: 28px;
+}
+.quality-view ul {
+  margin: 12px 0 0;
+}
+.quality-view li {
+  margin-top: 8px;
+}
+.quality-view > .field-help {
+  margin-bottom: 16px;
+}
+.quality-table {
+  margin-top: 16px;
+  max-height: 520px;
+}
+.quality-table table {
+  min-width: 650px;
+}
+.quality-table th,
+.quality-table td {
+  padding: 12px;
+  font-size: 0.75rem;
+  vertical-align: top;
+}
+.quality-table tbody th {
+  max-width: 220px;
+  color: var(--ink);
+}
+.attach-source-row {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--divider);
+}
+.attach-source-row h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 6px;
+}
+.attach-source-row p {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 0.75rem;
+  max-width: 65ch;
+}
+.attach-source-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.attach-source-controls select {
+  min-width: 0;
+  max-width: 360px;
+}
+.attach-source-row > .button {
+  margin-top: 14px;
+}
+.attach-source-row .attachment-result {
+  color: var(--success);
+  margin-top: 12px;
+}
+.source-original-download {
+  margin-top: 14px;
+  font-size: 0.75rem;
+}
+.case-source-evidence h2 {
+  margin-top: 28px;
+}
+.case-source-evidence > details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider);
+}
+.case-source-evidence summary {
+  font-size: 0.75rem;
+}
+.case-source-evidence .field-help {
+  margin-top: 8px;
+}
+.case-source-excerpt {
+  max-height: 320px;
+  margin-top: 14px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+}
+.case-source-excerpt table {
+  min-width: 360px;
+}
+.case-source-excerpt th,
+.case-source-excerpt td {
+  padding: 9px 10px;
+  font-size: 0.6875rem;
+  vertical-align: top;
+  max-width: 220px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 639px) {
+  .record-toolbar {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .record-toolbar > span {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+  .record-toolbar > select {
+    flex: 1;
+    min-width: 0;
+  }
+  .source-record-context {
+    gap: 8px 18px;
+  }
+  .source-record-context > span:last-child {
+    flex-basis: 100%;
+  }
+  .scientific-record > summary {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 14px 12px;
+  }
+  .scientific-record > summary > .record-kind {
+    flex-basis: calc(100% - 24px);
+    margin-left: 24px;
+  }
+  .record-preview {
+    display: none;
+  }
+  .record-fields {
+    padding: 12px;
+  }
+  .attach-source-controls {
+    flex-wrap: wrap;
+  }
+  .attach-source-controls select {
+    max-width: 100%;
+    width: 100%;
+  }
+  .field-table table {
+    min-width: 650px;
+  }
+}
+
+.workbook-inspector h2,
+.text-inspector h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.workbook-inspector h2 > svg,
+.text-inspector h2 > svg {
+  color: var(--secondary);
+}
+.workbook-dimensions {
+  margin-bottom: 16px;
+}
+.workbook-table,
+.source-text-table {
+  max-height: 560px;
+  border: 1px solid var(--divider);
+  border-radius: 9px;
+}
+.workbook-table table {
+  min-width: 900px;
+}
+.workbook-table th,
+.workbook-table td {
+  padding: 12px;
+  font-size: 0.75rem;
+  vertical-align: top;
+}
+.workbook-table td {
+  max-width: 330px;
+  min-width: 130px;
+  overflow-wrap: anywhere;
+}
+.workbook-table .formula-text {
+  white-space: pre-wrap;
+}
+.workbook-table td details {
+  min-width: 140px;
+}
+.workbook-table td summary {
+  font-size: 0.6875rem;
+}
+.supporting-source-identity {
+  margin-top: 20px;
+  padding-top: 4px;
+  border-top: 1px solid var(--divider);
+}
+.source-text-table table {
+  width: max-content;
+  min-width: 100%;
+}
+.source-text-table th,
+.source-text-table td {
+  padding: 7px 12px;
+  font-size: 0.75rem;
+  vertical-align: top;
+}
+.source-text-table tbody th {
+  color: var(--muted);
+  user-select: none;
+}
+.source-text-table code {
+  white-space: pre;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+}
+.case-source-excerpt td {
+  white-space: pre-wrap;
+}
+.record-toolbar > select {
+  min-width: 0;
+  max-width: 100%;
+}
+.mobile-field-list {
+  display: none;
+}
+@media (max-width: 639px) {
+  .field-table {
+    display: none;
+  }
+  .mobile-field-list {
+    display: block;
+  }
+  .mobile-scientific-field {
+    padding: 18px 2px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .mobile-scientific-field:first-child {
+    padding-top: 4px;
+  }
+  .mobile-scientific-field h4 {
+    font-size: 0.8125rem;
+    font-weight: 570;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .source-value-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    margin: 0 0 12px;
+  }
+  .source-value-pair dt {
+    margin-top: 0;
+    font-size: 0.625rem;
+  }
+  .source-value-pair dd {
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+  }
+  .source-value-pair .mono {
+    font-size: 0.75rem;
+  }
+  .mobile-field-meaning .field-context {
+    margin-top: 3px;
+  }
+  .mobile-field-meaning .field-state {
+    font-size: 0.6875rem;
+  }
+}

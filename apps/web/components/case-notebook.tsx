@@ -20,6 +20,7 @@ import {
   workspaceBackup,
 } from "../lib/workspace-storage";
 import { Notice } from "./chrome";
+import { CaseSourceEvidence } from "./case-source-evidence";
 
 export function newCase(
   snapshot: string | null,
@@ -33,6 +34,7 @@ export function newCase(
     notes: "",
     investigation_ids: ids,
     snapshot_id: snapshot,
+    source_anchors: [],
     revision: 0,
     updated_at: new Date().toISOString(),
     revisions: [],
@@ -85,6 +87,7 @@ export function CaseNotebook({
       notes: draft.notes,
       investigation_ids: draft.investigation_ids,
       snapshot_id: draft.snapshot_id,
+      source_anchors: draft.source_anchors ?? [],
     };
     const next = {
       ...draft,
@@ -283,6 +286,7 @@ export function CaseNotebook({
               source view.
             </p>
           )}
+          <CaseSourceEvidence anchors={draft.source_anchors ?? []} />
           <h2>Frozen context</h2>
           <p className="field-help">
             {draft.snapshot_id ? (
@@ -310,6 +314,9 @@ export function CaseNotebook({
                       <p className="preserve-lines">
                         {revision.notes || "No notes recorded."}
                       </p>
+                      <CaseSourceEvidence
+                        anchors={revision.source_anchors ?? []}
+                      />
                     </details>
                   </li>
                 ))}

@@ -1,3 +1,18 @@
+export type SourceAnchor = {
+  accession: string;
+  investigation_version: number;
+  file_name: string;
+  file_version: number;
+  source_sha256: string;
+  snapshot_id: string;
+  source_row: number;
+  line_end: number;
+  row_kind: string;
+  adapter_id?: string;
+  source_columns: string[];
+  raw_cells: string[];
+};
+
 export type SavedRevision = {
   revision: number;
   saved_at: string;
@@ -5,6 +20,7 @@ export type SavedRevision = {
   notes: string;
   investigation_ids: string[];
   snapshot_id: string | null;
+  source_anchors?: SourceAnchor[];
 };
 
 export type ResearchCase = {
@@ -14,6 +30,7 @@ export type ResearchCase = {
   notes: string;
   investigation_ids: string[];
   snapshot_id: string | null;
+  source_anchors?: SourceAnchor[];
   revision: number;
   updated_at: string;
   revisions: SavedRevision[];
@@ -194,6 +211,44 @@ function boundedText(value: unknown, max: number): value is string {
   return typeof value === "string" && value.length <= max;
 }
 
+function validAnchors(value: unknown): value is SourceAnchor[] | undefined {
+  if (value === undefined) return true;
+  return (
+    Array.isArray(value) &&
+    value.length <= 500 &&
+    value.every((anchor: unknown) => {
+      if (!anchor || typeof anchor !== "object") return false;
+      const record = anchor as Partial<SourceAnchor>;
+      return (
+        boundedText(record.accession, 30) &&
+        /^PSI-\d+$/.test(record.accession) &&
+        Number.isSafeInteger(record.investigation_version) &&
+        Number(record.investigation_version) >= 1 &&
+        Number.isSafeInteger(record.file_version) &&
+        Number(record.file_version) >= 1 &&
+        boundedText(record.file_name, 1000) &&
+        boundedText(record.source_sha256, 64) &&
+        /^[a-f0-9]{64}$/.test(record.source_sha256) &&
+        boundedText(record.snapshot_id, 64) &&
+        /^[a-f0-9]{64}$/.test(record.snapshot_id) &&
+        Number.isSafeInteger(record.source_row) &&
+        Number(record.source_row) >= 1 &&
+        Number.isSafeInteger(record.line_end) &&
+        Number(record.line_end) >= Number(record.source_row) &&
+        boundedText(record.row_kind, 100) &&
+        (record.adapter_id === undefined ||
+          boundedText(record.adapter_id, 200)) &&
+        Array.isArray(record.source_columns) &&
+        record.source_columns.length <= 300 &&
+        record.source_columns.every((column) => boundedText(column, 20_000)) &&
+        Array.isArray(record.raw_cells) &&
+        record.raw_cells.length <= 300 &&
+        record.raw_cells.every((cell) => boundedText(cell, 20_000))
+      );
+    })
+  );
+}
+
 function validRevision(
   value: unknown,
   allowDraft = false,
@@ -212,7 +267,8 @@ function validRevision(
     record.investigation_ids.length <= 100 &&
     record.investigation_ids.every(
       (id) => typeof id === "string" && /^PSI-\d+$/.test(id),
-    )
+    ) &&
+    validAnchors(record.source_anchors)
   );
 }
 
@@ -257,6 +313,7 @@ export async function importWorkspace(file: File): Promise<number> {
       notes: value.notes,
       investigation_ids: value.investigation_ids,
       snapshot_id: value.snapshot_id,
+      source_anchors: value.source_anchors ?? [],
       revision: value.revision,
       updated_at: value.updated_at,
       revisions: value.revisions,

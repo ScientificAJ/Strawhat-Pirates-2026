@@ -143,7 +143,9 @@ export function FlexAnalysis({
           </details>
         )}
       </section>
-      {showSource && <RawTable asset={analysis.asset} />}
+      {showSource && (
+        <RawTable asset={analysis.asset} snapshotId={analysis.snapshot_id} />
+      )}
     </>
   );
 }

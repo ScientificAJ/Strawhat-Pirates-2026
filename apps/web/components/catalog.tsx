@@ -21,6 +21,8 @@ import {
   useResource,
 } from "../lib/api";
 import { ErrorState, LoadingRows, Notice } from "./chrome";
+import { ScientificRecordView } from "./scientific-records";
+import { SupportingSource } from "./supporting-source";
 
 export function InvestigationTable({
   items,
@@ -290,10 +292,71 @@ export function Explorer({
   );
 }
 
-export function RawTable({ asset }: { asset: Asset }) {
+export function RawTable({
+  asset,
+  snapshotId,
+}: {
+  asset: Asset;
+  snapshotId?: string;
+}) {
+  const [view, setView] = useState<"original" | "records" | "quality">(
+    "original",
+  );
+  return (
+    <div className="source-inspector">
+      <div
+        className="source-view-buttons"
+        role="group"
+        aria-label="Source inspection views"
+      >
+        <button
+          className="button button-small"
+          aria-pressed={view === "original"}
+          onClick={() => setView("original")}
+        >
+          Original
+        </button>
+        <button
+          className="button button-small"
+          aria-pressed={view === "records"}
+          onClick={() => setView("records")}
+        >
+          Scientific records
+        </button>
+        <button
+          className="button button-small"
+          aria-pressed={view === "quality"}
+          onClick={() => setView("quality")}
+        >
+          Quality
+        </button>
+      </div>
+      {view === "original" ? (
+        <OriginalTable asset={asset} snapshotId={snapshotId} />
+      ) : (
+        <ScientificRecordView
+          asset={asset}
+          snapshotId={snapshotId}
+          quality={view === "quality"}
+          onOriginal={() => setView("original")}
+        />
+      )}
+    </div>
+  );
+}
+
+function OriginalTable({
+  asset,
+  snapshotId,
+}: {
+  asset: Asset;
+  snapshotId?: string;
+}) {
   const [offset, setOffset] = useState(0);
+  const query = new URLSearchParams({ limit: "30", offset: String(offset) });
+  if (snapshotId) query.set("snapshot_id", snapshotId);
   const table = useResource<SourceTable>(
-    `/v1/assets/${asset.sha256}/table?limit=30&offset=${offset}`,
+    `/v1/assets/${asset.sha256}/table?${query}`,
   );
   return (
     <section
@@ -557,15 +620,13 @@ export function InvestigationDetail({
                   <ArrowRight size={15} />
                 </button>
               ) : (
-                <a
+                <button
                   className="button button-small"
-                  href={asset.source_url}
-                  target="_blank"
-                  rel="noreferrer"
+                  onClick={() => setTableAsset(asset)}
                 >
                   Inspect source
-                  <ArrowUpRight size={15} />
-                </a>
+                  <ArrowRight size={15} />
+                </button>
               )}
             </div>
           ))
@@ -578,7 +639,20 @@ export function InvestigationDetail({
           </div>
         )}
       </section>
-      {tableAsset && <RawTable key={tableAsset.sha256} asset={tableAsset} />}
+      {tableAsset &&
+        (tableAsset.file_name.toLowerCase().endsWith(".csv") ? (
+          <RawTable
+            key={tableAsset.sha256}
+            asset={tableAsset}
+            snapshotId={item.snapshot_id}
+          />
+        ) : (
+          <SupportingSource
+            key={tableAsset.sha256}
+            asset={tableAsset}
+            snapshotId={item.snapshot_id}
+          />
+        ))}
     </>
   );
 }
