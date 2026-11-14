@@ -24,11 +24,16 @@ import { RawTable } from "./catalog";
 export function FlexAnalysis({
   onSave,
   compact = false,
+  snapshotId,
 }: {
   onSave: (id: string) => void;
   compact?: boolean;
+  snapshotId?: string;
 }) {
-  const result = useResource<EndpointAnalysis>("/v1/analyses/flex-endpoints");
+  const result = useResource<EndpointAnalysis>(
+    "/v1/analyses/flex-endpoints" +
+      (snapshotId ? `?snapshot_id=${snapshotId}` : ""),
+  );
   const [showSource, setShowSource] = useState(false);
   if (result.error)
     return <ErrorState message={result.error} retry={result.reload} />;
