@@ -29,7 +29,7 @@ from openai.types.responses import (
 def test_collaborator_instructions_keep_action_and_evidence_constraints_together():
     # These are independent acceptance rules for the behavior request, not a
     # snapshot of the complete prompt's wording or formatting.
-    assert PROMPT_VERSION == "scientific-research-v7"
+    assert PROMPT_VERSION == "scientific-research-v10"
     assert "three targeted questions" in SYSTEM
     assert "prepare_simulation" in SYSTEM
     assert "prepare_source_simulation" in SYSTEM
@@ -112,7 +112,7 @@ class ToolSeekingModel(Model):
 
 def test_six_turn_runtime_reserves_the_last_provider_call_for_a_typed_answer(monkeypatch, tmp_path):
     context = WorkspaceContext(context_version="bounded-answer", snapshot_id="a" * 64)
-    tools = ResearchTools(SimpleNamespace(), context)
+    tools = ResearchTools(SimpleNamespace(investigations=lambda *args: {"items": []}), context)
     tools.resolve_context = lambda: {"snapshot_id": context.snapshot_id}
     tools.analyze_source = lambda _inputs: tools.fact(
         "Offline inspection fixture",

@@ -23,11 +23,95 @@ from .source_files import bass_calibration, flex_trace, source_text, source_work
 from .visualization import SourceDropletVisualizationRequest
 
 
+def dossier_model_payload(fact: dict, byte_limit: int) -> str:
+    """Keep exact scientific excerpts readable when many dossiers share one prompt."""
+    content = fact["content"]
+    fields = ("objective", "approach")
+    sources = [
+        {key: value for key, value in source.items() if value is not None}
+        for source in fact.get("sources", [])
+        if source.get("field") in fields
+    ]
+    view = {
+        "id": fact["id"],
+        "label": fact["label"],
+        "origin": fact["origin"],
+        "content": {key: content.get(key) for key in ("accession", "title", "source_url")},
+        "sources": sources,
+        "limitations": fact.get("limitations", []),
+        "model_view": {
+            "status": "partial_preview",
+            "original_bytes": len(json.dumps(fact, default=str).encode()),
+            "excerpts": {},
+            "instruction": "Exact source excerpts, not reported outcomes. Truncation is recorded "
+            "per field; omitted text and fields remain in the complete unchanged fact.",
+        },
+    }
+
+    def encoded() -> str:
+        return json.dumps(view, default=str, ensure_ascii=False)
+
+    texts = {name: str(content.get(name) or "") for name in fields}
+    for name, text in texts.items():
+        view["content"][name] = ""
+        view["model_view"]["excerpts"][name] = {
+            "original_characters": len(text),
+            "retained_characters": 0,
+        }
+    remaining = max(0, byte_limit - len(encoded().encode()) - 40)
+    allocations = {name: remaining // len(fields) for name in fields}
+    # A short field gives its unused space to the other scientific excerpt.
+    for name in fields:
+        unused = max(0, allocations[name] - len(texts[name].encode()))
+        allocations[name] -= unused
+        allocations[next(field for field in fields if field != name)] += unused
+    for name, text in texts.items():
+        excerpt = text.encode()[: allocations[name]].decode("utf-8", errors="ignore")
+        if len(excerpt) < len(text) and " " in excerpt:
+            excerpt = excerpt.rsplit(" ", 1)[0]
+        view["content"][name] = excerpt
+        view["model_view"]["excerpts"][name]["retained_characters"] = len(excerpt)
+
+    def add_if_fits(name: str, value) -> None:
+        view["content"][name] = value
+        if len(encoded().encode()) > byte_limit:
+            del view["content"][name]
+
+    for name in ("acronym", "doi", "platform", "hardware", "findings_status"):
+        if content.get(name):
+            add_if_fits(name, content[name])
+    for name in ("hypothesis", "researchImpacts"):
+        source = content.get("source_fields", {}).get(name)
+        if source and isinstance(source.get("value"), str):
+            # These optional passages preserve their own exact source anchor.
+            add_if_fits(
+                name,
+                {
+                    "value": source["value"][:300],
+                    "anchor": source.get("anchor"),
+                    "original_characters": len(source["value"]),
+                    "retained_characters": min(300, len(source["value"])),
+                },
+            )
+    assets = [
+        {key: asset[key] for key in ("id", "sha256", "file_name", "media_type") if key in asset}
+        for asset in content.get("assets", [])[:3]
+    ]
+    if assets:
+        add_if_fits("assets", assets)
+        if "assets" in view["content"]:
+            add_if_fits("retained_asset_count", len(content.get("assets", [])))
+    return encoded()
+
+
 def model_fact_payload(fact: dict, byte_limit: int = 28000) -> str:
     """Bound the model view, preserving the full fact and its calculated summaries."""
     complete = json.dumps(fact, default=str)
-    if len(complete.encode()) <= byte_limit:
-        return complete
+    if fact.get("label") == "Investigation dossier" and byte_limit >= 2000:
+        return dossier_model_payload(fact, byte_limit)
+    encoded_view = json.dumps(fact, default=str)
+    if len(encoded_view.encode()) <= byte_limit:
+        return encoded_view
     references = {
         "id",
         "asset_id",
@@ -857,7 +941,15 @@ class ResearchTools:
             async def invoke(_context, arguments: str, name=name, schema=schema, function=function):
                 self.calls += 1
                 if self.calls > 12:
-                    raise ValueError("The bounded tool-call allowance is exhausted.")
+                    return json.dumps(
+                        {
+                            "status": "not_executed",
+                            "reason": (
+                                "The bounded tool-call allowance is exhausted. "
+                                "Use the facts already collected."
+                            ),
+                        }
+                    )
                 if self.on_action:
                     self.on_action(name)
                 inputs = schema.model_validate_json(arguments)

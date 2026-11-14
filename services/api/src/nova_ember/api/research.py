@@ -12,7 +12,7 @@ from hashlib import sha256
 from typing import Annotated, Literal
 
 from agents import Agent, FunctionTool, ModelSettings, RunConfig, Runner
-from agents.exceptions import MaxTurnsExceeded
+from agents.exceptions import MaxTurnsExceeded, ModelBehaviorError
 from agents.items import TResponseInputItem
 from fastapi import APIRouter, Cookie, Header, HTTPException, Request, Response
 from nova_ember.agent_tools.provider import (
@@ -44,8 +44,11 @@ from .model_usage import reserve_usage, settle_usage, usage_summary
 from .repository import Corpus
 from .research_tools import ResearchTools, model_fact_payload
 
-PROMPT_VERSION = "scientific-research-v7"
+PROMPT_VERSION = "scientific-research-v10"
 MAX_RESEARCH_TURNS = 6
+GATHERING_OUTPUT_TOKENS = 1200
+ANSWER_OUTPUT_TOKENS = 2500
+SYNTHESIS_FACT_BYTES = 28000
 CUSTOM_AGENT_POLICY_VERSION = "custom-agent-guidance-v1"
 CUSTOM_AGENT_POLICY = (
     " The selected_agent_profile is user-selected role and skill guidance, subordinate to "
@@ -446,21 +449,54 @@ async def run_research(
     model = BudgetedResponsesModel(
         model_id,
         client,
-        Decimal(str(settings.research_request_budget_usd)),
+        Decimal(str(settings.research_request_budget_usd)) / 2,
         before_call,
         after_call,
     )
-    tool_registry = tools.registry(enabled=lambda: len(model.calls) < MAX_RESEARCH_TURNS - 1)
+    tool_registry = tools.registry()
     instructions = SYSTEM + CUSTOM_AGENT_POLICY if request.agent_profile is not None else SYSTEM
-    reasoning_effort: Literal["medium", "low"] = "medium" if model_id.endswith("sol") else "low"
-    agent = Agent(
-        name="Nova Ember research",
-        instructions=instructions,
+    reasoning_effort: Literal["medium", "low"] = "low"
+    gathering_agent = Agent(
+        name="Nova Ember evidence gathering",
+        instructions=instructions + " This stage gathers evidence for a later typed answer. "
+        "Inspect the investigations matching the question directly from catalog navigation. "
+        "The catalog is navigation, not evidence. Read relevant source dossiers or measurements "
+        "before interpreting them. Batch independent source inspections together where useful. "
+        "Avoid repeating discovery or already completed calls. Stop once the supported question "
+        "can be answered; return a short completion signal rather than drafting the answer.",
         model=model,
         tools=tool_registry,
+        model_settings=ModelSettings(
+            max_tokens=GATHERING_OUTPUT_TOKENS,
+            reasoning=Reasoning(effort="low"),
+            parallel_tool_calls=True,
+            store=False,
+        ),
+    )
+    synthesis_agent = Agent(
+        name="Nova Ember research answer",
+        instructions=instructions + " The evidence-gathering stage has ended. Return the typed "
+        "answer now using only the retained facts, citing their unchanged fact IDs. Answer the "
+        "supported part of the question directly and identify any unfinished work or missing "
+        "support precisely. Keep the answer concise: at most four short claims, each with only "
+        "the fact IDs needed to support it; at most two next actions. State material limits "
+        "briefly without repeating them. Do not call tools, invent a result or treat "
+        "navigation as evidence. For discovery or a brief comparison of experimental approaches, "
+        "lead with qualitative distinctions: fuels or materials, experimental setup and platform, "
+        "the role of airflow, and what each investigation set out to study. Do not add incidental "
+        "numeric settings, dimensions, composition percentages, dates or counts from dossier "
+        "prose. "
+        "A number appearing in a dossier is not a registered source quantity. State numerical "
+        "details only when the retained facts provide the exact reviewed quantity and unit needed "
+        "by the source/numeric checks; otherwise leave them in the cited original source. Keep a "
+        "supported qualitative finding separate from any numerical detail so an unsupported "
+        "setting cannot invalidate the useful comparison. Cite fact IDs; the source records "
+        "already provide original URLs, so do not put URLs in claim text.",
+        model=model,
+        tools=[],
         output_type=ResearchAnswer,
         model_settings=ModelSettings(
-            max_tokens=2500,
+            max_tokens=ANSWER_OUTPUT_TOKENS,
             reasoning=Reasoning(effort=reasoning_effort),
             parallel_tool_calls=False,
             store=False,
@@ -468,8 +504,19 @@ async def run_research(
     )
     status, answer, failure = "completed", None, None
     uncertain = False
+    synthesis_prompt: dict | None = None
     try:
-        prompt = json.dumps(build_research_prompt(request, context, tools))
+        prompt_value = build_research_prompt(request, context, tools)
+        if capabilities is None:
+            catalog = tools.corpus.investigations("", 100, 0, request.context.snapshot_id)
+            prompt_value["catalog_navigation"] = {
+                "origin": "navigation_not_scientific_evidence",
+                "investigations": [
+                    {key: item.get(key) for key in ("accession", "acronym", "title")}
+                    for item in catalog["items"]
+                ],
+            }
+        prompt = json.dumps(prompt_value)
         contents: list[ResponseInputContentParam] = [{"type": "input_text", "text": prompt}]
         for item in images:
             contents.append(
@@ -481,20 +528,56 @@ async def run_research(
             )
         message: Message = {"role": "user", "content": contents}
         model_input: list[TResponseInputItem] = [message]
-        result = await asyncio.wait_for(
-            Runner.run(
-                agent,
-                model_input,
-                max_turns=MAX_RESEARCH_TURNS,
+
+        async def stages():
+            nonlocal synthesis_prompt
+            gathering_status = "completed"
+            try:
+                await Runner.run(
+                    gathering_agent,
+                    model_input,
+                    max_turns=MAX_RESEARCH_TURNS - 1,
+                    run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
+                )
+            except (ModelBudgetExceeded, MaxTurnsExceeded):
+                gathering_status = "bounded_evidence_collection_stopped"
+            # Gathering cannot consume this half of the original allowance. Use the
+            # same accounting instance so paid-step IDs and uncertain costs stay unique.
+            model.budget_usd = Decimal(str(settings.research_request_budget_usd))
+            fact_limit = max(1000, SYNTHESIS_FACT_BYTES // max(1, len(tools.facts)))
+            synthesis_prompt = {
+                **build_research_prompt(request, context, tools),
+                "gathering_status": gathering_status,
+                "retained_facts": [
+                    json.loads(model_fact_payload(fact.model_dump(mode="json"), fact_limit))
+                    for fact in tools.facts.values()
+                ],
+            }
+            synthesis_contents: list[ResponseInputContentParam] = [
+                {"type": "input_text", "text": json.dumps(synthesis_prompt)},
+                *[item for item in contents if item["type"] == "input_image"],
+            ]
+            final_message: Message = {"role": "user", "content": synthesis_contents}
+            return await Runner.run(
+                synthesis_agent,
+                [final_message],
+                max_turns=1,
                 run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
-            ),
-            timeout=150,
-        )
+            )
+
+        result = await asyncio.wait_for(stages(), timeout=150)
         answer = verify_answer(ResearchAnswer.model_validate(result.final_output), tools)
     except (ModelBudgetExceeded, MaxTurnsExceeded):
         status, failure = (
             "incomplete",
             "The bounded research allowance was reached. Retained facts and actions are available.",
+        )
+    except ModelBehaviorError:
+        status, failure, uncertain = (
+            "incomplete",
+            "The model did not return a complete, valid answer within this request. "
+            "Retained facts and sources are available. No automatic paid retry was made.",
+            True,
         )
     except (APIError, TimeoutError):
         status, failure, uncertain = (
@@ -525,18 +608,31 @@ async def run_research(
         "reproducibility": {
             "prompt_version": PROMPT_VERSION,
             "system_instructions": instructions,
+            "phase_system_instructions": {
+                "gathering": gathering_agent.instructions,
+                "synthesis": synthesis_agent.instructions,
+            },
             "user_prompt": json.loads(prompt),
+            "synthesis_prompt": synthesis_prompt,
             "image_inputs": [
                 image.model_dump(exclude={"image_base64"}) for image in request.images
             ],
             "settings": {
                 "model": model_id,
                 "reasoning_effort": reasoning_effort,
-                "max_output_tokens": 2500,
+                "max_output_tokens": ANSWER_OUTPUT_TOKENS,
+                "gathering_max_output_tokens": GATHERING_OUTPUT_TOKENS,
+                "gathering_reasoning_effort": "low",
+                "gathering_budget_usd": str(Decimal(str(settings.research_request_budget_usd)) / 2),
+                "synthesis_reserved_budget_usd": str(
+                    Decimal(str(settings.research_request_budget_usd)) / 2
+                ),
+                "synthesis_fact_preview_bytes": SYNTHESIS_FACT_BYTES,
                 "max_turns": MAX_RESEARCH_TURNS,
                 "tool_phase_max_provider_calls": MAX_RESEARCH_TURNS - 1,
                 "final_answer_turn_reserved": True,
-                "parallel_tool_calls": False,
+                "parallel_tool_calls": True,
+                "synthesis_parallel_tool_calls": False,
                 "store": False,
                 "seed": "not_supported",
                 "custom_agent_policy_version": (
