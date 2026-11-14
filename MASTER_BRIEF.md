@@ -1,10 +1,10 @@
-# Flame in Freefall Master Brief
+# Nova Ember Master Brief
 
 Baseline and research verification date: 14 November 2026.
 
-**Build Freefall: an evidence-first scientific research environment for understanding fire in reduced gravity.** A researcher should move from a question about materials, atmosphere, smoke detection, suppression, or an experimental mechanism to inspectable NASA evidence, meaningful comparisons, reproducible calculations, appropriately validated models, and a reviewable research case. The product is the complete research workflow, with useful intelligence throughout it and direct scientific controls at every step.
+**Build Nova Ember: an evidence-first scientific research environment for understanding fire in reduced gravity.** A researcher should move from a question about materials, atmosphere, smoke detection, suppression, or an experimental mechanism to inspectable NASA evidence, meaningful comparisons, reproducible calculations, appropriately validated models, and a reviewable research case. The product is the complete research workflow, with useful intelligence throughout it and direct scientific controls at every step.
 
-The full project name is **Flame in Freefall**. **Freefall** is the compact application identity. The selected experience is **Ignition Glass**: a calm, light-first scientific instrument with a restrained flame identity, an equally considered dark theme, precise data presentation, and expressive interaction that clarifies the research.
+The project and application name is **Nova Ember**, developed by team **StrawHat Pirates** for the NASA Space Apps Challenge **Flame in Freefall**. The name connects space and fire: a nova evokes astronomy, an ember evokes combustion, and “Nova” carries a wordplay nod to November. The selected experience is **Ignition Glass**: a calm, light-first scientific instrument with a restrained flame identity, an equally considered dark theme, precise data presentation, and expressive interaction that clarifies the research.
 
 The distinctive product idea has three connected signatures:
 
@@ -32,7 +32,7 @@ The source wording, examples, tables, equations, scientific distinctions, invest
 | [Challenge overview](challenge.md) and [official challenge](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/) | Challenge identity, stated purpose, and official source |
 | [Project engineering instructions](AGENTS.md) | Coding skills, working standards, verification, and Git delivery rules |
 
-The two supplied Pages are [Flame in Freefall Product Science Engineering and UI UX Specification](https://chatgpt.com/space/page_aec4307255548191b89cceb60f6d0007) and [Flame in Freefall Scientific and Engineering Plan](https://chatgpt.com/space/page_0525d144642081918b584ff977558690).
+The two supplied Pages are [Flame in Freefall Product Science Engineering and UI UX Specification](https://chatgpt.com/space/page_aec4307255548191b89cceb60f6d0007) and [Flame in Freefall Scientific and Engineering Plan](https://chatgpt.com/space/page_0525d144642081918b584ff977558690). Their original titles are retained as source references; Nova Ember is the current project and application identity.
 
 ## Complete product commitment
 
@@ -83,6 +83,7 @@ The secure OpenAI setup tools available in this environment support organization
 
 | Decision | Active contract |
 |---|---|
+| Product identity | Nova Ember is the project name and application wordmark, selected on 14 November 2026. StrawHat Pirates remains the team name; Flame in Freefall remains the official challenge title. Retain original source titles and URLs. |
 | Complete target | Preserve every feature and the detailed A/B contracts; order work by dependencies and evidence, without substituting a smaller MVP |
 | Hosting | Google Cloud replaces the earlier first-party Vercel/AWS deployment choices; provider-independent responsibilities remain |
 | Data status | The 24-record PSI inventory, 15 sampled file hashes, and three manifest hashes were independently reproduced on 14 November 2026; full scientific interpretation remains source-specific work |
@@ -1600,7 +1601,7 @@ A restrained flame mark connects these experiences visually. It is a brand illus
 
 ### A40.1 Product naming and voice
 
-Use **Flame in Freefall** as the full project name. Use **Freefall** as its compact in-application wordmark where space is limited, with the full name in the public introduction and About view. This is a selected working identity; trademark and domain clearance are not established by this specification.
+Use **Nova Ember** as both the project name and the in-application wordmark, preserving its spelling and space. Apply it consistently in the public introduction, About view, loading shell, sign-in screen, reports, sharing previews, and presentation mode. Where space permits only the mark, retain Nova Ember as its accessible name. Flame in Freefall identifies the official NASA challenge; StrawHat Pirates identifies the team. Trademark and domain clearance are not established by this specification.
 
 The descriptive line is **Combustion research, made clear.** A supporting public sentence is: **Explore experiments, compare conditions, and build evidence-backed fire safety insights.** Avoid claims such as “Predict any spacecraft fire,” “NASA-approved intelligence,” or “The world’s safest AI.”
 
@@ -2052,7 +2053,7 @@ Fork a session to explore an alternative assumption without overwriting the orig
 
 ### A51.1 Launcher decision
 
-Use a small blue-core mark within a labeled **Ask Freefall** control in the global shell. On spacious desktop screens, an optional compact orb can occupy a reserved utility area at the lower edge. It is not a wandering floating object over charts.
+Use a small blue-core mark within a labeled **Ask Nova Ember** control in the global shell. On spacious desktop screens, an optional compact orb can occupy a reserved utility area at the lower edge. It is not a wandering floating object over charts.
 
 The visible orb is approximately 28 px within a 48 px interaction target. Its label appears persistently when space permits and is available on focus otherwise. The assistant remains accessible from navigation, the command palette, and contextual actions even when the orb is hidden.
 

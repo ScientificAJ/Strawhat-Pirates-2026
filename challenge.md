@@ -2,6 +2,8 @@
 
 [https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/)
 
+**Project:** Nova Ember, by team StrawHat Pirates.
+
 ## Event
 
 2026 NASA Space Apps Challenge

@@ -1,4 +1,4 @@
-# Coding practices for Strawhat-Pirates-2026
+# Coding practices for Nova Ember
 
 ## Scope and intent
 
@@ -197,7 +197,7 @@ Optimize for readable, modular, correct, efficient, secure, and maintainable cod
 - Preserve existing backlog content and reconcile related entries when status changes. Mark a task complete only with evidence for its actual scope; old plans, dates, or partial checks do not authorize deferred work or establish completion.
 - Keep documentation discoverable using the project's existing structure. Do not import another repository's service names, stack-specific commands, release procedures, or documentation machinery without a demonstrated need.
 
-## Additional emphasis for Flame in Freefall
+## Additional scientific requirements for Nova Ember
 
 - Isolate and test unit conversions, normalization, comparisons, rankings, and scientific calculations using small known-answer cases.
 - Preserve source identifiers, experimental conditions, units, transformation steps, and relevant configuration alongside derived data so results can be traced and reproduced.
