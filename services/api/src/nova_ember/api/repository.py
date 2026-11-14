@@ -38,11 +38,23 @@ ASSET_FIELDS = (
     "doi",
     "license",
     "kind",
+    "license_scope",
+    "fetched_at",
+    "source_collection",
+    "media",
+    "example_role",
+    "source_run_association",
+    "metadata_sha256",
+    "manifest_sha256",
 )
 
 
 class MissingSource(LookupError):
     """A requested source or snapshot is absent from this frozen corpus."""
+
+
+class AmbiguousSource(ValueError):
+    """Identical bytes have several source identities, requiring an explicit selector."""
 
 
 def public_investigation(record: dict) -> dict:
@@ -124,17 +136,31 @@ class Corpus:
             "assets": [public_asset(asset["record"]) for asset in assets],
         }
 
-    def asset(self, digest: str, snapshot_id: str | None = None) -> dict:
+    def asset(
+        self,
+        digest: str,
+        snapshot_id: str | None = None,
+        *,
+        accession: str | None = None,
+        asset_id: str | None = None,
+    ) -> dict:
         snapshot_id = snapshot_id or self.snapshot()["snapshot_id"]
         with connect(self.settings.database_url) as connection:
-            row = connection.execute(
+            rows = connection.execute(
                 """SELECT record FROM source_assets WHERE snapshot_id = %s AND sha256 = %s
-                   ORDER BY accession, file_name LIMIT 1""",
-                (snapshot_id, digest),
-            ).fetchone()
-        if not row:
+                   AND (%s::text IS NULL OR accession = %s)
+                   AND (%s::text IS NULL OR record->>'id' = %s)
+                   ORDER BY accession, file_name""",
+                (snapshot_id, digest, accession, accession, asset_id, asset_id),
+            ).fetchall()
+        if not rows:
             raise MissingSource("Asset is not in the requested public snapshot.")
-        return public_asset(row["record"])
+        if len(rows) > 1:
+            raise AmbiguousSource(
+                "These bytes belong to multiple source records. "
+                "Select an accession or asset identity."
+            )
+        return public_asset(rows[0]["record"])
 
     def asset_bytes(self, asset: dict) -> bytes:
         digest = asset["sha256"]

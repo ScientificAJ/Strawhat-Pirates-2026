@@ -35,8 +35,10 @@ def flex_endpoints(corpus: Corpus, snapshot_id: str | None = None) -> dict:
     }
 
 
-def compare_investigations(corpus: Corpus, accessions: list[str]) -> dict:
-    snapshot_id = corpus.snapshot()["snapshot_id"]
+def compare_investigations(
+    corpus: Corpus, accessions: list[str], snapshot_id: str | None = None
+) -> dict:
+    snapshot_id = corpus.snapshot(snapshot_id)["snapshot_id"]
     records = [corpus.investigation(accession, snapshot_id) for accession in accessions]
     return {
         "snapshot_id": snapshot_id,

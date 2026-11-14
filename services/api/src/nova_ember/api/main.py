@@ -10,13 +10,29 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from nova_ember.adapters.psi import parse_csv_bytes
 from nova_ember.analysis.oxygen import oxygen_partial_pressure
+from nova_ember.domain.records import RowKind
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from . import jobs
+from .artifacts import remove_artifact_files
 from .config import Settings
 from .database import connect
-from .repository import Corpus, MissingSource
+from .discovery import create_discovery_router
+from .media_analysis import create_media_analysis_router
+from .methods import create_methods_router
+from .model_registry import create_model_router
+from .model_usage import ProviderBudgetExceeded
+from .public_mcp import create_mcp_router
+from .records import CohortInputs, RecordPage, freeze_selection, record_page
+from .repository import AmbiguousSource, Corpus, MissingSource
+from .research import create_research_router
 from .science import compare_investigations, flex_endpoints
+from .semantic import create_semantic_router
+from .source_acquisition import create_source_acquisition_router
+from .source_files import bass_calibration, flex_trace, source_text, source_workbook
+from .uploads import create_upload_router
+from .voice import create_voice_router
+from .workflows import create_workflow_router
 
 FiniteNumber = Annotated[float, Field(strict=True, allow_inf_nan=False)]
 Accession = Annotated[str, Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")]
@@ -47,6 +63,37 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_environment()
     corpus = Corpus(settings)
     application = FastAPI(title="Nova Ember scientific API", version="0.1.0")
+    application.include_router(create_discovery_router(corpus))
+    application.include_router(create_methods_router(settings))
+    application.include_router(create_media_analysis_router(settings))
+    application.include_router(create_model_router(settings))
+    application.include_router(create_research_router(settings))
+    application.include_router(create_semantic_router(settings))
+    application.include_router(create_source_acquisition_router(settings))
+    application.include_router(create_upload_router(settings))
+    application.include_router(create_workflow_router(settings))
+    application.include_router(create_mcp_router(settings))
+    application.include_router(create_voice_router(settings))
+
+    @application.exception_handler(AmbiguousSource)
+    async def ambiguous_source(_request, error):
+        return JSONResponse(status_code=409, content={"detail": str(error)})
+
+    @application.exception_handler(jobs.JobConflict)
+    async def workflow_conflict(_request, error):
+        return JSONResponse(status_code=409, content={"detail": str(error)})
+
+    @application.exception_handler(ProviderBudgetExceeded)
+    async def provider_budget_unavailable(_request, _error):
+        return JSONResponse(
+            status_code=429,
+            content={
+                "detail": (
+                    "The configured model budget is unavailable. Direct "
+                    "scientific tools remain available."
+                )
+            },
+        )
 
     @application.exception_handler(MissingSource)
     @application.exception_handler(jobs.JobNotFound)
@@ -98,12 +145,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 return JSONResponse(status_code=403, content={"detail": "Origin is not permitted."})
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
-        if request.url.path.startswith("/v1/jobs"):
+        if request.method != "GET" or request.url.path.startswith(
+            (
+                "/v1/jobs",
+                "/v1/workflows",
+                "/v1/execution",
+                "/v1/research",
+                "/v1/voice",
+                "/v1/uploads",
+                "/v1/source-acquisitions",
+            )
+        ):
             response.headers["Cache-Control"] = "no-store"
         return response
 
     @application.get("/v1/health")
     def health():
+        from nova_ember.workers.execution import execution_capability
+
         with connect(settings.database_url) as connection:
             version_row = connection.execute("SHOW server_version_num").fetchone()
             assert version_row is not None
@@ -116,9 +175,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "database": "postgresql",
             "postgresql_version": version,
             "pgvector": bool(extensions),
-            "openai": "not_configured",
+            "openai": "configured" if settings.openai_api_key else "not_configured",
             "hosting": "local_only",
-            "interactive_execution": "not_configured",
+            "interactive_execution": execution_capability(),
         }
 
     @application.get("/v1/snapshots/current")
@@ -172,9 +231,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "offset": offset,
         }
 
-    @application.get("/v1/assets/{digest}/raw")
-    def download_asset(digest: Digest, snapshot_id: Digest | None = None):
-        asset = corpus.asset(digest, snapshot_id)
+    @application.get(
+        "/v1/assets/{digest}/raw",
+        response_class=Response,
+        responses={
+            200: {
+                "content": {
+                    "application/octet-stream": {"schema": {"type": "string", "format": "binary"}}
+                }
+            }
+        },
+    )
+    def download_asset(
+        digest: Digest,
+        snapshot_id: Digest | None = None,
+        accession: Accession | None = None,
+        asset_id: Annotated[str | None, Query(max_length=768)] = None,
+    ):
+        asset = corpus.asset(digest, snapshot_id, accession=accession, asset_id=asset_id)
         if asset["license"] != "CC0-1.0":
             raise HTTPException(403, "Redistribution rights for the original bytes are unresolved.")
         return Response(
@@ -182,6 +256,53 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             media_type="application/octet-stream",
             headers={"Content-Disposition": f'attachment; filename="{digest}.bin"'},
         )
+
+    @application.get("/v1/assets/{digest}/records", response_model=RecordPage)
+    def scientific_records(
+        digest: Digest,
+        snapshot_id: Digest | None = None,
+        row_kind: RowKind | None = None,
+        limit: Annotated[int, Query(ge=1, le=250)] = 30,
+        offset: Annotated[int, Query(ge=0, le=100000)] = 0,
+    ):
+        return record_page(corpus, digest, snapshot_id, row_kind, limit, offset)
+
+    @application.post("/v1/cohorts/resolve")
+    def resolve_cohort(inputs: CohortInputs):
+        return freeze_selection(corpus, inputs)
+
+    @application.get("/v1/assets/{digest}/workbook")
+    def workbook(
+        digest: Digest,
+        snapshot_id: Digest | None = None,
+        sheet: Annotated[str | None, Query(max_length=128)] = None,
+        limit: Annotated[int, Query(ge=1, le=250)] = 50,
+        offset: Annotated[int, Query(ge=0, le=200000)] = 0,
+    ):
+        return source_workbook(corpus, digest, snapshot_id, sheet, limit, offset)
+
+    @application.get("/v1/assets/{digest}/text")
+    def text_source(
+        digest: Digest,
+        snapshot_id: Digest | None = None,
+        limit: Annotated[int, Query(ge=1, le=250)] = 100,
+        offset: Annotated[int, Query(ge=0, le=200000)] = 0,
+    ):
+        return source_text(corpus, digest, snapshot_id, limit, offset)
+
+    @application.get("/v1/analyses/bass-calibration")
+    def bass_calibration_evidence(
+        snapshot_id: Digest | None = None,
+        investigator: Annotated[str | None, Query(max_length=128)] = None,
+        test_number: Annotated[str | None, Query(max_length=64)] = None,
+    ):
+        if (investigator is None) != (test_number is None):
+            raise HTTPException(422, "Select both the investigator and test number.")
+        return bass_calibration(corpus, snapshot_id, investigator, test_number)
+
+    @application.get("/v1/analyses/flex-007-source")
+    def flex_trace_evidence(snapshot_id: Digest | None = None):
+        return flex_trace(corpus, snapshot_id)
 
     @application.get("/v1/analyses/flex-endpoints")
     def flex_analysis(snapshot_id: Digest | None = None):
@@ -217,9 +338,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.delete("/v1/jobs/{job_id}", status_code=204)
     def remove(job_id: UUID, x_job_receipt: Annotated[str | None, Header()] = None):
         jobs.delete_job(settings.database_url, job_id, x_job_receipt)
+        remove_artifact_files(settings.object_directory, str(job_id))
         return Response(status_code=204)
 
-    @application.get("/v1/jobs/{job_id}/events")
+    @application.get(
+        "/v1/jobs/{job_id}/events",
+        response_class=StreamingResponse,
+        responses={200: {"content": {"text/event-stream": {"schema": {"type": "string"}}}}},
+    )
     def events(
         job_id: UUID,
         x_job_receipt: Annotated[str | None, Header()] = None,

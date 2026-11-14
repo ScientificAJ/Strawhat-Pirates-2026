@@ -25,6 +25,7 @@ def corpus_settings(tmp_path_factory):
         settings,
         database_url=database_url,
         object_directory=tmp_path_factory.mktemp("corpus-objects"),
+        openai_api_key=None,
     )
     seed(settings)
     return settings
@@ -48,6 +49,14 @@ def test_database_version_extensions_and_checksum_revisions(corpus_client, corpu
         "001_corpus",
         "002_jobs",
         "003_source_search",
+        "005_workflows",
+        "006_models",
+        "007_execution_inputs",
+        "008_model_registry",
+        "009_execution_termination",
+        "010_source_acquisition",
+        "011_private_uploads",
+        "012_semantic_passages",
     ]
 
 

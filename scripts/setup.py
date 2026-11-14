@@ -41,6 +41,24 @@ def main() -> None:
         env=env,
         check=True,
     )
+    preparation = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/python.py"),
+            str(ROOT / "sandboxes/python-analysis/prepare.py"),
+        ],
+        cwd=ROOT,
+        env=env,
+        check=False,
+    )
+    if preparation.returncode:
+        print(
+            "The scientific sandbox could not be prepared on this host. "
+            "Browsing and registered calculations remain available. "
+            "Interactive Python/shell remains unavailable until preparation succeeds. "
+            "Retry with: python3 scripts/python.py sandboxes/python-analysis/prepare.py",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":

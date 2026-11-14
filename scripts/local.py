@@ -51,7 +51,16 @@ def main() -> int:
     signal.signal(signal.SIGTERM, stop)
     try:
         for command in commands:
-            children.append(subprocess.Popen(command, cwd=ROOT, env=env, start_new_session=True))
+            child_env = env
+            if command[0] == "pnpm":
+                child_env = {
+                    name: value
+                    for name, value in env.items()
+                    if not name.startswith("OPENAI_") and name != "NOVA_DATABASE_URL"
+                }
+            children.append(
+                subprocess.Popen(command, cwd=ROOT, env=child_env, start_new_session=True)
+            )
         print("Nova Ember: http://127.0.0.1:3100", flush=True)
         while True:
             for child in children:

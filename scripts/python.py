@@ -15,6 +15,10 @@ SOURCE_PATHS = [
     "packages/domain/src",
     "packages/analysis/src",
     "packages/data-adapters/src",
+    "packages/contracts/src",
+    "packages/evidence/src",
+    "packages/modeling/src",
+    "packages/agent-tools/src",
 ]
 
 
@@ -26,6 +30,7 @@ def tool_environment() -> dict[str, str]:
     env.setdefault("UV_PYTHON_BIN_DIR", str(ROOT / ".data/bin"))
     env.setdefault("UV_LINK_MODE", "copy")
     env.setdefault("NEXT_TELEMETRY_DISABLED", "1")
+    env.setdefault("MPLCONFIGDIR", str(ROOT / ".data/cache/matplotlib"))
     return env
 
 

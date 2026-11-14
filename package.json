@@ -9,8 +9,11 @@
     "setup": "python3 scripts/setup.py",
     "dev": "python3 scripts/python.py scripts/local.py",
     "build": "pnpm --filter @nova-ember/web build",
-    "typecheck": "pnpm --filter @nova-ember/web typecheck",
-    "python:typecheck": "python3 scripts/python.py -m mypy services/api/src services/workers/src packages/analysis/src packages/domain/src packages/data-adapters/src scripts",
+    "typecheck": "pnpm --filter @nova-ember/web typecheck && pnpm typecheck:contracts",
+    "typecheck:contracts": "pnpm --filter @nova-ember/web exec tsc --noEmit --strict --skipLibCheck --target ES2022 --module esnext --moduleResolution bundler --lib es2022,dom ../../packages/contracts/client.ts",
+    "contracts": "node scripts/contracts.mjs",
+    "contracts:check": "node scripts/contracts.mjs --check",
+    "python:typecheck": "python3 scripts/python.py -m mypy services/api/src services/workers/src packages/analysis/src packages/domain/src packages/data-adapters/src packages/contracts/src packages/evidence/src packages/modeling/src packages/agent-tools/src scripts",
     "test:browser": "playwright test",
     "web:format:check": "prettier --check apps/web",
     "test": "python3 scripts/python.py -m pytest",
@@ -19,6 +22,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
+    "openapi-typescript": "^7.13.0",
     "prettier": "3.10.1"
   }
 }
