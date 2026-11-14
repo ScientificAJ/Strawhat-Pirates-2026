@@ -2,7 +2,7 @@
 
 Baseline and research verification date: 14 November 2026.
 
-Local implementation has started. The [first-build report](docs/local-build-2026-11-14.md) records the verified workflow and pending features; this brief remains the complete target specification. Continue from the existing implementation: complete the backend, including OpenAI setup, then complete the frontend, then perform final integrated testing and conditional hosting. These are whole-system deliveries, with no intermediate implementation milestones. The complete backend delivery is implemented and locally checked; see the [current backend report](docs/backend-2026-11-14.md) for evidence and source limits. Complete frontend integration, final whole-application acceptance and conditional hosting remain. The first-build report remains historical.
+Local implementation has started. The [first-build report](docs/local-build-2026-11-14.md) records the verified workflow and pending features; this brief remains the complete target specification. Continue from the existing implementation: complete the backend, including OpenAI setup, then complete the frontend, then perform final integrated testing and conditional hosting. These are whole-system deliveries, with no intermediate implementation milestones. The complete backend delivery is implemented and locally checked; see the [current backend report](docs/backend-2026-11-14.md) for evidence and source limits. The complete frontend is now connected and locally checked; see the [frontend report](docs/frontend-2026-11-14.md) for browser workflows, portability and verification limits. Final whole-application acceptance and conditional hosting remain. The first-build report remains historical.
 
 **Build Nova Ember: an evidence-first scientific research environment for understanding fire in reduced gravity.** A researcher should move from a question about materials, atmosphere, smoke detection, suppression, or an experimental mechanism to inspectable NASA evidence, meaningful comparisons, reproducible calculations, appropriately validated models, and a reviewable research case. The product is the complete research workflow, with useful intelligence throughout it and direct scientific controls at every step.
 
@@ -2419,22 +2419,22 @@ This UI layer extends the existing application architecture. It does not replace
 | Responsibility | Selected approach | Reason |
 |---|---|---|
 | Styling | CSS Modules and semantic CSS custom properties | Precise visual control without coupling scientific components to a large theme framework |
-| Tokens | Versioned JSON token source compiled to CSS variables | One source for colors, type, spacing, radii, motion and themes |
-| Accessible primitives | Radix Primitives | Dialog, popover, tabs, tooltip and focus foundations, with application-level testing |
-| Data tables | TanStack Table with a pinned compatible version | Controlled sorting, column state, selection and pinning |
-| Large-result rendering | TanStack Virtual only where profiling justifies it | Avoid unnecessary virtualization and preserve accessible alternatives |
-| Server state | TanStack Query | Explicit fetching, invalidation and permission-scoped caching |
+| Tokens | Semantic CSS custom properties in the existing stylesheet, shared by CSS Modules | One palette and theme authority without an additional token-generation build |
+| Accessible primitives | Native HTML dialogs, disclosure, form controls and semantic navigation with explicit focus handling | Browser foundations with application-level keyboard, modal, focus and recovery tests |
+| Data tables | Controlled, semantic HTML tables with explicit pagination and source selection | Keep sorting, variable selection, exact values and accessible alternatives in the existing application |
+| Large-result rendering | Bounded server queries and accessible pagination; virtualize only if measured need justifies it | Avoid unnecessary rendering machinery and preserve reliable row scope |
+| Server state | Abortable React request hooks and snapshot-scoped typed requests | Explicit loading, errors, retry and stale-response handling without another state framework |
 | Charts | Existing restricted Vega-Lite renderer | Shared typed scientific chart contract |
-| Motion | Motion for React for stateful transitions; CSS for simple effects | Consistent motion policy and reduced-motion integration |
+| Motion | CSS state transitions and native reduced-motion preferences, with an in-app override | Preserve meaningful motion and accessibility without another runtime dependency |
 | Icons | Lucide with selective imports | Coherent iconography without loading an entire library |
-| Code editing | Lazy-loaded CodeMirror 6 with a plain-text fallback | Purpose-built code surface without putting a large editor in the initial shell |
-| Component verification | Storybook stories and Playwright interaction and screenshot tests | Inspect states independently and verify complete workflows |
+| Code editing | Lazy-loaded code workbench with an accessible plain-text editor | Exact code, keyboard exit, explicit execution and separate output without loading an editor framework into the shell |
+| Component verification | Playwright state fixtures, interaction tests and actual rendered screenshots | Inspect states independently and verify complete workflows with the existing test runner |
 
-Radix documents accessibility-oriented behavior, but custom composition still needs correct labels and testing. TanStack documents table pinning and server-state management; these libraries do not decide scientific query semantics or authorize access. Pin one compatible API generation and do not mix examples from different major versions. [D12, D13, D14]
+The 14 November frontend implementation uses the existing browser and React foundations for these responsibilities. This changes package choices, not the screen, interaction, scientific or accessibility contracts above. Native elements still require correct labels, keyboard behavior, focus management, loading/error handling and actual browser testing. The original Radix and TanStack references remain background guidance. [D12, D13, D14]
 
 ### A62.2 Token structure
 
-Use three token layers: primitive values, semantic roles, and component-specific references. A component consumes `color.text.secondary`, not an arbitrary gray hex value. A scientific status consumes a status token, not a brand token.
+Use primitive palette values, semantic CSS roles and component-specific references in the existing stylesheet and CSS Modules. A component consumes a semantic variable such as `--secondary`, not an arbitrary gray hex value. A scientific status consumes a status token, not a brand token.
 
 Modes include light, dark, high-contrast overrides, reduced transparency, and reduced motion. Density is a separate dimension. Do not couple Comfortable density to a different scientific summary depth.
 

@@ -90,3 +90,30 @@ remain inspectable, with the scientific meaning of a source-backed judgment
 separate from mechanical source/hash/quotation checks. No external reviewer or
 formal human accuracy approval is introduced. Scientific evidence requirements
 and all product features remain in force.
+
+
+## 14 November 2026 — Frontend implementation choices
+
+Continue the existing light-first Ignition Glass interface and React/CSS Modules
+implementation. Use native dialogs, disclosure and form controls with explicit
+focus handling, controlled paginated tables, abortable snapshot-scoped requests,
+CSS motion and Playwright state fixtures. Reuse semantic CSS variables as the
+palette authority. The code workbench provides exact plain-text editing, explicit
+Run, streamed output, environment/source provenance and keyboard exit. These
+choices replace planned framework/build packages for equivalent responsibilities;
+they do not remove the scientific, screen, interaction or accessibility contracts.
+
+Bundle the restricted Vega/Vega-Lite renderer with the application, without a CDN,
+remote editor or chart hosting service. Research stays in IndexedDB: revisions,
+sources, scenarios, comparisons, dashboards, sessions, annotations and case reports
+are portable files. A separate local workspace has its own browser database.
+Switching another tab does not change an already open tab's storage destination.
+
+Imports create independent copies and remap current local references. Case
+companions retain their copied case address; frozen research payloads and their
+hashes retain original content. Copied selections are available in Settings,
+where the researcher can deliberately resume a scope. Temporary remote access
+credentials and active job records are excluded. Saving output bytes locally is
+explicit; a downloaded research report includes private notes/data only when
+selected and retains scientific qualifications. No account, sync provider,
+additional execution service or cloud integration is introduced.
