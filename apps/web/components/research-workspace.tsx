@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
-  ArrowUpRight,
   BookOpen,
   Check,
   ChevronRight,
@@ -16,139 +16,209 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { type Catalog, downloadJson, family, useResource } from "../lib/api";
 import {
-  Catalog,
-  Dossier,
-  downloadJson,
-  family,
-  request,
-  useResource,
-} from "../lib/api";
-import {
-  importWorkspace,
   listCases,
-  ResearchCase,
+  type ResearchCase,
   saveCase,
-  saveTheme,
-  storedTheme,
   workspaceBackup,
 } from "../lib/workspace-storage";
+import {
+  completeWorkspaceBackup,
+  defaultPreferences,
+  readPreferences,
+  writePreferences,
+  previewWorkspaceBackup,
+  restoreCompleteWorkspace,
+  type BackupPreview,
+} from "../lib/workspace-backup";
+import {
+  ResearchContextProvider,
+  useResearchContext,
+} from "../lib/research-context";
+import { saveDocument } from "../lib/workspace-documents";
 import { CaseNotebook, newCase } from "./case-notebook";
-import { Explorer, InvestigationDetail, InvestigationTable } from "./catalog";
+import { InvestigationTable } from "./catalog";
 import { ErrorState, LoadingRows, Notice, Shell } from "./chrome";
-import { FlexAnalysis, Laboratory } from "./laboratory";
+import { FlexAnalysis } from "./laboratory";
+import { WorkspaceSettings } from "./workspace-settings";
+import { JobsBoard } from "./jobs-board";
 
-type Comparison = {
-  snapshot_id: string;
-  investigations: Dossier[];
-  suitability: {
-    side_by_side: string;
-    quantitative_pooling: string;
-    scenario_transfer: string;
-  };
-  conditions: { field: string; status: string; reason: string }[];
-  limitations: string[];
-};
+const loading = () => <LoadingRows label="Opening the research workbench" />;
+const ResearchStudio = dynamic(
+  () => import("./studio").then((module) => module.ResearchStudio),
+  { loading },
+);
+const ContextualAssistant = dynamic(() =>
+  import("./contextual-assistant").then((module) => module.ContextualAssistant),
+);
+const DiscoveryWorkbench = dynamic(
+  () =>
+    import("./discovery-workbench").then((module) => module.DiscoveryWorkbench),
+  { loading },
+);
+const ComparisonWorkbench = dynamic(
+  () =>
+    import("./compare-workbench").then((module) => module.ComparisonWorkbench),
+  { loading },
+);
+const EvidenceWorkbench = dynamic(
+  () =>
+    import("./evidence-workbench").then((module) => module.EvidenceWorkbench),
+  { loading },
+);
+const InvestigationDossier = dynamic(
+  () => import("./run-workbench").then((module) => module.InvestigationDossier),
+  { loading },
+);
+const RunWorkbench = dynamic(
+  () => import("./run-workbench").then((module) => module.RunWorkbench),
+  { loading },
+);
+const LaboratoryWorkbench = dynamic(
+  () =>
+    import("./laboratory-workbench").then(
+      (module) => module.LaboratoryWorkbench,
+    ),
+  { loading },
+);
+const DashboardWorkbench = dynamic(
+  () =>
+    import("./dashboard-workbench").then((module) => module.DashboardWorkbench),
+  { loading },
+);
 
-export function ResearchWorkspace({
-  section,
-  entityId,
-  initialQuery,
-}: {
+type WorkspaceProps = {
   section: string;
   entityId?: string;
+  detailId?: string;
+  intentId?: string;
   initialQuery: string;
+  requestedSnapshot?: string;
+  investigationIds?: string[];
+};
+export function ResearchWorkspace(props: WorkspaceProps) {
+  const current = useResource<{ snapshot_id: string }>("/v1/snapshots/current");
+  return (
+    <ResearchContextProvider
+      snapshotId={props.requestedSnapshot ?? current.data?.snapshot_id ?? null}
+    >
+      <WorkspaceContent
+        {...props}
+        latestSnapshot={current.data?.snapshot_id}
+        snapshotError={current.error}
+        retrySnapshot={current.reload}
+      />
+    </ResearchContextProvider>
+  );
+}
+function WorkspaceContent({
+  section,
+  entityId,
+  detailId,
+  intentId,
+  initialQuery,
+  requestedSnapshot,
+  investigationIds,
+  latestSnapshot,
+  snapshotError,
+  retrySnapshot,
+}: WorkspaceProps & {
+  latestSnapshot?: string;
+  snapshotError: string | null;
+  retrySnapshot: () => void;
 }) {
   const router = useRouter();
-  const catalog = useResource<Catalog>("/v1/investigations?limit=100");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [selected, setSelected] = useState<string[]>([]);
+  const { context, updateContext, storageError } = useResearchContext();
+  const snapshot =
+    requestedSnapshot ?? context?.snapshot_id ?? latestSnapshot ?? null;
+  const catalog = useResource<Catalog>(
+    snapshot ? `/v1/investigations?limit=100&snapshot_id=${snapshot}` : null,
+  );
+  const [preferences, setPreferences] = useState(defaultPreferences);
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const changed = () => setSystemTheme(media.matches ? "dark" : "light");
+    changed();
+    media.addEventListener("change", changed);
+    return () => media.removeEventListener("change", changed);
+  }, []);
+  const resolvedTheme =
+    preferences.theme === "system" ? systemTheme : preferences.theme;
   const [cases, setCases] = useState<ResearchCase[]>([]);
   const [message, setMessage] = useState<{
     text: string;
     error: boolean;
   } | null>(null);
+  const [preview, setPreview] = useState<BackupPreview | null>(null);
+  const [restorePreferences, setRestorePreferences] = useState(false);
+  const [assistantSession, setAssistantSession] = useState<string>();
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const importInput = useRef<HTMLInputElement>(null);
-
-  async function refreshCases() {
-    setCases(await listCases());
-  }
+  useEffect(() => setAssistantOpen(false), [section, entityId, detailId]);
+  const selected = context?.investigations ?? [];
+  const refreshCases = useCallback(async () => setCases(await listCases()), []);
   useEffect(() => {
-    listCases()
-      .then(setCases)
-      .catch((reason: unknown) =>
-        setMessage({
-          text:
-            reason instanceof Error
-              ? reason.message
-              : "Browser storage could not be opened.",
-          error: true,
-        }),
-      );
-    storedTheme()
-      .then((value) => {
-        if (value) setTheme(value);
-      })
-      .catch((reason: unknown) =>
-        setMessage({
-          text:
-            reason instanceof Error
-              ? reason.message
-              : "The saved appearance could not be read. Light theme is active for this visit.",
-          error: true,
-        }),
-      );
-  }, []);
+    if (
+      requestedSnapshot &&
+      context &&
+      context.snapshot_id !== requestedSnapshot
+    )
+      updateContext({
+        snapshot_id: requestedSnapshot,
+        investigations: [],
+        selected_sources: [],
+        selected_evidence: [],
+        selected_artifacts: [],
+        selected_private_inputs: [],
+        scenario: {},
+        focused_view: null,
+        active_artifact_id: null,
+        case_revision: null,
+      });
+  }, [requestedSnapshot, context, updateContext]);
   useEffect(() => {
-    const changed = () => {
-      listCases()
-        .then(setCases)
-        .catch((reason: unknown) =>
-          setMessage({
-            text:
-              reason instanceof Error
-                ? reason.message
-                : "Saved cases could not be refreshed.",
-            error: true,
-          }),
-        );
+    const refresh = () => {
+      void refreshCases().catch((reason) =>
+        setMessage({ text: String(reason), error: true }),
+      );
     };
-    window.addEventListener("nova-ember-workspace-changed", changed);
-    return () =>
-      window.removeEventListener("nova-ember-workspace-changed", changed);
-  }, []);
-
+    const prefs = () => {
+      void readPreferences()
+        .then(setPreferences)
+        .catch((reason) => setMessage({ text: String(reason), error: true }));
+    };
+    const warning = (event: Event) =>
+      setMessage({ text: String((event as CustomEvent).detail), error: true });
+    refresh();
+    prefs();
+    window.addEventListener("nova-ember-workspace-changed", refresh);
+    window.addEventListener("nova-ember-preferences-changed", prefs);
+    window.addEventListener("nova-ember-storage-warning", warning);
+    return () => {
+      window.removeEventListener("nova-ember-workspace-changed", refresh);
+      window.removeEventListener("nova-ember-preferences-changed", prefs);
+      window.removeEventListener("nova-ember-storage-warning", warning);
+    };
+  }, [refreshCases]);
   function toggleTheme() {
-    const next = theme === "light" ? "dark" : "light";
-    setTheme(next);
-    saveTheme(next).catch((reason: unknown) =>
-      setMessage({
-        text:
-          reason instanceof Error
-            ? reason.message
-            : "The theme could not be saved.",
-        error: true,
-      }),
+    const next = {
+      ...preferences,
+      theme: resolvedTheme === "light" ? ("dark" as const) : ("light" as const),
+    };
+    setPreferences(next);
+    void writePreferences(next).catch((reason) =>
+      setMessage({ text: String(reason), error: true }),
     );
   }
-
-  function toggleSelection(id: string) {
-    setSelected((current) =>
-      current.includes(id)
-        ? current.filter((value) => value !== id)
-        : [...current, id],
-    );
-  }
-
   async function saveInvestigation(id: string) {
-    const investigation = catalog.data?.items.find(
-      (item) => item.accession === id,
-    );
+    const item = catalog.data?.items.find((item) => item.accession === id);
     const draft = newCase(
-      catalog.data?.snapshot_id ?? null,
+      snapshot,
       [id],
-      `${investigation?.acronym || id} — evidence notes`,
+      `${item?.acronym || id} — evidence notes`,
     );
     const time = new Date().toISOString();
     const value: ResearchCase = {
@@ -162,7 +232,7 @@ export function ResearchWorkspace({
           question: "",
           notes: "",
           investigation_ids: [id],
-          snapshot_id: draft.snapshot_id,
+          snapshot_id: snapshot,
         },
       ],
     };
@@ -170,73 +240,72 @@ export function ResearchWorkspace({
       await saveCase(value);
       await refreshCases();
       router.push(`/app/cases/${value.id}`);
-      setMessage({
-        text: "Case saved on this device. Back up your workspace to keep a portable copy.",
-        error: false,
-      });
-    } catch (reason: unknown) {
+    } catch (reason) {
       downloadJson("nova-ember-unsaved-case.json", workspaceBackup([value]));
-      setMessage({
-        text:
-          reason instanceof Error
-            ? reason.message
-            : "Browser storage failed. Your case has been downloaded.",
-        error: true,
-      });
+      setMessage({ text: String(reason), error: true });
     }
   }
-
   async function backup() {
     try {
       downloadJson(
         "nova-ember-workspace.json",
-        workspaceBackup(await listCases()),
+        await completeWorkspaceBackup(),
       );
+      const next = { ...preferences, last_backup_at: new Date().toISOString() };
+      await writePreferences(next);
+      setPreferences(next);
       setMessage({
-        text: "Workspace backup downloaded. It includes your saved cases and revisions.",
+        text: "Workspace backup downloaded with cases, research documents, revisions and preferences. Credentials and live server access are excluded.",
         error: false,
       });
-    } catch (reason: unknown) {
-      setMessage({
-        text:
-          reason instanceof Error
-            ? reason.message
-            : "The workspace could not be read for backup.",
-        error: true,
-      });
+    } catch (reason) {
+      setMessage({ text: String(reason), error: true });
     }
   }
-
   async function restore(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (file)
+      try {
+        setPreview(await previewWorkspaceBackup(file));
+        setRestorePreferences(false);
+      } catch (reason) {
+        setMessage({ text: String(reason), error: true });
+      }
+    event.target.value = "";
+  }
+  async function confirmRestore() {
+    if (!preview) return;
     try {
-      const count = await importWorkspace(file);
+      const count = await restoreCompleteWorkspace(preview, restorePreferences);
+      setPreview(null);
       await refreshCases();
       setMessage({
-        text: `Restored ${count} ${count === 1 ? "case" : "cases"} as separate copies. Your existing cases are unchanged.`,
+        text: `Restored ${count} research items as independent copies. Existing work is preserved. Copied selections can be resumed in Settings; expired remote inputs may need to be selected again.`,
         error: false,
       });
       router.push("/app/cases");
-    } catch (reason: unknown) {
-      setMessage({
-        text:
-          reason instanceof Error
-            ? reason.message
-            : "Choose a valid Nova Ember workspace backup.",
-        error: true,
-      });
+    } catch (reason) {
+      setMessage({ text: String(reason), error: true });
     }
-    event.target.value = "";
   }
-
+  const ready = !!snapshot && context?.snapshot_id === snapshot;
   return (
     <Shell
       section={section}
-      snapshot={catalog.data?.snapshot_id ?? null}
-      theme={theme}
+      snapshot={snapshot}
+      theme={resolvedTheme}
+      preferences={preferences}
+      context={context}
+      assistantOpen={assistantOpen}
+      onAsk={() => {
+        if (section === "agent")
+          document
+            .querySelector<HTMLTextAreaElement>("#studio-research-question")
+            ?.focus();
+        else setAssistantOpen(true);
+      }}
       onTheme={toggleTheme}
-      onBackup={backup}
+      onBackup={() => void backup()}
       onRestore={() => importInput.current?.click()}
     >
       <input
@@ -254,7 +323,7 @@ export function ResearchWorkspace({
           role={message.error ? "alert" : "status"}
         >
           <span>
-            {message.error ? <CircleHelp size={17} /> : <Check size={17} />}
+            {message.error ? <CircleHelp size={17} /> : <Check size={17} />}{" "}
             {message.text}
           </span>
           <button
@@ -266,8 +335,59 @@ export function ResearchWorkspace({
           </button>
         </div>
       )}
-      {section === "overview" ? (
+      {storageError && (
+        <Notice kind="error">
+          {storageError} Keep a backup before leaving this browser.
+        </Notice>
+      )}
+      {preview && (
+        <section
+          className="inline-confirmation"
+          role="region"
+          aria-label="Review workspace restore"
+        >
+          <h2>Review workspace restore</h2>
+          <p>
+            {preview.cases} cases and {preview.documents} research documents ·
+            version {preview.version} · exported {preview.exported_at}
+          </p>
+          <p>
+            Import creates independent copies with frozen source references. It
+            cannot transfer temporary browser receipts or recover expired
+            uploads. Existing drafts stay in place.
+          </p>
+          {preview.version === 2 && (
+            <label className="check-label">
+              <input
+                type="checkbox"
+                checked={restorePreferences}
+                onChange={(event) =>
+                  setRestorePreferences(event.target.checked)
+                }
+              />
+              Apply the backup’s research and appearance preferences
+            </label>
+          )}
+          <div className="inline-actions">
+            <button
+              className="button button-primary"
+              onClick={() => void confirmRestore()}
+            >
+              Import independent copies
+            </button>
+            <button className="button" onClick={() => setPreview(null)}>
+              Cancel restore
+            </button>
+          </div>
+        </section>
+      )}
+      {snapshotError && !ready ? (
+        <ErrorState message={snapshotError} retry={retrySnapshot} />
+      ) : !ready ? (
+        <LoadingRows label="Opening the source snapshot" />
+      ) : section === "overview" ? (
         <Overview
+          snapshotId={snapshot}
           catalog={catalog.data}
           loading={catalog.loading}
           error={catalog.error}
@@ -276,48 +396,76 @@ export function ResearchWorkspace({
           onSave={saveInvestigation}
         />
       ) : section === "investigations" && entityId ? (
-        <InvestigationDetail
+        <InvestigationDossier
           accession={entityId}
-          selected={selected}
-          onSelect={toggleSelection}
+          snapshotId={snapshot}
           onSave={saveInvestigation}
         />
       ) : section === "investigations" ? (
-        <Explorer
-          catalog={catalog.data}
-          loading={catalog.loading}
-          error={catalog.error}
-          retry={catalog.reload}
-          selected={selected}
-          onSelect={toggleSelection}
-          initialQuery={initialQuery}
-        />
+        <DiscoveryWorkbench snapshotId={snapshot} initialQuery={initialQuery} />
+      ) : section === "runs" && entityId ? (
+        <RunWorkbench id={entityId} snapshotId={snapshot} />
+      ) : section === "lab" && entityId === "evidence" ? (
+        <EvidenceWorkbench view={detailId} snapshotId={snapshot} />
       ) : section === "lab" ? (
-        <Laboratory tab={entityId} onSave={saveInvestigation} />
+        <LaboratoryWorkbench
+          view={entityId}
+          entityId={detailId}
+          snapshotId={snapshot}
+        />
       ) : section === "cases" ? (
         <CaseNotebook
           cases={cases}
           entityId={entityId}
-          snapshot={catalog.data?.snapshot_id ?? null}
+          snapshot={snapshot}
           selected={selected}
           onSaved={refreshCases}
         />
       ) : section === "compare" ? (
-        <Compare
-          catalog={catalog.data}
-          selected={selected}
-          onSelect={toggleSelection}
+        <ComparisonWorkbench
+          id={entityId}
+          snapshotId={snapshot}
+          investigationIds={investigationIds ?? selected}
         />
       ) : section === "agent" ? (
-        <Studio />
+        <ResearchStudio
+          sessionId={entityId}
+          snapshotId={snapshot}
+          context={context ?? undefined}
+          intentId={intentId}
+        />
+      ) : section === "dashboards" ? (
+        <DashboardWorkbench id={entityId} snapshotId={snapshot} />
+      ) : section === "jobs" ? (
+        <JobsBoard id={entityId} />
+      ) : section === "settings" ? (
+        <WorkspaceSettings
+          onBackup={() => void backup()}
+          onRestore={() => importInput.current?.click()}
+        />
+      ) : ["coverage", "stewardship", "learning"].includes(section) ? (
+        <EvidenceWorkbench
+          view={section === "coverage" ? "gaps" : section}
+          snapshotId={snapshot}
+        />
       ) : (
         <ResearchGuide />
+      )}
+      {context && section !== "agent" && (
+        <ContextualAssistant
+          context={context}
+          sessionId={assistantSession}
+          onSessionChange={setAssistantSession}
+          open={assistantOpen}
+          onOpenChange={setAssistantOpen}
+        />
       )}
     </Shell>
   );
 }
 
 function Overview({
+  snapshotId,
   catalog,
   loading,
   error,
@@ -325,6 +473,7 @@ function Overview({
   cases,
   onSave,
 }: {
+  snapshotId: string;
   catalog: Catalog | null;
   loading: boolean;
   error: string | null;
@@ -333,6 +482,7 @@ function Overview({
   onSave: (id: string) => void;
 }) {
   const [question, setQuestion] = useState("");
+  const [draftError, setDraftError] = useState<string | null>(null);
   const router = useRouter();
   const groups = [
     "Solid fuels and spread",
@@ -356,7 +506,19 @@ function Overview({
         className="question-composer"
         onSubmit={(event) => {
           event.preventDefault();
-          router.push(`/app/investigations?q=${encodeURIComponent(question)}`);
+          if (!catalog || !question.trim()) return;
+          void saveDocument({
+            kind: "studio_intent",
+            title: question.slice(0, 100),
+            snapshot_id: catalog.snapshot_id,
+            data: {
+              question,
+              snapshot_id: catalog.snapshot_id,
+              investigations: [],
+            },
+          })
+            .then((intent) => router.push(`/app/agent?intent=${intent.id}`))
+            .catch((reason) => setDraftError(String(reason)));
         }}
       >
         <label htmlFor="research-question">
@@ -368,10 +530,10 @@ function Overview({
             id="research-question"
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
-            placeholder="Search for an investigation, material, or combustion question"
+            placeholder="Ask a combustion research question; review context before sending"
           />
           <button className="button button-primary" type="submit">
-            Explore
+            Draft in Studio
             <ArrowRight size={16} />
           </button>
         </div>
@@ -382,6 +544,7 @@ function Overview({
           <Link href="/app/investigations?q=smoke">Smoke measurements</Link>
         </div>
       </form>
+      {draftError && <Notice kind="error">{draftError}</Notice>}
       <div className="corpus-strip" aria-live="polite">
         <span>
           <Layers size={16} />
@@ -400,7 +563,7 @@ function Overview({
       {error && <ErrorState message={error} retry={retry} />}
       <div className="overview-layout">
         <div>
-          <FlexAnalysis compact onSave={onSave} />
+          <FlexAnalysis compact onSave={onSave} snapshotId={snapshotId} />
         </div>
         <aside className="continuation-panel">
           <h2>
@@ -499,6 +662,7 @@ function Overview({
             </Link>
           </div>
           <InvestigationTable
+            snapshotId={snapshotId}
             compact
             items={catalog.items.filter((item) =>
               ["PSI-25", "PSI-69", "PSI-101"].includes(item.accession),
@@ -506,201 +670,6 @@ function Overview({
           />
         </section>
       )}
-    </>
-  );
-}
-
-function Compare({
-  catalog,
-  selected,
-  onSelect,
-}: {
-  catalog: Catalog | null;
-  selected: string[];
-  onSelect: (id: string) => void;
-}) {
-  const [comparison, setComparison] = useState<Comparison | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    setComparison(null);
-    setError(null);
-  }, [selected]);
-  async function compare() {
-    setLoading(true);
-    setError(null);
-    try {
-      setComparison(
-        await request<Comparison>("/v1/comparisons", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ investigation_ids: selected }),
-        }),
-      );
-    } catch (reason: unknown) {
-      setError(
-        reason instanceof Error
-          ? reason.message
-          : "The comparison could not be completed.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <h1>Compare investigations</h1>
-          <p>
-            Make the condition differences visible before comparing outcomes.
-          </p>
-        </div>
-        <button
-          className="button button-primary"
-          disabled={selected.length < 2 || selected.length > 4 || loading}
-          onClick={compare}
-        >
-          {loading ? "Checking evidence…" : "Check comparability"}
-          <ArrowRight size={16} />
-        </button>
-      </div>
-      <Notice>
-        <strong>Choose two to four investigations.</strong>
-        <p>
-          Side-by-side source inspection does not establish that numerical
-          outcomes can be pooled.
-        </p>
-      </Notice>
-      {catalog && (
-        <div className="comparison-picker">
-          {catalog.items.map((item) => (
-            <label
-              key={item.accession}
-              className={`comparison-choice ${selected.includes(item.accession) ? "choice-selected" : ""}`}
-            >
-              <input
-                type="checkbox"
-                disabled={loading}
-                checked={selected.includes(item.accession)}
-                onChange={() => onSelect(item.accession)}
-              />
-              <span>
-                {item.acronym || item.title}
-                <small className="mono">{item.accession}</small>
-              </span>
-            </label>
-          ))}
-        </div>
-      )}
-      {selected.length > 4 && (
-        <Notice kind="caution">
-          Select at most four investigations for a readable condition matrix.
-        </Notice>
-      )}
-      {error && <ErrorState message={error} />}
-      {comparison && (
-        <section className="data-surface comparison-results">
-          <div className="section-heading">
-            <div>
-              <h2>Comparability assessment</h2>
-              <p>
-                Source-level comparison · {comparison.investigations.length}{" "}
-                investigations
-              </p>
-            </div>
-            <span className="status status-caution">
-              Quantitative pooling unsupported
-            </span>
-          </div>
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Question</th>
-                  <th scope="col">Evidence state</th>
-                  <th scope="col">What is needed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparison.conditions.map((condition) => (
-                  <tr key={condition.field}>
-                    <th scope="row" className="capitalize">
-                      {condition.field}
-                    </th>
-                    <td>
-                      {condition.status === "unknown"
-                        ? "Not established"
-                        : condition.status}
-                    </td>
-                    <td>{condition.reason}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <Notice kind="caution">
-            <ul>
-              {comparison.limitations.map((text, index) => (
-                <li key={index}>{text}</li>
-              ))}
-            </ul>
-          </Notice>
-          <div className="button-row comparison-links">
-            {comparison.investigations.map((item) => (
-              <Link
-                className="button button-small"
-                href={`/app/investigations/${item.accession}`}
-                key={item.accession}
-              >
-                {item.acronym || item.accession}
-                <ArrowUpRight size={14} />
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-    </>
-  );
-}
-
-function Studio() {
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <h1>Research Studio</h1>
-          <p>
-            A conversation connected to inspectable evidence and scientific
-            tools.
-          </p>
-        </div>
-      </div>
-      <section className="reading-surface studio-pending">
-        <div className="studio-pending-mark">
-          <BookOpen size={28} />
-        </div>
-        <h2>Begin with the evidence</h2>
-        <p className="reading-text">
-          Live research assistance will be connected after the local scientific
-          workflows have been verified and the project’s model access is
-          configured.
-        </p>
-        <p className="reading-text">
-          You can already discover investigations, inspect the source table,
-          reproduce the FLEX endpoint analysis, and keep your own research
-          notes.
-        </p>
-        <div className="button-row">
-          <Link className="button button-primary" href="/app/investigations">
-            Explore investigations
-            <ArrowRight size={16} />
-          </Link>
-          <Link className="button" href="/app/lab">
-            Open the laboratory
-          </Link>
-        </div>
-      </section>
     </>
   );
 }
@@ -742,11 +711,13 @@ function ResearchGuide() {
         </p>
         <h2>Understand the current scope</h2>
         <p>
-          This local build starts the approved implementation plan. Source
-          inspection, table-label analysis, scenario arithmetic, and personal
-          cases work without live model credentials. Broader calibrated
-          measurements, prediction, live assistance, and public hosting need
-          their respective implementation and verification.
+          The laboratory uses registered scientific methods and preserves their
+          source and calibration requirements. Studio and voice use the
+          configured OpenAI service only after an explicit request. Saved work
+          remains in this browser; use Settings for portable backups and
+          temporary-data controls. Prediction remains unavailable wherever
+          independent validation or the required conditions are missing. Public
+          hosting depends on the selected host and offer eligibility.
         </p>
         <a
           href="https://psi.nasa.gov/physci/repo"

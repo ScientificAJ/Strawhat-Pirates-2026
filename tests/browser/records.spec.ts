@@ -2,9 +2,12 @@ import { expect, Page, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
 async function scientificRecords(page: Page, accession: string) {
-  await page.goto(`/app/investigations/${accession}`);
+  await page.goto(`/app/investigations/${accession}?section=sources`);
   await page
-    .getByRole("button", { name: "Inspect table", exact: true })
+    .locator(".asset-row")
+    .filter({ hasText: ".csv" })
+    .first()
+    .getByRole("button", { name: "Inspect source", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Scientific records", exact: true })
@@ -164,7 +167,10 @@ test("distinguish raw zero, missingness, and withheld meaning on a narrow dark s
   );
   await page.reload();
   await page
-    .getByRole("button", { name: "Inspect table", exact: true })
+    .locator(".asset-row")
+    .filter({ hasText: ".csv" })
+    .first()
+    .getByRole("button", { name: "Inspect source", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Scientific records", exact: true })
@@ -229,7 +235,7 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
   const backupPath = testInfo.outputPath("source-anchors.json");
   await (await downloadEvent).saveAs(backupPath);
   const backup = JSON.parse(await readFile(backupPath, "utf8"));
-  expect(backup.version).toBe(1);
+  expect(backup.version).toBe(2);
   expect(backup.cases[0].source_anchors).toHaveLength(1);
   const anchor = backup.cases[0].source_anchors[0];
   expect(anchor.source_sha256).toBe(
@@ -250,6 +256,9 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
     await restored
       .getByLabel("Restore a workspace backup")
       .setInputFiles(backupPath);
+    await restored
+      .getByRole("button", { name: "Import independent copies", exact: true })
+      .click();
     await restored.getByRole("link", { name: new RegExp(caseTitle) }).click();
     await expect(
       restored.getByRole("heading", { name: "Pinned source rows" }).first(),
@@ -265,6 +274,8 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
       restored.locator(".source-identity > .case-source-evidence"),
     ).toContainText("0.27 mm");
     const legacy = JSON.parse(JSON.stringify(backup));
+    legacy.version = 1;
+    delete legacy.documents;
     for (const item of legacy.cases) {
       item.title = "Legacy source notebook";
       delete item.source_anchors;
@@ -275,6 +286,9 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
       mimeType: "application/json",
       buffer: Buffer.from(JSON.stringify(legacy)),
     });
+    await restored
+      .getByRole("button", { name: "Import independent copies", exact: true })
+      .click();
     await expect(
       restored.getByRole("link", { name: /Legacy source notebook/ }),
     ).toBeVisible();
@@ -287,7 +301,7 @@ test("pin an exact source row and preserve new and legacy workspace backups", as
 test("inspect retained workbook formulas separately from cached values and read exact text lines", async ({
   page,
 }) => {
-  await page.goto("/app/investigations/PSI-25");
+  await page.goto("/app/investigations/PSI-25?section=sources");
   await page
     .locator(".asset-row")
     .filter({ hasText: "PSI-25_Reference Data_Fan calibration data.xlsx" })
@@ -325,7 +339,7 @@ test("inspect retained workbook formulas separately from cached values and read 
   await expect(formulaCell).toContainText("Raw XML value");
   await expect(formulaCell).toContainText("Fan Calibration data");
 
-  await page.goto("/app/investigations/PSI-69");
+  await page.goto("/app/investigations/PSI-69?section=sources");
   await page
     .locator(".asset-row")
     .filter({ hasText: "PSI-69_Raw Data_FLEX-007_TestSheet.txt" })

@@ -1,116 +1,94 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
-test("inspect a real source, reproduce its labels, and recover a failed catalog request", async ({
+test("reproduce source-label counts and recover a failed exact discovery request", async ({
   page,
 }) => {
+  await page.goto("/app");
+  await expect(
+    page.getByRole("img", {
+      name: "Completion: 27 records; Disruption: 61 records; Extinction: 186 records",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("274 table records", { exact: true }),
+  ).toBeVisible();
+  await page.route("**/v1/discovery/investigations", (route) => route.abort());
   await page.goto("/app/investigations");
   await expect(
-    page.getByText("24 investigations", { exact: true }),
+    page.getByRole("alert").filter({ hasText: "Evidence could not be loaded" }),
   ).toBeVisible();
-  await page
-    .getByRole("textbox", { name: "Search investigations" })
-    .fill("FLEX");
+  await page.unroute("**/v1/discovery/investigations");
+  await page.getByRole("button", { name: "Try again", exact: true }).click();
+  await page.getByLabel("Exact metadata terms").fill("FLEX");
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await expect(
+    page.getByRole("link", { name: "FLEX", exact: true }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "FLEX", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "FLEX", exact: true }),
   ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Inspect table", exact: true })
-    .click();
-  await expect(
-    page.getByRole("columnheader", { name: "Burning rate; mm", exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("cell", { name: "20CAL08", exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("cp1252 encoding", { exact: true }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Next", exact: true }).click();
-  await expect(
-    page.getByText("Records 31–60 of 274", { exact: true }),
-  ).toBeVisible();
-
-  await page.goto("/app/lab");
-  const chart = page.getByRole("img", { name: /Completion: 27 records/ });
-  await expect(chart).toHaveAttribute(
-    "aria-label",
-    "Completion: 27 records; Disruption: 61 records; Extinction: 186 records",
-  );
-  await expect(
-    page.getByText("274 table records", { exact: true }),
-  ).toBeVisible();
-  await page
-    .getByText("Method, provenance, and limitations", { exact: true })
-    .click();
-  await expect(
-    page.getByText(/no conversion to mm²\/s is authorized/i),
-  ).toBeVisible();
-
-  await page.route("**/v1/investigations?limit=100", (route) => route.abort());
-  await page.goto("/app/investigations");
-  await expect(
-    page.getByRole("alert").filter({ hasText: "Evidence could not be loaded" }),
-  ).toContainText("Evidence could not be loaded");
-  await page.unroute("**/v1/investigations?limit=100");
-  await page.getByRole("button", { name: "Try again", exact: true }).click();
-  await expect(
-    page.getByText("24 investigations", { exact: true }),
-  ).toBeVisible();
 });
 
-test("calculate oxygen partial pressure with explicit assumptions and refuse unsupported pooling", async ({
+test("calculate stated oxygen and pressure while keeping unsupported pooling unresolved", async ({
   page,
 }) => {
   await page.goto("/app/lab/scenarios");
+  const oxygen = page.getByRole("group", {
+    name: "Oxygen mole fraction",
+    exact: true,
+  });
+  const pressure = page.getByRole("group", {
+    name: "Total absolute pressure",
+    exact: true,
+  });
+  await oxygen
+    .getByRole("textbox", { name: "Oxygen mole fraction", exact: true })
+    .fill("21");
+  await pressure
+    .getByRole("textbox", { name: "Total absolute pressure", exact: true })
+    .fill("14.7");
+  await pressure.getByLabel("Unit", { exact: true }).fill("psia");
   await page
-    .getByRole("button", { name: "Calculate partial pressure" })
+    .getByRole("button", { name: "Calculate partial pressure", exact: true })
     .click();
   await expect(page.locator(".calculated-value")).toHaveText("3.087psia");
+  await oxygen
+    .getByRole("textbox", { name: "Oxygen mole fraction", exact: true })
+    .fill("30");
+  await pressure
+    .getByRole("textbox", { name: "Total absolute pressure", exact: true })
+    .fill("10.2");
   await expect(
-    page.getByText(
-      "Similar partial pressures do not establish equivalent flammability.",
-      { exact: true },
-    ),
+    page.getByText("Atmosphere changed; prior calculation is stale.", {
+      exact: true,
+    }),
   ).toBeVisible();
-  await page.getByLabel("Oxygen mole fraction").fill("30");
-  await page.getByLabel("Total absolute pressure").fill("10.2");
-  await expect(
-    page.getByText("Inputs changed — recalculate", { exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Export calculation" }),
-  ).toBeDisabled();
   await page
-    .getByRole("button", { name: "Calculate partial pressure" })
+    .getByRole("button", { name: "Calculate partial pressure", exact: true })
     .click();
   await expect(page.locator(".calculated-value")).toHaveText("3.06psia");
   await expect(
-    page.getByText("30% oxygen × 10.2 psia absolute", { exact: true }),
+    page.getByText(/Similar partial pressure does not establish equivalent/),
   ).toBeVisible();
-
-  await page.goto("/app/compare");
-  await page
-    .locator(".comparison-choice")
-    .filter({ hasText: "PSI-25" })
-    .getByRole("checkbox")
-    .check();
-  await page
-    .locator(".comparison-choice")
-    .filter({ hasText: "PSI-69" })
-    .getByRole("checkbox")
-    .check();
-  await page.getByRole("button", { name: "Check comparability" }).click();
+  await page.goto("/app/compare?ids=PSI-25,PSI-69");
   await expect(
-    page.getByRole("heading", { name: "Comparability assessment" }),
+    page.getByRole("heading", { name: "Comparability: unknown", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("Quantitative pooling unsupported", { exact: true }),
+    page.getByText(/^quantitative pooling:\s*not established$/),
+  ).toContainText("not established");
+  await expect(
+    page.getByRole("heading", {
+      name: "Condition difference matrix",
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
-    page.getByRole("cell", { name: "Not established", exact: true }),
-  ).toHaveCount(5);
+    page.getByRole("cell", { name: "Not reported", exact: true }),
+  ).toHaveCount(66);
 });
 
 test("save a revision and restore a portable case in an independent browser, with mobile navigation", async ({
@@ -171,6 +149,9 @@ test("save a revision and restore a portable case in an independent browser, wit
     await restored
       .getByLabel("Restore a workspace backup")
       .setInputFiles(backupPath);
+    await restored
+      .getByRole("button", { name: "Import independent copies", exact: true })
+      .click();
     await restored
       .getByRole("link", { name: /FLEX endpoint interpretation/ })
       .click();
