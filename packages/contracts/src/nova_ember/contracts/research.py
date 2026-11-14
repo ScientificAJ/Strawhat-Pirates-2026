@@ -7,6 +7,8 @@ from uuid import UUID
 from nova_ember.evidence.contracts import EvidenceAnchor
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .custom_agents import CustomAgentProfile
+
 Digest = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
 Accession = Annotated[str, Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")]
 
@@ -121,6 +123,7 @@ class ConversationTurn(Contract):
 
 
 class ResearchRequest(Contract):
+    agent_profile: CustomAgentProfile | None = None
     question: str = Field(min_length=1, max_length=6000)
     context: WorkspaceContext
     complexity: Literal["auto", "routine", "complex"] = "auto"

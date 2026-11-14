@@ -5,7 +5,10 @@ from dataclasses import dataclass
 from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation, localcontext
 
 from nova_ember.adapters.records import source_scalar_text
+from nova_ember.analysis.visualization import MODEL_ID, MODEL_UNITS, DropletVisualizationPoint
 from nova_ember.contracts.research import EvidenceFact
+from nova_ember.evidence.contracts import EvidenceAnchor
+from pydantic import ValidationError
 
 NUMBER = re.compile(r"(?<![A-Za-z0-9_])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?")
 WEAK_ORIGINS = {"tool_contract", "model_proposal", "source_media"}
@@ -38,6 +41,10 @@ UNIT_NAMES = {
     "m²/s": "m2/s",
     "mm²": "mm2",
     "m²": "m2",
+    "mm^2/s": "mm2/s",
+    "m^2/s": "m2/s",
+    "mm^2": "mm2",
+    "m^2": "m2",
 }
 for _unit in (
     "mm2/s",
@@ -71,6 +78,17 @@ UNIT_PATTERN = re.compile(
     + "|".join(re.escape(name) for name in sorted(UNIT_NAMES, key=len, reverse=True))
     + r")(?=$|[^A-Za-z0-9_])"
 )
+LINE_POSITION = r"[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?"
+LINE_RANGE = rf"{LINE_POSITION}(?:\s*(?:[-–—]|to|through)\s*{LINE_POSITION})?"
+LINE_LOCATOR = re.compile(
+    rf"\b(?:source\s+)?lines?\s*(?P<ranges>{LINE_RANGE}"
+    rf"(?:\s*(?:,\s*(?:and\s+)?|and\s+){LINE_RANGE})*)(?!\w)",
+    re.I,
+)
+LINE_RANGE_PART = re.compile(
+    rf"(?P<first>{LINE_POSITION})(?:\s*(?:[-–—]|to|through)\s*(?P<last>{LINE_POSITION}))?",
+    re.I,
+)
 
 
 @dataclass(frozen=True)
@@ -87,16 +105,116 @@ def statement_numbers(statement: str) -> list[str]:
     return NUMBER.findall(text)
 
 
-def numeric_mentions(statement: str) -> list[tuple[str, str | None]]:
-    text = re.sub(r"\bPSI-[0-9]+\b", "", statement)
+def numeric_mentions(
+    statement: str, *, locator_spans: list[tuple[int, int]] | None = None
+) -> list[tuple[str, str | None]]:
+    # Preserve offsets so independently checked source locators can be excluded
+    # without changing the positions of physical quantities elsewhere.
+    text = re.sub(r"\bPSI-[0-9]+\b", lambda match: " " * len(match.group()), statement)
     result = []
     for match in NUMBER.finditer(text):
+        if any(start <= match.start() < end for start, end in locator_spans or []):
+            continue
         unit = UNIT_PATTERN.match(text, match.end())
         result.append((match.group(), UNIT_NAMES[unit.group(1)] if unit else None))
     return result
 
 
+def _covering_line_anchors(
+    anchors: list[tuple[str, EvidenceAnchor]], first: int, last: int
+) -> list[dict] | None:
+    cursor = first
+    used = []
+    for fact_id, anchor in sorted(anchors, key=lambda item: item[1].source_row or 0):
+        start, end = anchor.source_row, anchor.line_end
+        if start is None or end is None or end < cursor:
+            continue
+        if start > cursor:
+            return None
+        used.append({"fact_id": fact_id, "anchor": anchor.model_dump(mode="json")})
+        cursor = max(cursor, end + 1)
+        if cursor > last:
+            return used
+    return None
+
+
+def check_source_line_locators(
+    statement: str, facts: list[EvidenceFact]
+) -> tuple[list[tuple[int, int]], list[dict], list[str]]:
+    """Qualify source-line positions separately from scientific quantities.
+
+    Every position in a cited range/list must have coverage in one retained
+    source identity. Anchor positions never become physical numeric evidence.
+    """
+    groups: dict[tuple[object, ...], list[tuple[str, EvidenceAnchor]]] = {}
+    for fact in facts:
+        if fact.origin in WEAK_ORIGINS or fact.origin == "user_supplied_input":
+            continue
+        for source in fact.sources:
+            if source.get("kind") != "text_lines":
+                continue
+            try:
+                anchor = EvidenceAnchor.model_validate(source)
+            except ValidationError:
+                continue
+            identity = (
+                anchor.snapshot_id,
+                anchor.source_kind,
+                anchor.source_sha256,
+                anchor.accession,
+                anchor.investigation_version,
+                anchor.asset_id,
+            )
+            groups.setdefault(identity, []).append((fact.id, anchor))
+
+    spans, support, errors = [], [], []
+    for match in LINE_LOCATOR.finditer(statement):
+        # A physical quantity such as 'line 18 mm' remains a quantity even if a
+        # retained source happens to have an eighteenth line.
+        if UNIT_PATTERN.match(statement, match.end()):
+            continue
+        ranges = []
+        for part in LINE_RANGE_PART.finditer(match.group("ranges")):
+            first_text, last_text = part.group("first"), part.group("last") or part.group("first")
+            if not first_text.isdigit() or not last_text.isdigit():
+                break
+            first, last = int(first_text), int(last_text)
+            if first < 1 or last < first:
+                break
+            ranges.append((first, last))
+        else:
+            for anchors in groups.values():
+                covered = [_covering_line_anchors(anchors, first, last) for first, last in ranges]
+                if ranges and all(item is not None for item in covered):
+                    spans.append(match.span())
+                    support.append(
+                        {
+                            "locator": match.group(),
+                            "kind": "text_lines",
+                            "ranges": [{"first": first, "last": last} for first, last in ranges],
+                            "supporting_anchors": [
+                                entry for item in covered if item for entry in item
+                            ],
+                        }
+                    )
+                    break
+            else:
+                errors.append(
+                    "A source-line locator lacks coverage in the cited same-source anchors."
+                )
+            continue
+        errors.append(
+            "A source-line locator requires positive integer positions in ascending order."
+        )
+    return spans, support, errors
+
+
 def source_backed(fact: EvidenceFact) -> bool:
+    if (
+        fact.content.get("artifact_type") == "educational_simulation"
+        or fact.content.get("parameter_origin") == "analyst_assumptions"
+    ):
+        return False
     retained = any(
         any(
             isinstance(source.get(name), str) and len(source[name]) == 64
@@ -130,6 +248,12 @@ def numeric_evidence(
     if measured_only and fact.origin != "source_measurement":
         return []
     values: list[NumericEvidence] = []
+    registered_droplet_points = (
+        fact.origin == "deterministic_calculation"
+        and fact.content.get("artifact_type") == "educational_simulation"
+        and fact.content.get("model_id") == MODEL_ID
+        and fact.content.get("method_id") == MODEL_ID
+    )
 
     def append(value, origin: str, unit: str | None = None) -> None:
         if isinstance(value, bool) or value is None:
@@ -172,6 +296,16 @@ def numeric_evidence(
                 return
             for name, nested in value.items():
                 if name in REFERENCE_KEYS or (name in INPUT_KEYS and not include_inputs):
+                    continue
+                if name == "points" and value is fact.content and registered_droplet_points:
+                    if isinstance(nested, (list, tuple)):
+                        for point in nested:
+                            if not isinstance(point, dict):
+                                continue
+                            for channel in DropletVisualizationPoint.model_fields:
+                                scalar = point.get(channel)
+                                if isinstance(scalar, (int, float, Decimal)):
+                                    append(scalar, fact.origin, MODEL_UNITS[channel])
                     continue
                 field_unit = value.get("unit") if name in {"value", "lower", "upper"} else unit
                 if name.endswith("_percent"):

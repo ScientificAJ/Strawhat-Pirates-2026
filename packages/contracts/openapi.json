@@ -70,6 +70,135 @@
         "title": "AcquisitionInputs",
         "type": "object"
       },
+      "AgentDraftRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          },
+          "kind": {
+            "default": "profile",
+            "enum": [
+              "profile",
+              "skill"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "description"
+        ],
+        "title": "AgentDraftRequest",
+        "type": "object"
+      },
+      "AgentDraftResponse": {
+        "properties": {
+          "cost_usd": {
+            "title": "Cost Usd",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "profile",
+              "skill"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CustomAgentProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "provider_calls": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Provider Calls",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "skill": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentSkill"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "const": "draft",
+            "default": "draft",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "model",
+          "prompt_version",
+          "cost_usd",
+          "provider_calls",
+          "limitations"
+        ],
+        "title": "AgentDraftResponse",
+        "type": "object"
+      },
+      "AgentSkill": {
+        "additionalProperties": false,
+        "properties": {
+          "instructions": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Instructions",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "instructions"
+        ],
+        "title": "AgentSkill",
+        "type": "object"
+      },
       "AggregateField": {
         "additionalProperties": false,
         "properties": {
@@ -978,6 +1107,63 @@
         "title": "CoverageRequest",
         "type": "object"
       },
+      "CustomAgentProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "capabilities": {
+            "items": {
+              "enum": [
+                "sources",
+                "analysis",
+                "visualization",
+                "modeling",
+                "code",
+                "workspace",
+                "export"
+              ],
+              "type": "string"
+            },
+            "maxItems": 7,
+            "minItems": 1,
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Description",
+            "type": "string"
+          },
+          "instructions": {
+            "maxLength": 6000,
+            "minLength": 1,
+            "title": "Instructions",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "skills": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AgentSkill"
+            },
+            "maxItems": 8,
+            "title": "Skills",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "instructions",
+          "capabilities"
+        ],
+        "title": "CustomAgentProfile",
+        "type": "object"
+      },
       "DashboardComponent": {
         "additionalProperties": false,
         "properties": {
@@ -1330,6 +1516,254 @@
           "relations"
         ],
         "title": "DependencyQuery",
+        "type": "object"
+      },
+      "DropletVisualizationPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "diameter_mm": {
+            "minimum": 0.0,
+            "title": "Diameter Mm",
+            "type": "number"
+          },
+          "diameter_squared_mm2": {
+            "minimum": 0.0,
+            "title": "Diameter Squared Mm2",
+            "type": "number"
+          },
+          "relative_mass": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Relative Mass",
+            "type": "number"
+          },
+          "time_s": {
+            "minimum": 0.0,
+            "title": "Time S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "time_s",
+          "diameter_mm",
+          "diameter_squared_mm2",
+          "relative_mass"
+        ],
+        "title": "DropletVisualizationPoint",
+        "type": "object"
+      },
+      "DropletVisualizationRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "burning_constant_mm2_s": {
+            "exclusiveMinimum": 0.0,
+            "title": "Burning Constant Mm2 S",
+            "type": "number"
+          },
+          "context": {
+            "$ref": "#/components/schemas/MethodContext"
+          },
+          "initial_diameter_mm": {
+            "exclusiveMinimum": 0.0,
+            "title": "Initial Diameter Mm",
+            "type": "number"
+          },
+          "investigation_accession": {
+            "anyOf": [
+              {
+                "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Accession"
+          },
+          "model_id": {
+            "const": "droplet_d_squared_v1",
+            "default": "droplet_d_squared_v1",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "parameter_origin": {
+            "const": "analyst_assumptions",
+            "default": "analyst_assumptions",
+            "title": "Parameter Origin",
+            "type": "string"
+          },
+          "sample_count": {
+            "default": 241,
+            "maximum": 601.0,
+            "minimum": 2.0,
+            "title": "Sample Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "initial_diameter_mm",
+          "burning_constant_mm2_s",
+          "context"
+        ],
+        "title": "DropletVisualizationRequest",
+        "type": "object"
+      },
+      "DropletVisualizationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_type": {
+            "const": "educational_simulation",
+            "default": "educational_simulation",
+            "title": "Artifact Type",
+            "type": "string"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "autoplay": {
+            "const": false,
+            "default": false,
+            "title": "Autoplay",
+            "type": "boolean"
+          },
+          "context": {
+            "$ref": "#/components/schemas/MethodContext"
+          },
+          "equations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Equations",
+            "type": "array"
+          },
+          "idealized_endpoint_s": {
+            "exclusiveMinimum": 0.0,
+            "title": "Idealized Endpoint S",
+            "type": "number"
+          },
+          "initial_diameter_squared_mm2": {
+            "exclusiveMinimum": 0.0,
+            "title": "Initial Diameter Squared Mm2",
+            "type": "number"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "method_id": {
+            "const": "droplet_d_squared_v1",
+            "default": "droplet_d_squared_v1",
+            "title": "Method Id",
+            "type": "string"
+          },
+          "model_id": {
+            "const": "droplet_d_squared_v1",
+            "default": "droplet_d_squared_v1",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "origin": {
+            "const": "deterministic_calculation",
+            "default": "deterministic_calculation",
+            "title": "Origin",
+            "type": "string"
+          },
+          "parameter_origin": {
+            "enum": [
+              "analyst_assumptions",
+              "source_reported_nominal"
+            ],
+            "title": "Parameter Origin",
+            "type": "string"
+          },
+          "point_count": {
+            "maximum": 601.0,
+            "minimum": 2.0,
+            "title": "Point Count",
+            "type": "integer"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/DropletVisualizationPoint"
+            },
+            "maxItems": 601,
+            "minItems": 2,
+            "title": "Points",
+            "type": "array"
+          },
+          "references": {
+            "items": {
+              "type": "string"
+            },
+            "title": "References",
+            "type": "array"
+          },
+          "request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DropletVisualizationRequest"
+              },
+              {
+                "$ref": "#/components/schemas/SourceReportedDropletInputs"
+              }
+            ],
+            "title": "Request"
+          },
+          "requires_open": {
+            "const": true,
+            "default": true,
+            "title": "Requires Open",
+            "type": "boolean"
+          },
+          "scientific_qualification": {
+            "default": "An analytical teaching calculation using assumed parameters. This is not a NASA measurement, validated experimental reconstruction or operational safety prediction.",
+            "title": "Scientific Qualification",
+            "type": "string"
+          },
+          "status": {
+            "const": "illustrative_model",
+            "default": "illustrative_model",
+            "title": "Status",
+            "type": "string"
+          },
+          "summaries": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/VisualizationQuantity"
+            },
+            "title": "Summaries",
+            "type": "object"
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Units",
+            "type": "object"
+          }
+        },
+        "required": [
+          "parameter_origin",
+          "context",
+          "request",
+          "initial_diameter_squared_mm2",
+          "idealized_endpoint_s",
+          "point_count",
+          "summaries",
+          "points",
+          "equations",
+          "units",
+          "assumptions",
+          "limitations",
+          "references"
+        ],
+        "title": "DropletVisualizationResult",
         "type": "object"
       },
       "EarthTransfer": {
@@ -3615,9 +4049,122 @@
         "title": "RecordQuery",
         "type": "object"
       },
+      "ReportedVisualizationCondition": {
+        "additionalProperties": false,
+        "properties": {
+          "anchor": {
+            "$ref": "#/components/schemas/EvidenceAnchor"
+          },
+          "composition_basis": {
+            "anyOf": [
+              {
+                "const": "mole",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Composition Basis"
+          },
+          "origin": {
+            "const": "source_reported_nominal",
+            "default": "source_reported_nominal",
+            "title": "Origin",
+            "type": "string"
+          },
+          "pressure_reference": {
+            "anyOf": [
+              {
+                "const": "unreported",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressure Reference"
+          },
+          "source_text": {
+            "title": "Source Text",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "atm",
+              "K",
+              "1"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "minimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "anchor",
+          "source_text"
+        ],
+        "title": "ReportedVisualizationCondition",
+        "type": "object"
+      },
+      "ReportedVisualizationParameter": {
+        "additionalProperties": false,
+        "properties": {
+          "anchor": {
+            "$ref": "#/components/schemas/EvidenceAnchor"
+          },
+          "origin": {
+            "const": "source_reported_nominal",
+            "default": "source_reported_nominal",
+            "title": "Origin",
+            "type": "string"
+          },
+          "source_text": {
+            "title": "Source Text",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "mm",
+              "mm^2/s"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "exclusiveMinimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "anchor",
+          "source_text"
+        ],
+        "title": "ReportedVisualizationParameter",
+        "type": "object"
+      },
       "ResearchRequest": {
         "additionalProperties": false,
         "properties": {
+          "agent_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CustomAgentProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "complexity": {
             "default": "auto",
             "enum": [
@@ -4024,6 +4571,224 @@
         "title": "SmoothingSpec",
         "type": "object"
       },
+      "SourceDropletVisualizationRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "sample_count": {
+            "default": 241,
+            "maximum": 601.0,
+            "minimum": 2.0,
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "snapshot_id": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id"
+        ],
+        "title": "SourceDropletVisualizationRequest",
+        "type": "object"
+      },
+      "SourceDropletVisualizationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_type": {
+            "const": "educational_simulation",
+            "default": "educational_simulation",
+            "title": "Artifact Type",
+            "type": "string"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "autoplay": {
+            "const": false,
+            "default": false,
+            "title": "Autoplay",
+            "type": "boolean"
+          },
+          "condition_sources": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ReportedVisualizationCondition"
+            },
+            "title": "Condition Sources",
+            "type": "object"
+          },
+          "context": {
+            "$ref": "#/components/schemas/MethodContext"
+          },
+          "equations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Equations",
+            "type": "array"
+          },
+          "idealized_endpoint_s": {
+            "exclusiveMinimum": 0.0,
+            "title": "Idealized Endpoint S",
+            "type": "number"
+          },
+          "initial_diameter_squared_mm2": {
+            "exclusiveMinimum": 0.0,
+            "title": "Initial Diameter Squared Mm2",
+            "type": "number"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "method_id": {
+            "const": "droplet_d_squared_v1",
+            "default": "droplet_d_squared_v1",
+            "title": "Method Id",
+            "type": "string"
+          },
+          "model_id": {
+            "const": "droplet_d_squared_v1",
+            "default": "droplet_d_squared_v1",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "origin": {
+            "const": "deterministic_calculation",
+            "default": "deterministic_calculation",
+            "title": "Origin",
+            "type": "string"
+          },
+          "parameter_origin": {
+            "enum": [
+              "analyst_assumptions",
+              "source_reported_nominal"
+            ],
+            "title": "Parameter Origin",
+            "type": "string"
+          },
+          "parameter_sources": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ReportedVisualizationParameter"
+            },
+            "title": "Parameter Sources",
+            "type": "object"
+          },
+          "point_count": {
+            "maximum": 601.0,
+            "minimum": 2.0,
+            "title": "Point Count",
+            "type": "integer"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/DropletVisualizationPoint"
+            },
+            "maxItems": 601,
+            "minItems": 2,
+            "title": "Points",
+            "type": "array"
+          },
+          "references": {
+            "items": {
+              "type": "string"
+            },
+            "title": "References",
+            "type": "array"
+          },
+          "request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DropletVisualizationRequest"
+              },
+              {
+                "$ref": "#/components/schemas/SourceReportedDropletInputs"
+              }
+            ],
+            "title": "Request"
+          },
+          "requires_open": {
+            "const": true,
+            "default": true,
+            "title": "Requires Open",
+            "type": "boolean"
+          },
+          "scientific_qualification": {
+            "default": "An analytical teaching calculation using assumed parameters. This is not a NASA measurement, validated experimental reconstruction or operational safety prediction.",
+            "title": "Scientific Qualification",
+            "type": "string"
+          },
+          "source_conditions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Source Conditions",
+            "type": "object"
+          },
+          "source_profile_id": {
+            "const": "flex-007-nominal-v1",
+            "default": "flex-007-nominal-v1",
+            "title": "Source Profile Id",
+            "type": "string"
+          },
+          "source_record_limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Record Limitations",
+            "type": "array"
+          },
+          "status": {
+            "const": "illustrative_model",
+            "default": "illustrative_model",
+            "title": "Status",
+            "type": "string"
+          },
+          "summaries": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/VisualizationQuantity"
+            },
+            "title": "Summaries",
+            "type": "object"
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Units",
+            "type": "object"
+          }
+        },
+        "required": [
+          "parameter_origin",
+          "context",
+          "request",
+          "initial_diameter_squared_mm2",
+          "idealized_endpoint_s",
+          "point_count",
+          "summaries",
+          "points",
+          "equations",
+          "units",
+          "assumptions",
+          "limitations",
+          "references",
+          "parameter_sources",
+          "condition_sources",
+          "source_conditions",
+          "source_record_limitations"
+        ],
+        "title": "SourceDropletVisualizationResult",
+        "type": "object"
+      },
       "SourceField": {
         "additionalProperties": false,
         "properties": {
@@ -4255,6 +5020,69 @@
           "fields"
         ],
         "title": "SourceRecord",
+        "type": "object"
+      },
+      "SourceReportedDropletInputs": {
+        "additionalProperties": false,
+        "description": "Constructed by the source-profile reader, never accepted by the editable API.",
+        "properties": {
+          "burning_constant_mm2_s": {
+            "exclusiveMinimum": 0.0,
+            "title": "Burning Constant Mm2 S",
+            "type": "number"
+          },
+          "context": {
+            "$ref": "#/components/schemas/MethodContext"
+          },
+          "initial_diameter_mm": {
+            "exclusiveMinimum": 0.0,
+            "title": "Initial Diameter Mm",
+            "type": "number"
+          },
+          "investigation_accession": {
+            "anyOf": [
+              {
+                "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Accession"
+          },
+          "model_id": {
+            "const": "droplet_d_squared_v1",
+            "default": "droplet_d_squared_v1",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "parameter_origin": {
+            "const": "source_reported_nominal",
+            "default": "source_reported_nominal",
+            "title": "Parameter Origin",
+            "type": "string"
+          },
+          "sample_count": {
+            "default": 241,
+            "maximum": 601.0,
+            "minimum": 2.0,
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "source_profile_id": {
+            "const": "flex-007-nominal-v1",
+            "default": "flex-007-nominal-v1",
+            "title": "Source Profile Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "initial_diameter_mm",
+          "burning_constant_mm2_s",
+          "context"
+        ],
+        "title": "SourceReportedDropletInputs",
         "type": "object"
       },
       "SourceSelection": {
@@ -4595,6 +5423,32 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VisualizationQuantity": {
+        "additionalProperties": false,
+        "properties": {
+          "unit": {
+            "enum": [
+              "mm",
+              "mm^2",
+              "mm^2/s",
+              "s"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "exclusiveMinimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit"
+        ],
+        "title": "VisualizationQuantity",
         "type": "object"
       },
       "VoiceContextUpdate": {
@@ -4945,6 +5799,66 @@
           }
         },
         "summary": "Message"
+      }
+    },
+    "/v1/agents/catalog": {
+      "get": {
+        "operationId": "catalog_v1_agents_catalog_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Catalog",
+        "tags": [
+          "agents"
+        ]
+      }
+    },
+    "/v1/agents/draft": {
+      "post": {
+        "operationId": "draft_v1_agents_draft_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentDraftResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Draft",
+        "tags": [
+          "agents"
+        ]
       }
     },
     "/v1/analyses/bass-calibration": {
@@ -9104,6 +10018,88 @@
         "summary": "Usage",
         "tags": [
           "research"
+        ]
+      }
+    },
+    "/v1/visualizations/droplet": {
+      "post": {
+        "operationId": "droplet_v1_visualizations_droplet_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DropletVisualizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DropletVisualizationResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Droplet",
+        "tags": [
+          "educational visualizations"
+        ]
+      }
+    },
+    "/v1/visualizations/flex-007": {
+      "post": {
+        "operationId": "flex_007_v1_visualizations_flex_007_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceDropletVisualizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceDropletVisualizationResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Flex 007",
+        "tags": [
+          "educational visualizations"
         ]
       }
     },

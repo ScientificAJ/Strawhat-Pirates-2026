@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from . import jobs
 from .artifacts import remove_artifact_files
 from .config import Settings
+from .custom_agents import create_custom_agent_router
 from .database import connect
 from .discovery import create_discovery_router
 from .media_analysis import create_media_analysis_router
@@ -31,6 +32,7 @@ from .semantic import create_semantic_router
 from .source_acquisition import create_source_acquisition_router
 from .source_files import bass_calibration, flex_trace, source_text, source_workbook
 from .uploads import create_upload_router
+from .visualization import create_visualization_router
 from .voice import create_voice_router
 from .workflows import create_workflow_router
 
@@ -65,9 +67,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application = FastAPI(title="Nova Ember scientific API", version="0.1.0")
     application.include_router(create_discovery_router(corpus))
     application.include_router(create_methods_router(settings))
+    application.include_router(create_visualization_router(corpus))
     application.include_router(create_media_analysis_router(settings))
     application.include_router(create_model_router(settings))
     application.include_router(create_research_router(settings))
+    application.include_router(create_custom_agent_router(settings))
     application.include_router(create_semantic_router(settings))
     application.include_router(create_source_acquisition_router(settings))
     application.include_router(create_upload_router(settings))

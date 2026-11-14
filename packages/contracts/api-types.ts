@@ -17,6 +17,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/agents/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalog */
+        get: operations["catalog_v1_agents_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agents/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Draft */
+        post: operations["draft_v1_agents_draft_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/analyses/bass-calibration": {
         parameters: {
             query?: never;
@@ -1381,6 +1415,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/visualizations/droplet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Droplet */
+        post: operations["droplet_v1_visualizations_droplet_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/visualizations/flex-007": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Flex 007 */
+        post: operations["flex_007_v1_visualizations_flex_007_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/voice/sessions": {
         parameters: {
             query?: never;
@@ -1627,6 +1695,58 @@ export interface components {
             preview?: components["schemas"]["MediaSelection"] | null;
             /** Snapshot Id */
             snapshot_id: string;
+        };
+        /** AgentDraftRequest */
+        AgentDraftRequest: {
+            /** Description */
+            description: string;
+            /**
+             * Kind
+             * @default profile
+             * @enum {string}
+             */
+            kind: "profile" | "skill";
+        };
+        /** AgentDraftResponse */
+        AgentDraftResponse: {
+            /** Cost Usd */
+            cost_usd: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "profile" | "skill";
+            /** Limitations */
+            limitations: string[];
+            /** Model */
+            model: string;
+            profile?: components["schemas"]["CustomAgentProfile"] | null;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Provider Calls */
+            provider_calls: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: 1;
+            skill?: components["schemas"]["AgentSkill"] | null;
+            /**
+             * Status
+             * @default draft
+             * @constant
+             */
+            status: "draft";
+        };
+        /** AgentSkill */
+        AgentSkill: {
+            /** Instructions */
+            instructions: string;
+            /** Name */
+            name: string;
         };
         /** AggregateField */
         AggregateField: {
@@ -1917,6 +2037,25 @@ export interface components {
             axes: components["schemas"]["CoverageAxis"][];
             query: components["schemas"]["RecordQuery"];
         };
+        /** CustomAgentProfile */
+        CustomAgentProfile: {
+            /** Capabilities */
+            capabilities: ("sources" | "analysis" | "visualization" | "modeling" | "code" | "workspace" | "export")[];
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Instructions */
+            instructions: string;
+            /** Name */
+            name: string;
+            /**
+             * Skills
+             * @default []
+             */
+            skills: components["schemas"]["AgentSkill"][];
+        };
         /** DashboardComponent */
         DashboardComponent: {
             /** Artifact Id */
@@ -2016,6 +2155,126 @@ export interface components {
             changed_ids: string[];
             /** Relations */
             relations: components["schemas"]["EvidenceRelation"][];
+        };
+        /** DropletVisualizationPoint */
+        DropletVisualizationPoint: {
+            /** Diameter Mm */
+            diameter_mm: number;
+            /** Diameter Squared Mm2 */
+            diameter_squared_mm2: number;
+            /** Relative Mass */
+            relative_mass: number;
+            /** Time S */
+            time_s: number;
+        };
+        /** DropletVisualizationRequest */
+        DropletVisualizationRequest: {
+            /** Burning Constant Mm2 S */
+            burning_constant_mm2_s: number;
+            context: components["schemas"]["MethodContext"];
+            /** Initial Diameter Mm */
+            initial_diameter_mm: number;
+            /** Investigation Accession */
+            investigation_accession?: string | null;
+            /**
+             * Model Id
+             * @default droplet_d_squared_v1
+             * @constant
+             */
+            model_id: "droplet_d_squared_v1";
+            /**
+             * Parameter Origin
+             * @default analyst_assumptions
+             * @constant
+             */
+            parameter_origin: "analyst_assumptions";
+            /**
+             * Sample Count
+             * @default 241
+             */
+            sample_count: number;
+        };
+        /** DropletVisualizationResult */
+        DropletVisualizationResult: {
+            /**
+             * Artifact Type
+             * @default educational_simulation
+             * @constant
+             */
+            artifact_type: "educational_simulation";
+            /** Assumptions */
+            assumptions: string[];
+            /**
+             * Autoplay
+             * @default false
+             * @constant
+             */
+            autoplay: false;
+            context: components["schemas"]["MethodContext"];
+            /** Equations */
+            equations: string[];
+            /** Idealized Endpoint S */
+            idealized_endpoint_s: number;
+            /** Initial Diameter Squared Mm2 */
+            initial_diameter_squared_mm2: number;
+            /** Limitations */
+            limitations: string[];
+            /**
+             * Method Id
+             * @default droplet_d_squared_v1
+             * @constant
+             */
+            method_id: "droplet_d_squared_v1";
+            /**
+             * Model Id
+             * @default droplet_d_squared_v1
+             * @constant
+             */
+            model_id: "droplet_d_squared_v1";
+            /**
+             * Origin
+             * @default deterministic_calculation
+             * @constant
+             */
+            origin: "deterministic_calculation";
+            /**
+             * Parameter Origin
+             * @enum {string}
+             */
+            parameter_origin: "analyst_assumptions" | "source_reported_nominal";
+            /** Point Count */
+            point_count: number;
+            /** Points */
+            points: components["schemas"]["DropletVisualizationPoint"][];
+            /** References */
+            references: string[];
+            /** Request */
+            request: components["schemas"]["DropletVisualizationRequest"] | components["schemas"]["SourceReportedDropletInputs"];
+            /**
+             * Requires Open
+             * @default true
+             * @constant
+             */
+            requires_open: true;
+            /**
+             * Scientific Qualification
+             * @default An analytical teaching calculation using assumed parameters. This is not a NASA measurement, validated experimental reconstruction or operational safety prediction.
+             */
+            scientific_qualification: string;
+            /**
+             * Status
+             * @default illustrative_model
+             * @constant
+             */
+            status: "illustrative_model";
+            /** Summaries */
+            summaries: {
+                [key: string]: components["schemas"]["VisualizationQuantity"];
+            };
+            /** Units */
+            units: {
+                [key: string]: string;
+            };
         };
         /** EarthTransfer */
         EarthTransfer: {
@@ -2736,8 +2995,51 @@ export interface components {
              */
             text: string;
         };
+        /** ReportedVisualizationCondition */
+        ReportedVisualizationCondition: {
+            anchor: components["schemas"]["EvidenceAnchor"];
+            /** Composition Basis */
+            composition_basis?: "mole" | null;
+            /**
+             * Origin
+             * @default source_reported_nominal
+             * @constant
+             */
+            origin: "source_reported_nominal";
+            /** Pressure Reference */
+            pressure_reference?: "unreported" | null;
+            /** Source Text */
+            source_text: string;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "atm" | "K" | "1";
+            /** Value */
+            value: number;
+        };
+        /** ReportedVisualizationParameter */
+        ReportedVisualizationParameter: {
+            anchor: components["schemas"]["EvidenceAnchor"];
+            /**
+             * Origin
+             * @default source_reported_nominal
+             * @constant
+             */
+            origin: "source_reported_nominal";
+            /** Source Text */
+            source_text: string;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "mm" | "mm^2/s";
+            /** Value */
+            value: number;
+        };
         /** ResearchRequest */
         ResearchRequest: {
+            agent_profile?: components["schemas"]["CustomAgentProfile"] | null;
             /**
              * Complexity
              * @default auto
@@ -2869,6 +3171,118 @@ export interface components {
             /** Window Points */
             window_points: number;
         };
+        /** SourceDropletVisualizationRequest */
+        SourceDropletVisualizationRequest: {
+            /**
+             * Sample Count
+             * @default 241
+             */
+            sample_count: number;
+            /** Snapshot Id */
+            snapshot_id: string;
+        };
+        /** SourceDropletVisualizationResult */
+        SourceDropletVisualizationResult: {
+            /**
+             * Artifact Type
+             * @default educational_simulation
+             * @constant
+             */
+            artifact_type: "educational_simulation";
+            /** Assumptions */
+            assumptions: string[];
+            /**
+             * Autoplay
+             * @default false
+             * @constant
+             */
+            autoplay: false;
+            /** Condition Sources */
+            condition_sources: {
+                [key: string]: components["schemas"]["ReportedVisualizationCondition"];
+            };
+            context: components["schemas"]["MethodContext"];
+            /** Equations */
+            equations: string[];
+            /** Idealized Endpoint S */
+            idealized_endpoint_s: number;
+            /** Initial Diameter Squared Mm2 */
+            initial_diameter_squared_mm2: number;
+            /** Limitations */
+            limitations: string[];
+            /**
+             * Method Id
+             * @default droplet_d_squared_v1
+             * @constant
+             */
+            method_id: "droplet_d_squared_v1";
+            /**
+             * Model Id
+             * @default droplet_d_squared_v1
+             * @constant
+             */
+            model_id: "droplet_d_squared_v1";
+            /**
+             * Origin
+             * @default deterministic_calculation
+             * @constant
+             */
+            origin: "deterministic_calculation";
+            /**
+             * Parameter Origin
+             * @enum {string}
+             */
+            parameter_origin: "analyst_assumptions" | "source_reported_nominal";
+            /** Parameter Sources */
+            parameter_sources: {
+                [key: string]: components["schemas"]["ReportedVisualizationParameter"];
+            };
+            /** Point Count */
+            point_count: number;
+            /** Points */
+            points: components["schemas"]["DropletVisualizationPoint"][];
+            /** References */
+            references: string[];
+            /** Request */
+            request: components["schemas"]["DropletVisualizationRequest"] | components["schemas"]["SourceReportedDropletInputs"];
+            /**
+             * Requires Open
+             * @default true
+             * @constant
+             */
+            requires_open: true;
+            /**
+             * Scientific Qualification
+             * @default An analytical teaching calculation using assumed parameters. This is not a NASA measurement, validated experimental reconstruction or operational safety prediction.
+             */
+            scientific_qualification: string;
+            /** Source Conditions */
+            source_conditions: {
+                [key: string]: string;
+            };
+            /**
+             * Source Profile Id
+             * @default flex-007-nominal-v1
+             * @constant
+             */
+            source_profile_id: "flex-007-nominal-v1";
+            /** Source Record Limitations */
+            source_record_limitations: string[];
+            /**
+             * Status
+             * @default illustrative_model
+             * @constant
+             */
+            status: "illustrative_model";
+            /** Summaries */
+            summaries: {
+                [key: string]: components["schemas"]["VisualizationQuantity"];
+            };
+            /** Units */
+            units: {
+                [key: string]: string;
+            };
+        };
         /** SourceField */
         SourceField: {
             /** Basis */
@@ -2927,6 +3341,42 @@ export interface components {
             row_kind: "source_test_record" | "condition_record" | "range_summary" | "daily_summary" | "session_record" | "sample_record" | "flow_visualization" | "note" | "unclassified_record";
             /** Source Row */
             source_row: number;
+        };
+        /**
+         * SourceReportedDropletInputs
+         * @description Constructed by the source-profile reader, never accepted by the editable API.
+         */
+        SourceReportedDropletInputs: {
+            /** Burning Constant Mm2 S */
+            burning_constant_mm2_s: number;
+            context: components["schemas"]["MethodContext"];
+            /** Initial Diameter Mm */
+            initial_diameter_mm: number;
+            /** Investigation Accession */
+            investigation_accession?: string | null;
+            /**
+             * Model Id
+             * @default droplet_d_squared_v1
+             * @constant
+             */
+            model_id: "droplet_d_squared_v1";
+            /**
+             * Parameter Origin
+             * @default source_reported_nominal
+             * @constant
+             */
+            parameter_origin: "source_reported_nominal";
+            /**
+             * Sample Count
+             * @default 241
+             */
+            sample_count: number;
+            /**
+             * Source Profile Id
+             * @default flex-007-nominal-v1
+             * @constant
+             */
+            source_profile_id: "flex-007-nominal-v1";
         };
         /** SourceSelection */
         SourceSelection: {
@@ -3045,6 +3495,16 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** VisualizationQuantity */
+        VisualizationQuantity: {
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "mm" | "mm^2" | "mm^2/s" | "s";
+            /** Value */
+            value: number;
         };
         /** VoiceContextUpdate */
         VoiceContextUpdate: {
@@ -3206,6 +3666,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    catalog_v1_agents_catalog_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    draft_v1_agents_draft_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDraftResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -5860,6 +6373,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    droplet_v1_visualizations_droplet_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DropletVisualizationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DropletVisualizationResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    flex_007_v1_visualizations_flex_007_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SourceDropletVisualizationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceDropletVisualizationResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

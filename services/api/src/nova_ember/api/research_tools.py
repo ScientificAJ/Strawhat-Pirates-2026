@@ -10,14 +10,17 @@ from uuid import UUID
 from agents import FunctionTool, Tool
 from nova_ember.adapters.psi import parse_csv_bytes
 from nova_ember.adapters.records import interpret_table
+from nova_ember.analysis.visualization import DropletVisualizationRequest
 from nova_ember.contracts.research import Contract, EvidenceFact, WorkspaceContext
 from pydantic import BaseModel, Field
 
+from .agent_capabilities import allowed_tool, require_tool
 from .records import CohortInputs, freeze_selection
 from .repository import Corpus
 from .science import compare_investigations, flex_endpoints
 from .scientific_toolbox import Empty, ScientificToolbox, ScientificToolCall, ToolName
 from .source_files import bass_calibration, flex_trace, source_text, source_workbook
+from .visualization import SourceDropletVisualizationRequest
 
 
 def model_fact_payload(fact: dict, byte_limit: int = 28000) -> str:
@@ -193,10 +196,13 @@ class ResearchTools:
     calls: int = 0
     job: dict | None = None
     receipt_sha256: str | None = field(default=None, repr=False)
+    capabilities: frozenset[str] | None = None
 
     def private_owner_hash(self) -> str:
         if self.job is not None:
-            return ScientificToolbox(self.corpus, self.context, self.job)._owner_hash()
+            return ScientificToolbox(
+                self.corpus, self.context, self.job, capabilities=self.capabilities
+            )._owner_hash()
         if self.receipt_sha256 is None:
             raise ValueError("Selected temporary inputs require the originating browser's scope.")
         return self.receipt_sha256
@@ -533,10 +539,26 @@ class ResearchTools:
                 30,
                 inputs.offset,
             )
+        sources = [result["asset"]]
+        if inputs.format == "text" and result["lines"]:
+            from nova_ember.evidence.contracts import EvidenceAnchor
+
+            asset = result["asset"]
+            anchor = EvidenceAnchor(
+                snapshot_id=self.context.snapshot_id,
+                accession=asset["accession"],
+                investigation_version=asset["investigation_version"],
+                source_sha256=asset["sha256"],
+                asset_id=asset["id"],
+                kind="text_lines",
+                source_row=result["lines"][0]["line_number"],
+                line_end=result["lines"][-1]["line_number"],
+            )
+            sources.extend(self.retained_sources({"anchor": anchor.model_dump(mode="json")}))
         return self.fact(
             "Exact retained source evidence",
             result,
-            [result["asset"]],
+            sources,
             origin="source_text",
             limitations=result.get("limitations", []),
         )
@@ -608,7 +630,7 @@ class ResearchTools:
     def list_scientific_tools(self, _inputs: Empty) -> dict:
         return self.fact(
             "Scientific tool catalog",
-            ScientificToolbox(self.corpus, self.context).menu(),
+            ScientificToolbox(self.corpus, self.context, capabilities=self.capabilities).menu(),
             [],
             origin="tool_contract",
         )
@@ -616,13 +638,45 @@ class ResearchTools:
     def scientific_tool_schema(self, inputs: ToolName) -> dict:
         return self.fact(
             "Scientific tool contract",
-            ScientificToolbox(self.corpus, self.context).schema(inputs.name),
+            ScientificToolbox(self.corpus, self.context, capabilities=self.capabilities).schema(
+                inputs.name
+            ),
             [],
             origin="tool_contract",
         )
 
     def run_scientific_tool(self, inputs: ScientificToolCall) -> dict:
-        result = ScientificToolbox(self.corpus, self.context, self.job).dispatch(inputs)
+        result = ScientificToolbox(
+            self.corpus, self.context, self.job, capabilities=self.capabilities
+        ).dispatch(inputs)
+        if inputs.name == "prepare_source_simulation":
+            reported = [
+                self.fact(
+                    f"FLEX-007 source-reported {name}",
+                    {
+                        "reported_parameter": {
+                            "value": parameter["value"],
+                            "unit": parameter["unit"],
+                            "origin": parameter["origin"],
+                        },
+                        "source_text": parameter["source_text"],
+                        "anchor": parameter["anchor"],
+                        "source_profile_id": result["source_profile_id"],
+                    },
+                    self.retained_sources(parameter),
+                    origin="source_text",
+                    limitations=result["source_record_limitations"],
+                )
+                for name, parameter in {
+                    **result["parameter_sources"],
+                    **result["condition_sources"],
+                }.items()
+            ]
+            result = {
+                **result,
+                "reported_parameter_facts": reported,
+                "reported_parameter_fact_ids": [fact["id"] for fact in reported],
+            }
         origin = "deterministic_calculation"
         if inputs.name in {"search_runs", "get_run"}:
             origin = "source_measurement"
@@ -651,8 +705,52 @@ class ResearchTools:
             limitations=result.get("limitations", []),
         )
 
-    def registry(self) -> list[Tool]:
+    def prepare_simulation(self, inputs: DropletVisualizationRequest) -> dict:
+        return self.run_scientific_tool(
+            ScientificToolCall(name="prepare_simulation", parameters=inputs.model_dump(mode="json"))
+        )
+
+    def prepare_source_simulation(self, inputs: SourceDropletVisualizationRequest) -> dict:
+        return self.run_scientific_tool(
+            ScientificToolCall(
+                name="prepare_source_simulation", parameters=inputs.model_dump(mode="json")
+            )
+        )
+
+    def registry(self, *, enabled: Callable[[], bool] | None = None) -> list[Tool]:
+        enabled_turn_input: object | None = None
+        enabled_for_turn = True
+
+        def tool_enabled(context, _agent) -> bool:
+            nonlocal enabled_turn_input, enabled_for_turn
+            if enabled is None:
+                return True
+            # The SDK checks availability both before the model request and
+            # before invoking its advertised tool. Keep that turn's decision
+            # stable; the next model turn supplies a fresh turn_input list.
+            if context.turn_input is not enabled_turn_input:
+                enabled_turn_input = context.turn_input
+                enabled_for_turn = enabled()
+            return enabled_for_turn
+
         definitions: list[tuple[str, type[BaseModel], Callable[..., dict], str]] = [
+            (
+                "prepare_simulation",
+                DropletVisualizationRequest,
+                self.prepare_simulation,
+                "Prepare an optional, bounded D-squared droplet visualization using explicitly "
+                "supplied illustrative diameter and burning coefficient. Keep units and "
+                "assumptions; this neither launches a view nor infers missing inputs.",
+            ),
+            (
+                "prepare_source_simulation",
+                SourceDropletVisualizationRequest,
+                self.prepare_source_simulation,
+                "Inspect the selected FLEX-007 source profile and prepare a bounded teaching "
+                "visualization using its exact unit-bearing reported diameter and coefficient. "
+                "Preserve source anchors and obscuration/disruption limits; this neither "
+                "launches a view nor produces a newly fitted or validated predictor.",
+            ),
             (
                 "inspect_private_input",
                 PrivateEvidenceInput,
@@ -755,6 +853,8 @@ class ResearchTools:
         ]
         result: list[Tool] = []
         for name, schema, function, description in definitions:
+            if not allowed_tool(name, self.capabilities):
+                continue
 
             async def invoke(_context, arguments: str, name=name, schema=schema, function=function):
                 self.calls += 1
@@ -764,6 +864,7 @@ class ResearchTools:
                     self.on_action(name)
                 inputs = schema.model_validate_json(arguments)
                 try:
+                    require_tool(name, self.capabilities)
                     output = function(inputs)
                 except (ValueError, LookupError) as error:
                     return json.dumps({"status": "unsupported", "reason": str(error)[:500]})
@@ -784,6 +885,7 @@ class ResearchTools:
                     params_json_schema=schema.model_json_schema(),
                     on_invoke_tool=invoke,
                     strict_json_schema=False,
+                    is_enabled=True if enabled is None else tool_enabled,
                 )
             )
         return result

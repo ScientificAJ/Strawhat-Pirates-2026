@@ -6,6 +6,7 @@ from hashlib import sha256
 from typing import Any
 from uuid import UUID, uuid4
 
+from nova_ember.analysis.visualization import DropletVisualizationRequest
 from nova_ember.contracts.research import Contract, WorkspaceContext
 from nova_ember.evidence.contracts import Claim, ControlCandidate, EarthTransfer, Hypothesis
 from nova_ember.evidence.research import (
@@ -18,6 +19,7 @@ from psycopg.types.json import Jsonb
 from pydantic import BaseModel, Field, model_validator
 
 from . import jobs
+from .agent_capabilities import allowed_tool, require_tool
 from .artifacts import (
     ChartSpec,
     DashboardSpec,
@@ -41,6 +43,11 @@ from .model_registry import PredictionInputs, list_models, predict
 from .records import CohortInputs, freeze_selection
 from .repository import Corpus
 from .semantic import SemanticQuery, semantic_search
+from .visualization import (
+    SourceDropletVisualizationRequest,
+    prepare_droplet_visualization,
+    prepare_source_droplet_visualization,
+)
 
 
 class Empty(Contract):
@@ -108,13 +115,21 @@ class Definition:
 
 
 class ScientificToolbox:
-    def __init__(self, corpus: Corpus, context: WorkspaceContext, job: dict | None = None):
+    def __init__(
+        self,
+        corpus: Corpus,
+        context: WorkspaceContext,
+        job: dict | None = None,
+        *,
+        capabilities: frozenset[str] | None = None,
+    ):
         if job is not None and job.get("snapshot_id") != context.snapshot_id:
             raise ValueError("The research job belongs to a different frozen source snapshot.")
         self.corpus = corpus
         self.context = context
         self.discovery = Discovery(corpus)
         self.job = job
+        self.capabilities = capabilities
         self.definitions = {
             "search_runs": Definition(
                 RecordQuery,
@@ -179,6 +194,22 @@ class ScientificToolbox:
                 Empty,
                 "Inspect registered method identifiers and their exact typed input contracts.",
                 lambda _: method_catalog(),
+            ),
+            "prepare_simulation": Definition(
+                DropletVisualizationRequest,
+                "Calculate a bounded, optional D-squared droplet teaching visualization "
+                "from explicit assumed diameter and coefficient, with equations, units and limits. "
+                "A selected FLEX/FLEX2 association supplies context only. This does not launch "
+                "a view, infer experimental parameters or predict extinction, temperature or soot.",
+                self.prepare_simulation,
+            ),
+            "prepare_source_simulation": Definition(
+                SourceDropletVisualizationRequest,
+                "Inspect the exact retained FLEX-007 test sheet and prepare an optional "
+                "D-squared visualization using its unit-bearing reported diameter and coefficient. "
+                "Returns exact parameter anchors, obscuration and disruption limits; "
+                "it is not a newly calibrated fit or a prediction of actual extinction.",
+                self.prepare_source_simulation,
             ),
             "create_chart": Definition(
                 ChartSpec,
@@ -287,10 +318,12 @@ class ScientificToolbox:
             "tools": [
                 {"name": name, "description": item.description}
                 for name, item in self.definitions.items()
+                if allowed_tool(name, self.capabilities, nested=True)
             ]
         }
 
     def schema(self, name: str) -> dict:
+        require_tool(name, self.capabilities, nested=True)
         item = self.definitions.get(name)
         if item is None:
             raise ValueError("This scientific tool is not registered.")
@@ -301,6 +334,7 @@ class ScientificToolbox:
         }
 
     def dispatch(self, call: ScientificToolCall) -> dict:
+        require_tool(call.name, self.capabilities, nested=True)
         item = self.definitions.get(call.name)
         if item is None:
             raise ValueError("This scientific tool is not registered.")
@@ -391,6 +425,8 @@ class ScientificToolbox:
         return run_method(request)
 
     def calculate(self, request: MethodCall) -> dict:
+        if request.method in {"trace-fit", "regression-evaluation"}:
+            require_tool("fit_model", self.capabilities, nested=True)
         self._snapshot(method_source_snapshot(request))
         if request.method in {
             "trace-fit",
@@ -420,6 +456,22 @@ class ScientificToolbox:
                 "This tool supports only the registered descriptive fits and regression evaluation."
             )
         return self.calculate(request)
+
+    def prepare_simulation(self, request: DropletVisualizationRequest) -> dict:
+        return prepare_droplet_visualization(
+            self.corpus,
+            request,
+            expected_snapshot=self.context.snapshot_id,
+            selected_investigations=self.context.investigations,
+        ).model_dump(mode="json")
+
+    def prepare_source_simulation(self, request: SourceDropletVisualizationRequest) -> dict:
+        return prepare_source_droplet_visualization(
+            self.corpus,
+            request,
+            expected_snapshot=self.context.snapshot_id,
+            selected_investigations=self.context.investigations,
+        ).model_dump(mode="json")
 
     def chart(self, spec: ChartSpec) -> dict:
         self._snapshot(spec.query.snapshot_id)
