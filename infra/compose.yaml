@@ -1,0 +1,22 @@
+name: nova-ember-local
+
+services:
+  database:
+    image: pgvector/pgvector:pg17@sha256:b513c48566e4777cd3370451400000c78eda6a08131d68f4c31d4a76f27bd8fd
+    network_mode: bridge
+    environment:
+      POSTGRES_USER: nova
+      POSTGRES_PASSWORD: nova-local
+      POSTGRES_DB: nova_ember
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - ../.data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nova -d nova_ember"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    mem_limit: 1g
+    cpus: 1.0
+    restart: unless-stopped

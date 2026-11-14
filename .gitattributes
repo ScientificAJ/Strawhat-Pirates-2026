@@ -1,0 +1,5 @@
+# NASA captures retain original encodings, whitespace and line endings.
+tests/fixtures/nasa-psi/assets/** -text -diff
+tests/fixtures/nasa-psi/raw/** -text -diff
+tests/fixtures/nasa-psi/metadata/** -text -diff
+tests/fixtures/nasa-psi/manifests/** -text -diff
