@@ -2,7 +2,7 @@
 
 Baseline and research verification date: 14 November 2026.
 
-Local implementation has started. The [first-build report](docs/local-build-2026-11-14.md) records the verified workflow and pending features; this brief remains the complete target specification. OpenAI setup and hosting await the owner's decision at their implementation milestones.
+Local implementation has started. The [first-build report](docs/local-build-2026-11-14.md) records the verified workflow and pending features; this brief remains the complete target specification. Continue from the existing implementation: complete the backend, including OpenAI setup, then complete the frontend, then perform final integrated testing and conditional hosting. These are whole-system deliveries, with no intermediate implementation milestones.
 
 **Build Nova Ember: an evidence-first scientific research environment for understanding fire in reduced gravity.** A researcher should move from a question about materials, atmosphere, smoke detection, suppression, or an experimental mechanism to inspectable NASA evidence, meaningful comparisons, reproducible calculations, appropriately validated models, and a reviewable research case. The product is the complete research workflow, with useful intelligence throughout it and direct scientific controls at every step.
 
@@ -78,7 +78,7 @@ Start locally. Serve the web interface and scientific API from one HTTPS origin,
 
 Choose at deployment time: check an eligible no-card student offer or existing suitable compute first; otherwise present the owner with the specific host, terms, cost, expiry and alternative before enabling any cloud or billing integration. Qualify persistent storage, concurrent research and analysis, the local execution boundary, restore and voice connectivity on the actual host. A static site can publish an evidence snapshot but cannot host the whole application.
 
-For live AI, use the **OpenAI Developers** plugin's secure setup flow at the integration milestone to reuse or create a scoped project key and confirm its ignored local destination. Place the key only in the model-calling backend's secret configuration, outside Git, browser bundles, logs, and research environments. No key setup or provider activation is part of this documentation revision.
+During backend implementation, use the **OpenAI Developers** plugin's secure setup flow to reuse or create a scoped project key and confirm its ignored local destination. Place the key only in the model-calling backend's secret configuration, outside Git, browser bundles, logs, and research environments. Key creation, successful provider calls and complete backend integration require separate evidence. Hosting is selected only after the backend, frontend and final local integrated tests are complete.
 
 ## Reconciled decisions
 
@@ -106,6 +106,8 @@ For live AI, use the **OpenAI Developers** plugin's secure setup flow at the int
 **Change of plan, 14 November 2026:** the earlier Google-managed stack, Temporal, E2B, additional model providers and multi-user review workflow are superseded. Original source documents and dated data observations remain available. “Checked” or “validated” below means that the stated evidence or method-specific tests support a result in its stated domain. Record precisely which checks ran. Researchers can inspect or annotate their own work; no one has to invite a collaborator or obtain sign-off. If the checks cannot establish a value or meaning, leave it unresolved.
 
 **Workbench scope, 14 November 2026:** F13 uses the application's existing or included compute, with no paid execution fallback. F14 replaces the earlier advanced training and simulation plan with [two descriptive fits and one conditional prediction](#a11). Published simulation results remain available as source evidence.
+
+**Execution strategy, 14 November 2026:** preserve the current code, all F01–F20 features, all A39–A65 interface requirements and every scientific contract. Finish the complete backend and its OpenAI integration first, then the complete frontend, followed by final integrated testing and hosting qualification. W00–W21 remain requirement references, not milestones, internal delivery stages or permission checkpoints. Dependency ordering and scientific validation still apply within implementation; they do not create partial product deliveries. Use GPT-6.1 Sol and GPT-6.1 Terra for text/image reasoning according to task complexity and evaluated capability; specialized embedding and voice endpoints remain within the same OpenAI integration.
 
 The original source-era ranking policies are intentionally retained as different scientific-discovery views. Permission checks and mandatory exact filters run first; hybrid retrieval produces candidates; applicability rules determine permitted analytical use. A high semantic score cannot override a hard incompatibility.
 
@@ -804,7 +806,7 @@ Use the OpenAI Responses API and the Python OpenAI Agents SDK. The application w
 
 ### A18.2 Model allocation
 
-The selected lead model is **gpt-6-astra** for complex synthesis, competing explanations, analysis planning, and final research-case assessment. **gpt-6.1-sol** handles routine source-grounded summaries, extraction proposals, and less demanding tool-assisted tasks. Use structured responses for bounded classifications; evaluate **gpt-6-luna through the Decisions API** only if available and useful on the same project. These are chosen from the current official model documentation, not asserted to be universally best for combustion research before evaluation. [S15, S16, S18]
+Use **gpt-6.1-sol** for complex synthesis, competing explanations, analysis planning and consequential verification. Use **gpt-6.1-terra** for suitable routine extraction, source-grounded writing and visual tasks, escalating to Sol when task complexity or evaluation warrants it. Bounded classifications use structured responses from these models; a separate Decisions model is not required. The official [Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol.md) and [Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra.md) pages confirm text/image input, text output and Responses tool calling. This routing is an application policy requiring domain evaluation, not proof of scientific accuracy. Neither model supplies embeddings or live audio; the documented specialized OpenAI endpoints preserve those features. [S15, S16]
 
 All production roles require domain-specific evaluation. A model upgrade is a versioned change with regression tests. Use dated snapshots when the provider exposes them; otherwise record the exact model identifier, request metadata, and deployment date, and treat provider drift as an operational risk.
 
@@ -977,8 +979,8 @@ Do not add Neo4j, Elasticsearch, Kafka, Kubernetes, and a second vector store be
 
 | Layer | Selected baseline | Decision rationale |
 |---|---|---|
-| Lead reasoning | OpenAI gpt-6-astra through Responses | Complex evidence synthesis and planning, subject to domain evaluation |
-| Routine language work | OpenAI gpt-6.1-sol | Lower-cost source-grounded work with escalation on difficult cases |
+| Complex reasoning | OpenAI gpt-6.1-sol through Responses | Evidence synthesis, planning and difficult verification, subject to domain evaluation |
+| Routine language and suitable visual work | OpenAI gpt-6.1-terra through Responses | Source-grounded work with escalation to Sol according to complexity and evaluated results |
 | Bounded decisions | Deterministic rules first, then typed OpenAI classification with abstention | Test extraction, routing and tags against independent reference labels |
 | Embeddings | text-embedding-3-large with 1536 output dimensions | Deliberate quality and index-size tradeoff; evaluate against exact-search baselines |
 | Agent framework | OpenAI Agents SDK for Python | Typed tools, bounded roles, handoffs and tracing |
@@ -1250,45 +1252,45 @@ The application should ask which physical constraints transfer and which do not:
 
 <a id="a30"></a>
 
-## A30 Implementation roadmap with scientific gates
+## A30 Complete implementation and scientific acceptance
 
-Maximum ambition should define the destination. Evidence gates should determine when each capability becomes trustworthy. The plan is not to remove difficult features; it is to avoid presenting unearned capabilities as complete.
+The complete product remains the destination. Scientific acceptance requirements determine what each result supports. They are not implementation milestones or reasons to omit difficult features. Finish the backend as a whole, then the frontend as a whole, then final integrated testing and conditional hosting. Continue from existing work without rebuilding completed functionality.
 
-### A30.1 Gate A Data foundation
+### A30.1 Scientific data requirements
 
 Deliver the canonical schema, source and license ledger, acquisition manifests, versioned original storage, investigation registry, and adapter framework. Register every challenge-named family, even when some entries remain metadata-only.
 
 Deeply normalize an initial evidence set covering solid-fuel prevention, droplet suppression, smoke detection, and scale effects. The preferred anchors are BASS-II, FLEX, SAME-R, Saffire-II experimental-condition records, and Saffire I calibration/metadata context, with BASS and the other families normalized through their own adapters. Access to the sampled files is verified; scientific interpretation and analysis readiness still require source-specific checks. A blocked adapter is shown as blocked, not replaced with invented measurements.
 
-Exit criterion: at least one end-to-end real-data path exists for each demonstrated scientific question, with reproducible source-to-result lineage.
+Acceptance evidence: at least one end-to-end real-data path exists for each demonstrated scientific question, with reproducible source-to-result lineage.
 
-### A30.2 Gate B Complete investigation workflow
+### A30.2 Investigation workflow requirements
 
 Deliver the explorer, filters, individual dossiers, authentic examples, source-linked summaries, saved queries, cohort freezing, and the comparison engine. Users must complete the core discovery and inspection tasks without AI.
 
-Exit criterion: the system correctly handles known metadata conflicts, unknown fields, condition differences, and source versions.
+Acceptance evidence: the system correctly handles known metadata conflicts, unknown fields, condition differences, and source versions.
 
-### A30.3 Gate C Agentic research
+### A30.3 Scientific assistance requirements
 
 Deliver the coordinator, typed tools, bounded decision routing, evidence verification, chart generation, controlled sandbox, research cases, and reproducibility exports. Add contextual application state before screenshot-based context.
 
-Exit criterion: the agent completes representative tasks with supported claims, correct calculations, controlled costs, and no permission bypasses.
+Acceptance evidence: the agent completes representative tasks with supported claims, correct calculations, controlled costs, and no permission bypasses.
 
-### A30.4 Gate D Measured fits and conditional prediction
+### A30.4 Measured fits and conditional prediction requirements
 
 Deliver both descriptive fit workflows: users can select an eligible measured interval, inspect diagnostics and export a result, or see a precise reason no fit can be reported. Test the proposed regression only if a compatible independent-run cohort exists.
 
-Exit criterion: known-answer tests, source-linked reruns and unsupported cases pass on the CPU budget. Publish a predictive result only after passing the separate held-out and domain checks. Absence of supporting data is a valid documented outcome, including for partial gravity.
+Acceptance evidence: known-answer tests, source-linked reruns and unsupported cases pass on the CPU budget. Publish a predictive result only after passing the separate held-out and domain checks. Absence of supporting data is a valid documented outcome, including for partial gravity.
 
-### A30.5 Gate E Advanced research system
+### A30.5 Advanced research requirements
 
-Add image-derived measurements, evidence-gap analysis, next-informative-investigation proposals, contradiction review, and broader corpus coverage, including published computational evidence. Introduce live voice once the underlying workflows are reliable.
+Implement image-derived measurements, evidence-gap analysis, next-informative-investigation proposals, contradiction review, broader corpus coverage including published computational evidence, and live voice through the same reliable scientific workflows.
 
-Exit criterion: advanced features improve real scientific tasks and preserve the same source, domain, and reproducibility contracts.
+Acceptance evidence: advanced features improve real scientific tasks and preserve the same source, domain, and reproducibility contracts.
 
 ### A30.6 Hackathon demonstration target
 
-The demonstration should show a coherent vertical slice of the full architecture rather than a shallow simulation of every feature. Register the full investigation landscape, deeply support a documented subset, and make coverage states visible.
+The demonstration selects a coherent sequence from the complete application. It is not the delivery scope. Register the full investigation landscape, deeply support sources according to their actual evidence, and make coverage states visible.
 
 The strongest demonstration is a sequence of real tasks: filter investigations, inspect one experiment, compare selected runs, ask a contextual question, produce a source-grounded chart, expose an unsupported transfer, and export a reproducible research case.
 
@@ -1296,16 +1298,15 @@ A fully functioning abstention with a useful explanation is a scientific feature
 
 <a id="a31"></a>
 
-## A31 Build work packages and dependency order
+## A31 Backend, frontend and final release work
 
-### A31.1 Build order
+### A31.1 Whole-system delivery order
 
-1. Take real PSI files from manifest to anchored, checked values. Publish coverage and unresolved fields.
-2. Build discovery, comparison, registered methods, personal cases and reproducible exports on those records.
-3. Connect Studio and voice to the same tools; add direct isolated analysis, modeling and media workflows against real fixtures.
-4. Run the scientific and interface checks throughout. Qualify the chosen host with a real workload and a restore before release.
+1. Complete the backend: source acquisition and interpretation, canonical contracts and provenance, scientific methods and models, discovery/comparison/ranking/applicability, evidence relationships, research planning, durable jobs, artifacts and exports, public API/MCP, direct isolated analysis on existing compute, and OpenAI reasoning/embeddings/voice integration. Preserve browser-owned personal work; implement the server contracts it needs. Verify the backend as a whole before handing over to frontend implementation.
+2. Complete the frontend against that backend, preserving existing working views and implementing every A39–A65 screen/state/interaction and F01–F20 workflow, including the complete account-free personal experience, Studio, contextual assistance and live voice. End this delivery only when the complete frontend is integrated and checked.
+3. Perform final whole-application scientific, interface, accessibility, recovery and resource testing. Then qualify a specific eligible host, obtain the owner's hosting decision and deploy. Verify the real host, backup/restore, public workflows and operational limits before claiming public release.
 
-These are units of work. One developer can complete them without assigning leads or waiting for sign-off.
+There are no intermediate or internal implementation milestones. Dependency checks, ordinary development tests and scientifically justified result restrictions continue within this order. W identifiers provide traceability; they do not define separate deliveries. A required credential handoff or hosting decision is an external dependency, not a declaration that the backend or application is complete.
 
 ### A31.2 Critical path
 
@@ -1315,9 +1316,9 @@ Do not postpone citation architecture until the end. A result without provenance
 
 Do not begin with cross-investigation machine learning. Begin with one traceable experiment-to-calculation path, then expand. This does not lower the target; it prevents a sophisticated architecture from being built on incorrect labels.
 
-### A31.3 Suggested hackathon allocation
+### A31.3 Implementation discipline
 
-Allocate early effort to access verification, the schema, and real fixtures. Build the explorer and backend contracts in parallel once those fixtures exist. Integrate the agent only after its first tools return correct typed data. Reserve substantial final effort for scientific regression tests, source and license verification, deployment recovery, and demonstration rehearsal.
+Use the verified data, schema and real fixtures already present. Within the backend, connect the coordinator to correct typed tools and test the complete scientific contracts. Continue frontend implementation after backend completion. Reserve final integrated testing for scientific regressions, source and license verification, deployment recovery and demonstration rehearsal; development checks still run while implementing each system.
 
 Avoid a schedule in which the first real dataset is connected shortly before submission. A convincing scientific product depends more on a verified evidence path than on a large number of untested integrations.
 
@@ -3063,9 +3064,9 @@ One coordinator handles ordinary questions. It calls specialist tools or paralle
 
 | Function | Selected model or method | Reason |
 |---|---|---|
-| Main scientific coordinator and complex synthesis | gpt-6-astra through Responses; high reasoning by default for difficult research tasks | Highest-capability selected reasoning tier; source- and tool-grounded work |
-| Expensive difficult verification | gpt-6-astra with a supported high-effort reasoning profile, selectively | Reserve additional work for consequential ambiguity or complex analysis; use the configured endpoint's supported effort values |
-| Structured extraction, bounded tool subtasks, code drafting | gpt-6.1-sol through Responses with Structured Outputs | Strong tool/code capability with lower routine cost |
+| Main scientific coordinator and complex synthesis | gpt-6.1-sol through Responses | Complex source- and tool-grounded work, with evaluated reasoning settings |
+| Difficult verification | gpt-6.1-sol with a supported higher reasoning effort where justified | Consequential ambiguity and complex analysis require the same independent scientific checks |
+| Routine extraction, writing and suitable visual subtasks | gpt-6.1-terra through Responses with Structured Outputs | Route by complexity and evaluated capability; escalate to Sol when needed |
 | Typed semantic decisions | Deterministic mappings first, then a bounded structured OpenAI response | Editable categories and routing, including unknown |
 | Embedding retrieval | text-embedding-3-large with dimensions=1536 | Semantic retrieval quality with a practical Postgres vector index footprint |
 | Voice interaction | gpt-live-1 via Live sessions/WebRTC | Full-duplex voice and delegation to the same scientific backend |
@@ -3348,7 +3349,7 @@ During an OpenAI outage, keep discovery, filters, referenced sources, direct cal
 
 Track OpenAI text, reasoning, embedding and voice usage per supported task. Record local sandbox, trusted fit and import time, disk use, selected asset transfer and hosting cost separately. Reconcile usage with actual bills where relevant. Estimate significant requests in advance and enforce a server-side total budget for public access.
 
-As an illustrative model-call calculation using the documented uncached rates, 20,000 input tokens and 4,000 total billed output tokens, including any billed reasoning tokens, cost about $0.40 with gpt-6-astra or $0.08 with gpt-6.1-sol. More output/reasoning tokens, additional calls, long-context pricing rules, and infrastructure can change the task total. Ten minutes of gpt-live-1 costs $0.50 for the voice session, plus backend usage. These are dated examples, not a fixed project quote. [Astra pricing](https://developers.openai.com/api/docs/models/gpt-6-astra.md); [Sol pricing](https://developers.openai.com/api/docs/models/gpt-6.1-sol.md); [Live pricing](https://developers.openai.com/api/docs/models/gpt-live-1.md).
+With the selected Sol/Terra routing and their documented standard uncached rates checked on 14 November 2026, an illustrative 20,000 input tokens and 4,000 billed output tokens cost $0.08 with Sol or $0.04 with Terra. This supersedes the earlier Astra comparison. Additional calls, reasoning tokens, caching and service/long-context rules change actual totals. The separate dated voice estimate is $0.50 for ten minutes of gpt-live-1 plus backend usage and requires recheck when enabling voice. These are examples, not a fixed project quote. [Sol pricing](https://developers.openai.com/api/docs/models/gpt-6.1-sol.md); [Terra pricing](https://developers.openai.com/api/docs/models/gpt-6.1-terra.md); [Live pricing](https://developers.openai.com/api/docs/models/gpt-live-1.md).
 
 Limit usage per request, browser and across the whole deployment. Run exact rules locally, use routine OpenAI calls for grounded text or bounded semantic labels and reserve higher-effort reasoning for work that needs it. Apply rate and concurrency limits to costly anonymous requests. Preserve partial results and identify quota exhaustion.
 
@@ -3384,25 +3385,21 @@ Do not claim byte-identical LLM regeneration or exact cross-hardware numerical r
 
 ### Delivery sequence
 
-The full target remains all features F01–F20. Build in dependency order rather than reducing scientific promises to fit an arbitrary demo deadline.
+The full target remains every F01–F20 feature and A39–A65 screen contract. The earlier lettered delivery stages are superseded by the owner's backend-first strategy; their scientific requirements remain in force.
 
-| Stage | Concrete work | Completion gate |
+| Delivery | Complete work | Evidence required |
 |---|---|---|
-| A: Evidence foundation | Index all 24 combustion records; freeze catalog snapshot; import selected small tables and methods; establish run/measurement schema, licenses, provenance and quality issues | Every imported field has a source and a documented meaning; ambiguous fields remain explicit |
-| B: Scientific exploration | Discovery, filters, overviews, run records, hardware relations, comparisons, scenario records, ranking, applicability | Researchers can complete representative evidence-finding tasks without AI assistance |
-| C: Agentic vertical workflow | Main agent, typed retrieval/query tools, context snapshots, source-bound answers, safe Python, chart generation, reproducibility export | One complete question-to-reproduced-answer workflow passes scientific and permission checks |
-| D: Quantitative methods | Calibrated trace/video extraction, registered calculations, uncertainty propagation, detector/outcome interpretation | At least one source-specific analysis reproduces an independently established reference result |
-| E: Lightweight fits | Traceable front-position and squared-diameter fits with residuals. Optionally validate one predefined run-level regression on a compatible curated cohort. | Demonstrate independent known-answer fits, resource and domain refusals and uncertainty handling. The optional regression can return a gap when held-out evidence is insufficient. |
-| F: Full research platform | Contradiction explorer, next-measurement planner, mitigation briefs, personal research notes/revisions, source-change watch, Earth collections, live voice, API/MCP | A visitor can complete and reproduce each supported workflow without an account or another participant. |
-| G: Extension of coverage | New partial-gravity releases, external datasets and additional material families | New sources pass the same provenance, licensing and scientific checks. |
+| Complete backend | Continue the existing source integration; implement all catalog/acquisition, provenance, run/measurement, licensing, discovery/filter, lineage, comparison/scenario/ranking/applicability, calculation/uncertainty, calibrated media, descriptive fitting/conditional regression, research/evidence/planning/control/Earth, artifact/export, API/MCP, direct isolated execution, durable job and OpenAI reasoning/embedding/voice server capabilities. | Anchored real-source paths, independent known answers, scientific refusal/domain cases, complete typed contracts, private-job isolation, recovery, resource checks and bounded live provider integration. Every imported field retains its source and meaning; an unresolved field remains explicit. |
+| Complete frontend | Finish and integrate all documented scientific and personal workflows, Studio/contextual assistance/live voice, dashboards, workbench, notebook/revisions/watches, settings, exports and complete Ignition Glass screen/state/accessibility behavior. Preserve browser-owned account-free personal data and existing completed views. | A visitor completes and reproduces each supported workflow without an account or another participant; the complete UI uses the backend and preserves drafts through failures, interruptions and recovery. |
+| Final integrated testing and hosting | Verify the complete application and full scientific benchmark, qualify an eligible host, obtain the owner's hosting decision, deploy and test public operation, backup/restore and rollback. | Local integrated and actual hosted evidence, measured limits/costs, source rights, whole-product acceptance and reproducible handover. Host availability and eligibility remain conditional. |
 
-Stages B and C can proceed in parallel after stable contracts exist. UI implementation proceeds against the selected A39–A65 design system, screen contracts, and state matrices; no additional unresolved overall visual direction is implied. Modeling preparation can begin early, but scientific prediction release depends on source interpretation and validation.
+These whole-system deliveries have no internal milestones. Technical dependencies are handled while completing each system. Known-answer fits, calibrated reference analyses, uncertainty, endpoint identity, independent held-out evaluation and joint-domain checks continue to determine which results are scientifically supported. Extending source coverage, including new partial-gravity releases and external/material families, uses the same provenance, licensing and scientific contracts; a missing release never authorizes a fabricated result.
 
 ### Workstreams
 
-Organize work around data/provenance, methods/evaluation, backend/agent execution and the web workflows. One person can cover several areas. Calibrations, endpoint identities, applicability and consequential claims are checked against source records, independent references and held-out evidence. Invite domain feedback where it helps and preserve an unknown when the evidence is insufficient.
+Organize implementation by responsibility within the complete backend, then the complete frontend. One person can cover several areas. Calibrations, endpoint identities, applicability and consequential claims are checked against source records, independent references and held-out evidence. Invite domain feedback where it helps and preserve an unknown when the evidence is insufficient; no formal reviewer or collaborator is required.
 
-The first implementation tasks are to establish contracts, build the PSI adapter, load the verified catalog, and make one investigation family fully traceable. FLEX is useful for event/censoring work; BASS-II for material/flow calibration; SAME-R for instrumentation and detector interpretation. Work on all three as separate adapters rather than flattening their scientific differences into one generic CSV import.
+Continue from the implemented contracts, PSI adapter, verified catalog and unfinished source-record work. FLEX supports source-specific event/censoring work; BASS-II material/flow calibration; SAME-R instrumentation and detector interpretation. Complete their distinct adapters without flattening the scientific differences into one generic CSV import.
 
 Report each supported result and each unresolved empirical question separately. A hackathon demonstration can show a real, reproducible research workflow even if the optional regression lacks enough independent runs for validation. The full feature inventory still applies.
 

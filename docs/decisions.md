@@ -36,3 +36,34 @@ user-supplied commands.
 The development database uses a documented loopback-only fixture password.
 It is not a public-deployment credential. Local setup does not configure
 provider keys, cloud resources, user accounts, or paid services.
+
+## 14 November 2026 — Complete backend, then complete frontend
+
+This owner-directed strategy supersedes the implementation ordering in the
+local runtime decision above. Preserve the current implementation, unfinished
+source-record integration, all F01–F20 features, the full Ignition Glass
+experience and all scientific accuracy, provenance, applicability and
+validation requirements. Resume the existing work rather than restarting it.
+
+Complete the backend as one delivery, including NASA data access, scientific
+methods and evidence handling, API/jobs/tools, exports/read-only API/MCP,
+project-hosted isolated Python/shell, contextual/voice server support and
+OpenAI secure credential setup and inference. Then complete the frontend as
+one delivery. Final integrated testing and conditional hosting follow both.
+There are no delivery milestones or internal milestones within either
+implementation. W00–W21 remain requirement references, not a prescribed
+execution order or intermediate handoff schedule.
+
+The owner has completed secure OpenAI key creation and approved its ignored
+`.env.local` destination. This records credential provisioning, not verified
+backend loading or live inference. Hosting remains unselected and
+unprovisioned. Evaluate eligibility, payment/card requirements, actual
+capacity, offer limits, expiration and operating costs with the owner only
+after both implementation deliveries and final local integration checks.
+No separate Python/shell execution service or paid execution fallback is added.
+
+Keep relevant numerical, API, isolation and recovery checks running during
+implementation. Scientific support and prediction validity still depend on
+the original source-specific evidence and tests. The revised delivery strategy
+does not remove scientific checks or treat missing data as a supported result.
+Dated build reports and earlier observed outcomes remain historical evidence.
