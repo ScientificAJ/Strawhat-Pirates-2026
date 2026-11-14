@@ -11,16 +11,18 @@ import {
   Plus,
   Save,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { downloadJson } from "../lib/api";
+import { useEffect, useRef, useState } from "react";
 import {
   ResearchCase,
   saveCase,
   SavedRevision,
-  workspaceBackup,
 } from "../lib/workspace-storage";
 import { Notice } from "./chrome";
 import { CaseSourceEvidence } from "./case-source-evidence";
+import {
+  CaseResearchTools,
+  type CaseResearchToolsHandle,
+} from "./case-research-tools";
 
 export function newCase(
   snapshot: string | null,
@@ -59,6 +61,8 @@ export function CaseNotebook({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [toolsReady, setToolsReady] = useState(false);
+  const structured = useRef<CaseResearchToolsHandle>(null);
   useEffect(() => {
     if (entityId === "new") setDraft(newCase(snapshot, selected));
     else setDraft(cases.find((item) => item.id === entityId) ?? null);
@@ -98,9 +102,20 @@ export function CaseNotebook({
     try {
       await saveCase(next, draft.revision || undefined);
       setDraft(next);
-      setSaved(true);
+      let structuredSaved = false;
+      try {
+        await structured.current?.freeze(next);
+        setSaved(true);
+        structuredSaved = true;
+      } catch (failure) {
+        setSaved(false);
+        setError(
+          `Case revision ${next.revision} was saved, but its structured research snapshot needs recovery. ${failure instanceof Error ? failure.message : "Keep this draft open and save another revision after storage is available."}`,
+        );
+      }
       await onSaved();
-      if (entityId === "new") router.replace(`/app/cases/${next.id}`);
+      if (entityId === "new" && structuredSaved)
+        router.replace(`/app/cases/${next.id}`);
     } catch (reason: unknown) {
       setError(
         reason instanceof Error
@@ -205,12 +220,7 @@ export function CaseNotebook({
         </div>
         <button
           className="button"
-          onClick={() =>
-            downloadJson(
-              "nova-ember-research-case.json",
-              workspaceBackup([draft]),
-            )
-          }
+          onClick={() => structured.current?.openExport()}
         >
           <ArrowDownToLine size={16} />
           Export {draft.revision && saved ? "case" : "draft"}
@@ -221,6 +231,7 @@ export function CaseNotebook({
           <label>
             Case title
             <input
+              disabled={saving}
               value={draft.title}
               maxLength={1000}
               required
@@ -230,6 +241,8 @@ export function CaseNotebook({
           <label>
             Research question
             <textarea
+              id="case-question"
+              disabled={saving}
               value={draft.question}
               maxLength={10_000}
               rows={3}
@@ -240,6 +253,7 @@ export function CaseNotebook({
           <label>
             Notes and unresolved questions
             <textarea
+              disabled={saving}
               className="notes-editor"
               value={draft.notes}
               maxLength={100_000}
@@ -253,7 +267,7 @@ export function CaseNotebook({
             <button
               className="button button-primary"
               type="submit"
-              disabled={saving || saved || !draft.title.trim()}
+              disabled={saving || saved || !draft.title.trim() || !toolsReady}
             >
               {saved ? <Check size={16} /> : <Save size={16} />}
               {saving
@@ -273,7 +287,9 @@ export function CaseNotebook({
             <ul className="linked-sources">
               {draft.investigation_ids.map((id) => (
                 <li key={id}>
-                  <Link href={`/app/investigations/${id}`}>
+                  <Link
+                    href={`/app/investigations/${id}${draft.snapshot_id ? `?snapshot=${encodeURIComponent(draft.snapshot_id)}` : ""}`}
+                  >
                     <span className="mono">{id}</span>
                     <ArrowUpRightSmall />
                   </Link>
@@ -328,6 +344,28 @@ export function CaseNotebook({
           )}
         </aside>
       </div>
+      <CaseResearchTools
+        ref={structured}
+        value={draft}
+        onReady={setToolsReady}
+        onDraftChange={() => setSaved(false)}
+        onRestore={(historical) => {
+          setDraft((current) =>
+            current
+              ? {
+                  ...current,
+                  title: historical.title,
+                  question: historical.question,
+                  notes: historical.notes,
+                  investigation_ids: historical.investigation_ids,
+                  snapshot_id: historical.snapshot_id,
+                  source_anchors: historical.source_anchors ?? [],
+                }
+              : current,
+          );
+          setSaved(false);
+        }}
+      />
     </>
   );
 }

@@ -1,0 +1,267 @@
+.tools {
+  padding: 28px;
+  margin-top: 28px;
+  border: 1px solid var(--divider);
+  border-radius: 12px;
+  background: var(--surface);
+  min-width: 0;
+}
+.tools > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+.tools > header p {
+  color: var(--secondary);
+  max-width: 72ch;
+  font-size: 0.875rem;
+}
+.tools h3 {
+  margin-top: 32px;
+  margin-bottom: 10px;
+}
+.tools label {
+  display: grid;
+  gap: 7px;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  margin: 12px 0;
+}
+.tools input:not([type="checkbox"]),
+.tools textarea,
+.tools select {
+  width: 100%;
+  border: 1px solid var(--boundary);
+  border-radius: 7px;
+  padding: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 42px;
+}
+.tools textarea {
+  line-height: 1.65;
+  resize: vertical;
+}
+.tools textarea::placeholder {
+  color: var(--secondary);
+}
+.tools > section p,
+.attach p {
+  color: var(--secondary);
+  max-width: 72ch;
+  font-size: 0.8125rem;
+}
+.outline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 16px 0;
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+  font-size: 0.8125rem;
+}
+.outline a {
+  padding: 5px 0;
+}
+.document {
+  max-width: 86ch;
+}
+.document > section {
+  scroll-margin-top: 96px;
+}
+.document > section label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin-top: 26px;
+}
+.document textarea {
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+.stale {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--caution);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 12px 0;
+}
+.row label {
+  flex: 1 1 220px;
+  margin: 0;
+  min-width: 0;
+}
+.attached,
+.annotation {
+  padding: 16px 0;
+  border-top: 1px solid var(--divider);
+}
+.attached > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.attached > div:first-child span {
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+.attached > div:first-child button {
+  margin-left: auto;
+}
+.annotation > p {
+  white-space: pre-wrap;
+}
+.annotation dl {
+  display: grid;
+  grid-template-columns: 85px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 0.875rem;
+}
+.annotation dd {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.annotation small {
+  color: var(--secondary);
+  display: block;
+}
+.target {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+.tools pre {
+  max-height: 380px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  padding: 14px;
+  border-radius: 7px;
+  background: var(--subtle);
+  color: var(--ink);
+  font:
+    0.75rem/1.65 "IBM Plex Mono",
+    monospace;
+}
+.tools code {
+  overflow-wrap: anywhere;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+}
+.tools summary {
+  cursor: pointer;
+  padding: 9px 0;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+.tools .check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+.check input {
+  width: 17px;
+  height: 17px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.watch {
+  border-top: 1px solid var(--divider);
+  margin-top: 30px;
+}
+.frozen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--divider);
+}
+.frozen > span {
+  color: var(--secondary);
+  font-size: 0.75rem;
+}
+.frozen > button {
+  margin-left: auto;
+}
+.preview {
+  margin-top: 28px;
+  padding: 20px;
+  border: 1px solid var(--divider);
+  border-radius: 10px;
+  background: var(--canvas);
+}
+.preview h3 {
+  margin-top: 0;
+}
+.preview fieldset {
+  border: 1px solid var(--divider);
+  border-radius: 7px;
+  margin: 18px 0;
+  padding: 12px 16px;
+}
+.preview legend {
+  padding: 0 6px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+.checklist {
+  font-size: 0.8125rem;
+}
+.textButton {
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--action);
+  padding: 6px 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 0.8125rem;
+}
+.tools > footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-top: 1px solid var(--divider);
+  margin-top: 28px;
+  padding-top: 16px;
+  color: var(--secondary);
+  font-size: 0.75rem;
+}
+.notice {
+  background: var(--blue-wash);
+  color: var(--action);
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 0.8125rem;
+}
+.error {
+  background: var(--danger-wash);
+  color: var(--danger);
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 0.8125rem;
+}
+@media (max-width: 700px) {
+  .tools {
+    padding: 18px;
+  }
+  .tools > header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .preview {
+    padding: 14px;
+  }
+  .frozen > button {
+    margin-left: 0;
+  }
+}
