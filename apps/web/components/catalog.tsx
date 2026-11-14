@@ -29,11 +29,13 @@ export function InvestigationTable({
   selected = [],
   onSelect,
   compact = false,
+  snapshotId,
 }: {
   items: Investigation[];
   selected?: string[];
   onSelect?: (accession: string) => void;
   compact?: boolean;
+  snapshotId?: string;
 }) {
   return (
     <div className="table-scroll">
@@ -74,7 +76,7 @@ export function InvestigationTable({
               <td>
                 <Link
                   className="investigation-title"
-                  href={`/app/investigations/${item.accession}`}
+                  href={`/app/investigations/${item.accession}${snapshotId ? `?snapshot=${snapshotId}` : ""}`}
                 >
                   {item.acronym || item.title}
                   <ArrowUpRight size={15} />
