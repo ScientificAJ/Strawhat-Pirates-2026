@@ -1,0 +1,112 @@
+name: nova-ember
+
+x-backend: &backend
+  build:
+    context: ../..
+    dockerfile: infra/production/Dockerfile.backend
+  environment: &backend-environment
+    NOVA_DATABASE_URL: postgresql://nova:${NOVA_POSTGRES_PASSWORD:?Set NOVA_POSTGRES_PASSWORD}@database:5432/nova_ember
+    NOVA_WEB_ORIGIN: https://${NOVA_DOMAIN:?Set NOVA_DOMAIN}
+    NOVA_DAILY_MODEL_BUDGET_USD: ${NOVA_DAILY_MODEL_BUDGET_USD:-5}
+    NOVA_REQUEST_MODEL_BUDGET_USD: ${NOVA_REQUEST_MODEL_BUDGET_USD:-0.10}
+  volumes:
+    - application-data:/app/.data
+
+services:
+  database:
+    image: pgvector/pgvector:pg17@sha256:b513c48566e4777cd3370451400000c78eda6a08131d68f4c31d4a76f27bd8fd
+    environment:
+      POSTGRES_USER: nova
+      POSTGRES_PASSWORD: ${NOVA_POSTGRES_PASSWORD:?Set NOVA_POSTGRES_PASSWORD}
+      POSTGRES_DB: nova_ember
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nova -d nova_ember"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  seed:
+    <<: *backend
+    command: ["python", "-m", "nova_ember.api.seed"]
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    command:
+      [
+        "uvicorn",
+        "nova_ember.api.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8100",
+        "--proxy-headers",
+        "--forwarded-allow-ips",
+        "*",
+      ]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8100/v1/health', timeout=3)",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  worker:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    command: ["python", "-m", "nova_ember.workers"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/production/Dockerfile.web
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2
+    environment:
+      NOVA_DOMAIN: ${NOVA_DOMAIN:?Set NOVA_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  application-data:
+  caddy-data:
+  caddy-config:

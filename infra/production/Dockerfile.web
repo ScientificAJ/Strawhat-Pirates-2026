@@ -1,0 +1,19 @@
+FROM node:24-slim AS build
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN corepack enable
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/package.json
+RUN pnpm install --frozen-lockfile
+COPY apps/web ./apps/web
+COPY packages/contracts ./packages/contracts
+ARG NOVA_API_ORIGIN=http://api:8100
+ENV NOVA_API_ORIGIN=$NOVA_API_ORIGIN
+RUN pnpm --filter @nova-ember/web build
+
+FROM node:24-slim
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
+COPY --from=build /app /app
+EXPOSE 3100
+CMD ["/app/apps/web/node_modules/.bin/next", "start", "apps/web", "--hostname", "0.0.0.0", "--port", "3100"]

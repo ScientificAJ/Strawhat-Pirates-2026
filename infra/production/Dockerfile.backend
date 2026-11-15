@@ -1,0 +1,18 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/app/.venv/bin:$PATH" \
+    PYTHONPATH="/app/services/api/src:/app/services/workers/src:/app/packages/domain/src:/app/packages/analysis/src:/app/packages/data-adapters/src:/app/packages/contracts/src:/app/packages/evidence/src:/app/packages/modeling/src:/app/packages/agent-tools/src" \
+    MPLCONFIGDIR=/tmp/matplotlib
+
+RUN pip install --no-cache-dir uv==0.13.8
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+COPY services ./services
+COPY packages ./packages
+COPY tests/fixtures ./tests/fixtures
+COPY data/nasa-research ./data/nasa-research
