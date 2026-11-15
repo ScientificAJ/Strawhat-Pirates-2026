@@ -34,7 +34,46 @@ type Scenario = {
   conditions: Record<string, Assumption>;
   notes: string;
   preset?: unknown;
+  elevatedOxygen?: boolean;
 };
+const atmosphereExamples = [
+  {
+    id: "earth-station-example",
+    title: "Earth / ISS atmosphere example",
+    oxygen_percent: 21,
+    absolute_pressure: 14.7,
+    source: "https://ntrs.nasa.gov/citations/20240003211",
+  },
+  {
+    id: "exploration-atmosphere-example",
+    title: "Exploration atmosphere example",
+    oxygen_percent: 34,
+    absolute_pressure: 8.2,
+    source: "https://ntrs.nasa.gov/citations/20220009536",
+  },
+  {
+    id: "challenge-boundary-example",
+    title: "Hypothetical challenge atmosphere example",
+    oxygen_percent: 30,
+    absolute_pressure: 10.2,
+    source:
+      "https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/",
+  },
+  {
+    id: "eva-suit-example",
+    title: "EVA suit example",
+    oxygen_percent: 100,
+    absolute_pressure: 4.3,
+    source:
+      "https://www.nasa.gov/podcasts/houston-we-have-a-podcast/spacesuits/",
+  },
+] as const;
+const gravityExamples = [
+  { id: "microgravity", title: "Microgravity (idealized 0 g)", value: "0" },
+  { id: "moon", title: "Moon (about 1/6 g)", value: "1.62" },
+  { id: "mars", title: "Mars (about 3/8 g)", value: "3.71" },
+  { id: "earth", title: "Earth (about 1 g)", value: "9.81" },
+] as const;
 const sections: { title: string; fields: [string, string, string][] }[] = [
   {
     title: "Environment",
@@ -87,7 +126,7 @@ const sections: { title: string; fields: [string, string, string][] }[] = [
 ];
 const blank = (): Scenario => ({
   title: "Untitled research scenario",
-  environment: "spacecraft",
+  environment: "",
   endpoint: "",
   conditions: Object.fromEntries(
     sections.flatMap((section) =>
@@ -138,6 +177,7 @@ export function ScenarioWorkbench({
 }) {
   const router = useRouter();
   const [finding, setFinding] = useState(false);
+  const [elevatedOxygen, setElevatedOxygen] = useState(false);
   const presets = useResource<{
     presets: {
       id: string;
@@ -181,6 +221,7 @@ export function ScenarioWorkbench({
         .then((doc) => {
           if (doc) {
             setScenario(doc.data);
+            setElevatedOxygen(doc.data.elevatedOxygen ?? false);
             setId(doc.id);
             setRevision(doc.revision);
             setSaved(doc);
@@ -191,10 +232,12 @@ export function ScenarioWorkbench({
   useEffect(() => {
     if (
       !scenario.endpoint.trim() &&
-      !scenario.conditions.material.value.trim()
+      !scenario.conditions.material.value.trim() &&
+      !elevatedOxygen
     ) {
       setMatches([]);
       setCoverage(null);
+      setUpdating(false);
       return;
     }
     const controller = new AbortController();
@@ -207,6 +250,16 @@ export function ScenarioWorkbench({
           .join(" ")
           .slice(0, 500),
         limit: 50,
+        predicates: elevatedOxygen
+          ? [
+              {
+                quantity_kind: "oxygen_fraction",
+                operator: "gte",
+                value: 0.3,
+                unit: "1",
+              },
+            ]
+          : [],
       };
       void Promise.all([
         post<{ items: RecordMatch[] }>(
@@ -253,13 +306,41 @@ export function ScenarioWorkbench({
       controller.abort();
       clearTimeout(timer);
     };
-  }, [snapshotId, scenario.endpoint, scenario.conditions.material.value]);
+  }, [
+    snapshotId,
+    scenario.endpoint,
+    scenario.conditions.material.value,
+    elevatedOxygen,
+  ]);
   function change(key: string, part: Partial<Assumption>) {
+    if (
+      scenario.environment === "exploration-atmosphere-example" &&
+      ["oxygen_fraction", "pressure"].includes(key) &&
+      (part.value !== undefined || part.unit !== undefined)
+    ) {
+      setElevatedOxygen(false);
+    }
     setScenario((previous) => ({
       ...previous,
+      ...(atmosphereExamples.some((item) => item.id === previous.environment) &&
+      ["oxygen_fraction", "pressure"].includes(key) &&
+      (part.value !== undefined || part.unit !== undefined)
+        ? { environment: "", preset: undefined }
+        : {}),
       conditions: {
         ...previous.conditions,
-        [key]: { ...previous.conditions[key], ...part },
+        [key]: {
+          ...previous.conditions[key],
+          ...((key === "gravity_magnitude" ||
+            (atmosphereExamples.some(
+              (item) => item.id === previous.environment,
+            ) &&
+              ["oxygen_fraction", "pressure"].includes(key))) &&
+          (part.value !== undefined || part.unit !== undefined)
+            ? { source: "" }
+            : {}),
+          ...part,
+        },
       },
     }));
     setStale(true);
@@ -273,7 +354,7 @@ export function ScenarioWorkbench({
           kind: "scenario",
           title: scenario.title,
           snapshot_id: snapshotId,
-          data: scenario,
+          data: { ...scenario, elevatedOxygen },
         },
         copy ? undefined : revision,
       );
@@ -488,6 +569,15 @@ export function ScenarioWorkbench({
     ? (passport.conditions as Record<string, unknown>[])
     : [];
   const compared = versions.find((doc) => doc.id === compareId);
+  const selectedExample = atmosphereExamples.find(
+    (item) => item.id === scenario.environment,
+  );
+  const selectedGravity = gravityExamples.find(
+    (item) =>
+      scenario.conditions.gravity_magnitude.value === item.value &&
+      scenario.conditions.gravity_magnitude.unit === "m/s^2" &&
+      scenario.conditions.gravity_magnitude.status !== "not_reported",
+  );
   return (
     <div className={styles.stack}>
       <div className={styles.heading}>
@@ -556,14 +646,57 @@ export function ScenarioWorkbench({
               <label className={styles.field}>
                 Starting conditions (optional)
                 <select
-                  defaultValue=""
+                  value={scenario.environment}
                   onChange={(event) => {
+                    if (!event.target.value) {
+                      setScenario((previous) => ({
+                        ...previous,
+                        environment: "",
+                        preset: undefined,
+                      }));
+                      setElevatedOxygen(false);
+                      return;
+                    }
+                    const example = atmosphereExamples.find(
+                      (item) => item.id === event.target.value,
+                    );
+                    if (example) {
+                      setScenario((previous) => ({
+                        ...previous,
+                        environment: example.id,
+                        preset: example,
+                        conditions: {
+                          ...previous.conditions,
+                          oxygen_fraction: {
+                            value: String(example.oxygen_percent),
+                            unit: "%",
+                            basis: "mole",
+                            status: "nominal",
+                            source: example.source,
+                          },
+                          pressure: {
+                            value: String(example.absolute_pressure),
+                            unit: "psia",
+                            basis: "absolute",
+                            status: "nominal",
+                            source: example.source,
+                          },
+                        },
+                      }));
+                      setElevatedOxygen(example.oxygen_percent >= 30);
+                      setStale(true);
+                      setPassportStale(Boolean(passport));
+                      return;
+                    }
                     const preset = presets.data?.presets.find(
                       (item) => item.id === event.target.value,
                     );
                     if (!preset) return;
-                    const next = blank();
-                    next.title = preset.title;
+                    setElevatedOxygen(false);
+                    const next = {
+                      ...scenario,
+                      conditions: { ...scenario.conditions },
+                    };
                     next.environment = preset.id;
                     next.preset = preset;
                     if (preset.oxygen_percent !== null)
@@ -584,11 +717,18 @@ export function ScenarioWorkbench({
                       };
                     setScenario(next);
                     setStale(true);
+                    setPassportStale(Boolean(passport));
                   }}
                 >
                   <option value="">
-                    Choose a starting example, or enter your own conditions
+                    Use current conditions without an example
                   </option>
+                  {atmosphereExamples.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title} · {item.oxygen_percent}% O₂,{" "}
+                      {item.absolute_pressure} psia
+                    </option>
+                  ))}
                   {presets.data?.presets.map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.title} · {item.status.replaceAll("_", " ")}
@@ -596,14 +736,94 @@ export function ScenarioWorkbench({
                   ))}
                 </select>
               </label>
-              {scenario.preset !== undefined && (
-                <details>
-                  <summary>Preset origin and limitations</summary>
-                  <pre className={styles.output}>
-                    {JSON.stringify(scenario.preset, null, 2)}
-                  </pre>
-                </details>
+              {selectedExample ? (
+                <p className={styles.caption}>
+                  Selected example: {selectedExample.oxygen_percent}% O₂ at{" "}
+                  {selectedExample.absolute_pressure} psia.{" "}
+                  {selectedExample.id === "challenge-boundary-example" &&
+                    "The oxygen fraction is about 42.9% higher than 21% air. "}
+                  <a href={selectedExample.source}>NASA source</a>
+                </p>
+              ) : (
+                scenario.preset !== undefined && (
+                  <details>
+                    <summary>Preset origin and limitations</summary>
+                    <pre className={styles.output}>
+                      {JSON.stringify(scenario.preset, null, 2)}
+                    </pre>
+                  </details>
+                )
               )}
+              <label className={styles.field}>
+                Gravity context (optional)
+                <select
+                  value={selectedGravity?.id ?? ""}
+                  onChange={(event) => {
+                    const gravity = gravityExamples.find(
+                      (item) => item.id === event.target.value,
+                    );
+                    if (!gravity) {
+                      change("gravity_magnitude", {
+                        value: "",
+                        status: "not_reported",
+                        source: "",
+                      });
+                      return;
+                    }
+                    change("gravity_magnitude", {
+                      value: gravity.value,
+                      unit: "m/s^2",
+                      status: "nominal",
+                      source: gravity.title,
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Custom or unspecified gravity
+                  </option>
+                  <option value="clear">Clear gravity value</option>
+                  {gravityExamples.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div
+                className={styles.gravityScale}
+                aria-label="Gravity reference scale: microgravity near zero, Moon about one sixth, Mars about three eighths, Earth about one g"
+              >
+                <span>
+                  0 g <small>Microgravity</small>
+                </span>
+                <span>
+                  ⅙ g <small>Moon</small>
+                </span>
+                <span>
+                  ⅜ g <small>Mars</small>
+                </span>
+                <span>
+                  1 g <small>Earth</small>
+                </span>
+              </div>
+              <p className={styles.caption}>
+                Compare conditions with{" "}
+                <a
+                  href={`/app/investigations/NASA-LUCI?snapshot=${snapshotId}`}
+                >
+                  LUCI
+                </a>{" "}
+                simulated lunar-gravity results,{" "}
+                <a href={`/app/investigations/NASA-FM2?snapshot=${snapshotId}`}>
+                  FM2
+                </a>{" "}
+                planned lunar tests, and{" "}
+                <a href="https://science.nasa.gov/biological-physical/investigations/e-field-flames/">
+                  E-FIELD Flames
+                </a>{" "}
+                research on electric-field effects. Gravity alone does not
+                determine a flame-spread result.
+              </p>
               <label className={styles.field}>
                 What outcome do you want to understand?
                 <input
@@ -806,12 +1026,21 @@ export function ScenarioWorkbench({
                 These records match the words in your outcome or material.
                 Compare the test conditions before using them for your question.
               </p>
+              <label className={styles.check}>
+                <input
+                  type="checkbox"
+                  checked={elevatedOxygen}
+                  onChange={(event) => setElevatedOxygen(event.target.checked)}
+                />
+                Show records with at least 30% oxygen
+              </label>
               {matches.length === 0 ? (
                 <p>
                   {!scenario.endpoint.trim() &&
-                  !scenario.conditions.material.value.trim()
+                  !scenario.conditions.material.value.trim() &&
+                  !elevatedOxygen
                     ? "Enter an outcome or material to look for source records. Use the research assistant to find and explain relevant investigations."
-                    : "No source records match those exact terms. Find research with the assistant to explore related investigations and different terminology."}
+                    : "No source records match these terms and filters. Try broadening the search or removing a filter."}
                 </p>
               ) : (
                 <ul className={styles.list}>
@@ -941,6 +1170,7 @@ export function ScenarioWorkbench({
                 className="text-button"
                 onClick={() => {
                   setScenario(item.data);
+                  setElevatedOxygen(item.data.elevatedOxygen ?? false);
                   setStale(true);
                   setNotice(
                     "Prior assumptions restored into the draft. Saving creates a new revision.",

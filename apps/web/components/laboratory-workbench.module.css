@@ -293,6 +293,19 @@
   max-width: 75ch;
   line-height: 1.6;
 }
+.gravityScale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  border-top: 1px solid var(--divider);
+  padding-top: 10px;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.gravityScale small {
+  display: block;
+  color: var(--secondary);
+}
 .skeleton {
   height: 200px;
   background: var(--subtle);
