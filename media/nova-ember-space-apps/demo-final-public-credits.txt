@@ -1,0 +1,15 @@
+Nova Ember — FINAL DEMO (v3) — 2026 NASA Space Apps Challenge: Flame in Freefall
+
+NASA research sources: Physical Sciences Informatics (PSI), including BASS-II (PSI-25), https://doi.org/10.60555/4qc4-de67, and FLEX (PSI-69), https://doi.org/10.60555/mbq8-0451.
+
+Visuals: NASA Glenn Research Center, candle flames in normal gravity and microgravity, GRC-1998-C-00486, https://images.nasa.gov/details/GRC-1998-C-00486. The normal-gravity side was cropped and held as a still. FLEX footage: Great Balls of Fire, Science@NASA and NASA's Goddard Space Flight Center, https://svs.gsfc.nasa.gov/11318/. Footage was trimmed and enlarged; the original audio is not used.
+
+Music: "Mesmerizing Galaxy" by Kevin MacLeod (incompetech.com), https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300011. Licensed under Creative Commons Attribution 4.0 International, https://creativecommons.org/licenses/by/4.0/. The track was trimmed, faded, reduced and ducked under narration; sound effects were softened.
+
+Production: motion graphics rendered with HyperFrames 0.9.52; final encode and mix prepared with FFmpeg (https://ffmpeg.org/). Text uses Inter and IBM Plex Mono, licensed under SIL Open Font License 1.1; notices are retained in the application’s public/licenses directory.
+
+Narration: AI-generated using OpenAI text-to-speech, Marin voice. The project used ChatGPT for architecture, Gemini for visualization prototypes, and OpenAI Codex for code prototyping, project files and validation. The application also uses configured OpenAI models for optional research assistance and voice.
+
+Final file: nova-ember-demo-final.mp4 (28 seconds, 1080p, 60 fps). Earlier demo cuts are superseded.
+
+Full source and production notes: https://github.com/ScientificAJ/Strawhat-Pirates-2026/blob/main/media/nova-ember-space-apps/credits.md
