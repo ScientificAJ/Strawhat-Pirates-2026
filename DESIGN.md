@@ -11,12 +11,12 @@ A top navigation connects Investigations, Compare, Data & models, Research assis
 ## Shared visual rules
 
 - Inter carries headings, prose and interface controls. IBM Plex Mono is reserved for code, identifiers and numerical/source representations.
-- Light canvas `#f5f7f8`, surface `#ffffff`, ink `#142c38`, secondary text `#4c626e`, action `#176273`, dividers `#d5dfe3`.
-- Dark canvas `#101d25`, surface `#172a35`, ink `#edf4f5`, secondary text `#b9cbd2`, action `#87d5df`.
-- Ember colors identify the existing brand and specific scientific series; they do not decorate unrelated controls. Scientific images retain their original appearance in both themes.
+- Light canvas `#f8f7fb`, surface `#ffffff`, ink `#142c38`, secondary text `#4c626e`, action `#075d75`, dividers `#d5dfe3`.
+- Dark canvas `#101b29`, surface `#182b3b`, ink `#edf4f5`, secondary text `#b9cbd2`, action `#87d5df`.
+- Warm ember, violet, blue and mint surfaces distinguish the home research paths; teal remains the action and link color. Scientific images retain their original appearance in both themes.
 - Main headings use a fixed 2rem scale; the home introduction uses a larger fixed display size. Body prose has a readable measure and line height. Data tables use bounded internal scrolling and retain all source columns.
 - Primary actions have at least 44px targets, clear disabled states and visible keyboard focus. Status uses text as well as color.
-- Surfaces separate task groups; headings and whitespace carry hierarchy. Subtle tonal gradients add depth to the research canvas and selected introductory surfaces without changing the meaning of status colors. Avoid nested cards and repeated warning blocks. Loading, empty and failure states explain the available next action.
+- Surfaces separate task groups; headings and whitespace carry hierarchy. Warm-to-cool gradients carry across the canvas, header, footer, primary actions and selected introductory surfaces without changing the meaning of status colors. Avoid nested cards and repeated warning blocks. Loading, empty and failure states explain the available next action.
 - Motion communicates feedback. The existing wordmark animation remains short, interruptible and compatible with reduced motion; research screens do not orchestrate decorative entrances.
 
 ## Research interaction rules
@@ -31,4 +31,4 @@ Conversation history and useful recent research appear automatically. Bookmarks 
 
 ## Rendered references
 
-The [assistant](docs/redesign-2026-11-15/assistant-desktop.png), [home](docs/redesign-2026-11-15/home-desktop.png), [investigations](docs/redesign-2026-11-15/investigations-desktop.png), [comparison](docs/redesign-2026-11-15/comparison-desktop.png), [data entry](docs/redesign-2026-11-15/data-models-desktop.png) and [phone home](docs/redesign-2026-11-15/home-mobile.png) are captures of the implementation, not concept art or user-study evidence.
+The [assistant](docs/redesign-2026-11-15/assistant-desktop.png), [home](docs/redesign-2026-11-15/home-desktop.png), [investigations](docs/redesign-2026-11-15/investigations-desktop.png), [comparison](docs/redesign-2026-11-15/comparison-desktop.png), [data entry](docs/redesign-2026-11-15/data-models-desktop.png) and [phone home](docs/redesign-2026-11-15/home-mobile.png) document the implementation before the later color update; they are not concept art or user-study evidence.

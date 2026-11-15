@@ -4,7 +4,7 @@
 
 ## 🚀 [Try the live demo](https://nova-ember.duckdns.org/app)
 
-Open the interactive dashboard to explore NASA combustion research, ask questions and follow the evidence.
+Hosted on Google Cloud, the interactive dashboard lets you explore NASA combustion research, ask questions and follow the evidence.
 
 Nova Ember helps people investigate fire in space. Built by **StrawHat Pirates** for the 2026 NASA Space Apps Challenge, it responds to [Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity Combustion Data](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/): making decades of microgravity combustion findings easier to find, compare and interpret for human space exploration.
 
@@ -46,23 +46,30 @@ GitHub does not preview the video at its current size; download it to watch. The
 
 ## Architecture
 
-This diagram shows the main components and data paths.
+The hosted app runs as a small set of services on one Google Cloud virtual machine. The diagram shows the request, data and background-work paths:
 
 ```mermaid
 flowchart LR
-    Browser["Browser<br/>Research interface and personal saves"] <--> Web["Next.js · React · TypeScript"]
-    Web <--> API["Python · FastAPI"]
-    API <--> DB[("PostgreSQL")]
-    Worker["Scientific worker<br/>Research, calculations and exports"] <--> DB
-    Corpus["Checked-in NASA research<br/>source captures and tables"] -->|"Imported on startup"| DB
-    Corpus -->|"Retained files"| Objects[("Object directory<br/>sources and artifacts")]
+    Browser["Browser<br/>Research interface and personal saves"] <-->|"HTTPS"| Proxy["Caddy<br/>HTTPS reverse proxy"]
+    Proxy <--> Web["Next.js · React · TypeScript"]
+    Web <-->|"/v1 requests"| API["Python · FastAPI"]
+    API <-->|"Records and jobs"| DB[("PostgreSQL + pgvector")]
+    Worker["Python worker<br/>Research, calculations and exports"] <-->|"Claim jobs and store results"| DB
+    Corpus["Checked-in NASA research<br/>selected sources and tables"] --> Seed["Seed and import"]
+    Seed --> DB
+    Seed --> Objects[("Persistent object storage<br/>source files and artifacts")]
     API <--> Objects
     Worker <--> Objects
-    API -.->|"Voice and model requests"| Models["Configured OpenAI services"]
-    Worker -.->|"Research and model requests"| Models
+    Worker -.->|"Selected source refreshes"| NASA["NASA research sources"]
+    API -.->|"Semantic search and voice"| Models["OpenAI services"]
+    Worker -.->|"Research assistant requests"| Models
 ```
 
-The web app presents the research journey; the API and worker coordinate discovery, analysis and exports through PostgreSQL. Personal research is saved in the browser. The model service supports the assistant and voice, while registered calculations run as defined scientific operations. The frontend uses **Next.js, React and TypeScript**, with **Vega** for visualization and **Three.js** for 3D graphics. The backend uses **Python, FastAPI and PostgreSQL**, with a scientific Python stack and Docker-based local services.
+The browser keeps personal research locally; the web app brings questions, evidence, comparisons and data exploration into one journey. Next.js forwards API requests to FastAPI, which reads the imported collection, starts jobs and serves results. PostgreSQL stores application records, job state and vector indexes; the worker claims background jobs for research, registered analysis and exports. Source files and generated artifacts live in persistent storage on the host. The checked-in collection is a curated subset, and the worker can check selected NASA source metadata for updates.
+
+The assistant, semantic search and voice use configured OpenAI services; registered calculations run in the application without a model call. The frontend uses **Next.js, React and TypeScript**, with **Vega** for charts and **Three.js** for 3D graphics. The Python backend uses **FastAPI**, a scientific Python stack and **PostgreSQL with pgvector**. Caddy, the web app, API, worker and database run in Docker Compose on the VM, with HTTPS at the public endpoint. Interactive Python and shell execution remain unavailable on the hosted VM because its separate sandbox has not been qualified.
+
+The repository also contains an optional systemd timer intended to check GitHub `main` and deploy application changes; installing and verifying it on the host is a separate step. See the [deployment notes](infra/production/README.md) for its behavior and limits.
 
 ## Run locally
 

@@ -1,29 +1,35 @@
 /* Shared research surfaces: the question and its evidence lead the interface. */
 .research-shell {
-  --canvas: #f5f7f8;
+  --canvas: #f8f7fb;
   --surface: #ffffff;
-  --subtle: #edf1f3;
+  --subtle: #eef1fa;
   --ink: #142c38;
   --secondary: #4c626e;
   --muted: #596f7b;
   --divider: #d5dfe3;
   --boundary: #899da7;
-  --action: #176273;
+  --action: #075d75;
   --action-ink: #fff;
-  --blue-wash: #e7f2f4;
+  --blue-wash: #e3f3f9;
   --ember: #a64425;
   --ember-wash: #fff0e9;
+  --violet-wash: #f1eafa;
+  --mint-wash: #e4f5ee;
+  --gold-wash: #fff1d9;
   --glass: #fff;
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
   font-size: 1rem;
-  background: linear-gradient(160deg, #edf4f4 0%, var(--canvas) 36rem);
+  background:
+    radial-gradient(ellipse at 8% 8%, #ffe9df 0%, transparent 32rem),
+    radial-gradient(ellipse at 86% 12%, #e4edff 0%, transparent 38rem),
+    linear-gradient(160deg, #faf6f5 0%, var(--canvas) 54rem);
 }
 .research-shell[data-theme="dark"] {
-  --canvas: #101d25;
-  --surface: #172a35;
-  --subtle: #203641;
+  --canvas: #101b29;
+  --surface: #182b3b;
+  --subtle: #243449;
   --ink: #edf4f5;
   --secondary: #b9cbd2;
   --muted: #a4bac4;
@@ -31,11 +37,17 @@
   --boundary: #7c97a4;
   --action: #87d5df;
   --action-ink: #102e37;
-  --blue-wash: #203f4a;
+  --blue-wash: #1c4051;
   --ember: #ffac89;
-  --ember-wash: #3d302b;
+  --ember-wash: #49312f;
+  --violet-wash: #382f4d;
+  --mint-wash: #1e403b;
+  --gold-wash: #44392a;
   --glass: #172a35;
-  background: linear-gradient(160deg, #142d35 0%, var(--canvas) 36rem);
+  background:
+    radial-gradient(ellipse at 8% 8%, #3a2536 0%, transparent 34rem),
+    radial-gradient(ellipse at 86% 12%, #1b3455 0%, transparent 40rem),
+    linear-gradient(160deg, #142a36 0%, var(--canvas) 54rem);
 }
 .research-shell :is(h1, h2, h3) {
   letter-spacing: -0.025em;
@@ -71,9 +83,13 @@
   min-height: 44px;
 }
 .research-shell .button-primary {
-  background: var(--action);
+  background: linear-gradient(115deg, #075970, #343b89);
   color: var(--action-ink);
-  border-color: var(--action);
+  border-color: #244c76;
+}
+.research-shell[data-theme="dark"] .button-primary {
+  background: linear-gradient(115deg, #8cdddf, #b9bcff);
+  border-color: #a1d2e5;
 }
 .research-shell .button-primary:hover:not(:disabled) {
   background: var(--ink);
@@ -93,8 +109,11 @@
   display: flex;
   align-items: center;
   gap: 32px;
-  background: var(--surface);
+  background: linear-gradient(100deg, #fffaf6, #f5f8ff 55%, #f5f1fb);
   border-bottom: 1px solid var(--divider);
+}
+.research-shell[data-theme="dark"] .site-header {
+  background: linear-gradient(100deg, #25313f, #192e45 55%, #2b2945);
 }
 .site-header .wordmark {
   padding: 0;
@@ -138,7 +157,7 @@
   position: absolute;
   bottom: 0;
   inset-inline: 0;
-  background: var(--action);
+  background: linear-gradient(90deg, #db6a43, #8a63b1, #14899b);
 }
 .site-tools {
   display: flex;
@@ -197,6 +216,12 @@
   color: var(--secondary);
   font-size: 0.8125rem;
   line-height: 1.5;
+  background: linear-gradient(
+    110deg,
+    var(--ember-wash),
+    var(--violet-wash),
+    var(--blue-wash)
+  );
 }
 .site-footer nav {
   display: flex;
@@ -291,7 +316,7 @@
   margin-bottom: 26px;
 }
 .home-question {
-  background: var(--surface);
+  background: linear-gradient(145deg, var(--surface), var(--violet-wash));
   border: 1px solid var(--boundary);
   border-radius: 12px;
   padding: 24px;
@@ -375,7 +400,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, #1b4550, #102d3a);
+  background: linear-gradient(145deg, #153d52 0%, #472848 58%, #783c32 100%);
   color: #fff;
   border-radius: 12px;
   overflow: hidden;
@@ -492,11 +517,24 @@
 .science-topic-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 48px;
+  gap: 12px;
 }
 .science-topic-list > article {
-  border-top: 1px solid var(--divider);
-  padding: 24px 0;
+  border: 1px solid var(--divider);
+  border-radius: 12px;
+  padding: 24px;
+}
+.science-topic-list > article:nth-child(4n + 1) {
+  background: var(--ember-wash);
+}
+.science-topic-list > article:nth-child(4n + 2) {
+  background: var(--violet-wash);
+}
+.science-topic-list > article:nth-child(4n + 3) {
+  background: var(--blue-wash);
+}
+.science-topic-list > article:nth-child(4n + 4) {
+  background: var(--mint-wash);
 }
 .science-topic-link {
   display: flex;
@@ -547,7 +585,12 @@
   grid-template-columns: 1.3fr 1fr;
   gap: 64px;
   padding: 30px;
-  background: linear-gradient(135deg, var(--blue-wash), var(--subtle));
+  background: linear-gradient(
+    115deg,
+    var(--gold-wash),
+    var(--violet-wash) 52%,
+    var(--blue-wash)
+  );
   border-radius: 12px;
 }
 .home-data-path p {
@@ -788,7 +831,7 @@
     gap: 16px;
   }
   .science-topic-list {
-    gap: 0 24px;
+    gap: 12px;
   }
   .site-selection {
     gap: 12px;
