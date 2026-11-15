@@ -28,9 +28,9 @@ Scientific context stays close to the evidence: source locations and units accom
 
 ## See Nova Ember
 
-[Open Nova Ember](https://nova-ember.duckdns.org/app) · [Watch the revised 28-second demo](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md)
+[Open Nova Ember](https://nova-ember.duckdns.org/app) · [Download the revised 28-second demo](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md)
 
-The screenshots below show the local application on 15 November 2026.
+GitHub does not preview the video at its current size; the file can be downloaded. The screenshots below show the local application on 15 November 2026.
 
 ![Nova Ember comparing the objectives and approaches of two NASA combustion investigations](docs/redesign-2026-11-15/comparison-desktop.png)
 
