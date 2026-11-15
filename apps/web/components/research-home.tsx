@@ -32,32 +32,45 @@ const questions = [
 ];
 const topics = [
   {
-    title: "How do materials catch fire and burn?",
+    title: "Prevention: How do materials catch fire and burn?",
     description:
       "Explore solid fuels, flame spread and the conditions an experiment tested.",
-    query: "solid",
+    href: "/app/investigations?focus=prevention",
     label: "Materials & flame spread",
+    studies: [
+      { name: "BASS", id: "PSI-26" },
+      { name: "BASS-II", id: "PSI-25" },
+    ],
   },
   {
-    title: "How can a fire be detected?",
+    title: "Detection: How can a fire be detected?",
     description:
       "Find smoke and aerosol investigations relevant to detecting a fire early.",
-    query: "smoke",
+    href: "/app/investigations?focus=detection",
     label: "Smoke & detection",
+    studies: [
+      { name: "SAME", id: "PSI-102" },
+      { name: "SAME-R", id: "PSI-101" },
+    ],
   },
   {
-    title: "What makes a flame go out?",
+    title: "Suppression: What makes a flame go out?",
     description:
       "Investigate fuel droplets, surrounding gases and flame extinction.",
-    query: "extinguishment",
+    href: "/app/investigations?focus=suppression",
     label: "Extinction & suppression",
+    studies: [
+      { name: "FLEX", id: "PSI-69" },
+      { name: "FLEX-2", id: "PSI-68" },
+    ],
   },
   {
     title: "What might this mean for Earth?",
     description:
-      "Follow NASA’s application research and examine where conditions differ.",
+      "BASS-II research informs combustion models that may help study building and wildland fires.",
     href: "/app/lab/evidence/earth",
     label: "Earth applications",
+    studies: [{ name: "BASS-II", id: "PSI-25" }],
   },
 ];
 
@@ -170,6 +183,10 @@ export function ResearchHome({
           </p>
           <p className="home-purpose">
             Ask a question, follow the evidence and put the data to work.
+          </p>
+          <p className="home-purpose">
+            Focus: fire in spacecraft and habitats; propulsion combustion is
+            outside this scope.
           </p>
           <form
             className="home-question"
@@ -292,19 +309,33 @@ export function ResearchHome({
         {error && <ErrorState message={error} retry={retry} />}
         <div className="science-topic-list">
           {topics.map((topic) => (
-            <Link
-              key={topic.title}
-              href={
-                topic.href ??
-                `/app/investigations?q=${encodeURIComponent(topic.query!)}`
-              }
-            >
-              <div>
-                <h3>{topic.title}</h3>
-                <p>{topic.description}</p>
+            <article key={topic.title}>
+              <Link className="science-topic-link" href={topic.href}>
+                <div>
+                  <h3>{topic.title}</h3>
+                  <p>{topic.description}</p>
+                </div>
+                <ArrowRight size={21} />
+              </Link>
+              <div className="science-topic-actions">
+                <span>Start with:</span>
+                {topic.studies.map((study) => (
+                  <Link
+                    key={study.id}
+                    href={`/app/investigations/${study.id}?snapshot=${snapshotId}`}
+                  >
+                    {study.name}
+                  </Link>
+                ))}
+                {topic.studies.length > 1 && (
+                  <Link
+                    href={`/app/compare?ids=${topic.studies.map((study) => study.id).join(",")}&snapshot=${snapshotId}`}
+                  >
+                    Compare and rank
+                  </Link>
+                )}
               </div>
-              <ArrowRight size={21} />
-            </Link>
+            </article>
           ))}
         </div>
       </section>

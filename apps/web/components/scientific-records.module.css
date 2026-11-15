@@ -1,13 +1,13 @@
 .count {
-  margin: 6px 0 16px;
+  margin: 8px 0 20px;
   color: var(--secondary);
   font-size: 0.875rem;
 }
 
 .tableHint {
-  margin: 12px 0;
+  margin: 14px 0;
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   line-height: 1.6;
 }
 
@@ -22,19 +22,21 @@
 .values {
   border-collapse: collapse;
   width: 100%;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   line-height: 1.6;
+  font-variant-numeric: tabular-nums;
 }
 
 .values th,
 .values td {
   min-width: 120px;
   max-width: 280px;
-  padding: 12px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--divider);
   vertical-align: top;
   text-align: left;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .values thead th {
@@ -73,8 +75,8 @@
 }
 
 .interpretation {
-  margin-top: 20px;
-  font-size: 0.8125rem;
+  margin-top: 24px;
+  font-size: 0.875rem;
   line-height: 1.65;
 }
 
@@ -83,6 +85,10 @@
   padding-block: 10px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.interpretation summary:hover {
+  color: var(--action);
 }
 
 .interpretation code {

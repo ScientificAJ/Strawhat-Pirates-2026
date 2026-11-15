@@ -1,7 +1,7 @@
 .workbench {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 24px;
+  gap: 28px;
   min-width: 0;
 }
 .toolbar,
@@ -37,9 +37,9 @@
 }
 .scope {
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   border-block: 1px solid var(--divider);
-  padding: 10px 0;
+  padding: 14px 0;
   justify-content: space-between;
   overflow-wrap: anywhere;
 }
@@ -54,12 +54,12 @@
   align-items: start;
 }
 .filters {
-  padding: 20px;
+  padding: 22px;
   background: var(--surface);
   border: 1px solid var(--divider);
   border-radius: 12px;
   display: grid;
-  gap: 20px;
+  gap: 24px;
 }
 .filters fieldset,
 .form fieldset {
@@ -79,9 +79,10 @@
 .filters label,
 .field {
   display: grid;
-  gap: 6px;
-  font-size: 0.8125rem;
+  gap: 8px;
+  font-size: 0.875rem;
   color: var(--secondary);
+  line-height: 1.5;
 }
 .filters input,
 .filters select,
@@ -95,9 +96,9 @@
   background: var(--surface);
   color: var(--ink);
   border: 1px solid var(--boundary);
-  border-radius: 7px;
+  border-radius: 8px;
   min-height: 44px;
-  padding: 9px 11px;
+  padding: 10px 12px;
   max-width: 100%;
   width: 100%;
 }
@@ -157,6 +158,9 @@
   color: var(--secondary);
   text-decoration: none;
   min-height: 44px;
+  transition:
+    color var(--motion-feedback) ease,
+    background var(--motion-feedback) ease;
 }
 .tabs [aria-selected="true"],
 .tabs [aria-current="page"] {
@@ -178,18 +182,20 @@
   width: 100%;
   background: var(--surface);
   font-size: 0.875rem;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
 }
 .table th {
   text-align: left;
   color: var(--secondary);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   background: var(--subtle);
-  padding: 12px 14px;
+  padding: 14px 16px;
   white-space: nowrap;
 }
 .table td {
-  padding: 14px;
+  padding: 16px;
   border-bottom: 1px solid var(--divider);
   vertical-align: top;
 }
@@ -208,6 +214,9 @@
 }
 .table tr:has(input:checked) {
   background: var(--blue-wash);
+}
+.table tbody tr:hover:not(:has(input:checked)) {
+  background: var(--subtle);
 }
 .table small {
   display: block;
@@ -235,15 +244,16 @@
   background: var(--surface);
   border: 1px solid var(--divider);
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 .resultCard p {
   color: var(--secondary);
   font-size: 0.875rem;
   margin: 0;
+  line-height: 1.65;
 }
 .resultCard h2 {
   margin: 0;
@@ -270,7 +280,7 @@
   align-items: center;
   border: 1px solid var(--divider);
   border-radius: 6px;
-  padding: 5px 9px;
+  padding: 6px 10px;
   background: var(--surface);
   font-size: 0.8125rem;
   color: var(--ink);
@@ -284,6 +294,11 @@
   min-width: 24px;
   min-height: 28px;
   padding: 2px;
+  border-radius: 4px;
+}
+.chip button:hover {
+  color: var(--action);
+  background: var(--subtle);
 }
 .empty {
   border: 1px solid var(--divider);
@@ -364,12 +379,12 @@
   display: grid;
   grid-template-columns: minmax(120px, 1fr) 2fr;
   gap: 14px;
-  padding: 11px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--divider);
 }
 .facts dt {
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 }
 .facts dd {
   margin: 0;
@@ -401,7 +416,7 @@
 .fieldGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
 .form > h2 {
   margin-bottom: 0;
@@ -421,7 +436,7 @@
   background: var(--surface);
   border: 1px solid var(--divider);
   border-radius: 12px;
-  padding: 22px;
+  padding: 24px;
 }
 .surface > h2 {
   margin-bottom: 14px;
@@ -463,7 +478,7 @@
   margin: 0;
 }
 .sourceList > li {
-  padding: 18px 0;
+  padding: 22px 0;
   border-bottom: 1px solid var(--divider);
   display: grid;
   gap: 10px;

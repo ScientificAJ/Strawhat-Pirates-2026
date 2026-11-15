@@ -227,6 +227,19 @@ export function DiscoveryWorkbench({
       if (params.has("accession"))
         filters.accession = params.get("accession") ?? "";
       if (initialQuery) filters.text = initialQuery;
+      const focus = params.get("focus");
+      const focusValues: Record<string, string> = {
+        prevention: "Material flammability",
+        detection: "Detection research",
+        suppression: "Suppression research",
+      };
+      if (focus && focusValues[focus]) {
+        filters = {
+          ...initialFilters,
+          catalogFacets: { purpose: [focusValues[focus]] },
+        };
+        chosen = {};
+      }
       const savedId = params.get("saved");
       if (savedId) {
         try {
@@ -675,6 +688,41 @@ export function DiscoveryWorkbench({
                 return;
               }
               const next = { ...initialFilters, text: term };
+              setDraft(next);
+              setApplied(next);
+              setCursor(null);
+              setPrevious([]);
+              setMode("exact");
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className={journey.topics} aria-label="Fire safety research focus">
+        {[
+          ["Prevention", "Material flammability"],
+          ["Detection", "Detection research"],
+          ["Suppression", "Suppression research"],
+        ].map(([label, focus]) => (
+          <button
+            className="button button-small"
+            type="button"
+            key={focus}
+            aria-pressed={
+              applied.catalogFacets?.purpose?.includes(focus) ?? false
+            }
+            onClick={() => {
+              if (selectedCount && applied.entity === "records") {
+                setProblem(
+                  "Clear the selected records before exploring investigation topics.",
+                );
+                return;
+              }
+              const next = {
+                ...initialFilters,
+                catalogFacets: { purpose: [focus] },
+              };
               setDraft(next);
               setApplied(next);
               setCursor(null);

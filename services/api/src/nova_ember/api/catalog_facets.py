@@ -41,6 +41,18 @@ ANNOTATIONS: dict[str, tuple[str, tuple[tuple[str, str, str, str], ...]]] = {
             ("outcome", "Extinction limits", "objective", "extinction limits"),
         ),
     ),
+    "PSI-20": (
+        "ea118e19d02785f54d246406aacea93878053ff95ddd5bdca44bd29c09a753d1",
+        (
+            (
+                "purpose",
+                "Material flammability",
+                "objective",
+                "burning conditions in a quiescent microgravity ambient "
+                "in terms of material properties",
+            ),
+        ),
+    ),
     "PSI-21": (
         "99a5e58119a9c01ec1b57dfe03d696fb8d05b494a3658338b0f2abb077a72ac5",
         (
@@ -126,6 +138,12 @@ ANNOTATIONS: dict[str, tuple[str, tuple[tuple[str, str, str, str], ...]]] = {
         (
             (
                 "purpose",
+                "Detection research",
+                "researchImpacts",
+                "development of novel fire and smoke detection systems",
+            ),
+            (
+                "purpose",
                 "Aerosol instrument characterization",
                 "objective",
                 "quantify smoke aerosols",
@@ -199,9 +217,27 @@ ANNOTATIONS: dict[str, tuple[str, tuple[tuple[str, str, str, str], ...]]] = {
             ("outcome", "Fire growth", "objective", "how rapidly a large scale fire grows"),
         ),
     ),
+    "PSI-100": (
+        "9c836955a28ff129b2f239f9499e06f4ca52ba58f7a03d384a7bd0528c8bbe10",
+        (
+            (
+                "purpose",
+                "Material flammability",
+                "objective",
+                "material flammability screening test",
+            ),
+            ("outcome", "Fire growth", "objective", "how rapidly a large scale fire grows"),
+        ),
+    ),
     "PSI-101": (
         "e0aa75d015705a5943b51dbb4a8ba52751a35e4cafc2307d9201d77ebed711a5",
         (
+            (
+                "purpose",
+                "Detection research",
+                "researchImpacts",
+                "technology for an advanced fire detector",
+            ),
             (
                 "purpose",
                 "Smoke characterization",

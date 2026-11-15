@@ -173,6 +173,12 @@
   min-width: 620px;
 }
 
+.comparisonScrollHint {
+  color: var(--secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
 .comparisonTable td {
   vertical-align: top;
   min-width: 220px;
@@ -182,6 +188,11 @@
 
 .comparisonTable th:first-child {
   min-width: 140px;
+  vertical-align: top;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--subtle);
 }
 
 .advanced {
@@ -222,5 +233,14 @@
 
   .investigation {
     padding: 20px;
+  }
+
+  .comparisonTable th:first-child {
+    width: 112px;
+    min-width: 112px;
+    max-width: 112px;
+    padding-inline: 10px;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }

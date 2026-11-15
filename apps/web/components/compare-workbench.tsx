@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Investigation, useResource } from "../lib/api";
+import { compareSourceRecords } from "../lib/source-record-comparison";
 import {
   RecordHit,
   recordIdentity,
@@ -101,6 +102,23 @@ const applicability = {
   flow_gravity: 0.2,
   apparatus_measurement: 0.15,
 };
+const comparisonStartingPoints = [
+  { label: "ACME gas flames", ids: ["PSI-20", "PSI-22", "PSI-159"] },
+  { label: "MDCA droplet studies", ids: ["PSI-69", "PSI-68", "PSI-39"] },
+  { label: "Glovebox flame spread", ids: ["PSI-25", "PSI-26", "PSI-107"] },
+  {
+    label: "Saffire spacecraft fires",
+    ids: [
+      "PSI-98",
+      "PSI-99",
+      "PSI-100",
+      "NASA-SAFFIRE-IV",
+      "NASA-SAFFIRE-V",
+      "NASA-SAFFIRE-VI",
+    ],
+  },
+  { label: "Smoke and dust detection", ids: ["PSI-101", "PSI-102", "PSI-47"] },
+];
 type Assessment = {
   components: Record<string, string>;
   evidence: Record<string, string>;
@@ -305,6 +323,7 @@ export function ComparisonWorkbench({
     }
     if (next.length > 2) setView("matrix");
     setProblem("");
+    setRankResult(null);
     setSelected(next);
     setProfiles(
       next.map(
@@ -313,6 +332,18 @@ export function ComparisonWorkbench({
           profile(value, snapshotId),
       ),
     );
+    updateContext({ investigations: next });
+  }
+  function selectStartingPoint(ids: string[]) {
+    const available = new Set(
+      (catalog.data?.items ?? []).map((item) => item.accession),
+    );
+    const next = ids.filter((id) => available.has(id));
+    setSelected(next);
+    setProfiles(next.map((id) => profile(id, snapshotId)));
+    setView(next.length > 2 ? "matrix" : "side");
+    setProblem("");
+    setRankResult(null);
     updateContext({ investigations: next });
   }
   async function save() {
@@ -524,6 +555,10 @@ export function ComparisonWorkbench({
     [];
   const plotted = data?.conditions.find((item) => item.field === selectedField);
   const plottedValues = ids.map((item) => plotted?.values_by_run[item]);
+  const sourceDifferences =
+    recordItems.length === 2
+      ? compareSourceRecords(recordItems[0].record, recordItems[1].record)
+      : [];
   const plotAllowed =
     plottedValues.length > 1 &&
     plottedValues.every(
@@ -603,6 +638,23 @@ export function ComparisonWorkbench({
             <ErrorState message={catalog.error} retry={catalog.reload} />
           )}
           {catalog.loading && <LoadingRows label="Finding investigations" />}
+          <p className={s.help}>
+            Start with a research group, or choose individual investigations
+            below.
+          </p>
+          <div className={s.actions} aria-label="Comparison starting points">
+            {comparisonStartingPoints.map((point) => (
+              <button
+                className="button"
+                type="button"
+                key={point.label}
+                disabled={!catalog.data}
+                onClick={() => selectStartingPoint(point.ids)}
+              >
+                {point.label}
+              </button>
+            ))}
+          </div>
           <div className={journey.comparisonPicker}>
             {catalog.data?.items.map((item) => (
               <label className={journey.comparisonChoice} key={item.accession}>
@@ -623,7 +675,19 @@ export function ComparisonWorkbench({
       {!recordItems.length && selected.length >= 2 && catalog.data && (
         <section className={journey.researchSummary}>
           <h2>Research side by side</h2>
-          <div className={s.scroll}>
+          <p
+            id="comparison-scroll-hint"
+            className={journey.comparisonScrollHint}
+          >
+            Scroll horizontally to see all investigations.
+          </p>
+          <div
+            className={s.scroll}
+            role="region"
+            aria-label="Research comparison table"
+            aria-describedby="comparison-scroll-hint"
+            tabIndex={0}
+          >
             <table className={s.table + " " + journey.comparisonTable}>
               <thead>
                 <tr>
@@ -726,6 +790,61 @@ export function ComparisonWorkbench({
           >
             Ask about these investigations <ArrowRight size={16} />
           </button>
+        </section>
+      )}
+      {sourceDifferences.length > 0 && (
+        <section className={journey.researchSummary}>
+          <h2>Source records side by side</h2>
+          <p>
+            Compare the reported values and follow either record to its source.
+          </p>
+          <div className={s.scroll}>
+            <table className={s.table}>
+              <thead>
+                <tr>
+                  <th scope="col">Source field</th>
+                  {recordItems.map((item) => (
+                    <th scope="col" key={recordIdentity(item)}>
+                      <Link href={runHref(item, snapshotId)}>
+                        {item.accession} · line {item.record.source_row}
+                      </Link>
+                    </th>
+                  ))}
+                  <th scope="col">Comparison</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sourceDifferences.map((row, index) => (
+                  <tr key={index}>
+                    <th scope="row">
+                      {row.left?.source_column ||
+                        row.right?.source_column ||
+                        "Source field"}
+                    </th>
+                    {[row.left, row.right].map((field, side) => (
+                      <td key={side}>
+                        {field?.raw_text?.trim() || "Not reported"}
+                        {field?.original_unit && (
+                          <small>Reported unit: {field.original_unit}</small>
+                        )}
+                        {field?.source_column &&
+                          field.source_column !==
+                            (row.left?.source_column ||
+                              row.right?.source_column) && (
+                            <small>{field.source_column}</small>
+                          )}
+                      </td>
+                    ))}
+                    <td>
+                      {row.status === "not_comparable"
+                        ? "Not comparable"
+                        : human(row.status)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
       {profiles.length < 2 ? (

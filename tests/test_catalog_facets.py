@@ -96,6 +96,30 @@ def test_annotation_hash_change_does_not_reuse_old_material_or_phase_scope(servi
     assert record["metadata_sha256"] == ANNOTATIONS["PSI-69"][0]
 
 
+def test_challenge_investigations_are_searchable_and_safety_focus_is_source_anchored(service):
+    for term, accession in (
+        ("DAFT-2", "PSI-47"),
+        ("SAME-R", "PSI-101"),
+        ("CFI-G", "PSI-159"),
+        ("E-FIELD", "PSI-22"),
+        ("SPICE", "PSI-107"),
+        ("SLICE", "PSI-106"),
+    ):
+        result = service.query_investigations(InvestigationQuery(text=term))
+        assert accession in {item["accession"] for item in result["items"]}
+
+    catalog = service.catalog_classifications(service.corpus.snapshot())
+    for accession, purpose in (
+        ("PSI-20", "Material flammability"),
+        ("PSI-100", "Material flammability"),
+        ("PSI-47", "Detection research"),
+        ("PSI-101", "Detection research"),
+    ):
+        item = next(item for item in catalog[accession]["purpose"] if item["value"] == purpose)
+        assert item["anchor"]["field"] in {"objective", "researchImpacts"}
+        assert item["origin"] == "source_pinned_catalog_annotation"
+
+
 def test_multi_facets_use_or_within_and_across_and_disjunctive_counts(service):
     query = InvestigationQuery(
         catalog_facets={"material": ("Nomex", "Ultem"), "sensor": ("Thermocouples",)}, limit=1

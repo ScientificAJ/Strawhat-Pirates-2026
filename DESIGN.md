@@ -16,7 +16,7 @@ A top navigation connects Investigations, Compare, Data & models, Research assis
 - Ember colors identify the existing brand and specific scientific series; they do not decorate unrelated controls. Scientific images retain their original appearance in both themes.
 - Main headings use a fixed 2rem scale; the home introduction uses a larger fixed display size. Body prose has a readable measure and line height. Data tables use bounded internal scrolling and retain all source columns.
 - Primary actions have at least 44px targets, clear disabled states and visible keyboard focus. Status uses text as well as color.
-- Surfaces separate task groups; headings and whitespace carry hierarchy. Avoid nested cards and repeated warning blocks. Loading, empty and failure states explain the available next action.
+- Surfaces separate task groups; headings and whitespace carry hierarchy. Subtle tonal gradients add depth to the research canvas and selected introductory surfaces without changing the meaning of status colors. Avoid nested cards and repeated warning blocks. Loading, empty and failure states explain the available next action.
 - Motion communicates feedback. The existing wordmark animation remains short, interruptible and compatible with reduced motion; research screens do not orchestrate decorative entrances.
 
 ## Research interaction rules
