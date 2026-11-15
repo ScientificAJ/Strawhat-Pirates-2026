@@ -47,7 +47,7 @@ If time permits, add one separate calculation or modeling example. A simple inde
 
 ## Before submitting
 
-- The official challenge Details and Resources were read in the browser on 15 November 2026; the [product brief records the verified list](../MASTER_BRIEF.md#communication-references). Recheck it for later additions before submission. The live PSI list returned 26 records while the retained corpus contains 24; do not claim the additional studies have been integrated until their source release is actually reviewed.
+- The official challenge Details and Resources were read in the browser on 15 November 2026; the [product brief records the verified list](../MASTER_BRIEF.md#communication-references). Recheck it for later additions before submission. The broad keyword search returned 26 records across categories; all 24 investigations in the Combustion Science category match the retained corpus. Distinguish metadata coverage, retained files and interpreted data, and identify broader NASA studies without implying their datasets are available in PSI.
 - Check the current submission form, eligibility, deadline and organizer rules through official sources. The old brief's legal/disclosure summaries are historical, not a substitute for the governing requirements at submission time.
 - Verify every visible scientific number, chart label and source in the recording against the final app and retained evidence. Use actual provider output or identify its absence; synthetic interface fixtures are not research results.
 - Inspect the public URL in a fresh browser. Run the meaningful source, comparison, data/export and assistant paths; confirm denied access to another visitor's private tasks.
