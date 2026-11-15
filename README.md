@@ -4,6 +4,14 @@
 
 Nova Ember helps people explore NASA combustion research and follow the evidence behind questions about fire in space. Built by **StrawHat Pirates** for the 2026 NASA Space Apps Challenge, it responds to [Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity Combustion Data](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/): making decades of microgravity combustion findings easier to find, compare and interpret for human space exploration.
 
+## 🎬 Check out the demo
+
+**[▶ Download and watch the 28-second Nova Ember demo](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4)**
+
+[Explore the live application](https://nova-ember.duckdns.org/app) · [Demo credits and sources](media/nova-ember-space-apps/credits.md)
+
+GitHub does not preview the video at its current size; download it to watch.
+
 ## The challenge and mission
 
 On Earth, hot combustion gases rise and draw fresh air toward a flame. In microgravity, that buoyancy-driven flow is greatly reduced, so ventilation and diffusion play different roles in how a flame grows, spreads and goes out. Understanding those differences matters when considering fire safety in spacecraft and future habitats.
@@ -28,9 +36,7 @@ Scientific context stays close to the evidence: source locations and units accom
 
 ## See Nova Ember
 
-[Open Nova Ember](https://nova-ember.duckdns.org/app) · [Download the revised 28-second demo](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md)
-
-GitHub does not preview the video at its current size; the file can be downloaded. The screenshots below show the local application on 15 November 2026.
+The screenshots below show the local application on 15 November 2026.
 
 ![Nova Ember comparing the objectives and approaches of two NASA combustion investigations](docs/redesign-2026-11-15/comparison-desktop.png)
 
