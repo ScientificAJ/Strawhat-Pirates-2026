@@ -21,6 +21,7 @@ from .records import CohortInputs, freeze_selection
 from .repository import Corpus
 from .science import compare_investigations, flex_endpoints
 from .scientific_toolbox import (
+    BassFireIllustrationInput,
     Empty,
     ScientificToolbox,
     ScientificToolCall,
@@ -1021,6 +1022,8 @@ class ResearchTools:
             origin = "prediction"
         elif inputs.name == "prepare_source_visualization":
             origin = "source_media"
+        elif inputs.name == "prepare_bass_fire_illustration":
+            origin = "model_proposal"
         return self.fact(
             inputs.name,
             result,
@@ -1048,6 +1051,13 @@ class ResearchTools:
             )
         )
 
+    def prepare_bass_fire_illustration(self, inputs: BassFireIllustrationInput) -> dict:
+        return self.run_scientific_tool(
+            ScientificToolCall(
+                name="prepare_bass_fire_illustration", parameters=inputs.model_dump(mode="json")
+            )
+        )
+
     def registry(self, *, enabled: Callable[[], bool] | None = None) -> list[Tool]:
         enabled_turn_input: object | None = None
         enabled_for_turn = True
@@ -1066,11 +1076,21 @@ class ResearchTools:
 
         definitions: list[tuple[str, type[BaseModel], Callable[..., dict], str]] = [
             (
+                "prepare_bass_fire_illustration",
+                BassFireIllustrationInput,
+                self.prepare_bass_fire_illustration,
+                "Generate an animated BASS-II fire illustration with a retained test row as "
+                "context. The image is illustrative, not a measurement or physical simulation. "
+                "Use directly for BASS-II fire visualization requests, unless NASA imagery "
+                "is requested. Pass a requested or selected PSI-25 asset and row when provided; "
+                "otherwise the first retained test row is used.",
+            ),
+            (
                 "prepare_source_visualization",
                 SourceVisualizationInput,
                 self.prepare_source_visualization,
-                "Show original retained imagery from an investigation. For a request such as "
-                "visualize BASS-II fire, use this directly with its accession: it selects a "
+                "Show original retained imagery from an investigation when an image or video "
+                "from NASA is requested: it selects a "
                 "source image by default and needs no calibration or simulation parameters. "
                 "Returns a prepared inline image/video artifact, not a physical prediction.",
             ),

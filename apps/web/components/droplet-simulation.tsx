@@ -46,6 +46,13 @@ function referenceLabel(reference: string) {
   }
 }
 
+function reportedCondition(line: string): string {
+  const separator = line.indexOf("=");
+  return separator >= 0
+    ? line.slice(separator + 1).trim()
+    : line.replace(/^[^:]+:\s*/, "");
+}
+
 export function DropletSimulation({
   snapshotId,
   accession,
@@ -342,15 +349,6 @@ export function DropletSimulation({
       )}
       {result && point && (
         <>
-          <p className={styles.help}>
-            Parameter provenance:{" "}
-            <strong>
-              {result.parameter_origin === "source_reported_nominal"
-                ? "source-reported nominal FLEX-007 values"
-                : "analyst assumptions"}
-            </strong>
-            . The constant-K evolution remains an idealized model.
-          </p>
           <SimulationScene
             diameterRatio={Math.min(
               1,
@@ -359,6 +357,57 @@ export function DropletSimulation({
             playing={playing && canPlay && !stale}
             reducedMotion={reduceMotion}
           />
+          {isSourceDropletVisualization(result) ? (
+            <section aria-label="FLEX-007 source conditions">
+              <h3>FLEX-007 source conditions</h3>
+              <dl className={styles.values}>
+                <div>
+                  <dt>Investigation / test</dt>
+                  <dd>PSI-69 · FLEX-007</dd>
+                </div>
+                {[
+                  ["Fuel:", "Fuel"],
+                  ["O2 Mole Fraction", "Oxygen mole fraction"],
+                  ["Pressure (atm)", "Pressure (atm)"],
+                  ["Temperature (K)", "Temperature (K)"],
+                ].map(([key, label]) => {
+                  const line = result.source_conditions[key];
+                  return line ? (
+                    <div key={key}>
+                      <dt>{label}</dt>
+                      <dd>{reportedCondition(line)}</dd>
+                    </div>
+                  ) : null;
+                })}
+                <div>
+                  <dt>Initial diameter · source nominal</dt>
+                  <dd>{display(result.request.initial_diameter_mm)} mm</dd>
+                </div>
+                <div>
+                  <dt>Burning constant · source average</dt>
+                  <dd>
+                    {display(result.request.burning_constant_mm2_s)} mm²/s
+                  </dd>
+                </div>
+              </dl>
+              <p className={styles.help}>
+                The droplet follows the calculated diameter; the flame shell is
+                illustrative.{" "}
+                <a
+                  href={`/app/investigations/PSI-69?snapshot=${snapshotId}&section=sources`}
+                >
+                  Explore FLEX sources
+                </a>
+              </p>
+            </section>
+          ) : (
+            <p className={styles.help}>
+              Analyst inputs: D₀ {display(result.request.initial_diameter_mm)}{" "}
+              mm · K {display(result.request.burning_constant_mm2_s)} mm²/s. The
+              droplet follows the calculated diameter; the flame shell is
+              illustrative.
+            </p>
+          )}
           <div className={styles.playback}>
             <button
               className="button"

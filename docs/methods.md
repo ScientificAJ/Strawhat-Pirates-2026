@@ -146,6 +146,12 @@ Spacecraft/station, lunar, Mars, rover, suit and Earth-transfer presets identify
 research contexts while leaving unspecified numerical conditions unknown. The
 30%-oxygen/10.2-psia example is explicitly hypothetical, not a mission standard.
 
+The BASS-II fire illustration is a generated visual linked to a specific
+retained test row. Its sample and gas-condition labels come from that row; the
+flame's shape, color and motion are illustrative and are not calculated from
+those conditions. The FLEX-007 droplet view separately uses a D² calculation
+and shows the source-reported nominal inputs alongside it.
+
 ## Small regression and prediction
 
 `nova_ember.modeling.regression.evaluate_regression` implements one fixed

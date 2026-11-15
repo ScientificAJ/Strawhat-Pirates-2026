@@ -140,3 +140,11 @@ conflict protection.
 
 These observations cover the local application and configured model service.
 Public deployment and hosted acceptance remain separate work in the active plan.
+
+### Later correction: BASS-II visualization
+
+The source-image result above was the original outcome, but it did not fulfill a
+request to generate a fire visualization. A subsequent implementation adds a
+generated BASS-II flame illustration linked to a retained test row. Its appearance
+is illustrative; the row's reported conditions are displayed as source context.
+Requests for original NASA photographs or video retain the source-media path.

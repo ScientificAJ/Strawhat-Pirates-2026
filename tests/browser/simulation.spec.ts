@@ -246,6 +246,14 @@ test("FLEX-007 source inputs retain exact units, text anchors and visibility qua
   expect(returned.ok()).toBe(true);
   const source = await returned.json();
   expect(source.parameter_origin).toBe("source_reported_nominal");
+  const sourceConditions = panel.getByRole("region", {
+    name: "FLEX-007 source conditions",
+  });
+  await expect(sourceConditions).toContainText("PSI-69 · FLEX-007");
+  await expect(sourceConditions).toContainText("Oxygen mole fraction");
+  await expect(sourceConditions).toContainText("Pressure (atm)");
+  await expect(sourceConditions).toContainText("1.82 mm");
+  await expect(sourceConditions).toContainText("0.68 mm²/s");
   expect(source.parameter_sources.initial_diameter).toMatchObject({
     value: 1.82,
     unit: "mm",

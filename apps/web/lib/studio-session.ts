@@ -190,7 +190,10 @@ export function sessionArtifacts(session: StudioSession): StudioArtifact[] {
     records(turn.result?.facts).map((fact) => {
       const content = object(fact.content);
       let kind = "Evidence";
-      if (content.artifact_type === "educational_simulation")
+      if (
+        content.artifact_type === "educational_simulation" ||
+        content.artifact_type === "bass_fire_illustration"
+      )
         kind = "Simulations";
       else if (content.plot || content.vega_lite) kind = "Figures";
       else if (content.dashboard || content.components) kind = "Dashboard";

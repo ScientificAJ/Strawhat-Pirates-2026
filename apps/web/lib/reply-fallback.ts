@@ -32,8 +32,12 @@ export function retainedReplyView(
         String(item.media_type),
       ) && item.license === "CC0-1.0",
   );
+  const originalMediaRequested =
+    /\b(photo(?:graph)?|video|footage)\b/i.test(question) ||
+    (/\bimage\b/i.test(question) &&
+      !/\b(generate|create|draw|illustrate|simulate)\b/i.test(question));
   const visual =
-    asset && /visuali[sz]|show|image|video|flame|fire/i.test(question)
+    asset && originalMediaRequested
       ? {
           artifact_type: "source_media_visualization",
           status: "prepared",

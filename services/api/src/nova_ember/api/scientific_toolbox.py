@@ -73,6 +73,12 @@ class SourceVisualizationInput(Contract):
     asset_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
 
 
+class BassFireIllustrationInput(Contract):
+    snapshot_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    asset_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    source_row: int | None = Field(default=None, ge=2, le=1000000)
+
+
 class CohortComparison(Contract):
     left: CohortInputs
     right: CohortInputs
@@ -215,6 +221,12 @@ class ScientificToolbox:
                 "representative source image, then video, without requiring numerical inputs "
                 "or treating the image as a physical simulation.",
                 self.prepare_source_visualization,
+            ),
+            "prepare_bass_fire_illustration": Definition(
+                BassFireIllustrationInput,
+                "Prepare an animated illustrative BASS-II fire and attach the exact retained "
+                "test record used as context. Its shape and motion are not measured physics.",
+                self.prepare_bass_fire_illustration,
             ),
             "prepare_source_simulation": Definition(
                 SourceDropletVisualizationRequest,
@@ -477,6 +489,58 @@ class ScientificToolbox:
             expected_snapshot=self.context.snapshot_id,
             selected_investigations=self.context.investigations,
         ).model_dump(mode="json")
+
+    def prepare_bass_fire_illustration(self, request: BassFireIllustrationInput) -> dict:
+        snapshot = self._snapshot(request.snapshot_id)
+        asset_sha256, source_row = request.asset_sha256, request.source_row
+        pinned = next(
+            (
+                source
+                for source in self.context.selected_sources
+                if source.accession == "PSI-25" and source.source_rows
+            ),
+            None,
+        )
+        if pinned is not None:
+            if asset_sha256 is None:
+                asset_sha256 = pinned.asset_sha256
+            if source_row is None and asset_sha256 == pinned.asset_sha256:
+                source_row = pinned.source_rows[0]
+        matches, _, _ = self.discovery.matching_records(
+            RecordQuery(
+                snapshot_id=snapshot, accessions=("PSI-25",), row_kinds=("source_test_record",)
+            )
+        )
+        selected = next(
+            (
+                item
+                for item in matches
+                if (asset_sha256 is None or item["asset"]["sha256"] == asset_sha256)
+                and (source_row is None or item["record"].source_row == source_row)
+            ),
+            None,
+        )
+        if selected is None:
+            raise ValueError(
+                "No matching BASS-II source test record is available in this snapshot."
+            )
+        record, asset = selected["record"], selected["asset"]
+        return {
+            "artifact_type": "bass_fire_illustration",
+            "status": "prepared",
+            "title": "BASS-II fire illustration",
+            "snapshot_id": snapshot,
+            "accession": "PSI-25",
+            "source_row": record.source_row,
+            "asset_sha256": asset["sha256"],
+            "asset_id": asset["id"],
+            "anchor": selected["anchor"].model_dump(mode="json", exclude_none=True),
+            "conditions": [
+                {"label": field.source_column, "value": field.raw_text}
+                for field in record.fields
+                if field.source_column and field.raw_text
+            ],
+        }
 
     def prepare_source_visualization(self, request: SourceVisualizationInput) -> dict:
         investigation = self.corpus.investigation(request.accession, self.context.snapshot_id)

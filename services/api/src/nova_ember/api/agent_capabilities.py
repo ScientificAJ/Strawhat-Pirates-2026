@@ -26,6 +26,7 @@ DIRECT_CAPABILITIES = {
     "prepare_simulation": "visualization",
     "prepare_source_simulation": "visualization",
     "prepare_source_visualization": "visualization",
+    "prepare_bass_fire_illustration": "visualization",
 }
 SCIENTIFIC_CAPABILITIES = {
     "search_runs": "sources",
@@ -48,6 +49,7 @@ SCIENTIFIC_CAPABILITIES = {
     "prepare_simulation": "visualization",
     "prepare_source_simulation": "visualization",
     "prepare_source_visualization": "visualization",
+    "prepare_bass_fire_illustration": "visualization",
     "create_chart": "visualization",
     "propose_dashboard": "visualization",
     "list_models": "modeling",

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { Notice } from "./chrome";
 import { isSourceMediaVisualization } from "../lib/source-media";
 import { sourceUrl } from "./workbench-common";
+import { isBassFireIllustration } from "../lib/bass-fire-illustration";
 import {
   isDropletVisualization,
   isSourceDropletVisualization,
@@ -15,6 +16,16 @@ const DropletSimulation = dynamic(
     import("./droplet-simulation").then((module) => module.DropletSimulation),
   {
     loading: () => <p role="status">Opening the prepared visualization…</p>,
+  },
+);
+const BassFireIllustration = dynamic(
+  () =>
+    import("./bass-fire-illustration").then(
+      (module) => module.BassFireIllustration,
+    ),
+  {
+    ssr: false,
+    loading: () => <p role="status">Preparing the fire illustration…</p>,
   },
 );
 
@@ -109,6 +120,8 @@ export function ArtifactView({
   summarize?: boolean;
 }) {
   if (!isRecord(value)) return <p>{text(value)}</p>;
+  if (isBassFireIllustration(value))
+    return <BassFireIllustration value={value} />;
   if (isSourceMediaVisualization(value)) {
     const url = sourceUrl(value.asset, value.snapshot_id, "media/preview");
     return (

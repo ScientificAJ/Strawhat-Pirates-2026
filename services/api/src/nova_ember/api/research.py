@@ -160,9 +160,13 @@ SYSTEM += (
     "change how the requested result should be used, and state each once. Empty claim and "
     "answer limitation lists are appropriate. Do not add generic validation, measurement, "
     "causality or safety disclaimers when they do not affect the requested task. "
-    "When asked to visualize fire from an investigation without requesting a numerical "
-    "simulation or particular chart, call prepare_source_visualization directly with the "
-    "matching accession. It prepares retained NASA imagery and chooses a useful source "
+    "When an original NASA photograph or video is requested, call prepare_source_visualization "
+    "even if the user also says visualize. Otherwise, when asked to generate or visualize "
+    "BASS-II fire, call prepare_bass_fire_illustration and explain briefly that it is an "
+    "illustration linked to a source test record. Pass the requested or pinned PSI-25 asset "
+    "and source row when given; use the default test row only when none is selected. "
+    "For an original NASA photograph or video, call prepare_source_visualization "
+    "with the matching accession. It prepares retained NASA imagery and chooses a useful source "
     "image by default. Do not inspect calibration tables or discover unrelated tools merely "
     "to display that image. Use the returned title and specific representative/run note; "
     "do not invent image observations or simulation parameters. A source-media preparation "
@@ -329,6 +333,17 @@ def verify_answer(answer: ResearchAnswer, tools: ResearchTools) -> dict:
 def retained_evidence_answer(tools: ResearchTools, question: str) -> dict | None:
     """Return useful recorded work without a model retry or a claim of unfinished analysis."""
     terms = set(re.findall(r"[a-z]{3,}", question.casefold()))
+    media_requested = bool(
+        re.search(r"\b(?:photos?|photographs?|pictures?|images?|videos?|footage)\b", question, re.I)
+        and (
+            not re.search(r"\b(?:create|generate|draw|illustrate)\b", question, re.I)
+            or re.search(r"\b(?:nasa|original|actual|source|flight)\b", question, re.I)
+        )
+    )
+    video_requested = bool(re.search(r"\b(?:videos?|footage)\b", question, re.I))
+    image_requested = bool(
+        re.search(r"\b(?:photos?|photographs?|pictures?|images?)\b", question, re.I)
+    )
     candidates = []
 
     def add(priority: int, fact, title: str, statement: str, origin: str) -> None:
@@ -359,9 +374,33 @@ def retained_evidence_answer(tools: ResearchTools, question: str) -> dict | None
         content = fact.content
         artifact = content.get("artifact_type")
         if (
+            artifact == "bass_fire_illustration"
+            and content.get("status") == "prepared"
+            and fact.origin == "model_proposal"
+            and not media_requested
+        ):
+            add(
+                0,
+                fact,
+                "BASS-II fire illustration",
+                "Here is an illustrative BASS-II fire, linked to a NASA test record.",
+                "model_interpretation",
+            )
+        elif (
             artifact == "source_media_visualization"
             and content.get("status") == "prepared"
             and fact.origin == "source_media"
+            and media_requested
+            and (
+                not video_requested
+                or image_requested
+                or str(content.get("asset", {}).get("media_type", "")).startswith("video/")
+            )
+            and (
+                not image_requested
+                or video_requested
+                or str(content.get("asset", {}).get("media_type", "")).startswith("image/")
+            )
         ):
             title = str(content.get("title") or "NASA source visualization")
             add(0, fact, title, f"Prepared {title} below.", "model_interpretation")

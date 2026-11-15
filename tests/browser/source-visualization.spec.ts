@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 for (const legacy of [false, true]) {
-  test(`${legacy ? "older saved evidence" : "prepared source visual"} shows the BASS-II image and a useful reply`, async ({
+  test(`${legacy ? "older saved evidence stays distinct from a generated visual" : "prepared source visual shows the NASA image"}`, async ({
     page,
     request,
   }) => {
@@ -115,13 +115,17 @@ for (const legacy of [false, true]) {
     await composer.fill("create visualization of fire from BASS II");
     await page.getByRole("button", { name: "Send", exact: true }).click();
     const exchange = page.getByRole("article", { name: "Research exchange" });
-    const image = exchange.getByRole("img").first();
-    await expect(image).toBeVisible();
-    await expect
-      .poll(() =>
-        image.evaluate((node) => (node as HTMLImageElement).naturalWidth),
-      )
-      .toBe(1200);
+    if (legacy) {
+      await expect(exchange.getByRole("img")).toHaveCount(0);
+    } else {
+      const image = exchange.getByRole("img").first();
+      await expect(image).toBeVisible();
+      await expect
+        .poll(() =>
+          image.evaluate((node) => (node as HTMLImageElement).naturalWidth),
+        )
+        .toBe(1200);
+    }
     await expect(exchange).not.toContainText("couldn't finish this answer");
     await expect(exchange).not.toContainText(
       "Research stopped before a complete answer",

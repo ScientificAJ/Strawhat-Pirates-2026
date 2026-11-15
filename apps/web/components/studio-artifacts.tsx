@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ArtifactView } from "./artifact-view";
 import { downloadJson } from "../lib/api";
 import { isDropletVisualization } from "../lib/simulation";
+import { isBassFireIllustration } from "../lib/bass-fire-illustration";
 import { chatCitations } from "../lib/chat-sources";
 import { retainedReplyView } from "../lib/reply-fallback";
 import {
@@ -84,6 +85,7 @@ export function ResearchMessage({
   const visuals = records(turn.result?.facts).filter(
     (fact) =>
       isDropletVisualization(fact.content) ||
+      isBassFireIllustration(fact.content) ||
       object(fact.content).artifact_type === "source_media_visualization",
   );
   const retrievedInvestigations = [
