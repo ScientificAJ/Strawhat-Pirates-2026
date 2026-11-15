@@ -332,11 +332,7 @@ function WorkspaceContent({
           </button>
         </div>
       )}
-      {storageError && (
-        <Notice kind="error">
-          {storageError} Keep a backup before leaving this browser.
-        </Notice>
-      )}
+      {storageError && <Notice kind="error">{storageError}</Notice>}
       {preview && (
         <section
           className="inline-confirmation"

@@ -24,8 +24,10 @@ import {
 } from "../lib/workspace-storage";
 import { ErrorState, LoadingRows, Notice } from "./chrome";
 import styles from "./scientific-records.module.css";
+import { isPublishedTranscription } from "../lib/source-description";
 
 const roleLabels: Record<string, string> = {
+  published_summary: "Published summary",
   source_test_record: "Source test record",
   condition_record: "Condition record",
   range_summary: "Condition-range summary",
@@ -90,9 +92,18 @@ export function ScientificRecordView({
       aria-busy={result.loading}
     >
       <div className="section-heading">
-        <h2>{quality ? "Source quality" : "Experimental records"}</h2>
+        <h2>
+          {quality
+            ? "Source quality"
+            : isPublishedTranscription(asset)
+              ? "Published source records"
+              : "Experimental records"}
+        </h2>
         <button className="text-button" onClick={onOriginal}>
-          Read original table <ArrowRight size={15} />
+          {isPublishedTranscription(asset)
+            ? "Read transcribed table"
+            : "Read original table"}{" "}
+          <ArrowRight size={15} />
         </button>
       </div>
       {result.error ? (
@@ -836,7 +847,9 @@ function AttachSourceRow({
         href={`/v1/assets/${data.asset.sha256}/raw?snapshot_id=${data.snapshot_id}`}
       >
         <ArrowDownToLine size={14} />
-        Download original source
+        {isPublishedTranscription(data.asset)
+          ? "Download transcribed table"
+          : "Download original source"}
       </a>
     </div>
   );

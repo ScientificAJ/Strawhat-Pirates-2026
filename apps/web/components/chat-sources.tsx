@@ -1,4 +1,5 @@
 "use client";
+import { isInvestigationId } from "../lib/investigation-identifiers";
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -49,7 +50,7 @@ export function useCitationReveal(
           returnFocus={trigger.current}
           contextLabel={
             (selected.calculated
-              ? `[${selected.number}] ${selected.label} · Original source input to a calculation. The calculated result is recorded separately in the evidence record.`
+              ? `[${selected.number}] ${selected.label} · Calculation inputs`
               : `[${selected.number}] ${selected.label} · ${selected.origin}`) +
             (selected.scopeNote ? ` ${selected.scopeNote}` : "")
           }
@@ -111,7 +112,7 @@ export function ChatSources({
   const investigations = new Map<string, Set<string>>();
   for (const citation of citations) {
     for (const anchor of citation.anchors) {
-      if (!anchor.accession || !/^PSI-\d+$/.test(anchor.accession)) continue;
+      if (!isInvestigationId(anchor.accession)) continue;
       const accessions =
         investigations.get(anchor.snapshot_id) ?? new Set<string>();
       accessions.add(anchor.accession);
@@ -133,12 +134,7 @@ export function ChatSources({
                 >
                   {citation.label}
                 </button>
-                <p>
-                  {citation.origin}
-                  {citation.calculated
-                    ? " · Original locations below identify its inputs."
-                    : ""}
-                </p>
+                <p>{citation.origin}</p>
                 {citation.anchors.length ? (
                   <p>
                     {anchorLabel(citation.anchors[0])}
@@ -158,11 +154,7 @@ export function ChatSources({
                   {[
                     ...new Map(
                       citation.anchors
-                        .filter(
-                          (anchor) =>
-                            anchor.accession &&
-                            /^PSI-\d+$/.test(anchor.accession),
-                        )
+                        .filter((anchor) => isInvestigationId(anchor.accession))
                         .map((anchor) => [
                           `${anchor.snapshot_id}:${anchor.accession}`,
                           anchor,

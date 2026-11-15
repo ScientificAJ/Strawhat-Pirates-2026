@@ -23,6 +23,8 @@ import {
 import { ErrorState, LoadingRows, Notice } from "./chrome";
 import { ScientificRecordView } from "./scientific-records";
 import { SupportingSource } from "./supporting-source";
+import { isNasaInvestigationId } from "../lib/investigation-identifiers";
+import { isPublishedTranscription } from "../lib/source-description";
 
 export function InvestigationTable({
   items,
@@ -316,7 +318,7 @@ export function RawTable({
           aria-pressed={view === "original"}
           onClick={() => setView("original")}
         >
-          Original
+          {isPublishedTranscription(asset) ? "Transcribed table" : "Original"}
         </button>
         <button
           className="button button-small"
@@ -363,15 +365,27 @@ function OriginalTable({
   return (
     <section
       className="source-table-panel"
-      aria-label="Original source table"
+      aria-label={
+        isPublishedTranscription(asset)
+          ? "Published table transcription"
+          : "Original source table"
+      }
       aria-busy={table.loading}
     >
       <div className="section-heading">
         <div>
-          <h2>Original source table</h2>
+          <h2>
+            {isPublishedTranscription(asset)
+              ? "Published table transcription"
+              : "Original source table"}
+          </h2>
           <p>{asset.file_name}</p>
         </div>
-        <span className="status status-neutral">Raw source values</span>
+        <span className="status status-neutral">
+          {isPublishedTranscription(asset)
+            ? "Transcribed published values"
+            : "Raw source values"}
+        </span>
       </div>
       {table.error ? (
         <ErrorState message={table.error} retry={table.reload} />
@@ -553,7 +567,11 @@ export function InvestigationDetail({
           <h2>Source identity</h2>
           <dl>
             <dt>Repository</dt>
-            <dd>NASA PSI</dd>
+            <dd>
+              {isNasaInvestigationId(item.accession)
+                ? "NASA research publications"
+                : "NASA PSI"}
+            </dd>
             <dt>Accession</dt>
             <dd className="mono">{item.accession}</dd>
             <dt>Investigation version</dt>

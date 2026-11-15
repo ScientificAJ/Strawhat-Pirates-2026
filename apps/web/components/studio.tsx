@@ -1226,6 +1226,10 @@ export function ResearchStudio({
                   turn={turn}
                   onSelectCitation={selectCitation}
                   assistantName={session.agent?.frozen.profile.name}
+                  onRetry={() => {
+                    update({ draft: turn.question });
+                    composer.current?.focus();
+                  }}
                 />
                 {["submission_unconfirmed", "submitting"].includes(
                   turn.status,

@@ -249,6 +249,7 @@ test("Studio retains named drafts, forks without overwriting, and renders checke
   await expect(
     page.getByRole("heading", { name: "Offline reference table" }),
   ).toBeVisible();
+  await page.getByText("Answer details", { exact: true }).click();
   await expect(
     page.getByText("A record count does not establish independent runs.", {
       exact: true,

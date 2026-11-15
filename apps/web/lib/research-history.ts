@@ -1,3 +1,4 @@
+import { isInvestigationId } from "./investigation-identifiers";
 import type { WorkspaceDocument } from "./workspace-documents";
 
 export function researchDocumentLabel(kind: string): string {
@@ -37,8 +38,7 @@ export function researchDocumentHref(
     case "agent_session":
       return `/app/agents?session=${id}`;
     case "bookmark":
-      return typeof data.accession === "string" &&
-        /^PSI-\d+$/.test(data.accession)
+      return isInvestigationId(data.accession)
         ? `/app/investigations/${data.accession}${document.snapshot_id ? `?snapshot=${document.snapshot_id}` : ""}`
         : null;
     case "analysis":

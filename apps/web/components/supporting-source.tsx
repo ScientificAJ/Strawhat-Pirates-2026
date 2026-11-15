@@ -4,6 +4,7 @@ import { ArrowDownToLine, FileSpreadsheet, FileText } from "lucide-react";
 import { useState } from "react";
 import { Asset, useResource } from "../lib/api";
 import { ErrorState, LoadingRows, Notice } from "./chrome";
+import { isPublishedTranscription } from "../lib/source-description";
 
 type WorkbookCell = {
   sheet: string;
@@ -92,7 +93,9 @@ function SourceIdentity({
           href={`/v1/assets/${asset.sha256}/raw?snapshot_id=${snapshotId}`}
         >
           <ArrowDownToLine size={15} />
-          Download original file
+          {isPublishedTranscription(asset)
+            ? "Download transcribed table"
+            : "Download original file"}
         </a>
       )}
     </div>

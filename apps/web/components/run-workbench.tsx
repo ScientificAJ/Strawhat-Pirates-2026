@@ -38,8 +38,27 @@ import {
 } from "./workbench-common";
 import s from "./workbench.module.css";
 import journey from "./research-journey.module.css";
+import { investigationSourceKind } from "../lib/investigation-identifiers";
+import {
+  assetSourceLabel,
+  datasetLabel,
+  investigationAvailability,
+  isPublishedTranscription,
+} from "../lib/source-description";
+import { recordedAnchor } from "../lib/chat-sources";
 
 type DeepDossier = Dossier & {
+  child_investigations?: Dossier[];
+  literature_sources?: {
+    document_id: string;
+    capture_id: string;
+    title: string;
+    source_url: string;
+    source_sha256: string | null;
+    page_count: number | null;
+    status: string;
+    unavailable_text_pages?: number[];
+  }[];
   source_fields: Record<
     string,
     { value: unknown; anchor: Anchor; scientific_role: string }
@@ -74,11 +93,7 @@ export function ActualThumbnail({
     <img
       className={s.thumb}
       src={sourceUrl(image, snapshotId, "media/preview")}
-      alt={
-        "Authentic NASA source example from " +
-        accession +
-        "; not a calibrated measurement"
-      }
+      alt={"NASA source image from " + accession}
       loading="lazy"
     />
   ) : null;
@@ -109,11 +124,6 @@ function OriginalMedia({
         >
           <a href={asset.source_url}>Open original video</a>
         </video>
-        <p className={s.help}>
-          Starts paused. The source camera clock is not an inferred experimental
-          clock. This investigation example is not automatically associated with
-          the selected record.
-        </p>
       </div>
     );
   if (asset.media_type.startsWith("image/"))
@@ -124,10 +134,7 @@ function OriginalMedia({
           src={sourceUrl(asset, snapshotId, "media/preview")}
           alt={"Original source image: " + asset.file_name}
         />
-        <figcaption className={s.help}>
-          Original source image. Spatial calibration and run association require
-          their own evidence.
-        </figcaption>
+        <figcaption className={s.help}>NASA source image</figcaption>
       </figure>
     );
   return null;
@@ -189,9 +196,13 @@ export function InvestigationDossier({
   const [problem, setProblem] = useState("");
   const [message, setMessage] = useState("");
   const [sourceId, setSourceId] = useState("");
+  const [tableHash, setTableHash] = useState("");
   useEffect(() => {
     const selected = new URLSearchParams(window.location.search).get("section");
     if (selected && sections.includes(selected)) setSection(selected);
+    setTableHash(
+      new URLSearchParams(window.location.search).get("dataset") ?? "",
+    );
     // The tab reads the route once; subsequent changes are explicit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -228,7 +239,10 @@ export function InvestigationDossier({
   if (result.error)
     return <ErrorState message={result.error} retry={result.reload} />;
   if (!data) return <LoadingRows label="Opening the investigation" />;
-  const table = data.assets.find((asset) => asset.file_name.endsWith(".csv"));
+  const tables = data.assets.filter((asset) =>
+    asset.file_name.endsWith(".csv"),
+  );
+  const table = tables.find((asset) => asset.sha256 === tableHash) ?? tables[0];
   const media = data.assets.find(
     (asset) =>
       asset.media_type.startsWith("image/") ||
@@ -269,14 +283,19 @@ export function InvestigationDossier({
           </button>
           {onSave && (
             <button className="button" onClick={() => onSave(accession)}>
-              Save investigation
+              {data.record_type === "program"
+                ? "Save research program"
+                : "Save investigation"}
             </button>
           )}
         </div>
       </div>
       <div className={journey.nextSteps}>
         <span className={s.help}>
-          {data.accession} · {data.platform || "NASA combustion research"}
+          {data.accession} ·{" "}
+          {data.record_type === "program"
+            ? "NASA research program"
+            : data.platform || "NASA combustion research"}
         </span>
         <a
           className="text-button"
@@ -286,7 +305,31 @@ export function InvestigationDossier({
         >
           NASA source record <ArrowRight size={15} />
         </a>
+        {data.parent_accession && (
+          <Link
+            className="text-button"
+            href={`/app/investigations/${data.parent_accession}?snapshot=${snapshotId}`}
+          >
+            Explore the research program <ArrowRight size={15} />
+          </Link>
+        )}
       </div>
+      {data.record_type === "program" && (
+        <section className={s.surface} aria-label="Studies in this program">
+          <h2>Studies in this program</h2>
+          <div className={s.actions}>
+            {data.child_investigations?.map((item) => (
+              <Link
+                key={item.accession}
+                className="button"
+                href={`/app/investigations/${item.accession}?snapshot=${snapshotId}`}
+              >
+                {item.acronym || item.title} <ArrowRight size={15} />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
       <div
         className={s.tabs}
         role="tablist"
@@ -344,7 +387,9 @@ export function InvestigationDossier({
             </details>
             {fields.map((name) => {
               const field = data.source_fields[name];
-              return field ? (
+              return field &&
+                field.value != null &&
+                String(field.value).trim() ? (
                 <section key={name} className={journey.researchSummary}>
                   <h2>
                     {{
@@ -373,18 +418,23 @@ export function InvestigationDossier({
               <OriginalMedia asset={media} snapshotId={snapshotId} />
             ) : null}
             <section className={s.surface}>
-              <h2>Work with this investigation</h2>
+              <h2>
+                {data.record_type === "program"
+                  ? "Explore this research program"
+                  : "Work with this investigation"}
+              </h2>
               <p className={s.help}>
-                {data.coverage.acquired_assets > 0
-                  ? `${data.coverage.acquired_assets} source files are available to inspect.`
-                  : "The NASA catalog describes this investigation. Its experimental files are not yet available here."}
+                {investigationAvailability({
+                  ...data,
+                  asset_count: data.coverage.acquired_assets,
+                })}
               </p>
               <div className={s.stack}>
                 <button className="button" onClick={() => tab("runs")}>
                   Explore data and conditions <ArrowRight size={15} />
                 </button>
                 <button className="button" onClick={() => tab("sources")}>
-                  Read original sources <BookOpen size={15} />
+                  Read sources <BookOpen size={15} />
                 </button>
                 <button
                   className="text-button"
@@ -445,12 +495,14 @@ export function InvestigationDossier({
       {section === "runs" && (
         <>
           <div className={s.notice}>
-            <h2>Explore the experimental records</h2>
+            <h2>
+              {data.source_kind === "nasa"
+                ? "Explore the published records"
+                : "Explore the experimental records"}
+            </h2>
             <p>
               Read the reported conditions and observations, then open a record
-              for its measurements and sources. Records may describe tests,
-              sessions or summaries; they are not automatically independent
-              experiments.
+              for its measurements and sources.
             </p>
             <Link
               className="button"
@@ -479,6 +531,46 @@ export function InvestigationDossier({
               onInspect={setAnchor}
             />
           </details>
+          {tables.length > 1 && (
+            <label className={s.field}>
+              Dataset
+              <select
+                aria-label="Dataset"
+                value={table.sha256}
+                onChange={(event) => {
+                  const hash = event.target.value;
+                  const asset = tables.find((item) => item.sha256 === hash);
+                  if (!asset) return;
+                  setTableHash(hash);
+                  const url = new URL(window.location.href);
+                  url.searchParams.set("dataset", hash);
+                  window.history.replaceState(null, "", url);
+                  updateContext({
+                    selected_sources: [
+                      {
+                        asset_sha256: hash,
+                        accession,
+                        asset_id: asset.id,
+                      },
+                    ],
+                  });
+                }}
+              >
+                {tables.map((asset) => (
+                  <option key={asset.id} value={asset.sha256}>
+                    {datasetLabel(asset)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {table?.origin === "planned_conditions" && (
+            <p className={s.help}>
+              These are planned test conditions from NASA's published
+              requirements. They describe experiments to be conducted, rather
+              than completed measurements.
+            </p>
+          )}
           {table && (
             <Link
               className="button button-primary"
@@ -489,6 +581,7 @@ export function InvestigationDossier({
           )}
           {table ? (
             <ScientificRecordView
+              key={table.id}
               asset={table}
               snapshotId={snapshotId}
               quality={false}
@@ -534,7 +627,7 @@ export function InvestigationDossier({
               </button>
             </div>
           </div>
-          {data.source_fields.researchImpacts && (
+          {String(data.source_fields.researchImpacts?.value ?? "").trim() && (
             <section>
               <h2>Reported prospective impacts</h2>
               <p className={s.prose}>
@@ -551,7 +644,11 @@ export function InvestigationDossier({
       {section === "sources" && (
         <>
           <div className={s.toolbar}>
-            <h2>Original sources</h2>
+            <h2>
+              {data.source_kind === "nasa"
+                ? "NASA sources and published tables"
+                : "Original sources"}
+            </h2>
           </div>
           <InvestigationWatch
             key={accession}
@@ -560,6 +657,82 @@ export function InvestigationDossier({
             version={data.version}
             assetIds={data.assets.map((asset) => asset.id)}
           />
+          {Boolean(data.source_provenance?.length) && (
+            <section className={s.surface}>
+              <h3>Original NASA research pages and publications</h3>
+              <ul className={s.sourceList}>
+                {data.source_provenance
+                  ?.filter((source) => /^https:\/\//.test(source.source_url))
+                  .map((source, index) => (
+                    <li key={source.source_url + index}>
+                      <a
+                        href={source.source_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {source.title || "Original NASA source"}{" "}
+                        <ArrowRight size={14} />
+                      </a>
+                      {source.page != null ? ` · page ${source.page}` : ""}
+                      {source.table ? ` · ${source.table}` : ""}
+                    </li>
+                  ))}
+              </ul>
+            </section>
+          )}
+          {Boolean(data.literature_sources?.length) && (
+            <section className={s.surface}>
+              <h3>Related NASA reports</h3>
+              <ul className={s.sourceList}>
+                {data.literature_sources?.map((document) => {
+                  const firstPage =
+                    (document.page_count ?? 0) > 0
+                      ? recordedAnchor({
+                          snapshot_id: snapshotId,
+                          source_kind: "ntrs",
+                          document_id: document.document_id,
+                          capture_id: document.capture_id,
+                          source_sha256: document.source_sha256,
+                          kind: "document_page",
+                          page: 1,
+                        })
+                      : null;
+                  return (
+                    <li key={document.capture_id || document.document_id}>
+                      <h4>{document.title}</h4>
+                      {Boolean(document.unavailable_text_pages?.length) && (
+                        <p className={s.help}>
+                          Text search excludes pages{" "}
+                          {document.unavailable_text_pages?.join(", ")}; view
+                          them in the original NASA report.
+                        </p>
+                      )}
+                      <div className={s.actions}>
+                        {/^https:\/\//.test(document.source_url) && (
+                          <a
+                            className="text-button"
+                            href={document.source_url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Open original NASA report <ArrowRight size={14} />
+                          </a>
+                        )}
+                        {firstPage ? (
+                          <button
+                            className="text-button"
+                            onClick={() => setAnchor(firstPage)}
+                          >
+                            Read retained page 1 <BookOpen size={15} />
+                          </button>
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
           <div className={s.scroll}>
             <table className={s.table}>
               <thead>
@@ -574,7 +747,9 @@ export function InvestigationDossier({
                   <tr key={asset.id} className="asset-row">
                     <td>
                       {asset.file_name}
-                      <small>{asset.media_type}</small>
+                      <small>
+                        {asset.media_type} · {assetSourceLabel(asset)}
+                      </small>
                     </td>
                     <td>
                       File v{asset.file_version}
@@ -591,12 +766,22 @@ export function InvestigationDossier({
                       >
                         <BookOpen size={16} /> Inspect source
                       </button>
+                      {asset.file_name.endsWith(".csv") && (
+                        <Link
+                          className="text-button"
+                          href={`/app/lab/data/${asset.sha256}?snapshot=${snapshotId}`}
+                        >
+                          Analyze this dataset <ArrowRight size={14} />
+                        </Link>
+                      )}
                       {asset.license === "CC0-1.0" && (
                         <a
                           className="text-button"
                           href={sourceUrl(asset, snapshotId)}
                         >
-                          Download original
+                          {isPublishedTranscription(asset)
+                            ? "Download transcribed table"
+                            : "Download original"}
                         </a>
                       )}
                     </td>
@@ -716,7 +901,11 @@ export function RunWorkbench({
           accession: value[0],
           asset_id: value[1],
           kind: "table_cell",
-          source_kind: "psi",
+          source_kind:
+            source.asset.source_kind ??
+            investigationSourceKind(value[0]) ??
+            "psi",
+          investigation_version: source.asset.investigation_version,
           source_row: value[3],
           column: 0,
         },
@@ -746,6 +935,10 @@ export function RunWorkbench({
     );
   const sourceAnchor = (column: number): Anchor => ({
     snapshot_id: snapshotId,
+    source_kind:
+      source.asset.source_kind ??
+      investigationSourceKind(source.asset.accession) ??
+      undefined,
     accession: source.asset.accession,
     investigation_version: source.asset.investigation_version,
     source_sha256: source.asset.sha256,
@@ -909,7 +1102,9 @@ export function RunWorkbench({
           <section className={s.surface}>
             <h2>Continue with this data</h2>
             <a className="button" href={sourceUrl(source.asset, snapshotId)}>
-              Download original file
+              {isPublishedTranscription(source.asset)
+                ? "Download transcribed table"
+                : "Download original file"}
             </a>
             <p className={s.help}>
               Recorded geometry, clocks, calibration, endpoint and experimental

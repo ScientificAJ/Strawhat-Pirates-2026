@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Notice } from "./chrome";
+import { isSourceMediaVisualization } from "../lib/source-media";
+import { sourceUrl } from "./workbench-common";
 import {
   isDropletVisualization,
   isSourceDropletVisualization,
@@ -107,6 +109,42 @@ export function ArtifactView({
   summarize?: boolean;
 }) {
   if (!isRecord(value)) return <p>{text(value)}</p>;
+  if (isSourceMediaVisualization(value)) {
+    const url = sourceUrl(value.asset, value.snapshot_id, "media/preview");
+    return (
+      <figure className="artifact-record" aria-label={value.title}>
+        {summarize && <h3>{value.title}</h3>}
+        {value.asset.license === "CC0-1.0" &&
+          (value.asset.media_type === "video/mp4" ? (
+            <video
+              controls
+              preload="metadata"
+              src={url}
+              aria-label={value.title}
+              style={{ display: "block", maxWidth: "100%", maxHeight: 520 }}
+            />
+          ) : (
+            <img
+              src={url}
+              alt={value.title}
+              style={{
+                display: "block",
+                maxWidth: "100%",
+                maxHeight: 520,
+                objectFit: "contain",
+              }}
+            />
+          ))}
+        <figcaption>
+          {value.asset.accession} · NASA source{" "}
+          {value.asset.media_type === "video/mp4" ? "video" : "image"}
+          {value.example_role === "repository_representative_image"
+            ? " · Representative flame image"
+            : ""}
+        </figcaption>
+      </figure>
+    );
+  }
   if (isDropletVisualization(value))
     return (
       <PreparedSimulation key={JSON.stringify(value.request)} value={value} />
@@ -125,12 +163,6 @@ export function ArtifactView({
             {origins[value.scientific_origin] ??
               value.scientific_origin.replaceAll("_", " ")}
           </p>
-        )}
-        {(value.incomplete === true || value.status === "incomplete") && (
-          <Notice kind="caution">
-            Incomplete research output. Its missing work and qualifications
-            remain part of this record.
-          </Notice>
         )}
         <ArtifactView value={nestedResult} summarize={summarize} />
         <EnvelopeQualifications value={value} />
@@ -218,11 +250,6 @@ export function ArtifactView({
           </tbody>
         </table>
       )}
-      {value.independent_run_count === null && (
-        <p className="data-caveat">
-          Independent experimental-run count is not established.
-        </p>
-      )}
       {reasons.length > 0 && (
         <Notice kind="caution">
           <ul>
@@ -266,29 +293,33 @@ export function ArtifactView({
 function EnvelopeQualifications({ value }: { value: Record<string, unknown> }) {
   const groups = [
     ["assumptions", "Assumptions"],
-    ["limitations", "Scientific limitations"],
+    ["limitations", "Method notes"],
     ["restrictions", "Use restrictions"],
   ] as const;
+  const populated = groups
+    .map(([key, title]) => ({
+      key,
+      title,
+      items: Array.isArray(value[key])
+        ? value[key].filter((item): item is string => typeof item === "string")
+        : [],
+    }))
+    .filter(({ items }) => items.length);
+  if (!populated.length) return null;
   return (
-    <>
-      {groups.map(([key, title]) => {
-        const items = Array.isArray(value[key])
-          ? value[key].filter(
-              (item): item is string => typeof item === "string",
-            )
-          : [];
-        return items.length ? (
-          <div className="artifact-limitations" key={key}>
-            <h4>{title}</h4>
-            <ul>
-              {items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null;
-      })}
-    </>
+    <details className="artifact-limitations">
+      <summary>Method details</summary>
+      {populated.map(({ key, title, items }) => (
+        <div className="artifact-limitations" key={key}>
+          <h4>{title}</h4>
+          <ul>
+            {items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </details>
   );
 }
 export function RecordDetails({ value }: { value: unknown }) {

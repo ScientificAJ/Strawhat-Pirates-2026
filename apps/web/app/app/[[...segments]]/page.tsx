@@ -1,3 +1,4 @@
+import { isInvestigationId } from "../../../lib/investigation-identifiers";
 import { ResearchWorkspace } from "../../../components/research-workspace";
 import { notFound } from "next/navigation";
 
@@ -64,7 +65,7 @@ export default async function Page({
       initialQuery={q}
       intentId={intent}
       requestedSnapshot={snapshot}
-      investigationIds={ids?.split(",").filter((id) => /^PSI-\d+$/.test(id))}
+      investigationIds={ids?.split(",").filter(isInvestigationId)}
     />
   );
 }

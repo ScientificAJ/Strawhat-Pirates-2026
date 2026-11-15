@@ -2,8 +2,24 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+export type PublicationSource = {
+  title: string;
+  source_url: string;
+  sha256?: string;
+  page?: number;
+  table?: string;
+};
+
 export type Investigation = {
   accession: string;
+  source_kind?: "psi" | "nasa";
+  origin?: string;
+  record_type?: "investigation" | "program";
+  parent_accession?: string | null;
+  data_status?:
+    "reported_measurements" | "reported_conditions" | "research_description";
+  source_provenance?: PublicationSource[];
+  research_status?: string;
   title: string;
   acronym: string;
   doi: string | null;
@@ -23,6 +39,10 @@ export type Investigation = {
 
 export type Asset = {
   id: string;
+  source_kind?: "psi" | "nasa";
+  origin?: string;
+  source_provenance?: PublicationSource[];
+  source_anchors?: unknown;
   accession: string;
   investigation_version: number;
   file_name: string;
@@ -194,6 +214,7 @@ export function downloadJson(fileName: string, value: unknown) {
 }
 
 export function family(accession: string) {
+  if (accession.startsWith("NASA-")) return "Solid fuels and spread";
   if (["PSI-39", "PSI-68", "PSI-69", "PSI-117", "PSI-142"].includes(accession))
     return "Droplets and cool flames";
   if (

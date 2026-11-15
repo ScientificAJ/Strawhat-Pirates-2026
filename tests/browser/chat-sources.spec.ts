@@ -152,7 +152,9 @@ test("numbered chat sources reveal a real retained passage and retain calculatio
   page,
   request,
 }) => {
-  const snapshot = await (await request.get("/v1/snapshots/current")).json();
+  const snapshot = await (
+    await request.get(`/v1/snapshots/${SNAPSHOT}`)
+  ).json();
   expect(snapshot.snapshot_id).toBe(SNAPSHOT);
   const job = "10000000-0000-4000-8000-000000000099";
   const secondJob = "10000000-0000-4000-8000-000000000098";
@@ -381,9 +383,7 @@ test("numbered chat sources reveal a real retained passage and retain calculatio
     })
     .first()
     .click();
-  await expect(
-    inspector.getByText(/Original source input to a calculation/),
-  ).toBeVisible();
+  await expect(inspector.getByText(/Calculation inputs/)).toBeVisible();
   await expect(inspector.locator("blockquote")).toContainText("1.82");
   await page.keyboard.press("Escape");
   await page

@@ -3,6 +3,7 @@
 import { ExternalLink, X, BookOpen, Download } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Asset, request } from "../lib/api";
+import { isPublishedTranscription } from "../lib/source-description";
 import { ErrorState, LoadingRows } from "./chrome";
 import s from "./workbench.module.css";
 
@@ -43,6 +44,8 @@ export type SourceRead = {
   limitations?: string[];
   content_kind?: string;
   member?: string;
+  source_origin?: string;
+  upstream_sources?: { label: string; source_url: string; anchor?: Anchor }[];
 };
 
 export function human(value: string | null | undefined) {
@@ -159,14 +162,14 @@ export function Scope({
 }
 export function Limitations({ values }: { values?: string[] }) {
   return values?.length ? (
-    <div className={s.limitations}>
-      <h3>Interpretation limits</h3>
+    <details className={s.limitations}>
+      <summary>Source and method notes</summary>
       <ul>
         {values.map((text, index) => (
           <li key={index}>{text}</li>
         ))}
       </ul>
-    </div>
+    </details>
   ) : null;
 }
 export function SourceInspector({
@@ -246,14 +249,24 @@ export function SourceInspector({
       ) : (
         data && (
           <>
-            {data.content_kind === "source_image" &&
-            data.asset &&
-            data.member ? (
+            {data.content_kind === "source_image" && data.asset ? (
               <figure>
                 {/* Exact retained bytes are verified by the source reader before display. */}
                 <img
-                  src={`${sourceUrl(data.asset, anchor.snapshot_id, "embedded-figure")}&${new URLSearchParams({ member: data.member })}`}
-                  alt={`Original embedded figure: ${data.member}`}
+                  src={
+                    data.member
+                      ? `${sourceUrl(data.asset, anchor.snapshot_id, "embedded-figure")}&${new URLSearchParams({ member: data.member })}`
+                      : sourceUrl(
+                          data.asset,
+                          anchor.snapshot_id,
+                          "media/preview",
+                        )
+                  }
+                  alt={
+                    data.member
+                      ? `Embedded figure: ${data.member}`
+                      : `NASA image: ${data.asset.file_name}`
+                  }
                   style={{ display: "block", maxWidth: "100%", height: "auto" }}
                 />
                 <figcaption>{anchorLabel(anchor)}</figcaption>
@@ -277,7 +290,7 @@ export function SourceInspector({
                 </dd>
               </div>
               <div>
-                <dt>Original checksum</dt>
+                <dt>Retained source checksum</dt>
                 <dd>
                   <code>{anchor.source_sha256}</code>
                 </dd>
@@ -287,17 +300,24 @@ export function SourceInspector({
                 <dd>{anchorLabel(anchor)}</dd>
               </div>
             </dl>
-            <p className={s.help}>
-              {data.scientific_verification ??
-                "This is source text; resolving its location does not establish an experimental interpretation."}
-            </p>
+            {(data.source_origin === "published_table_transcription" ||
+              (data.asset && isPublishedTranscription(data.asset))) && (
+              <p className={s.help}>
+                {data.source_origin === "planned_conditions"
+                  ? "Planned test conditions"
+                  : "Published table transcription"}
+              </p>
+            )}
             <div className={s.actions}>
               {data.asset?.license === "CC0-1.0" && (
                 <a
                   className="button"
                   href={sourceUrl(data.asset, anchor.snapshot_id)}
                 >
-                  <Download size={16} /> Original source
+                  <Download size={16} />{" "}
+                  {isPublishedTranscription(data.asset)
+                    ? "Transcribed table"
+                    : "Original source"}
                 </a>
               )}
               {data.source_url && /^https:\/\//.test(data.source_url) && (
@@ -311,6 +331,23 @@ export function SourceInspector({
                 </a>
               )}
             </div>
+            {Boolean(data.upstream_sources?.length) && (
+              <div className={s.stack}>
+                <h3>Original NASA sources</h3>
+                {data.upstream_sources
+                  ?.filter((source) => /^https:\/\//.test(source.source_url))
+                  .map((source, index) => (
+                    <a
+                      key={source.source_url + index}
+                      href={source.source_url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {source.label} <ExternalLink size={14} />
+                    </a>
+                  ))}
+              </div>
+            )}
             <Limitations
               values={[
                 ...(data.limitations ?? []),

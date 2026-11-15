@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useResearchContext } from "../lib/research-context";
 import { request } from "../lib/api";
+import { investigationSourceKind } from "../lib/investigation-identifiers";
 import { useRouter } from "next/navigation";
 import { sourceImage } from "../lib/studio-session";
 import {
@@ -306,7 +307,8 @@ export function MediaWorkbench({
           anchors: [
             {
               snapshot_id: snapshotId,
-              source_kind: "psi",
+              source_kind:
+                asset.source_kind ?? investigationSourceKind(accession),
               accession,
               investigation_version: asset.investigation_version,
               source_sha256: asset.sha256,

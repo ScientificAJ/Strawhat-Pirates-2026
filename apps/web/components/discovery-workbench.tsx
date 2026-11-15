@@ -1,4 +1,5 @@
 "use client";
+import { isInvestigationId } from "../lib/investigation-identifiers";
 
 import {
   ArrowRight,
@@ -50,6 +51,7 @@ import { sourceRole } from "./scientific-records";
 import { ActualThumbnail } from "./run-workbench";
 import s from "./workbench.module.css";
 import journey from "./research-journey.module.css";
+import { investigationAvailability } from "../lib/source-description";
 
 type Page<T> = {
   snapshot_id: string;
@@ -504,10 +506,7 @@ export function DiscoveryWorkbench({
         !["investigations", "records"].includes(definition.level) ||
         !Array.isArray(definition.items) ||
         definition.items.some(
-          (item) =>
-            !item ||
-            typeof item.accession !== "string" ||
-            !/^PSI-[1-9][0-9]*$/.test(item.accession),
+          (item) => !item || !isInvestigationId(item.accession),
         )
       )
         throw new Error(
@@ -1497,7 +1496,7 @@ export function DiscoveryWorkbench({
                 <Check size={16} /> {selectedCount} selected{" "}
                 {applied.entity === "records"
                   ? "source records"
-                  : "investigations"}
+                  : "research entries"}
               </strong>
               <details>
                 <summary>Inspect selected identities across all pages</summary>
@@ -1609,7 +1608,7 @@ export function DiscoveryWorkbench({
                 ? results.data.total +
                   (applied.entity === "records"
                     ? " source records"
-                    : " investigations") +
+                    : " research entries") +
                   " found"
                 : "Finding investigations"}
               {results.loading && results.data
@@ -1690,11 +1689,7 @@ export function DiscoveryWorkbench({
                               "Objectives are not reported in this catalog entry.",
                           )}
                         </p>
-                        <p>
-                          {item.asset_count > 0
-                            ? `${item.asset_count} source files to explore`
-                            : "NASA catalog record · original data not yet available here"}
-                        </p>
+                        <p>{investigationAvailability(item)}</p>
                         <CatalogContext
                           accession={item.accession}
                           values={
@@ -1728,7 +1723,9 @@ export function DiscoveryWorkbench({
                       >
                         {"record" in item
                           ? "Open record"
-                          : "Explore investigation"}{" "}
+                          : item.record_type === "program"
+                            ? "Explore research program"
+                            : "Explore investigation"}{" "}
                         <ArrowRight size={15} />
                       </Link>
                     </div>
@@ -1856,7 +1853,7 @@ export function DiscoveryWorkbench({
                             </>
                           ) : (
                             <>
-                              <span>{human(item.coverage)}</span>
+                              <span>{investigationAvailability(item)}</span>
                               <small>
                                 {item.asset_count} retained files · source v
                                 {item.version}

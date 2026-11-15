@@ -1,4 +1,5 @@
 "use client";
+import { isInvestigationId } from "../lib/investigation-identifiers";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -232,7 +233,7 @@ export function ComparisonWorkbench({
       const routeIds = new URLSearchParams(window.location.search)
         .get("ids")
         ?.split(",")
-        .filter((value) => /^PSI-[1-9][0-9]*$/.test(value));
+        .filter(isInvestigationId);
       if (routeIds?.length && !investigationIds.length) {
         setSelected(routeIds);
         setProfiles(routeIds.map((value) => profile(value, snapshotId)));

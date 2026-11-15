@@ -1,5 +1,6 @@
 import type { Asset, ScientificRecord } from "./api";
 import type { Anchor } from "../components/workbench-common";
+import { isInvestigationId } from "./investigation-identifiers";
 
 export type RecordHit = {
   accession: string;
@@ -159,9 +160,12 @@ export function compileFilters(
 export function proposeLanguage(text: string, current: Filters) {
   const filters = { ...current };
   const explanations: string[] = [];
-  const accessions = text.match(/\bPSI-[1-9][0-9]*\b/i);
-  if (accessions) {
-    filters.accession = accessions[0].toUpperCase();
+  const accession = text
+    .match(/\b(?:PSI|NASA)-[A-Z0-9-]+\b/gi)
+    ?.map((value) => value.toUpperCase())
+    .find(isInvestigationId);
+  if (accession) {
+    filters.accession = accession;
     explanations.push(
       "Uses the explicitly named investigation " + filters.accession + ".",
     );
@@ -243,7 +247,7 @@ export function parseRunIdentity(id: string): [string, string, string, number] {
   if (
     !Array.isArray(parsed) ||
     parsed.length !== 4 ||
-    typeof parsed[0] !== "string" ||
+    !isInvestigationId(parsed[0]) ||
     typeof parsed[1] !== "string" ||
     typeof parsed[2] !== "string" ||
     !/^[a-f0-9]{64}$/.test(parsed[2]) ||

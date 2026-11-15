@@ -1,4 +1,5 @@
 "use client";
+import { isInvestigationId } from "../lib/investigation-identifiers";
 
 import { ArrowDownToLine, Check, Copy, ExternalLink, Save } from "lucide-react";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import { ArtifactView } from "./artifact-view";
 import { downloadJson } from "../lib/api";
 import { isDropletVisualization } from "../lib/simulation";
 import { chatCitations } from "../lib/chat-sources";
+import { retainedReplyView } from "../lib/reply-fallback";
 import {
   ChatSources,
   CitationButton,
@@ -36,20 +38,53 @@ export function ResearchMessage({
   turn,
   onSelectCitation,
   assistantName = "Nova Ember",
+  onRetry,
 }: {
   turn: StudioTurn;
   onSelectCitation: SelectCitation;
   assistantName?: string;
+  onRetry?: () => void;
 }) {
   const answer = object(turn.result?.answer);
   const claims = records(answer.claims);
-  const limits = strings(answer.limitations);
-  const citations = chatCitations(claims, turn.result?.facts);
+  const retained =
+    claims.length === 0 && turn.result
+      ? retainedReplyView(
+          turn.result,
+          turn.question,
+          turn.request.context.snapshot_id,
+        )
+      : null;
+  const limits = [
+    ...new Map(
+      [
+        ...strings(answer.limitations),
+        ...claims.flatMap((claim) => strings(claim.limitations)),
+      ]
+        .map((value) => value.trim())
+        .filter(
+          (value) =>
+            value &&
+            !value.startsWith("Mechanical citation and numeric checks"),
+        )
+        .map((value) => [value.toLowerCase().replace(/\s+/g, " "), value]),
+    ).values(),
+  ];
+  const citations = chatCitations(
+    claims.length
+      ? claims
+      : retained?.source
+        ? [{ fact_ids: [retained.source.id] }]
+        : [],
+    turn.result?.facts,
+  );
   const citationById = new Map(
     citations.map((citation) => [citation.id, citation]),
   );
-  const simulations = records(turn.result?.facts).filter((fact) =>
-    isDropletVisualization(fact.content),
+  const visuals = records(turn.result?.facts).filter(
+    (fact) =>
+      isDropletVisualization(fact.content) ||
+      object(fact.content).artifact_type === "source_media_visualization",
   );
   const retrievedInvestigations = [
     ...new Set(
@@ -57,9 +92,7 @@ export function ResearchMessage({
         .flatMap((fact) =>
           records(fact.sources).map((source) => source.accession),
         )
-        .filter(
-          (id): id is string => typeof id === "string" && /^PSI-\d+$/.test(id),
-        ),
+        .filter(isInvestigationId),
     ),
   ];
   const incomplete =
@@ -71,7 +104,7 @@ export function ResearchMessage({
     const body = claims
       .map(
         (claim) =>
-          `${claim.statement} ${[...new Set(strings(claim.fact_ids))].map((id) => `[${citationById.get(id)?.number ?? "?"}]`).join(" ")}\n${strings(claim.limitations).join("\n")}`,
+          `${claim.statement} ${[...new Set(strings(claim.fact_ids))].map((id) => `[${citationById.get(id)?.number ?? "?"}]`).join(" ")}`,
       )
       .join("\n\n");
     const unresolved = strings(answer.contradictions).map(
@@ -85,11 +118,6 @@ export function ResearchMessage({
         [
           `[${citation.number}] ${citation.label} · ${citation.origin}`,
           `Evidence identifier: ${citation.id}`,
-          ...(citation.calculated
-            ? [
-                "Original source locations identify calculation inputs, not source measurements of the calculated result.",
-              ]
-            : []),
           ...(citation.scopeNote ? [citation.scopeNote] : []),
           `Recorded source locations: ${JSON.stringify(citation.anchors)}`,
         ].join("\n"),
@@ -114,7 +142,7 @@ export function ResearchMessage({
           <strong>{assistantName}</strong>
           <span className={styles.status}>
             {incomplete
-              ? "Research stopped before a complete answer"
+              ? "Available results"
               : ((
                   {
                     queued: "Waiting to start",
@@ -135,22 +163,11 @@ export function ResearchMessage({
             {turn.error}
           </p>
         )}
-        {Boolean(answer.title) && <h2>{String(answer.title)}</h2>}
+        {Boolean(answer.title || retained?.title) && (
+          <h2>{String(answer.title || retained?.title)}</h2>
+        )}
         {claims.map((claim, index) => (
           <section key={index} className={styles.claim}>
-            <span className={styles.origin}>
-              {(
-                {
-                  source_summary: "NASA source summary",
-                  calculated: "Calculation",
-                  predicted: "Model prediction",
-                  model_interpretation: "Interpretation",
-                  research_hypothesis: "Research hypothesis",
-                  user_input_summary: "Your data",
-                  unknown: "Evidence gap",
-                } as Record<string, string>
-              )[String(claim.origin)] ?? "Interpretation"}
-            </span>
             <p>
               {String(claim.statement ?? "")}{" "}
               {[...new Set(strings(claim.fact_ids))].map((id) => {
@@ -164,11 +181,11 @@ export function ResearchMessage({
                 ) : null;
               })}
             </p>
-            {strings(claim.limitations).map((limit) => (
-              <p className={styles.qualification} key={limit}>
-                {limit}
-              </p>
-            ))}
+          </section>
+        ))}
+        {visuals.map((fact) => (
+          <section key={String(fact.id)} aria-label="Prepared visualization">
+            <ArtifactView value={fact.content} summarize={false} />
           </section>
         ))}
         {!turn.result && !turn.error && (
@@ -177,45 +194,46 @@ export function ResearchMessage({
             sources and calculations as they become available.
           </p>
         )}
-        {turn.result && !claims.length && (
+        {retained?.visual && (
+          <ArtifactView value={retained.visual} summarize={false} />
+        )}
+        {retained?.excerpt && (
           <p>
-            {String(
-              turn.result.failure ??
-                "No answer was returned. Open the sources and research activity for details, or try a more specific question.",
-            )}
+            {retained.excerpt}{" "}
+            {retained.source &&
+              citationById.get(String(retained.source.id)) && (
+                <CitationButton
+                  citation={citationById.get(String(retained.source.id))!}
+                  onSelect={onSelectCitation}
+                />
+              )}
           </p>
         )}
-        {!claims.length && retrievedInvestigations.length > 0 && (
-          <section aria-label="Retrieved investigations">
-            <h3>Explore the sources retrieved so far</h3>
-            <p>
-              The assistant did not finish a synthesis. These investigation
-              records remain available to inspect.
-            </p>
-            <div className={styles.actions}>
-              {retrievedInvestigations.map((id) => (
-                <Link
-                  className="button button-small"
-                  key={id}
-                  href={`/app/investigations/${id}?snapshot=${turn.request.context.snapshot_id}`}
-                >
-                  {id}
-                  <ExternalLink size={14} />
-                </Link>
-              ))}
-            </div>
-          </section>
+        {incomplete && onRetry && (
+          <button className="button" onClick={onRetry}>
+            Try this question again
+          </button>
         )}
-        {limits.length > 0 && (
-          <div className={styles.limitations}>
-            <strong>Reading this result</strong>
-            <ul>
-              {limits.map((limit) => (
-                <li key={limit}>{limit}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {!claims.length &&
+          !retained?.excerpt &&
+          !retained?.visual &&
+          retrievedInvestigations.length > 0 && (
+            <section aria-label="Retrieved investigations">
+              <h3>Related investigations</h3>
+              <div className={styles.actions}>
+                {retrievedInvestigations.map((id) => (
+                  <Link
+                    className="button button-small"
+                    key={id}
+                    href={`/app/investigations/${id}?snapshot=${turn.request.context.snapshot_id}`}
+                  >
+                    {id}
+                    <ExternalLink size={14} />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
         {records(answer.withheld_claims).length > 0 && (
           <details>
             <summary>
@@ -250,12 +268,7 @@ export function ResearchMessage({
             </ul>
           </section>
         )}
-        {simulations.map((fact) => (
-          <section key={String(fact.id)} aria-label="Prepared simulation">
-            <ArtifactView value={fact.content} />
-          </section>
-        ))}
-        {turn.result && (
+        {turn.result && citations.length > 0 && (
           <ChatSources citations={citations} onSelect={onSelectCitation} />
         )}
         {(turn.events.length > 0 ||
@@ -301,6 +314,13 @@ export function ResearchMessage({
                   ? `Estimated usage: $${Number(turn.result.cost_usd).toFixed(4)}`
                   : "Usage not reported"}
               </p>
+              {limits.length > 0 && (
+                <ul>
+                  {limits.map((limit) => (
+                    <li key={limit}>{limit}</li>
+                  ))}
+                </ul>
+              )}
             </details>
             <button className={styles.textButton} onClick={copy}>
               {copied ? <Check size={14} /> : <Copy size={14} />}

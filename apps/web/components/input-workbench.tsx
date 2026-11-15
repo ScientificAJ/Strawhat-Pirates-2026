@@ -1,4 +1,5 @@
 "use client";
+import { isPsiAccession } from "../lib/investigation-identifiers";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownToLine,
@@ -92,7 +93,9 @@ export function InputWorkbench({
     truncated: boolean;
     encoding: string;
   } | null>(null);
-  const catalog = useResource<Catalog>("/v1/investigations?limit=100");
+  const catalog = useResource<Catalog>(
+    `/v1/investigations?limit=100&snapshot_id=${snapshotId}`,
+  );
   const [accession, setAccession] = useState("PSI-69");
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState("");
@@ -663,7 +666,7 @@ export function InputWorkbench({
         )}
       </section>
       <section className={styles.surface}>
-        <h2>Acquire exact NASA originals</h2>
+        <h2>Acquire exact PSI originals</h2>
         <p className={styles.caption}>
           A manifest lists available files; it does not imply that their bytes
           have been downloaded or scientific meaning qualified. Transfers use
@@ -671,7 +674,7 @@ export function InputWorkbench({
         </p>
         <div className={styles.fields}>
           <label className={styles.field}>
-            Investigation
+            PSI investigation
             <select
               value={accession}
               onChange={(event) => {
@@ -679,11 +682,13 @@ export function InputWorkbench({
                 setOffset(0);
               }}
             >
-              {catalog.data?.items.map((item) => (
-                <option key={item.accession} value={item.accession}>
-                  {item.acronym || item.accession}
-                </option>
-              ))}
+              {catalog.data?.items
+                .filter((item) => isPsiAccession(item.accession))
+                .map((item) => (
+                  <option key={item.accession} value={item.accession}>
+                    {item.acronym || item.accession}
+                  </option>
+                ))}
             </select>
           </label>
           <label className={styles.field}>

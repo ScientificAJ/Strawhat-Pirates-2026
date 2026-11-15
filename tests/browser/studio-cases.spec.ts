@@ -156,6 +156,7 @@ test("Structured cases freeze exact artifacts, preserve personal corrections, an
   await report
     .getByText("Inspect frozen content and source identity", { exact: true })
     .click();
+  await report.getByText("Method details", { exact: true }).click();
   await expect(
     report.getByText(
       "Synthetic independent arithmetic reference, not NASA measurements.",

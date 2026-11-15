@@ -1,4 +1,9 @@
 import type { Anchor } from "../components/workbench-common";
+import {
+  investigationSourceKind,
+  isNasaInvestigationId,
+  isPsiAccession,
+} from "./investigation-identifiers";
 
 type RecordValue = Record<string, unknown>;
 const record = (value: unknown): RecordValue =>
@@ -38,8 +43,10 @@ export function recordedAnchor(value: unknown): Anchor | null {
     )
       return null;
   } else if (
-    (input.source_kind != null && input.source_kind !== "psi") ||
-    !text(input.accession) ||
+    !(input.source_kind == null || input.source_kind === "psi"
+      ? isPsiAccession(input.accession)
+      : input.source_kind === "nasa" &&
+        isNasaInvestigationId(input.accession)) ||
     !integer(input.investigation_version, 1) ||
     input.document_id != null ||
     input.capture_id != null
@@ -151,7 +158,8 @@ function factAnchors(fact: RecordValue): {
           const anchor = recordedAnchor({
             snapshot_id: source.snapshot_id,
             source_sha256: source.sha256,
-            source_kind: "psi",
+            source_kind:
+              source.source_kind ?? investigationSourceKind(source.accession),
             accession: source.accession,
             investigation_version: source.investigation_version,
             asset_id: source.id,
@@ -184,7 +192,8 @@ function factAnchors(fact: RecordValue): {
     candidates.push({
       snapshot_id: content.snapshot_id,
       source_sha256: asset.sha256,
-      source_kind: "psi",
+      source_kind:
+        asset.source_kind ?? investigationSourceKind(asset.accession),
       accession: asset.accession,
       investigation_version: asset.investigation_version,
       asset_id: asset.id,

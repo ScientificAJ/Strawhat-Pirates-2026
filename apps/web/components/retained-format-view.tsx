@@ -10,6 +10,8 @@ import {
   sourceUrl,
 } from "./workbench-common";
 import s from "./workbench.module.css";
+import { investigationSourceKind } from "../lib/investigation-identifiers";
+import { isPublishedTranscription } from "../lib/source-description";
 
 type FormatPage = {
   format: string;
@@ -74,6 +76,10 @@ export function RetainedFormatView({
   );
   const anchor = (kind: string, place: Partial<Anchor>): Anchor => ({
     kind,
+    source_kind:
+      asset.source_kind ??
+      investigationSourceKind(asset.accession) ??
+      undefined,
     snapshot_id: snapshotId,
     accession: asset.accession,
     investigation_version: asset.investigation_version,
@@ -111,7 +117,9 @@ export function RetainedFormatView({
           </p>
         </div>
         <a className="button" href={sourceUrl(asset, snapshotId)}>
-          Download original file
+          {isPublishedTranscription(asset)
+            ? "Download transcribed table"
+            : "Download original file"}
         </a>
       </div>
       {data.sheet_names && (

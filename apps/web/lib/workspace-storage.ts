@@ -1,3 +1,4 @@
+import { isInvestigationId } from "./investigation-identifiers";
 import { workspaceDatabaseName } from "./local-workspaces";
 
 export type SourceAnchor = {
@@ -235,8 +236,7 @@ function validAnchors(value: unknown): value is SourceAnchor[] | undefined {
       if (!anchor || typeof anchor !== "object") return false;
       const record = anchor as Partial<SourceAnchor>;
       return (
-        boundedText(record.accession, 30) &&
-        /^PSI-\d+$/.test(record.accession) &&
+        isInvestigationId(record.accession) &&
         Number.isSafeInteger(record.investigation_version) &&
         Number(record.investigation_version) >= 1 &&
         Number.isSafeInteger(record.file_version) &&
@@ -280,9 +280,7 @@ export function validRevision(
     (record.snapshot_id === null || boundedText(record.snapshot_id, 256)) &&
     Array.isArray(record.investigation_ids) &&
     record.investigation_ids.length <= 100 &&
-    record.investigation_ids.every(
-      (id) => typeof id === "string" && /^PSI-\d+$/.test(id),
-    ) &&
+    record.investigation_ids.every(isInvestigationId) &&
     validAnchors(record.source_anchors)
   );
 }

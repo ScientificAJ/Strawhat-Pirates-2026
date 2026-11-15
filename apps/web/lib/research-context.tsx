@@ -1,4 +1,5 @@
 "use client";
+import { isInvestigationId } from "./investigation-identifiers";
 
 import {
   createContext,
@@ -12,6 +13,7 @@ import type { components } from "../../../packages/contracts/api-types";
 import {
   readDocument,
   saveDocument,
+  WorkspaceConflict,
   type WorkspaceDocument,
 } from "./workspace-documents";
 
@@ -40,6 +42,8 @@ export function ResearchContextProvider({
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
   const document = useRef<WorkspaceDocument | null>(null);
+  const latestContextVersion = useRef<string | null>(null);
+  latestContextVersion.current = context?.context_version ?? null;
   const pending = useRef(Promise.resolve());
   useEffect(() => {
     let alive = true;
@@ -60,9 +64,7 @@ export function ResearchContextProvider({
           typeof selected.context_version === "string" &&
           (!("investigations" in selected) ||
             (Array.isArray(selected.investigations) &&
-              selected.investigations.every(
-                (value) => typeof value === "string" && /^PSI-\d+$/.test(value),
-              ))) &&
+              selected.investigations.every(isInvestigationId))) &&
           [
             "selected_sources",
             "selected_evidence",
@@ -119,23 +121,50 @@ export function ResearchContextProvider({
   }, []);
   useEffect(() => {
     if (!ready || !context) return;
+    const savedContext = document.current?.data.context as
+      WorkspaceContext | undefined;
+    if (savedContext?.context_version === context.context_version) return;
     // Start the revision-checked write immediately so a full navigation after
     // saving an investigation cannot discard an unstarted selection update.
     pending.current = pending.current
       .then(async () => {
-        document.current = await saveDocument(
-          {
-            id: "active-research-context",
-            kind: "research_context",
-            title: "Current research selection",
-            snapshot_id: context.snapshot_id,
-            data: { context },
-          },
-          document.current?.revision ?? 0,
-        );
-        setStorageError(null);
+        // This is the current selection, not a conversation or authored note.
+        // Read its latest revision so ordinary navigation in another tab does
+        // not make a later explicit selection fail with a draft conflict.
+        for (let attempt = 0; attempt < 2; attempt++) {
+          if (latestContextVersion.current !== context.context_version) return;
+          const latest = await readDocument("active-research-context");
+          if (
+            latest?.data.context &&
+            (latest.data.context as WorkspaceContext).context_version ===
+              context.context_version
+          ) {
+            document.current = latest;
+            setStorageError(null);
+            return;
+          }
+          if (latestContextVersion.current !== context.context_version) return;
+          try {
+            document.current = await saveDocument(
+              {
+                id: "active-research-context",
+                kind: "research_context",
+                title: "Current research selection",
+                snapshot_id: context.snapshot_id,
+                data: { context },
+              },
+              latest?.revision ?? 0,
+            );
+            setStorageError(null);
+            return;
+          } catch (reason) {
+            if (!(reason instanceof WorkspaceConflict) || attempt > 0)
+              throw reason;
+          }
+        }
       })
       .catch((reason) => {
+        if (latestContextVersion.current !== context.context_version) return;
         setStorageError(
           reason instanceof Error
             ? reason.message

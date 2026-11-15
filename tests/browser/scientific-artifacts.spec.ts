@@ -83,6 +83,15 @@ test("a saved uncertainty artifact displays its dimensional outputs and interpre
   await expect(
     page.getByRole("listitem").filter({ hasText: /^2 Pa$/ }),
   ).toBeVisible();
+  await page
+    .locator("details.artifact-limitations")
+    .filter({
+      has: page.getByText("Keep the outer source qualification visible.", {
+        exact: true,
+      }),
+    })
+    .locator("summary")
+    .click();
   await expect(
     page.getByRole("listitem").filter({ hasText: /^3 K$/ }),
   ).toBeVisible();

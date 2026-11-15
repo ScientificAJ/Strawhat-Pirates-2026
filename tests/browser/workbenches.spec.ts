@@ -432,7 +432,7 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     .getByRole("combobox", { name: "Availability", exact: true })
     .selectOption("");
   await expect(
-    page.getByText("24 investigations found", { exact: true }),
+    page.getByText("36 research entries found", { exact: true }),
   ).toBeVisible();
   await page
     .locator("#discovery-filter-panel summary")
@@ -445,7 +445,7 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     })
     .check();
   await expect(
-    page.getByText("2 investigations found", { exact: true }),
+    page.getByText("2 research entries found", { exact: true }),
   ).toBeVisible();
   await page
     .locator("#discovery-filter-panel summary")
@@ -458,7 +458,7 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     })
     .check();
   await expect(
-    page.getByText("1 investigations found", { exact: true }),
+    page.getByText("1 research entries found", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "SAFFIRE-II", exact: true }),
@@ -497,7 +497,7 @@ test("catalog facets expose source-backed alternatives and counts without claimi
     })
     .click();
   await expect(
-    page.getByText("2 investigations found", { exact: true }),
+    page.getByText("2 research entries found", { exact: true }),
   ).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Filters", exact: true }).click();

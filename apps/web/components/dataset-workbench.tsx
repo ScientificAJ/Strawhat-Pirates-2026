@@ -1,4 +1,6 @@
 "use client";
+import { isInvestigationId } from "../lib/investigation-identifiers";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Check,
@@ -36,6 +38,10 @@ import { ScientificRecordView } from "./scientific-records";
 import { RawTable } from "./catalog";
 import { JobMonitor } from "./job-monitor";
 import styles from "./laboratory-workbench.module.css";
+import {
+  assetSourceLabel,
+  isPublishedTranscription,
+} from "../lib/source-description";
 
 type Operation = {
   id: string;
@@ -59,7 +65,7 @@ export function DatasetWorkbench({
     `/v1/investigations?limit=100&snapshot_id=${snapshotId}`,
   );
   const [accession, setAccession] = useState(
-    /^PSI-\d+$/.test(entityId ?? "")
+    isInvestigationId(entityId)
       ? entityId!
       : (context?.investigations?.[0] ?? ""),
   );
@@ -81,7 +87,7 @@ export function DatasetWorkbench({
   const pendingQuery = useRef<AbortController | null>(null);
   const [appliedQuery, setAppliedQuery] = useState<QuerySpec | null>(null);
   const [opening, setOpening] = useState(
-    Boolean(entityId && !/^PSI-\d+$/.test(entityId)),
+    Boolean(entityId && !isInvestigationId(entityId)),
   );
   const directHash = /^[a-f0-9]{64}$/.test(entityId ?? "")
     ? entityId
@@ -127,7 +133,7 @@ export function DatasetWorkbench({
   const [notice, setNotice] = useState("");
   const [exportId, setExportId] = useState<string | null>(null);
   useEffect(() => {
-    if (!entityId || /^PSI-\d+$/.test(entityId)) {
+    if (!entityId || isInvestigationId(entityId)) {
       setOpening(false);
       return;
     }
@@ -613,7 +619,8 @@ export function DatasetWorkbench({
               <div>
                 <h2>{asset?.file_name ?? "Choose a retained dataset"}</h2>
                 <p className={styles.caption}>
-                  {dossier.data?.acronym || accession} · NASA source data
+                  {dossier.data?.acronym || accession} ·{" "}
+                  {asset ? assetSourceLabel(asset) : "NASA research sources"}
                 </p>
               </div>
               {asset && (
@@ -626,6 +633,31 @@ export function DatasetWorkbench({
                 </button>
               )}
             </div>
+            {asset && isPublishedTranscription(asset) && (
+              <details className={styles.details}>
+                <summary>Publication and transcription details</summary>
+                <p>
+                  This retained table was transcribed from a published source.
+                  It preserves reported values and conditions; it is not an
+                  original experimental data file.
+                </p>
+                {asset.source_provenance
+                  ?.filter((source) => /^https:\/\//.test(source.source_url))
+                  .map((source, index) => (
+                    <p key={source.source_url + index}>
+                      <a
+                        href={source.source_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {source.title || "Original NASA publication"}
+                      </a>
+                      {source.page != null ? ` · page ${source.page}` : ""}
+                      {source.table ? ` · ${source.table}` : ""}
+                    </p>
+                  ))}
+              </details>
+            )}
             <div className={styles.summary}>
               <span>
                 Source records{" "}
@@ -655,7 +687,11 @@ export function DatasetWorkbench({
                   aria-selected={tab === value}
                   onClick={() => setTab(value)}
                 >
-                  {value[0].toUpperCase() + value.slice(1)}
+                  {value === "original" &&
+                  asset &&
+                  isPublishedTranscription(asset)
+                    ? "Transcribed table"
+                    : value[0].toUpperCase() + value.slice(1)}
                 </button>
               ))}
             </nav>
@@ -898,8 +934,10 @@ export function DatasetWorkbench({
                 <h3>Select variables to preview your data</h3>
                 <p>
                   Choose columns in the Variables list, then apply your
-                  selection. You can chart or export the result. Original source
-                  values remain available in the Original tab.
+                  selection. You can chart or export the result.{" "}
+                  {asset && isPublishedTranscription(asset)
+                    ? "Published values remain available in the Transcribed table tab."
+                    : "Original source values remain available in the Original tab."}
                 </p>
               </div>
             ))}
