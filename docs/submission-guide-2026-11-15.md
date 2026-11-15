@@ -2,6 +2,12 @@
 
 Prepared 15 November 2026. This is a reviewable demonstration outline and submission preparation document. It does not record a submission, a deployed URL, new user studies or scientific certification. Replace pending release facts with observed evidence before publishing.
 
+## Current recorded demonstration — 15 November 2026
+
+The current deliverable is the [final 28-second video](../media/nova-ember-space-apps/nova-ember-demo-final.mp4), the third motion-graphics revision. It rebuilds the presentation around the owner's app recording, retains the assistant's partial result and source reveal, and uses a quieter music mix. The export is 1920 × 1080 at 60 fps. Its [source and license record](../media/nova-ember-space-apps/credits.md) and [copy-ready description](../media/nova-ember-space-apps/demo-final-public-credits.txt) accompany the file. Independent listening review remains pending; the older video audits do not establish that this revision has passed that review.
+
+The assistant clip is marked “Available results” and discusses BASS-II. It does not complete the requested two-investigation answer. The separate comparison view shows source-reported approaches and conditions. The longer demonstration outline below remains useful for a live walkthrough; it does not describe every feature visible in the 28-second edit.
+
 ## Product description
 
 **Nova Ember turns NASA combustion research into a question-led scientific workflow.** People can find investigations, understand their purpose, compare experimental conditions, inspect the original evidence and work with source-bound data. The research assistant connects explanations and scientific tools to inspectable sources. Automatic continuity helps visitors return to research without first managing a workspace or creating a case.
@@ -39,7 +45,7 @@ If time permits, add one separate calculation or modeling example. A simple inde
 | Challenge | Flame in Freefall, 2026 NASA Space Apps |
 | Source repository | Use the configured repository and the delivered revision; verify visibility and the intended link before submission |
 | Live application | Pending a recorded deployment and hosted acceptance; no URL is asserted here |
-| Demo recording | Pending an actual recording of the final revision |
+| Demo recording | [Final 28-second video](../media/nova-ember-space-apps/nova-ember-demo-final.mp4) with [distribution credits](../media/nova-ember-space-apps/demo-final-public-credits.txt); independent listening and the actual public video-hosting page still need verification |
 | Data/resources | NASA PSI combustion records and the exact supporting publications/files actually used; include dataset identifiers, licenses and source versions |
 | Verification | Link the final dated redesign/release report; do not substitute the earlier interface's test counts |
 | Known limits | Source-specific gaps, calibration/independence, model support and any unverified hosted/voice/device behavior |

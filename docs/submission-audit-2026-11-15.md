@@ -2,6 +2,8 @@
 
 This is a point-in-time review of local media, not a release or submission record. The video and its credits may change while production continues; repeat the review against the final file and its actual distribution page.
 
+**Current final deliverable:** the current video is [`nova-ember-demo-final.mp4`](../media/nova-ember-space-apps/nova-ember-demo-final.mp4), with [final distribution credits](../media/nova-ember-space-apps/demo-final-public-credits.txt). The v2 measurements and remux checks below remain evidence for those earlier files; the final-revision note at the end records the successor and outstanding review.
+
 ## Version reviewed
 
 - [`nova-ember-demo-v2.mp4`](../media/nova-ember-space-apps/nova-ember-demo-v2.mp4): SHA-256 `4a74a31c18c8d6152c835802879cb7a77924608429883256960b6dbff1f27e12`.
@@ -45,3 +47,9 @@ NASA's [Science Data Licenses policy](https://science.data.nasa.gov/about/licens
 ### Attribution metadata remux
 
 A later separate `nova-ember-demo-v2-attributed.mp4` preserves the original video's H.264 and AAC packets while adding container description and comment tags identifying the AI-generated OpenAI text-to-speech narration and Marin voice, with a music credit and link to the full record. SHA-256: `331ca25ec241eb3eab6e848e89a6622edcaffc5113f5f779798aacbdfb7cbb37`. On the local remux, FFprobe recovered the tags, the 1,680 video and 2,626 audio packet hashes matched the original, and FFmpeg decoded both streams. The previous observation about missing narration metadata still describes the original v2 file. Platforms can strip metadata, so verify the public file and attach the complete [distribution credits](../media/nova-ember-space-apps/demo-v2-public-credits.txt) to the final video page. Audio listening and continuous visual review remain separate.
+
+## Final motion-graphics revision — 15 November 2026
+
+The successor is [`nova-ember-demo-final.mp4`](../media/nova-ember-space-apps/nova-ember-demo-final.mp4), the third motion-graphics revision, with [final copy-ready credits](../media/nova-ember-space-apps/demo-final-public-credits.txt). The exported file is 28.000 seconds, 1920 × 1080 at 60 fps. The final SHA-256 is `782132b918a0993b861739c6f74a3f0f738fa5fc164d8578e2d7d09d4c7396d7`; both streams decoded without error. Measured integrated loudness is −16.2 LUFS and true peak is −3.5 dBTP. Container title, narration disclosure and music-license metadata were recovered with FFprobe. It rebuilds the graphics and uses a much quieter music mix while preserving the partial assistant result and the distinction between source metadata and scientific validation.
+
+The prior file hashes, decode and packet-equality checks in this audit do not verify this new revision. The final file's hash, technical checks and sampled visual-review evidence are recorded in the [production credit record](../media/nova-ember-space-apps/credits.md). Independently listen to the final narration and music, and verify the actual public video page and description; those checks remain pending here.

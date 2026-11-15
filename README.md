@@ -32,7 +32,9 @@ Scientific context stays close to the evidence: source locations and units accom
 
 ## See Nova Ember
 
-[Download the 28-second video](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md)
+[![Nova Ember final demo](media/nova-ember-space-apps/demo-final-poster.jpg)](media/nova-ember-space-apps/nova-ember-demo-final.mp4)
+
+[Download the final 28-second video](media/nova-ember-space-apps/nova-ember-demo-final.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md) · [Copy-ready video description](media/nova-ember-space-apps/demo-final-public-credits.txt)
 
 GitHub does not preview the video at its current size; download it to watch. The screenshots below show the local application on 15 November 2026.
 

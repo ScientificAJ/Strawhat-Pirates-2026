@@ -2,6 +2,8 @@
 
 This is a point-in-time audit of the repository and local draft, not a record of submission or a certification of rights. Other work on the demo and hosting is ongoing. Recheck the final release, project page, assets and governing guidance before submission.
 
+**Current video successor:** use the [final 28-second video](../media/nova-ember-space-apps/nova-ember-demo-final.mp4) and its [copy-ready distribution credits](../media/nova-ember-space-apps/demo-final-public-credits.txt). The final-revision update at the end of this document supersedes the earlier v2 deliverable references; the earlier inspection outcomes remain historical evidence for those files.
+
 ## Organizer requirements and template
 
 The [2026 participant terms](https://www.spaceappschallenge.org/legal/) require all sources used in the project to be cited and applicable licenses for third-party materials to be identified in submission documentation. They also set terms for availability and use of original and third-party content. A [Global Organizing Team answer](https://github.com/nasa/spaceapps/discussions/1849) says to disclose where and how AI was used, with visible watermarks for AI-generated images and video and acknowledgment in descriptive text and metadata for AI-generated audio, code and data. It also identifies a challenge-listed NASA data source as a Global Awards requirement. The organizer's [submission-format answer](https://github.com/nasa/spaceapps/discussions/1858) lists a project title, summary, demo and project links, detailed description, data resources, AI/SI tool use and agreement to terms.
@@ -45,3 +47,9 @@ The [submission source register](submission-source-register-2026-11-15.md) provi
 The hosting chat subsequently reported a live deployment at [nova-ember.duckdns.org/app](https://nova-ember.duckdns.org/app), with successful source-linked assistant and research-flow checks. An independent HTTPS request in this review returned HTTP 200 with certificate verification succeeding. This request alone did not retest the full application; hosted Python and shell execution were reported disabled pending host-specific qualification.
 
 After the metadata-attributed video was pushed, the public GitHub file page returned HTTP 200; GitHub displayed that the file is too large to show in its preview. A downloadable file page is not a verified convenient playback experience for judges. Use and test an accessible public video-hosting page, with the [copy-ready credits](../media/nova-ember-space-apps/demo-v2-public-credits.txt) in its description; verify that the public page and metadata are present.
+
+## Final video successor — 15 November 2026
+
+The third motion-graphics revision is delivered as [`nova-ember-demo-final.mp4`](../media/nova-ember-space-apps/nova-ember-demo-final.mp4), with [`demo-final-public-credits.txt`](../media/nova-ember-space-apps/demo-final-public-credits.txt) for its distribution description. It is 28 seconds, 1920 × 1080 at 60 fps, with rebuilt motion graphics and a much quieter music mix. The assistant's partial “Available results” reply is retained accurately; the separate comparison does not establish interchangeable experimental conditions.
+
+Use this final file for subsequent review and hosting rather than either v2 file. The recorded v2 hashes, packet comparisons, decode results and public-page checks above apply only to their named files. Independent listening of the final narration and music remains pending. Verify this final video's file metadata, public playback and accompanying credits at the actual distribution destination before submission; final naming alone does not establish those outcomes.
