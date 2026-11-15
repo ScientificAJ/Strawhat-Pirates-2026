@@ -88,7 +88,7 @@ AI tools were used in the project in the following ways:
 - **ChatGPT** helped outline the system architecture.
 - **Gemini web app (Hydrogen)** helped rapidly prototype visualizations. **Gemini Hydrogen High** also assisted with drafting and refining this README.
 - **OpenAI Codex** helped rapidly prototype code, create project files and validate implementation work.
-- **ChatGPT Images 2.0** was used to upscale an earlier team image. The current Space Apps team and profile images use an unaltered public-domain photograph from The Met instead.
+- **OpenAI image generation** created the current Space Apps team and profile portrait as an artistic adaptation of a public-domain drawing of Hector; the image is visibly labeled. ChatGPT Images 2.0 was also used to upscale an earlier team image.
 - **OpenAI text-to-speech**, using the Marin voice, generated the demo video's narration; the [video credits](media/nova-ember-space-apps/credits.md) describe the audio and other media.
 
 The application's optional research assistant, semantic search and voice features also use configured OpenAI models. Their responses and interpretations are distinct from source-reported data and registered calculations.
@@ -102,7 +102,7 @@ Nova Ember builds on NASA's public research and the challenge resources:
 - [NASA: Studying Combustion and Fire Safety](https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/) — background on combustion research in space.
 - [NASA research collection](data/nasa-research/README.md), [source inventory](docs/data-sources.md) and [submission source register](docs/submission-source-register-2026-11-15.md) — retained sources, identifiers, table provenance, coverage and rights notes. The application links individual evidence to its original record or publication.
 
-The Space Apps team and profile images use The Metropolitan Museum of Art’s [*Marble head of a Greek general*](https://www.metmuseum.org/art/collection/search/251493), Roman, 1st–2nd century CE, Fletcher Fund, 1924 (24.97.32). The Met provides the image as [public domain under CC0](https://www.metmuseum.org/policies/image-resources).
+The Space Apps team and profile portrait is an AI-generated artistic adaptation of Benjamin West’s [*Hector taking leave of Andromache*](https://www.metmuseum.org/art/collection/search/340717) (1766), The Metropolitan Museum of Art, Purchase, Guy Wildenstein Gift, 2000 (2000.243). The Met provides its source image as [public domain under CC0](https://www.metmuseum.org/policies/image-resources).
 
 The demo uses NASA Glenn’s [candle-flame image](https://images.nasa.gov/details/GRC-1998-C-00486) and footage from [*Great Balls of Fire — FLEX*](https://svs.gsfc.nasa.gov/11318/), credited to Science@NASA and NASA’s Goddard Space Flight Center. Its music is [“Mesmerizing Galaxy” by Kevin MacLeod](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300011), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the track was trimmed, faded and mixed. The [video credits](media/nova-ember-space-apps/credits.md) provide the full source and modification record.
 

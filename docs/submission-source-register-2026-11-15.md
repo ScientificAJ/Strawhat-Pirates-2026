@@ -58,7 +58,7 @@ These links identify the retained sources and tools for the Space Apps project f
 
 ## Other resources and tools
 
-- [The Metropolitan Museum of Art, Marble head of a Greek general, accession 24.97.32](https://www.metmuseum.org/art/collection/search/251493): public-domain image under the Met’s [Open Access / CC0 policy](https://www.metmuseum.org/policies/image-resources); used unaltered for the team and profile photos.
+- [Benjamin West, Hector taking leave of Andromache, The Metropolitan Museum of Art, accession 2000.243](https://www.metmuseum.org/art/collection/search/340717): public-domain source image under the Met’s [Open Access / CC0 policy](https://www.metmuseum.org/policies/image-resources). The team and profile portraits are AI-generated artistic adaptations of this drawing.
 - [Mesmerizing Galaxy — Kevin MacLeod](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300011): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); trimmed, faded and mixed in the video.
 - [Final 28-second video](../media/nova-ember-space-apps/nova-ember-demo-final.mp4), [demo production credits](../media/nova-ember-space-apps/credits.md) and [copy-ready video description](../media/nova-ember-space-apps/demo-final-public-credits.txt): NASA visual credits, music, changes and AI-generated narration. This third motion-graphics revision supersedes the v2 deliverable; independent listening review remains pending.
 - [Software dependency license inventory](third-party-software-2026-11-15.md) and [notices from local application images](third-party-notices/2026-11-15/README.md): exact locked packages, recorded license terms and recovered notice files; review actual release artifacts.
