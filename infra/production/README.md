@@ -54,11 +54,56 @@ host for submission. A successful Compose build alone is not hosted acceptance.
 The initial packaging was exercised in a local throwaway stack with a local Caddy
 certificate; the hosted deployment had not yet been verified at that point.
 
+## Automatic updates from GitHub
+
+The optional systemd timer checks the public repository's `main` branch every
+three minutes. It builds a separate source snapshot before restarting the stack,
+uses the existing `nova-ember` project and named volumes, and records the last
+successfully processed revision under `.data/auto-deploy`. Documentation and
+media-only changes advance that marker without restarting the application, so the
+marker alone does not identify the running image. Builds or readiness failures are recorded in the system
+journal and are not retried for the same revision until an operator intervenes.
+
+On the VM, first confirm the actual deployed revision, the remote URL, and that
+`/opt/nova-ember/.env.production` contains the existing settings. Replace the
+revision below with the actual full deployed commit, then install the timer as root:
+
+```sh
+cd /opt/nova-ember
+git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+staging=$(mktemp -d /tmp/nova-deployer.XXXXXXXX)
+git archive refs/remotes/origin/main \
+  infra/production/auto-deploy.sh \
+  infra/production/nova-ember-deploy.service \
+  infra/production/nova-ember-deploy.timer | tar -x -C "$staging"
+install -d -m 700 .data/auto-deploy /usr/local/lib/nova-ember
+printf '%s\n' ACTUAL_DEPLOYED_COMMIT > .data/auto-deploy/deployed-revision
+install -m 755 "$staging/infra/production/auto-deploy.sh" /usr/local/lib/nova-ember/auto-deploy.sh
+install -m 644 "$staging/infra/production/nova-ember-deploy.service" /etc/systemd/system/
+install -m 644 "$staging/infra/production/nova-ember-deploy.timer" /etc/systemd/system/
+rm -rf "$staging"
+systemctl daemon-reload
+systemctl enable --now nova-ember-deploy.timer
+```
+
+The installed script and unit files are not automatically replaced by future
+pushes; reinstall them deliberately when these files change. Check status with
+`systemctl status nova-ember-deploy.timer` and inspect runs with
+`journalctl -u nova-ember-deploy.service`. After investigating a failure, remove
+only `.data/auto-deploy/failed-revision` to retry that revision and start the
+service. A failed rollout attempts to restore the previous version only if no
+database migrations changed; changed migrations require manual recovery. This
+does not back up or restore data, prevent downtime, verify all user workflows, or
+guarantee that a previous version can use a changed database. Maintain tested
+database and object backups. Release snapshots and build images consume disk.
+Run `python3 infra/production/test_auto_deploy.py` for the deployment decision
+tests; it also checks Compose paths and volume names when Docker is installed.
+
 ## Hosted deployment — 15 November 2026
 
 Nova Ember is available at [nova-ember.duckdns.org](https://nova-ember.duckdns.org/app).
-It runs on a Google Cloud VM with a reserved IP and HTTPS. The deployed application
-uses commit `fa0462d`. Public checks covered investigation search, comparison
+It runs on a Google Cloud VM with a reserved IP and HTTPS. The first verified
+deployment used commit `fa0462d`. Public checks covered investigation search, comparison
 and automatic rankings, a source-linked assistant answer, and the BASS-II flame
 illustration. The browser HTML and script assets checked did not contain the
 backend provider key.
