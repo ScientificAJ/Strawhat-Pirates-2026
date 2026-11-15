@@ -1,0 +1,92 @@
+{
+  "accession": "NASA-FLARE",
+  "version": 1,
+  "title": "Flammability Limits at Reduced-g Experiment",
+  "investigationAcronym": "FLARE",
+  "description": "FLARE connects material flammability limits measured on Earth with behavior in microgravity. The retained NASA sources describe an international research program and early ground test-method work.",
+  "objective": "Develop a method to estimate microgravity flammability limits from reproducible ground-test data.",
+  "approach": "Combine ground experiments, parabolic flights and theory, with ISS/Kibo verification described in the historical NASA approach. Compare ignition methods and failure criteria before relating ground screening to low-gravity behavior.",
+  "hypothesis": "",
+  "researchImpacts": "",
+  "experimentHardware": "JAXA Solid Combustion hardware described for ISS/Kibo; ground flammability apparatus",
+  "researchArea": "Combustion Science",
+  "subResearchArea": "Solid Fuels",
+  "related_glds": [],
+  "flightProgram": "Ground and reduced-gravity research; historical ISS/Kibo verification plan",
+  "missionName": "",
+  "missionStart": null,
+  "missionEnd": null,
+  "investigationStartDate": null,
+  "investigationEndDate": null,
+  "projectTitle": "Flammability Limits at Reduced-g Experiment",
+  "publications": [
+    {
+      "title": "Flammability Limits at Reduced-g Experiment (FLARE)Task Group 5: Fundamental Research on International Standard of Fire Safety in Space on the ISS/JEM",
+      "url": "https://ntrs.nasa.gov/citations/20160001023"
+    }
+  ],
+  "licenseIdentifier": null,
+  "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession.",
+  "field_provenance": {
+    "title": [
+      {
+        "source_id": "nasa-flare",
+        "quote": "Flammability Limits At Reduced-g Experiment (FLARE)",
+        "origin": "source_summary",
+        "label": "Flammability Limits at Reduced-g Experiment (FLARE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "source_sha256": "ee247d6adccba0fb4db146c02424c350e1a4876ce6486c50871c2fd592be45ea"
+      }
+    ],
+    "description": [
+      {
+        "source_id": "nasa-flare",
+        "quote": "To develop a methodology to correlate material flammability limits in normal gravity and",
+        "origin": "source_summary",
+        "label": "Flammability Limits at Reduced-g Experiment (FLARE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "source_sha256": "ee247d6adccba0fb4db146c02424c350e1a4876ce6486c50871c2fd592be45ea"
+      }
+    ],
+    "objective": [
+      {
+        "source_id": "nasa-flare",
+        "quote": "To develop a methodology to correlate material flammability limits in normal gravity and",
+        "origin": "source_summary",
+        "label": "Flammability Limits at Reduced-g Experiment (FLARE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "source_sha256": "ee247d6adccba0fb4db146c02424c350e1a4876ce6486c50871c2fd592be45ea"
+      }
+    ],
+    "approach": [
+      {
+        "source_id": "nasa-flare",
+        "quote": "• Perform extensive research via ground-based experiments, including 1g and parabolic",
+        "origin": "source_summary",
+        "label": "Flammability Limits at Reduced-g Experiment (FLARE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "source_sha256": "ee247d6adccba0fb4db146c02424c350e1a4876ce6486c50871c2fd592be45ea"
+      }
+    ],
+    "experimentHardware": [
+      {
+        "source_id": "nasa-flare",
+        "quote": "• Experiment uses same hardware as JAXA’s “Solid Combustion”",
+        "origin": "source_summary",
+        "label": "Flammability Limits at Reduced-g Experiment (FLARE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "source_sha256": "ee247d6adccba0fb4db146c02424c350e1a4876ce6486c50871c2fd592be45ea"
+      }
+    ],
+    "flightProgram": [
+      {
+        "source_id": "nasa-flare",
+        "quote": "• Flight experiments on orbit in ISS/KIBO will be performed to verify the correlation. The",
+        "origin": "source_summary",
+        "label": "Flammability Limits at Reduced-g Experiment (FLARE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "source_sha256": "ee247d6adccba0fb4db146c02424c350e1a4876ce6486c50871c2fd592be45ea"
+      }
+    ]
+  }
+}

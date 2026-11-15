@@ -1,0 +1,1541 @@
+{
+  "captured_at": "2026-11-15T02:14:35.821716+00:00",
+  "sources": [
+    {
+      "id": "ntrs-20240002981",
+      "title": "Preliminary Results from the Saffire VI Experiment",
+      "path": "sources/ntrs-20240002981.json",
+      "sha256": "e1a102b3c1eb58b9fa4def5c41adfbbe350a58856e3891e5d4a3a17c910dd272",
+      "byte_size": 11322,
+      "media_type": "application/json",
+      "source_url": "https://ntrs.nasa.gov/citations/20240002981",
+      "captured_at": "2026-11-15T02:06:26.032581+00:00",
+      "rights": "MAY_INCLUDE_COPYRIGHT_MATERIAL"
+    },
+    {
+      "id": "ntrs-20210011521",
+      "title": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+      "path": "sources/ntrs-20210011521.json",
+      "sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a",
+      "byte_size": 11766,
+      "media_type": "application/json",
+      "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+      "captured_at": "2026-11-15T02:06:33.441795+00:00",
+      "rights": "MAY_INCLUDE_COPYRIGHT_MATERIAL"
+    },
+    {
+      "id": "ntrs-20250010653",
+      "title": "Lunar Combustion Investigation: Flammability Results from a Rotating Sounding Rocket",
+      "path": "sources/ntrs-20250010653.json",
+      "sha256": "a7f842cf384ed21dcd83d1b461a58ff5259273fc5438986b700f9702f7ace87b",
+      "byte_size": 5645,
+      "media_type": "application/json",
+      "source_url": "https://ntrs.nasa.gov/citations/20250010653",
+      "captured_at": "2026-11-15T02:06:40.023423+00:00",
+      "rights": "GOV_PERMITTED"
+    },
+    {
+      "id": "nasa-fm2",
+      "title": "Flammability of Materials on the Moon (FM2)",
+      "path": "sources/nasa-fm2.html",
+      "sha256": "4c1fbceb982801f5fb39178315ee901f2c71dcd3199e8ec005cd182b27751fc5",
+      "byte_size": 277901,
+      "media_type": "text/html",
+      "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+      "captured_at": "2026-11-15T02:14:18.994012+00:00",
+      "rights": "Official NASA page; preserve original notices; no blanket CC0 assertion"
+    },
+    {
+      "id": "nasa-flare",
+      "title": "Flammability Limits at Reduced-g Experiment (FLARE)",
+      "path": "sources/nasa-flare.html",
+      "sha256": "ee247d6adccba0fb4db146c02424c350e1a4876ce6486c50871c2fd592be45ea",
+      "byte_size": 275949,
+      "media_type": "text/html",
+      "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+      "captured_at": "2026-11-15T02:14:20.035961+00:00",
+      "rights": "Official NASA page; preserve original notices; no blanket CC0 assertion"
+    },
+    {
+      "id": "nasa-saffire-complete-2024",
+      "title": "Flame Burns Out on NASA’s Long-Running Spacecraft Fire Experiment",
+      "path": "sources/nasa-saffire-complete-2024.html",
+      "sha256": "bba547f859c558c1dceed141554b48df0c270cf0f92c787f69dd9ab078aeb99f",
+      "byte_size": 299977,
+      "media_type": "text/html",
+      "source_url": "https://www.nasa.gov/centers-and-facilities/glenn/flame-burns-out-on-nasas-long-running-spacecraft-fire-experiment/",
+      "captured_at": "2026-11-15T02:14:21.144198+00:00",
+      "rights": "Official NASA page; preserve original notices; no blanket CC0 assertion"
+    },
+    {
+      "id": "ntrs-20260001966",
+      "title": "Material Flammability at Lunar and Martian Gravity",
+      "path": "sources/ntrs-20260001966.json",
+      "sha256": "5c51cdaef8119e7566fd16b48849ad6c25115a46c0831afb44188e7bcd30f080",
+      "byte_size": 4471,
+      "media_type": "application/json",
+      "source_url": "https://ntrs.nasa.gov/citations/20260001966",
+      "captured_at": "2026-11-15T02:14:30.860725+00:00",
+      "rights": "GOV_PERMITTED"
+    },
+    {
+      "id": "ntrs-20160001023",
+      "title": "Flammability Limits at Reduced-g Experiment (FLARE)Task Group 5: Fundamental Research on International Standard of Fire Safety in Space on the ISS/JEM",
+      "path": "sources/ntrs-20160001023.json",
+      "sha256": "d3cea33d7fe495564e48a223f932e9625ab4638dc91164055a7480a500bc04bb",
+      "byte_size": 3881,
+      "media_type": "application/json",
+      "source_url": "https://ntrs.nasa.gov/citations/20160001023",
+      "captured_at": "2026-11-15T02:14:35.821716+00:00",
+      "rights": "PUBLIC_USE_PERMITTED"
+    },
+    {
+      "id": "nasa-glenn-sofie",
+      "title": "Solid Fuel Ignition and Extinction (SoFIE)",
+      "path": "sources/nasa-glenn-sofie.html",
+      "sha256": "1c7af022fad61e8958021a42b81c7b8e7364cc174513749358a7833d202dfb70",
+      "byte_size": 306752,
+      "media_type": "text/html",
+      "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+      "captured_at": "2026-11-15T02:08:59.402117+00:00",
+      "rights": "NASA page; retain original notices and source scope; no CC0 assertion"
+    },
+    {
+      "id": "nasa-science-sofie",
+      "title": "SoFIE",
+      "path": "sources/nasa-science-sofie.html",
+      "sha256": "4ba0cd5197c51bac4c412e4e2cff15d8c29b736bf13155c248938e5ae6b36c06",
+      "byte_size": 274582,
+      "media_type": "text/html",
+      "source_url": "https://science.nasa.gov/mission/sofie/",
+      "captured_at": "2026-11-15T02:09:01.040206+00:00",
+      "rights": "NASA page; retain original notices and source scope; no CC0 assertion"
+    },
+    {
+      "id": "nasa-science-gel",
+      "title": "SoFIE-GEL",
+      "path": "sources/nasa-science-gel.html",
+      "sha256": "3b1399d0ba5e790ec9ae4734d31f690c5f896efa01c936bcea359e2714316d6c",
+      "byte_size": 272958,
+      "media_type": "text/html",
+      "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-gel/",
+      "captured_at": "2026-11-15T02:09:02.280234+00:00",
+      "rights": "NASA page; retain original notices and source scope; no CC0 assertion"
+    },
+    {
+      "id": "nasa-science-mist",
+      "title": "SoFIE-MIST",
+      "path": "sources/nasa-science-mist.html",
+      "sha256": "60bec20818744128af9b3763e612bcb1d991f014ea5820c4be44e8ee0c3396b9",
+      "byte_size": 273009,
+      "media_type": "text/html",
+      "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist/",
+      "captured_at": "2026-11-15T02:09:03.778654+00:00",
+      "rights": "NASA page; retain original notices and source scope; no CC0 assertion"
+    },
+    {
+      "id": "nasa-science-mist-overview",
+      "title": "Material Ignition and Suppression Test",
+      "path": "sources/nasa-science-mist-overview.html",
+      "sha256": "a50303c13537cd0da1d8cecc37f41031ff369627025231969898b77a9527930a",
+      "byte_size": 251855,
+      "media_type": "text/html",
+      "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist-solid-fuel-ignition-and-extinction-material-ignition-and-suppression-test/",
+      "captured_at": "2026-11-15T02:09:04.914651+00:00",
+      "rights": "NASA page; retain original notices and source scope; no CC0 assertion"
+    },
+    {
+      "id": "nasa-combustion-explainer-2024",
+      "title": "Why NASA Is Studying Flames in Space",
+      "path": "sources/nasa-combustion-explainer-2024.html",
+      "sha256": "0784677e28cf956d506f7502132e84c7309f1cbc3faaaf451e9005ba45f0d59c",
+      "byte_size": 277802,
+      "media_type": "text/html",
+      "source_url": "https://science.nasa.gov/biological-physical/resources/explainers-infographics/why-nasa-is-studying-flames-in-space/",
+      "captured_at": "2026-11-15T02:09:06.308484+00:00",
+      "rights": "NASA page; retain original notices and source scope; no CC0 assertion"
+    },
+    {
+      "id": "nasa-crew9-science-2025",
+      "title": "NASA’s SpaceX Crew-9 Scientific Mission on Space Station Concludes",
+      "path": "sources/nasa-crew9-science-2025.html",
+      "sha256": "cbadeb86490461db18f27512ceaac491909f31730103e6df96db2eab40d70976",
+      "byte_size": 362997,
+      "media_type": "text/html",
+      "source_url": "https://www.nasa.gov/missions/station/iss-research/nasas-spacex-crew-9-scientific-mission-on-space-station-concludes/",
+      "captured_at": "2026-11-15T02:09:08.805756+00:00",
+      "rights": "NASA page; retain original notices and source scope; no CC0 assertion"
+    },
+    {
+      "id": "ntrs-20200000361",
+      "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+      "path": "sources/ntrs-20200000361.json",
+      "sha256": "bf31dd62e798030dab5a8a54aa41ea92d91cf5f2735c62b02a0efde87a762c98",
+      "byte_size": 7528,
+      "media_type": "application/json",
+      "source_url": "https://ntrs.nasa.gov/citations/20200000361",
+      "captured_at": "2026-11-15T02:09:08.811602+00:00",
+      "rights": "PUBLIC_USE_PERMITTED"
+    },
+    {
+      "id": "ntrs-20240007628",
+      "title": "Extinction of Solid Diffusion Flame in Microgravity: Details of Quenching and Blowoff Processes",
+      "path": "sources/ntrs-20240007628.json",
+      "sha256": "7f0a0ea7e4ebf8daf2aff7fe78b19ec4ec5b9f459ad3748445e10cbfb0312289",
+      "byte_size": 6414,
+      "media_type": "application/json",
+      "source_url": "https://ntrs.nasa.gov/citations/20240007628",
+      "captured_at": "2026-11-15T02:09:08.811602+00:00",
+      "rights": "GOV_PERMITTED"
+    }
+  ],
+  "investigations": [
+    {
+      "metadata": {
+        "accession": "NASA-SAFFIRE-IV",
+        "version": 1,
+        "title": "Spacecraft Fire Experiment IV",
+        "investigationAcronym": "Saffire-IV",
+        "description": "Saffire IV studied large-scale solid-fuel fires inside an uncrewed Cygnus spacecraft after departure from the International Space Station. Retained tables report selected sample conditions and published outcomes; they are not the raw sensor archive.",
+        "objective": "Examine flame growth and spread at spacecraft-relevant scales and the resulting changes in the vehicle atmosphere to inform fire safety.",
+        "approach": "Ignite solid samples in a ventilated Cygnus experiment and compare flame behavior, calorimetry, temperatures and combustion-product measurements. Keep fuel, pressure, oxygen, geometry and measurement method attached to each reported result.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "Saffire apparatus in Cygnus cargo spacecraft",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "PSI-98",
+          "PSI-99",
+          "PSI-100"
+        ],
+        "flightProgram": "Cygnus spacecraft after ISS departure",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "Spacecraft Fire Experiment IV",
+        "publications": [
+          {
+            "title": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+            "url": "https://ntrs.nasa.gov/citations/20210011521"
+          },
+          {
+            "title": "Preliminary Results from the Saffire VI Experiment",
+            "url": "https://ntrs.nasa.gov/citations/20240002981"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "investigationAcronym": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "metadata_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": null,
+        "data_status": "reported_measurements",
+        "research_status": "Completed flight; preliminary results are retained from the cited 2021/2024 publications."
+      },
+      "source_ids": [
+        "ntrs-20210011521",
+        "ntrs-20240002981",
+        "nasa-saffire-complete-2024"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SAFFIRE-V",
+        "version": 1,
+        "title": "Spacecraft Fire Experiment V",
+        "investigationAcronym": "Saffire-V",
+        "description": "Saffire V studied large-scale solid-fuel fires inside an uncrewed Cygnus spacecraft after departure from the International Space Station. Retained tables report selected sample conditions and published outcomes; they are not the raw sensor archive.",
+        "objective": "Examine flame growth and spread at spacecraft-relevant scales and the resulting changes in the vehicle atmosphere to inform fire safety.",
+        "approach": "Ignite solid samples in a ventilated Cygnus experiment and compare flame behavior, calorimetry, temperatures and combustion-product measurements. Keep fuel, pressure, oxygen, geometry and measurement method attached to each reported result.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "Saffire apparatus in Cygnus cargo spacecraft",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "PSI-98",
+          "PSI-99",
+          "PSI-100"
+        ],
+        "flightProgram": "Cygnus spacecraft after ISS departure",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "Spacecraft Fire Experiment V",
+        "publications": [
+          {
+            "title": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+            "url": "https://ntrs.nasa.gov/citations/20210011521"
+          },
+          {
+            "title": "Preliminary Results from the Saffire VI Experiment",
+            "url": "https://ntrs.nasa.gov/citations/20240002981"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "investigationAcronym": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20210011521",
+            "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "metadata_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": null,
+        "data_status": "reported_measurements",
+        "research_status": "Completed flight; preliminary results are retained from the cited 2021/2024 publications."
+      },
+      "source_ids": [
+        "ntrs-20210011521",
+        "ntrs-20240002981",
+        "nasa-saffire-complete-2024"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SAFFIRE-VI",
+        "version": 1,
+        "title": "Spacecraft Fire Experiment VI",
+        "investigationAcronym": "Saffire-VI",
+        "description": "Saffire VI studied large-scale solid-fuel fires inside an uncrewed Cygnus spacecraft after departure from the International Space Station. Retained tables report selected sample conditions and published outcomes; they are not the raw sensor archive.",
+        "objective": "Examine flame growth and spread at spacecraft-relevant scales and the resulting changes in the vehicle atmosphere to inform fire safety.",
+        "approach": "Ignite solid samples in a ventilated Cygnus experiment and compare flame behavior, calorimetry, temperatures and combustion-product measurements. Keep fuel, pressure, oxygen, geometry and measurement method attached to each reported result.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "Saffire apparatus in Cygnus cargo spacecraft",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "PSI-98",
+          "PSI-99",
+          "PSI-100"
+        ],
+        "flightProgram": "Cygnus spacecraft after ISS departure",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "Spacecraft Fire Experiment VI",
+        "publications": [
+          {
+            "title": "Preliminary Results from the Saffire VI Experiment",
+            "url": "https://ntrs.nasa.gov/citations/20240002981"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "ntrs-20240002981",
+            "quote": "Preliminary results are presented for one test of the last flight of the Spacecraft Fire Experiment (Saffire VI) which was conducted on an orbiting Cygnus spacecraft. These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries. The lack of this experimental data has forced spacecraft designers to base their designs and safety precautions on 1-g understanding of flame spread, flame self-extinguishment, fire detection, and suppression. The Saffire experiment was developed by an international team of investigators with the goal of addressing open issues in spacecraft fire safety. NASA’s Spacecraft Fire Safety Demonstration Project was formulated with the goal of conducting a series of large-scale experiments in spacecraft environments that represent practical spacecraft fires. These tests spanned 1.5 to 3.2 kW with free air volumes of 17 to 19 cubic meters. The final flight in the series of six experiments examined concurrent spread over large samples (all 41 cm wide) including a thin sheet of flammable fuel (cotton/fiberglass 50 cm long); 2-sided spread over 1 cm thick polymethyl methacrylate (PMMA) (18 cm long); 1-sided spread over 0.5 cm thick (18 cm long); and Nomex fabric (7 cm long). Results are presented for the PMMA samples, the SIBAL sample, and the thin cotton samples from Saffire IV and V. The flame heat release is determined and compared to the overall temperature rise in the spacecraft and the change in the concentration of carbon dioxide and carbon monoxide in the spacecraft. Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+            "origin": "source_summary"
+          }
+        ],
+        "investigationAcronym": [
+          {
+            "source_id": "ntrs-20240002981",
+            "quote": "Preliminary results are presented for one test of the last flight of the Spacecraft Fire Experiment (Saffire VI) which was conducted on an orbiting Cygnus spacecraft. These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries. The lack of this experimental data has forced spacecraft designers to base their designs and safety precautions on 1-g understanding of flame spread, flame self-extinguishment, fire detection, and suppression. The Saffire experiment was developed by an international team of investigators with the goal of addressing open issues in spacecraft fire safety. NASA’s Spacecraft Fire Safety Demonstration Project was formulated with the goal of conducting a series of large-scale experiments in spacecraft environments that represent practical spacecraft fires. These tests spanned 1.5 to 3.2 kW with free air volumes of 17 to 19 cubic meters. The final flight in the series of six experiments examined concurrent spread over large samples (all 41 cm wide) including a thin sheet of flammable fuel (cotton/fiberglass 50 cm long); 2-sided spread over 1 cm thick polymethyl methacrylate (PMMA) (18 cm long); 1-sided spread over 0.5 cm thick (18 cm long); and Nomex fabric (7 cm long). Results are presented for the PMMA samples, the SIBAL sample, and the thin cotton samples from Saffire IV and V. The flame heat release is determined and compared to the overall temperature rise in the spacecraft and the change in the concentration of carbon dioxide and carbon monoxide in the spacecraft. Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "ntrs-20240002981",
+            "quote": "Preliminary results are presented for one test of the last flight of the Spacecraft Fire Experiment (Saffire VI) which was conducted on an orbiting Cygnus spacecraft. These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries. The lack of this experimental data has forced spacecraft designers to base their designs and safety precautions on 1-g understanding of flame spread, flame self-extinguishment, fire detection, and suppression. The Saffire experiment was developed by an international team of investigators with the goal of addressing open issues in spacecraft fire safety. NASA’s Spacecraft Fire Safety Demonstration Project was formulated with the goal of conducting a series of large-scale experiments in spacecraft environments that represent practical spacecraft fires. These tests spanned 1.5 to 3.2 kW with free air volumes of 17 to 19 cubic meters. The final flight in the series of six experiments examined concurrent spread over large samples (all 41 cm wide) including a thin sheet of flammable fuel (cotton/fiberglass 50 cm long); 2-sided spread over 1 cm thick polymethyl methacrylate (PMMA) (18 cm long); 1-sided spread over 0.5 cm thick (18 cm long); and Nomex fabric (7 cm long). Results are presented for the PMMA samples, the SIBAL sample, and the thin cotton samples from Saffire IV and V. The flame heat release is determined and compared to the overall temperature rise in the spacecraft and the change in the concentration of carbon dioxide and carbon monoxide in the spacecraft. Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "ntrs-20240002981",
+            "quote": "Preliminary results are presented for one test of the last flight of the Spacecraft Fire Experiment (Saffire VI) which was conducted on an orbiting Cygnus spacecraft. These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries. The lack of this experimental data has forced spacecraft designers to base their designs and safety precautions on 1-g understanding of flame spread, flame self-extinguishment, fire detection, and suppression. The Saffire experiment was developed by an international team of investigators with the goal of addressing open issues in spacecraft fire safety. NASA’s Spacecraft Fire Safety Demonstration Project was formulated with the goal of conducting a series of large-scale experiments in spacecraft environments that represent practical spacecraft fires. These tests spanned 1.5 to 3.2 kW with free air volumes of 17 to 19 cubic meters. The final flight in the series of six experiments examined concurrent spread over large samples (all 41 cm wide) including a thin sheet of flammable fuel (cotton/fiberglass 50 cm long); 2-sided spread over 1 cm thick polymethyl methacrylate (PMMA) (18 cm long); 1-sided spread over 0.5 cm thick (18 cm long); and Nomex fabric (7 cm long). Results are presented for the PMMA samples, the SIBAL sample, and the thin cotton samples from Saffire IV and V. The flame heat release is determined and compared to the overall temperature rise in the spacecraft and the change in the concentration of carbon dioxide and carbon monoxide in the spacecraft. Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "ntrs-20240002981",
+            "quote": "Preliminary results are presented for one test of the last flight of the Spacecraft Fire Experiment (Saffire VI) which was conducted on an orbiting Cygnus spacecraft. These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries. The lack of this experimental data has forced spacecraft designers to base their designs and safety precautions on 1-g understanding of flame spread, flame self-extinguishment, fire detection, and suppression. The Saffire experiment was developed by an international team of investigators with the goal of addressing open issues in spacecraft fire safety. NASA’s Spacecraft Fire Safety Demonstration Project was formulated with the goal of conducting a series of large-scale experiments in spacecraft environments that represent practical spacecraft fires. These tests spanned 1.5 to 3.2 kW with free air volumes of 17 to 19 cubic meters. The final flight in the series of six experiments examined concurrent spread over large samples (all 41 cm wide) including a thin sheet of flammable fuel (cotton/fiberglass 50 cm long); 2-sided spread over 1 cm thick polymethyl methacrylate (PMMA) (18 cm long); 1-sided spread over 0.5 cm thick (18 cm long); and Nomex fabric (7 cm long). Results are presented for the PMMA samples, the SIBAL sample, and the thin cotton samples from Saffire IV and V. The flame heat release is determined and compared to the overall temperature rise in the spacecraft and the change in the concentration of carbon dioxide and carbon monoxide in the spacecraft. Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20240002981",
+            "quote": "Preliminary results are presented for one test of the last flight of the Spacecraft Fire Experiment (Saffire VI) which was conducted on an orbiting Cygnus spacecraft. These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries. The lack of this experimental data has forced spacecraft designers to base their designs and safety precautions on 1-g understanding of flame spread, flame self-extinguishment, fire detection, and suppression. The Saffire experiment was developed by an international team of investigators with the goal of addressing open issues in spacecraft fire safety. NASA’s Spacecraft Fire Safety Demonstration Project was formulated with the goal of conducting a series of large-scale experiments in spacecraft environments that represent practical spacecraft fires. These tests spanned 1.5 to 3.2 kW with free air volumes of 17 to 19 cubic meters. The final flight in the series of six experiments examined concurrent spread over large samples (all 41 cm wide) including a thin sheet of flammable fuel (cotton/fiberglass 50 cm long); 2-sided spread over 1 cm thick polymethyl methacrylate (PMMA) (18 cm long); 1-sided spread over 0.5 cm thick (18 cm long); and Nomex fabric (7 cm long). Results are presented for the PMMA samples, the SIBAL sample, and the thin cotton samples from Saffire IV and V. The flame heat release is determined and compared to the overall temperature rise in the spacecraft and the change in the concentration of carbon dioxide and carbon monoxide in the spacecraft. Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20240002981",
+            "quote": "Preliminary results are presented for one test of the last flight of the Spacecraft Fire Experiment (Saffire VI) which was conducted on an orbiting Cygnus spacecraft. These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries. The lack of this experimental data has forced spacecraft designers to base their designs and safety precautions on 1-g understanding of flame spread, flame self-extinguishment, fire detection, and suppression. The Saffire experiment was developed by an international team of investigators with the goal of addressing open issues in spacecraft fire safety. NASA’s Spacecraft Fire Safety Demonstration Project was formulated with the goal of conducting a series of large-scale experiments in spacecraft environments that represent practical spacecraft fires. These tests spanned 1.5 to 3.2 kW with free air volumes of 17 to 19 cubic meters. The final flight in the series of six experiments examined concurrent spread over large samples (all 41 cm wide) including a thin sheet of flammable fuel (cotton/fiberglass 50 cm long); 2-sided spread over 1 cm thick polymethyl methacrylate (PMMA) (18 cm long); 1-sided spread over 0.5 cm thick (18 cm long); and Nomex fabric (7 cm long). Results are presented for the PMMA samples, the SIBAL sample, and the thin cotton samples from Saffire IV and V. The flame heat release is determined and compared to the overall temperature rise in the spacecraft and the change in the concentration of carbon dioxide and carbon monoxide in the spacecraft. Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://ntrs.nasa.gov/citations/20240002981",
+        "metadata_url": "https://ntrs.nasa.gov/citations/20240002981",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": null,
+        "data_status": "reported_measurements",
+        "research_status": "Completed flight; preliminary results are retained from the cited 2021/2024 publications."
+      },
+      "source_ids": [
+        "ntrs-20240002981",
+        "nasa-saffire-complete-2024"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SOFIE",
+        "version": 1,
+        "title": "Solid Fuel Ignition and Extinction",
+        "investigationAcronym": "SoFIE",
+        "description": "SoFIE is a shared ISS research facility for solid-material ignition, flame spread, extinction and suppression. Its five investigations address different materials and mechanisms; the program is not one experimental cohort.",
+        "objective": "Understand the ignition and flammability of spacecraft materials in realistic geometries and atmospheres, and improve material selection, modeling and suppression methods.",
+        "approach": "Use an insert within the Combustion Integrated Rack, with shared sample holders, flow control, heaters, igniters and diagnostics. Follow the individual investigations for their conditions and results.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-SOFIE-RTDFS",
+          "NASA-SOFIE-NCA",
+          "NASA-SOFIE-GEL",
+          "NASA-SOFIE-MIST",
+          "NASA-SOFIE-SMURF"
+        ],
+        "flightProgram": "International Space Station",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "Solid Fuel Ignition and Extinction",
+        "publications": [
+          {
+            "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+            "url": "https://ntrs.nasa.gov/citations/20200000361"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-science-sofie",
+            "quote": "Solid Fuel Ignition and Extinction",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-science-sofie",
+            "quote": "SoFIE is a facility on the International Space Station (ISS) for studying how fire can behave differently and unexpectedly in reduced gravity, to improve fire safety for future long-term missions to the Moon and eventually Mars or other planets. Understanding flame spread and behavior of solid materials in different environments in space is crucial for the safety of future astronauts and for understanding and controlling fire on Earth.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "nasa-science-sofie",
+            "quote": "SoFIE is a facility on the International Space Station (ISS) for studying how fire can behave differently and unexpectedly in reduced gravity, to improve fire safety for future long-term missions to the Moon and eventually Mars or other planets. Understanding flame spread and behavior of solid materials in different environments in space is crucial for the safety of future astronauts and for understanding and controlling fire on Earth.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://science.nasa.gov/mission/sofie/",
+        "metadata_url": "https://science.nasa.gov/mission/sofie/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "program",
+        "parent_accession": null,
+        "data_status": "research_description",
+        "research_status": "NASA mission page labels SoFIE an active mission in the retained capture; individual investigations have separate evidence and status."
+      },
+      "source_ids": [
+        "nasa-science-sofie",
+        "nasa-glenn-sofie",
+        "ntrs-20200000361"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SOFIE-RTDFS",
+        "version": 1,
+        "title": "SoFIE — Residence Time Driven Flame Spread",
+        "investigationAcronym": "SoFIE-RTDFS",
+        "description": "Study steady and unsteady spread over solid fuel sheets in microgravity, including the relationship between fuel thickness and radiative heat loss. NASA documented actual SoFIE-RTDFS acrylic-sheet flight research in March 2025.",
+        "objective": "Determine how residence time, fuel thickness and radiation affect flame propagation and quenching.",
+        "approach": "Investigate acrylic-sheet flames in the SoFIE facility. The March 2025 NASA report describes elevated oxygen and half standard Earth atmospheric pressure; it is descriptive evidence, not a numerical flight-data release.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-SOFIE"
+        ],
+        "flightProgram": "International Space Station",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "SoFIE — Residence Time Driven Flame Spread",
+        "publications": [
+          {
+            "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+            "url": "https://ntrs.nasa.gov/citations/20200000361"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "Residence Time Driven Flame Spread (RTDFS)",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The RTDFS experiment will investigate steady and unsteady flame propagation over solid fuels in a microgravity environment. Theoretical modeling predicts that steady flame spread over solid fuels cannot be sustained, even in a high oxygen environment if the fuel exceeds a critical thickness. Flame spread rate over thin fuels in a quiescent microgravity environment decreases with fuel thickness not only because of increased thermal mass but also because the relative importance of radiative losses, as quantified by a non-dimensional radiation number, increases in direct proportion of fuel thickness.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The RTDFS experiment will investigate steady and unsteady flame propagation over solid fuels in a microgravity environment. Theoretical modeling predicts that steady flame spread over solid fuels cannot be sustained, even in a high oxygen environment if the fuel exceeds a critical thickness. Flame spread rate over thin fuels in a quiescent microgravity environment decreases with fuel thickness not only because of increased thermal mass but also because the relative importance of radiative losses, as quantified by a non-dimensional radiation number, increases in direct proportion of fuel thickness.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "nasa-crew9-science-2025",
+            "quote": "During the Residence Time Driven Flame Spread (SOFIE-RTDFS) investigation at the International Space Station, this sheet of clear acrylic plastic burns at higher oxygen levels and half the standard pressure of Earth’s atmosphere. From left to right, the image sequence shows a side and top view of the fuel and the oxygen slowly diffusing into the flame. Studying the spread of flames in microgravity could help improve safety on future missions.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://www.nasa.gov/missions/station/iss-research/nasas-spacex-crew-9-scientific-mission-on-space-station-concludes/",
+        "metadata_url": "https://www.nasa.gov/missions/station/iss-research/nasas-spacex-crew-9-scientific-mission-on-space-station-concludes/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": "NASA-SOFIE",
+        "data_status": "research_description",
+        "research_status": "NASA March 6, 2025 report documents actual ISS RTDFS research; no new numerical flight table was located."
+      },
+      "source_ids": [
+        "nasa-crew9-science-2025",
+        "nasa-glenn-sofie",
+        "ntrs-20200000361"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SOFIE-NCA",
+        "version": 1,
+        "title": "SoFIE — Narrow Channel Apparatus",
+        "investigationAcronym": "SoFIE-NCA",
+        "description": "Investigate opposed-flow flame spread and extinction across planar PMMA samples, with a connection to narrow-channel ground testing. The retained NASA description presents the experimental approach.",
+        "objective": "Relate flame spread and extinction to flow, oxygen and pressure, including conditions on or near the normoxic curve.",
+        "approach": "Measure spread over planar PMMA samples in forced opposed flow while varying oxygen, pressure and flow velocity. These are described research variables, not completed observations in this pack.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-SOFIE"
+        ],
+        "flightProgram": "International Space Station",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "SoFIE — Narrow Channel Apparatus",
+        "publications": [
+          {
+            "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+            "url": "https://ntrs.nasa.gov/citations/20200000361"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "Narrow Channel Apparatus (NCA)",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The experimental approach is to measure flame spread across planar samples of PMMA in a forced opposed flow configuration. The atmosphere will be a mix of oxygen and nitrogen, with the oxygen percentage ranging from atmospheric up to 85%. The pressure will be varied accordingly to stay on or near the normoxic curve. Samples will be tested at variety of flow velocities to obtain spread rate and extinction limits.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The experimental approach is to measure flame spread across planar samples of PMMA in a forced opposed flow configuration. The atmosphere will be a mix of oxygen and nitrogen, with the oxygen percentage ranging from atmospheric up to 85%. The pressure will be varied accordingly to stay on or near the normoxic curve. Samples will be tested at variety of flow velocities to obtain spread rate and extinction limits.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The experimental approach is to measure flame spread across planar samples of PMMA in a forced opposed flow configuration. The atmosphere will be a mix of oxygen and nitrogen, with the oxygen percentage ranging from atmospheric up to 85%. The pressure will be varied accordingly to stay on or near the normoxic curve. Samples will be tested at variety of flow velocities to obtain spread rate and extinction limits.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "metadata_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": "NASA-SOFIE",
+        "data_status": "research_description",
+        "research_status": "NASA October 2024 source described NCA as future work; a later flight-result release was not located."
+      },
+      "source_ids": [
+        "nasa-glenn-sofie",
+        "ntrs-20200000361",
+        "nasa-combustion-explainer-2024"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SOFIE-GEL",
+        "version": 1,
+        "title": "SoFIE — Growth and Extinction Limit",
+        "investigationAcronym": "SoFIE-GEL",
+        "description": "Study flame growth and extinction around thick PMMA spheres in microgravity, including changing internal fuel heating. Five selected extinction cases are retained from a 2024 publication.",
+        "objective": "Determine how flow, oxygen, pressure and sample heating influence flame growth, quenching and blowoff.",
+        "approach": "Burn 4-cm PMMA spheres in SoFIE and allow oxygen to decline through natural depletion. Keep inside-duct and duct-exit sample locations distinct when comparing the five published cases.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-SOFIE"
+        ],
+        "flightProgram": "International Space Station",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "SoFIE — Growth and Extinction Limit",
+        "publications": [
+          {
+            "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+            "url": "https://ntrs.nasa.gov/citations/20200000361"
+          },
+          {
+            "title": "Extinction of Solid Diffusion Flame in Microgravity: Details of Quenching and Blowoff Processes",
+            "url": "https://ntrs.nasa.gov/citations/20240007628"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "Growth and Extinction Limit (GEL)",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-science-gel",
+            "quote": "The Solid Fuel Ignition and Extinction - Growth and Extinction Limit (SoFIE-GEL) investigation studies burning in microgravity, measuring the amount of heating in a fuel sample to determine how fuel temperature affects material flammability. Results could improve understanding of early fire growth behavior and help determine optimal fire suppression techniques, improving crew safety in future space facilities.",
+            "origin": "source_summary"
+          },
+          {
+            "source_id": "ntrs-20240007628",
+            "quote": "Long duration microgravity experiments aboard the International Space Station determine diffusion flame extinction limits of PMMA spheres. Upon ignition from an electrically-heated coil, the 4-cm-diameter samples are exposed to forced flows ranging from 0.2 to 80 cm/s and an oxygen ranging from 13 to 28% in one atmosphere total pressure. Extinction is reached as oxygen concentration gradually decreases by natural depletion. Five extinction tests are presented at different flow velocities and oxygen concentrations. Quenching at low velocity is observed with the flame tip shrinking upstream and blowoff is observed when a hole forms in the flame at the forward flow stagnation point. However, these processes are not quasistatic. The quenching motion involves periodic flame tip pulsating toward downstream and shrinking upstream with a continually decreasing flame size at the end of each cycle. In blowoff, the flame base pulsates between the flame hole and the downstream location, although with far fewer cycles compared to quenching. The pulsations appear to be the result of a premixed flame front spreading into a combustible mixture. Two specific cases are discussed. In the first, at very low flow velocity (~ 0.4 cm/s) and elevated oxygen, self-sustained flame tip cyclic pulsations are observed for a lengthy period (~15 minutes). In the second case with a higher flow velocity (50 cm/s), the diffusion flame is stabilized at the shoulder of the spherical sample after local stagnation point blowoff. With steady decrease in ambient oxygen due to depletion, spinning flamelets are formed. The long-duration microgravity environment makes it possible to observe. ",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "nasa-science-gel",
+            "quote": "The Solid Fuel Ignition and Extinction - Growth and Extinction Limit (SoFIE-GEL) investigation studies burning in microgravity, measuring the amount of heating in a fuel sample to determine how fuel temperature affects material flammability. Results could improve understanding of early fire growth behavior and help determine optimal fire suppression techniques, improving crew safety in future space facilities.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "ntrs-20240007628",
+            "quote": "Long duration microgravity experiments aboard the International Space Station determine diffusion flame extinction limits of PMMA spheres. Upon ignition from an electrically-heated coil, the 4-cm-diameter samples are exposed to forced flows ranging from 0.2 to 80 cm/s and an oxygen ranging from 13 to 28% in one atmosphere total pressure. Extinction is reached as oxygen concentration gradually decreases by natural depletion. Five extinction tests are presented at different flow velocities and oxygen concentrations. Quenching at low velocity is observed with the flame tip shrinking upstream and blowoff is observed when a hole forms in the flame at the forward flow stagnation point. However, these processes are not quasistatic. The quenching motion involves periodic flame tip pulsating toward downstream and shrinking upstream with a continually decreasing flame size at the end of each cycle. In blowoff, the flame base pulsates between the flame hole and the downstream location, although with far fewer cycles compared to quenching. The pulsations appear to be the result of a premixed flame front spreading into a combustible mixture. Two specific cases are discussed. In the first, at very low flow velocity (~ 0.4 cm/s) and elevated oxygen, self-sustained flame tip cyclic pulsations are observed for a lengthy period (~15 minutes). In the second case with a higher flow velocity (50 cm/s), the diffusion flame is stabilized at the shoulder of the spherical sample after local stagnation point blowoff. With steady decrease in ambient oxygen due to depletion, spinning flamelets are formed. The long-duration microgravity environment makes it possible to observe. ",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-gel/",
+        "metadata_url": "https://science.nasa.gov/biological-physical/investigations/sofie-gel/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": "NASA-SOFIE",
+        "data_status": "reported_measurements",
+        "research_status": "Actual ISS extinction results were published in 2024; retained data are a selected-case summary."
+      },
+      "source_ids": [
+        "nasa-science-gel",
+        "nasa-glenn-sofie",
+        "ntrs-20200000361",
+        "ntrs-20240007628"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SOFIE-MIST",
+        "version": 1,
+        "title": "SoFIE — Material Ignition and Suppression Test",
+        "investigationAcronym": "SoFIE-MIST",
+        "description": "Examine thermally assisted burning of PMMA cylinders in microgravity and the boundaries for ignition and extinction. NASA describes delivery via SpaceX-27 and the investigation objectives.",
+        "objective": "Understand how air flow, oxygen, pressure and external radiant heating influence ignition, burning and suppression.",
+        "approach": "Use a cylindrical fuel sample, radiant heaters and an igniter in opposed flow. The retained NASA sources describe the approach; no numerical SoFIE-MIST flight table is included.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-SOFIE"
+        ],
+        "flightProgram": "International Space Station",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "SoFIE — Material Ignition and Suppression Test",
+        "publications": [
+          {
+            "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+            "url": "https://ntrs.nasa.gov/citations/20200000361"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "Material Ignition and Suppression Test (MIST)",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-science-mist",
+            "quote": "The Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation examines thermally-assisted burning in microgravity, by varying parameters including air flow speed, oxygen concentration, pressure, and level of external radiation. Results could improve understanding of early fire growth behavior and validate models for material flammability, helping to inform selection of safer materials for future space facilities and determine the best methods for extinguishing fires in space.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "nasa-science-mist",
+            "quote": "The Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation examines thermally-assisted burning in microgravity, by varying parameters including air flow speed, oxygen concentration, pressure, and level of external radiation. Results could improve understanding of early fire growth behavior and validate models for material flammability, helping to inform selection of safer materials for future space facilities and determine the best methods for extinguishing fires in space.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "nasa-science-mist",
+            "quote": "In the Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation, the boundaries for ignition and extinction of a solid fuel (PMMA cylinder) as a function of flow speed, oxygen concentration, and external radiant flux are to be determined. The effects of the space exploration atmospheres (SEA) under consideration by NASA (lower pressure and increased oxygen concentrations compared to air) on the flammability and suppression of materials are of particular interest.",
+            "origin": "source_summary"
+          },
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The MIST experimental apparatus would consist of a small-scale combustion wind tunnel, a cylindrical fuel sample, radiant heaters, an igniter, and supporting instrumentation. The flow duct will provide a consistent and uniform flow of the oxidizer gas to the test section where the fuel sample will be located. The test section will have most of the area of its sidewalls available for optical access. Each cylindrical fuel sample will be supported in a holder and placed along the central axis of the flow duct, such that the oxidizer will flow smoothly over the sample surface. An electrical igniter consisting of coiled Kanthal wire will be located around the fuel sample on the downstream end. All tests will be conducted in an opposed-flow configuration.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist/",
+        "metadata_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": "NASA-SOFIE",
+        "data_status": "research_description",
+        "research_status": "NASA describes delivery via SpaceX-27 and SoFIE-MIST operation; no numerical flight table was located."
+      },
+      "source_ids": [
+        "nasa-science-mist",
+        "nasa-glenn-sofie",
+        "ntrs-20200000361",
+        "nasa-science-mist-overview",
+        "nasa-combustion-explainer-2024"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-SOFIE-SMURF",
+        "version": 1,
+        "title": "SoFIE — Spacecraft Materials Microgravity Research on Flammability",
+        "investigationAcronym": "SoFIE-SMURF",
+        "description": "Relate normal-gravity materials flammability tests to ventilated microgravity behavior to improve spacecraft material selection. This pack retains objectives and hardware context.",
+        "objective": "Develop correlations between ground test flammability and ventilated microgravity behavior, supporting assessment of material fire resistance.",
+        "approach": "Compare normal-gravity test information with microgravity material flammability research using SoFIE shared infrastructure. Retained descriptions do not establish a completed predictive validation dataset.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-SOFIE"
+        ],
+        "flightProgram": "International Space Station",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "SoFIE — Spacecraft Materials Microgravity Research on Flammability",
+        "publications": [
+          {
+            "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+            "url": "https://ntrs.nasa.gov/citations/20200000361"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "Spacecraft Materials Microgravity Research on Flammability (SMuRF)",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The SMµRF experiment will correlate normal gravity flammability test data with data under ventilated microgravity conditions. Rigorous correlations between ground test flammability data in ventilated spacecraft environment would allow selection of materials with increased fire resistance, and thus decrease the fire risk in space systems. The operational flexibility will also increase because the safety factors will be assessable.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The SMµRF experiment will correlate normal gravity flammability test data with data under ventilated microgravity conditions. Rigorous correlations between ground test flammability data in ventilated spacecraft environment would allow selection of materials with increased fire resistance, and thus decrease the fire risk in space systems. The operational flexibility will also increase because the safety factors will be assessable.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "nasa-glenn-sofie",
+            "quote": "The SMµRF experiment will correlate normal gravity flammability test data with data under ventilated microgravity conditions. Rigorous correlations between ground test flammability data in ventilated spacecraft environment would allow selection of materials with increased fire resistance, and thus decrease the fire risk in space systems. The operational flexibility will also increase because the safety factors will be assessable.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20200000361",
+            "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "metadata_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": "NASA-SOFIE",
+        "data_status": "research_description",
+        "research_status": "NASA October 2024 source described SMuRF as future work; a later flight-result release was not located."
+      },
+      "source_ids": [
+        "nasa-glenn-sofie",
+        "ntrs-20200000361",
+        "nasa-combustion-explainer-2024"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-FLARE",
+        "version": 1,
+        "title": "Flammability Limits at Reduced-g Experiment",
+        "investigationAcronym": "FLARE",
+        "description": "FLARE connects material flammability limits measured on Earth with behavior in microgravity. The retained NASA sources describe an international research program and early ground test-method work.",
+        "objective": "Develop a method to estimate microgravity flammability limits from reproducible ground-test data.",
+        "approach": "Combine ground experiments, parabolic flights and theory, with ISS/Kibo verification described in the historical NASA approach. Compare ignition methods and failure criteria before relating ground screening to low-gravity behavior.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "JAXA Solid Combustion hardware described for ISS/Kibo; ground flammability apparatus",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [],
+        "flightProgram": "Ground and reduced-gravity research; historical ISS/Kibo verification plan",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "Flammability Limits at Reduced-g Experiment",
+        "publications": [
+          {
+            "title": "Flammability Limits at Reduced-g Experiment (FLARE)Task Group 5: Fundamental Research on International Standard of Fire Safety in Space on the ISS/JEM",
+            "url": "https://ntrs.nasa.gov/citations/20160001023"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-flare",
+            "quote": "Flammability Limits At Reduced-g Experiment (FLARE)",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-flare",
+            "quote": "To develop a methodology to correlate material flammability limits in normal gravity and",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "nasa-flare",
+            "quote": "To develop a methodology to correlate material flammability limits in normal gravity and",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "nasa-flare",
+            "quote": "• Perform extensive research via ground-based experiments, including 1g and parabolic",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "nasa-flare",
+            "quote": "• Experiment uses same hardware as JAXA’s “Solid Combustion”",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "nasa-flare",
+            "quote": "• Flight experiments on orbit in ISS/KIBO will be performed to verify the correlation. The",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "metadata_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-limits-at-reduced-g-experiment-flare/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": null,
+        "data_status": "research_description",
+        "research_status": "Retained program description includes a 2017-or-later flight expectation; that historical schedule is not a verified current flight status."
+      },
+      "source_ids": [
+        "nasa-flare",
+        "ntrs-20160001023"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-FM2",
+        "version": 1,
+        "title": "Flammability of Materials on the Moon",
+        "investigationAcronym": "FM2",
+        "description": "FM2 is a lunar-surface experiment concept for measuring solid-material flame spread in one-sixth gravity. The retained 2026 requirements describe planned fabric tests and initial atmospheres; they are not lunar measurements.",
+        "objective": "Observe flame spread on the Moon, evaluate whether some materials can be more flammable in partial gravity, and connect terrestrial screening with reduced-gravity behavior.",
+        "approach": "Operate a sealed autonomous chamber with four separately initiated fuel samples, cameras and gas/temperature sensors. Planned initial atmospheres and exposed sample geometry are retained as condition records, separately from measured outcomes.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "Sealed autonomous chamber with cameras and gas/temperature sensors",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-LUCI"
+        ],
+        "flightProgram": "Planned lunar surface experiment",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "Flammability of Materials on the Moon",
+        "publications": [
+          {
+            "title": "Material Flammability at Lunar and Martian Gravity",
+            "url": "https://ntrs.nasa.gov/citations/20260001966"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "nasa-fm2",
+            "quote": "Flammability of Materials on the Moon (FM2)",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "nasa-fm2",
+            "quote": "FM2 is the first-ever combustion experiment to be performed on another planetary body. Building on the success of the decades-long combustion science ground (1g) program and International Space Station (ISS) microgravity (~0g) combustion experiment campaigns, FM2 investigates burning materials on the Moon at its 1/6 reduced gravity level. Previous computational modeling, bolstered by experiments aboard parabolicflight aircraft and the ISS, suggest that materials may burn at lower oxygen concentrations in lunar gravity compared to Earth. This means that some things that are not flammable on Earth, may be flammable in potential habitats on the Moon and other places with reduced gravity. Since fire can be a catastrophic hazard for spaceflight and extreme human exploration, FM2 is a critical step in determining material flammability and safety for future missions.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "nasa-fm2",
+            "quote": "Conduct the first-ever observations and measurements of flame spread on the Moon.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "nasa-fm2",
+            "quote": "The experiment burns four fuel samples individually in atmospheric conditions planned for future lunar habitats or vehicles. The experiment is housed inside a sealed chamber and operates autonomously through software. Cameras record flame characteristics including size, intensity, color, and spread rate. Onboard sensors measure flame and fuel temperatures, oxygen concentration, and carbon-dioxide concentrations.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "nasa-fm2",
+            "quote": "The experiment burns four fuel samples individually in atmospheric conditions planned for future lunar habitats or vehicles. The experiment is housed inside a sealed chamber and operates autonomously through software. Cameras record flame characteristics including size, intensity, color, and spread rate. Onboard sensors measure flame and fuel temperatures, oxygen concentration, and carbon-dioxide concentrations.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "nasa-fm2",
+            "quote": "Conduct the first-ever observations and measurements of flame spread on the Moon.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "metadata_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": null,
+        "data_status": "reported_conditions",
+        "research_status": "NASA sources describe objectives and March 2026 science requirements; no completed lunar measurement release was located."
+      },
+      "source_ids": [
+        "nasa-fm2",
+        "ntrs-20260001966"
+      ]
+    },
+    {
+      "metadata": {
+        "accession": "NASA-LUCI",
+        "version": 1,
+        "title": "Lunar Combustion Investigation",
+        "investigationAcronym": "LUCI",
+        "description": "LUCI measured solid-fuel combustion in simulated lunar gravity created by a rotating New Shepard sounding rocket. Published comparison tables report flame-spread fit rates for fabric and a PMMA rod; this was not a lunar-surface experiment.",
+        "objective": "Demonstrate extended-duration material flammability research in partial gravity and compare flame behavior with related Earth-gravity experiments.",
+        "approach": "Use centrifugal acceleration from a steady 11 RPM rotation and image two simultaneously burning samples with orthogonal cameras. Retain the changing oxygen concentration, Coriolis context and paired endpoints when interpreting source-reported fit rates.",
+        "hypothesis": "",
+        "researchImpacts": "",
+        "experimentHardware": "Rotating combustion enclosure, orthogonal cameras and chamber oxygen measurement",
+        "researchArea": "Combustion Science",
+        "subResearchArea": "Solid Fuels",
+        "related_glds": [
+          "NASA-FM2"
+        ],
+        "flightProgram": "Blue Origin New Shepard sounding rocket",
+        "missionName": "",
+        "missionStart": null,
+        "missionEnd": null,
+        "investigationStartDate": null,
+        "investigationEndDate": null,
+        "projectTitle": "Lunar Combustion Investigation",
+        "publications": [
+          {
+            "title": "Lunar Combustion Investigation: Flammability Results from a Rotating Sounding Rocket",
+            "url": "https://ntrs.nasa.gov/citations/20250010653"
+          }
+        ],
+        "licenseIdentifier": null,
+        "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession."
+      },
+      "field_provenance": {
+        "title": [
+          {
+            "source_id": "ntrs-20250010653",
+            "quote": "The Lunar Combustion Investigation (LUCI) demonstrates the feasibility of conducting material flammability experiments in partial-g.  A spinning Blue Origin New Shepard sounding rocket yields Lunar gravity by using centrifugal acceleration.  These are the first-ever, extended-duration (greater than 25 seconds) combustion tests performed in simulated Lunar gravity.  A steady vehicle rotation of 11 RPM is established, with an effective radius of rotation of 1.22 m at the experiment location.  Two samples are burned simultaneously in air at normal pressure.  The first sample is a cotton-fiberglass composite fabric sheet and the second a 4-mm diameter rod of acrylic plastic (polymethyl methacrylate).  Flame images from two orthogonal cameras are used to determine flame spread and growth rates, and the burn lasts for over two and a half minutes.  The oxygen concentration in the chamber is measured.  As the burns progress, the oxygen concentration drops, enabling a limiting value for extinction to be defined.  The effect of Coriolis force is discussed.  Results from this experiment are compared to related 1-g work, drop tower tests, aircraft experiments, and modeling.  The results are applicable to NASA’s exploration efforts in that they guide the selection of fire-safe materials and environments and ensure safety of future spacecraft and Lunar habitats.  The data also provides fundamental understanding of fires.  Finally, the experiment is a steppingstone to the ultimate goal of performing burn tests on the Lunar surface in the Flammability of Materials on the Moon (FM2) experiment which is planned to launch in late 2026.",
+            "origin": "source_summary"
+          }
+        ],
+        "description": [
+          {
+            "source_id": "ntrs-20250010653",
+            "quote": "The Lunar Combustion Investigation (LUCI) demonstrates the feasibility of conducting material flammability experiments in partial-g.  A spinning Blue Origin New Shepard sounding rocket yields Lunar gravity by using centrifugal acceleration.  These are the first-ever, extended-duration (greater than 25 seconds) combustion tests performed in simulated Lunar gravity.  A steady vehicle rotation of 11 RPM is established, with an effective radius of rotation of 1.22 m at the experiment location.  Two samples are burned simultaneously in air at normal pressure.  The first sample is a cotton-fiberglass composite fabric sheet and the second a 4-mm diameter rod of acrylic plastic (polymethyl methacrylate).  Flame images from two orthogonal cameras are used to determine flame spread and growth rates, and the burn lasts for over two and a half minutes.  The oxygen concentration in the chamber is measured.  As the burns progress, the oxygen concentration drops, enabling a limiting value for extinction to be defined.  The effect of Coriolis force is discussed.  Results from this experiment are compared to related 1-g work, drop tower tests, aircraft experiments, and modeling.  The results are applicable to NASA’s exploration efforts in that they guide the selection of fire-safe materials and environments and ensure safety of future spacecraft and Lunar habitats.  The data also provides fundamental understanding of fires.  Finally, the experiment is a steppingstone to the ultimate goal of performing burn tests on the Lunar surface in the Flammability of Materials on the Moon (FM2) experiment which is planned to launch in late 2026.",
+            "origin": "source_summary"
+          }
+        ],
+        "objective": [
+          {
+            "source_id": "ntrs-20250010653",
+            "quote": "The Lunar Combustion Investigation (LUCI) demonstrates the feasibility of conducting material flammability experiments in partial-g.  A spinning Blue Origin New Shepard sounding rocket yields Lunar gravity by using centrifugal acceleration.  These are the first-ever, extended-duration (greater than 25 seconds) combustion tests performed in simulated Lunar gravity.  A steady vehicle rotation of 11 RPM is established, with an effective radius of rotation of 1.22 m at the experiment location.  Two samples are burned simultaneously in air at normal pressure.  The first sample is a cotton-fiberglass composite fabric sheet and the second a 4-mm diameter rod of acrylic plastic (polymethyl methacrylate).  Flame images from two orthogonal cameras are used to determine flame spread and growth rates, and the burn lasts for over two and a half minutes.  The oxygen concentration in the chamber is measured.  As the burns progress, the oxygen concentration drops, enabling a limiting value for extinction to be defined.  The effect of Coriolis force is discussed.  Results from this experiment are compared to related 1-g work, drop tower tests, aircraft experiments, and modeling.  The results are applicable to NASA’s exploration efforts in that they guide the selection of fire-safe materials and environments and ensure safety of future spacecraft and Lunar habitats.  The data also provides fundamental understanding of fires.  Finally, the experiment is a steppingstone to the ultimate goal of performing burn tests on the Lunar surface in the Flammability of Materials on the Moon (FM2) experiment which is planned to launch in late 2026.",
+            "origin": "source_summary"
+          }
+        ],
+        "approach": [
+          {
+            "source_id": "ntrs-20250010653",
+            "quote": "The Lunar Combustion Investigation (LUCI) demonstrates the feasibility of conducting material flammability experiments in partial-g.  A spinning Blue Origin New Shepard sounding rocket yields Lunar gravity by using centrifugal acceleration.  These are the first-ever, extended-duration (greater than 25 seconds) combustion tests performed in simulated Lunar gravity.  A steady vehicle rotation of 11 RPM is established, with an effective radius of rotation of 1.22 m at the experiment location.  Two samples are burned simultaneously in air at normal pressure.  The first sample is a cotton-fiberglass composite fabric sheet and the second a 4-mm diameter rod of acrylic plastic (polymethyl methacrylate).  Flame images from two orthogonal cameras are used to determine flame spread and growth rates, and the burn lasts for over two and a half minutes.  The oxygen concentration in the chamber is measured.  As the burns progress, the oxygen concentration drops, enabling a limiting value for extinction to be defined.  The effect of Coriolis force is discussed.  Results from this experiment are compared to related 1-g work, drop tower tests, aircraft experiments, and modeling.  The results are applicable to NASA’s exploration efforts in that they guide the selection of fire-safe materials and environments and ensure safety of future spacecraft and Lunar habitats.  The data also provides fundamental understanding of fires.  Finally, the experiment is a steppingstone to the ultimate goal of performing burn tests on the Lunar surface in the Flammability of Materials on the Moon (FM2) experiment which is planned to launch in late 2026.",
+            "origin": "source_summary"
+          }
+        ],
+        "experimentHardware": [
+          {
+            "source_id": "ntrs-20250010653",
+            "quote": "The Lunar Combustion Investigation (LUCI) demonstrates the feasibility of conducting material flammability experiments in partial-g.  A spinning Blue Origin New Shepard sounding rocket yields Lunar gravity by using centrifugal acceleration.  These are the first-ever, extended-duration (greater than 25 seconds) combustion tests performed in simulated Lunar gravity.  A steady vehicle rotation of 11 RPM is established, with an effective radius of rotation of 1.22 m at the experiment location.  Two samples are burned simultaneously in air at normal pressure.  The first sample is a cotton-fiberglass composite fabric sheet and the second a 4-mm diameter rod of acrylic plastic (polymethyl methacrylate).  Flame images from two orthogonal cameras are used to determine flame spread and growth rates, and the burn lasts for over two and a half minutes.  The oxygen concentration in the chamber is measured.  As the burns progress, the oxygen concentration drops, enabling a limiting value for extinction to be defined.  The effect of Coriolis force is discussed.  Results from this experiment are compared to related 1-g work, drop tower tests, aircraft experiments, and modeling.  The results are applicable to NASA’s exploration efforts in that they guide the selection of fire-safe materials and environments and ensure safety of future spacecraft and Lunar habitats.  The data also provides fundamental understanding of fires.  Finally, the experiment is a steppingstone to the ultimate goal of performing burn tests on the Lunar surface in the Flammability of Materials on the Moon (FM2) experiment which is planned to launch in late 2026.",
+            "origin": "source_summary"
+          }
+        ],
+        "flightProgram": [
+          {
+            "source_id": "ntrs-20250010653",
+            "quote": "The Lunar Combustion Investigation (LUCI) demonstrates the feasibility of conducting material flammability experiments in partial-g.  A spinning Blue Origin New Shepard sounding rocket yields Lunar gravity by using centrifugal acceleration.  These are the first-ever, extended-duration (greater than 25 seconds) combustion tests performed in simulated Lunar gravity.  A steady vehicle rotation of 11 RPM is established, with an effective radius of rotation of 1.22 m at the experiment location.  Two samples are burned simultaneously in air at normal pressure.  The first sample is a cotton-fiberglass composite fabric sheet and the second a 4-mm diameter rod of acrylic plastic (polymethyl methacrylate).  Flame images from two orthogonal cameras are used to determine flame spread and growth rates, and the burn lasts for over two and a half minutes.  The oxygen concentration in the chamber is measured.  As the burns progress, the oxygen concentration drops, enabling a limiting value for extinction to be defined.  The effect of Coriolis force is discussed.  Results from this experiment are compared to related 1-g work, drop tower tests, aircraft experiments, and modeling.  The results are applicable to NASA’s exploration efforts in that they guide the selection of fire-safe materials and environments and ensure safety of future spacecraft and Lunar habitats.  The data also provides fundamental understanding of fires.  Finally, the experiment is a steppingstone to the ultimate goal of performing burn tests on the Lunar surface in the Flammability of Materials on the Moon (FM2) experiment which is planned to launch in late 2026.",
+            "origin": "source_summary"
+          }
+        ]
+      },
+      "record": {
+        "source_url": "https://ntrs.nasa.gov/citations/20250010653",
+        "metadata_url": "https://ntrs.nasa.gov/citations/20250010653",
+        "fetched_at": "2026-11-15T02:14:35.821716+00:00",
+        "declared_bytes": null,
+        "quality_notes": [
+          "Curated from cited NASA sources; this record is separate from the PSI catalog.",
+          "Published summary tables and planned conditions retain their original scientific scope; no raw telemetry archive was located in the bounded source search."
+        ],
+        "status": "research_sources_available",
+        "record_type": "investigation",
+        "parent_accession": null,
+        "data_status": "reported_measurements",
+        "research_status": "Published presentation reports simulated-lunar-gravity flight observations and source-fitted rates in 2025."
+      },
+      "source_ids": [
+        "ntrs-20250010653"
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "20240002981",
+      "title": "Preliminary Results from the Saffire VI Experiment",
+      "source_url": "https://ntrs.nasa.gov/citations/20240002981",
+      "download_url": "https://ntrs.nasa.gov/api/citations/20240002981/downloads/Saffire-ICES-2024-ICES-365-accepted%20final.pdf",
+      "sha256": "7f875da1d6abeeeeac64aeba67d3f160074cf98430e714fe7606b34b37e0aa59",
+      "byte_size": 3066759,
+      "media_type": "application/pdf",
+      "associated_investigations": [
+        "NASA-SAFFIRE-IV",
+        "NASA-SAFFIRE-V",
+        "NASA-SAFFIRE-VI"
+      ],
+      "rights": "MAY_INCLUDE_COPYRIGHT_MATERIAL",
+      "distribution": "PUBLIC",
+      "captured_at": "2026-11-15T02:06:26.032581+00:00",
+      "cache_policy": "Original PDF bytes belong in the ignored evidence-document cache; not redistributed by this factual-transcription pack."
+    },
+    {
+      "document_id": "20210011521",
+      "title": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+      "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+      "download_url": "https://ntrs.nasa.gov/api/citations/20210011521/downloads/ICES%202021-266%200503-2021%20final.pdf",
+      "sha256": "d25b394f43774ee79a3223b53e90571be299c8996d1cff2512c76e3308e107f5",
+      "byte_size": 6518291,
+      "media_type": "application/pdf",
+      "associated_investigations": [
+        "NASA-SAFFIRE-IV",
+        "NASA-SAFFIRE-V"
+      ],
+      "rights": "MAY_INCLUDE_COPYRIGHT_MATERIAL",
+      "distribution": "PUBLIC",
+      "captured_at": "2026-11-15T02:06:33.441795+00:00",
+      "cache_policy": "Original PDF bytes belong in the ignored evidence-document cache; not redistributed by this factual-transcription pack."
+    },
+    {
+      "document_id": "20250010653",
+      "title": "Lunar Combustion Investigation: Flammability Results from a Rotating Sounding Rocket",
+      "source_url": "https://ntrs.nasa.gov/citations/20250010653",
+      "download_url": "https://ntrs.nasa.gov/api/citations/20250010653/downloads/ASGSR%202025-LUCI-Ferkul-Presentation-v2-20250010653.pdf",
+      "sha256": "bb0aadd2f9543483467b86796e6aa19f4e13c3f8169eec96134015f95ed61d79",
+      "byte_size": 2906408,
+      "media_type": "application/pdf",
+      "associated_investigations": [
+        "NASA-LUCI"
+      ],
+      "rights": "GOV_PERMITTED",
+      "distribution": "PUBLIC",
+      "captured_at": "2026-11-15T02:06:40.023423+00:00",
+      "cache_policy": "Original PDF bytes belong in the ignored evidence-document cache; not redistributed by this factual-transcription pack."
+    },
+    {
+      "document_id": "20260001966",
+      "title": "Material Flammability at Lunar and Martian Gravity",
+      "source_url": "https://ntrs.nasa.gov/citations/20260001966",
+      "download_url": "https://ntrs.nasa.gov/api/citations/20260001966/downloads/Ferkul-Lunar%20and%20Planetary%20Science%20Conf%202026%20v2.pdf",
+      "sha256": "89c604a71fe33840a79aaad8fdb9942e11b32d88b20af6fa46f3bb48b1b63113",
+      "byte_size": 3809344,
+      "media_type": "application/pdf",
+      "associated_investigations": [
+        "NASA-FM2"
+      ],
+      "rights": "GOV_PERMITTED",
+      "distribution": "PUBLIC",
+      "captured_at": "2026-11-15T02:14:30.860725+00:00",
+      "cache_policy": "Original PDF bytes belong in the ignored evidence-document cache; not redistributed by this factual-transcription pack."
+    },
+    {
+      "document_id": "20160001023",
+      "title": "Flammability Limits at Reduced-g Experiment (FLARE)Task Group 5: Fundamental Research on International Standard of Fire Safety in Space on the ISS/JEM",
+      "source_url": "https://ntrs.nasa.gov/citations/20160001023",
+      "download_url": "https://ntrs.nasa.gov/api/citations/20160001023/downloads/20160001023.pdf",
+      "sha256": "610ea73544a49a24e94624844e437b5a77cbb2ac9fc8cc3215a03688a6a58594",
+      "byte_size": 1130863,
+      "media_type": "application/pdf",
+      "associated_investigations": [
+        "NASA-FLARE"
+      ],
+      "rights": "PUBLIC_USE_PERMITTED",
+      "distribution": "PUBLIC",
+      "captured_at": "2026-11-15T02:14:35.821716+00:00",
+      "cache_policy": "Original PDF bytes belong in the ignored evidence-document cache; not redistributed by this factual-transcription pack."
+    },
+    {
+      "document_id": "20200000361",
+      "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+      "source_url": "https://ntrs.nasa.gov/citations/20200000361",
+      "download_url": "https://ntrs.nasa.gov/api/citations/20200000361/downloads/20200000361.pdf",
+      "sha256": "dc42805d92fb9073cda48d76b9aa3fdf9fd26b7780d537a9e8e1b73ac433e7b0",
+      "byte_size": 2940091,
+      "media_type": "application/pdf",
+      "associated_investigations": [
+        "NASA-SOFIE",
+        "NASA-SOFIE-RTDFS",
+        "NASA-SOFIE-NCA",
+        "NASA-SOFIE-GEL",
+        "NASA-SOFIE-MIST",
+        "NASA-SOFIE-SMURF"
+      ],
+      "rights": "PUBLIC_USE_PERMITTED",
+      "distribution": "PUBLIC",
+      "captured_at": "2026-11-15T02:09:08.811602+00:00",
+      "cache_policy": "Original PDF bytes belong in the ignored evidence-document cache; not redistributed by this factual-transcription pack."
+    },
+    {
+      "document_id": "20240007628",
+      "title": "Extinction of Solid Diffusion Flame in Microgravity: Details of Quenching and Blowoff Processes",
+      "source_url": "https://ntrs.nasa.gov/citations/20240007628",
+      "download_url": "https://ntrs.nasa.gov/api/citations/20240007628/downloads/GELsymposiumfinalRev1.pdf",
+      "sha256": "32929bc29471668729980478e60db91cb374ed8ae800288a635ced70fcb59024",
+      "byte_size": 2663061,
+      "media_type": "application/pdf",
+      "associated_investigations": [
+        "NASA-SOFIE-GEL"
+      ],
+      "rights": "GOV_PERMITTED",
+      "distribution": "PUBLIC",
+      "captured_at": "2026-11-15T02:09:08.811602+00:00",
+      "cache_policy": "Original PDF bytes belong in the ignored evidence-document cache; not redistributed by this factual-transcription pack."
+    }
+  ]
+}

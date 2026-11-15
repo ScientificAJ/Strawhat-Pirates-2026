@@ -1,0 +1,110 @@
+{
+  "accession": "NASA-SAFFIRE-IV",
+  "version": 1,
+  "title": "Spacecraft Fire Experiment IV",
+  "investigationAcronym": "Saffire-IV",
+  "description": "Saffire IV studied large-scale solid-fuel fires inside an uncrewed Cygnus spacecraft after departure from the International Space Station. Retained tables report selected sample conditions and published outcomes; they are not the raw sensor archive.",
+  "objective": "Examine flame growth and spread at spacecraft-relevant scales and the resulting changes in the vehicle atmosphere to inform fire safety.",
+  "approach": "Ignite solid samples in a ventilated Cygnus experiment and compare flame behavior, calorimetry, temperatures and combustion-product measurements. Keep fuel, pressure, oxygen, geometry and measurement method attached to each reported result.",
+  "hypothesis": "",
+  "researchImpacts": "",
+  "experimentHardware": "Saffire apparatus in Cygnus cargo spacecraft",
+  "researchArea": "Combustion Science",
+  "subResearchArea": "Solid Fuels",
+  "related_glds": [
+    "PSI-98",
+    "PSI-99",
+    "PSI-100"
+  ],
+  "flightProgram": "Cygnus spacecraft after ISS departure",
+  "missionName": "",
+  "missionStart": null,
+  "missionEnd": null,
+  "investigationStartDate": null,
+  "investigationEndDate": null,
+  "projectTitle": "Spacecraft Fire Experiment IV",
+  "publications": [
+    {
+      "title": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+      "url": "https://ntrs.nasa.gov/citations/20210011521"
+    },
+    {
+      "title": "Preliminary Results from the Saffire VI Experiment",
+      "url": "https://ntrs.nasa.gov/citations/20240002981"
+    }
+  ],
+  "licenseIdentifier": null,
+  "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession.",
+  "field_provenance": {
+    "title": [
+      {
+        "source_id": "ntrs-20210011521",
+        "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+        "origin": "source_summary",
+        "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "source_sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a"
+      }
+    ],
+    "investigationAcronym": [
+      {
+        "source_id": "ntrs-20210011521",
+        "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+        "origin": "source_summary",
+        "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "source_sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a"
+      }
+    ],
+    "description": [
+      {
+        "source_id": "ntrs-20210011521",
+        "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+        "origin": "source_summary",
+        "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "source_sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a"
+      }
+    ],
+    "objective": [
+      {
+        "source_id": "ntrs-20210011521",
+        "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+        "origin": "source_summary",
+        "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "source_sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a"
+      }
+    ],
+    "approach": [
+      {
+        "source_id": "ntrs-20210011521",
+        "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+        "origin": "source_summary",
+        "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "source_sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a"
+      }
+    ],
+    "experimentHardware": [
+      {
+        "source_id": "ntrs-20210011521",
+        "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+        "origin": "source_summary",
+        "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "source_sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a"
+      }
+    ],
+    "flightProgram": [
+      {
+        "source_id": "ntrs-20210011521",
+        "quote": "The spread and growth of flames over large solid fuel samples and their effect on the pressurized spacecraft were studied inside the Cygnus spacecraft while in orbit after departing the International Space Station. These experiments were developed by NASA’s Advanced Exploration Systems Division in the Human Exploration and Operations Mission Directorate. The ignited materials consisted of poly-methyl methacrylate (PMMA), cotton fabric and a cotton/fiberglass fabric blend. The samples were all 40 cm wide and with various lengths ranging from 18 cm for the PMMA samples to 50 cm for the fabrics. The overall results from these tests and their impact on the spacecraft are presented with emphasis on the fire safety implications of the results. The experiments included, a post-fire cleanup system, vehicle internal volume measurements, and transport of acid gases (HCl and HF). Measurements included video images, flame spread rate, flame temperatures and radiant heat output; energy release through oxygen calorimetry; distributed measurements of CO2 concentration and temperature at six locations in the spacecraft; CO2, CO, O2, HF and HCl concentrations; vehicle pressurized volume; and aerosol concentrations. Details of the flame growth and spread are discussed in other papers as are details of the post-fire cleanup system performance. The fire events had a measurable impact on the vehicle pressure, temperature, and carbon dioxide concentration. However, despite having heat release rates up to 10 kW, the average vehicle conditions did not rise to unacceptable levels. The combined results of the experiments provide significant new understanding of the impact of sample and flow duct height on flame spread and growth in addition to an improved perspective of the impact of a fire event on a spacecraft.",
+        "origin": "source_summary",
+        "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires",
+        "source_url": "https://ntrs.nasa.gov/citations/20210011521",
+        "source_sha256": "8a3e3273b0305a0b3a198b4d075e8d6f0e4723f42d515d698374aaa7c56e138a"
+      }
+    ]
+  }
+}

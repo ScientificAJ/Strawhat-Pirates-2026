@@ -1,0 +1,5 @@
+Flight/Sample,Material/configuration,Length (cm),Air Flow Rate (cm/s),Flow Direction,Ambient Pressure (kPa),Oxygen Concentration (mol %),Pressurized Volume (m3),Free volume (m3)
+IV-1,"SIBAL
+Cloth",50,20,Concurrent,100.0,22.0,18.7,17.9
+IV-2,"2-sided
+PMMA",18,20,Concurrent,100.0,22.0,18.7,17.9

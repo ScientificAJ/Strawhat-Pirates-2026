@@ -1,0 +1,69 @@
+Explore This Section
+…
+Investigations
+Solid Fuel Ignition and...
+Overview
+About
+Decadal Survey
+Investigations
+Missions
+Organization
+Partnerships
+Advisory Committee
+Ames Research Center
+Glenn Research Center
+Marshall Space Flight Center
+Jet Propulsion Lab
+Johnson Space Center
+Kennedy Space Center
+Goals
+Scientific Goals Overview
+Precision Health
+Quantum Leaps
+Space Crops
+Foundations
+Space Labs
+Programs
+Programs Overview
+Space Biology Program
+Physical Sciences Program
+Commercial
+Fundamental Physics
+Resources
+News, Media & Features
+Articles, Explainers, Videos & Infographics
+Solicitations
+Contact Us
+Social Media
+Science Digest
+Education & Opportunities
+Data
+Overview
+OSDR
+PSI
+NBISC
+AWGs
+BPS Data Management Policy
+Solid Fuel Ignition and Extinction – Growth and Extinction Limit (SoFIE-GEL)
+Science Objectives
+The Solid Fuel Ignition and Extinction - Growth and Extinction Limit (SoFIE-GEL) investigation studies burning in microgravity, measuring the amount of heating in a fuel sample to determine how fuel temperature affects material flammability. Results could improve understanding of early fire growth behavior and help determine optimal fire suppression techniques, improving crew safety in future space facilities.
+Status
+Delivery to the International Space Station via Northrop Grumman Commercial Resupply Services Mission 17.
+Experiment Description
+The Solid Fuel Ignition and Extinction - Growth and Extinction Limit (SoFIE-GEL) investigation helps researchers experimentally determine the flame growth and extinction characteristics (rate, flame shape and dimensions) over a thick solid fuel [a Poly (methyl methacrylate) (PMMA) sphere] as a function of flow velocity, oxygen percentage, pressure and the degree of internal heating. A high-fidelity numerical model is compared with the microgravity results, and serves as a tool connecting Earth gravity (1g) and microgravity performance.
+Space Applications
+Developing an effective fire safety strategy suppression techniques is critical to ensuring crew wellbeing on future missions.
+Earth Applications
+Studying flames in space allows us to refine computer models of combustion without the complicating aspects of buoyancy. The improvements in the models can then be applied to terrestrial applications.
+Related Links
+Space Station Research Explorer
+Keep Exploring
+Discover More Topics From NASA
+James Webb Space Telescope
+Webb is the premier observatory of the next decade, serving thousands of astronomers worldwide. It studies every phase in the…
+Perseverance Rover
+This rover and its aerial sidekick were assigned to study the geology of Mars and seek signs of ancient microbial…
+Parker Solar Probe
+On a mission to “touch the Sun,” NASA's Parker Solar Probe became the first spacecraft to fly through the corona…
+Juno
+NASA’s Juno spacecraft entered orbit around Jupiter in 2016, the first explorer to peer below the planet's dense clouds to…

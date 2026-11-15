@@ -1,0 +1,2 @@
+Saffire Flight/Sample,Material,Burn duration (s),Oxygen Consumption Calorimetry / Peak Heat Release (W),Oxygen Consumption Calorimetry / Total Heat Release (kJ),Fuel Consumption Calorimetry / Average Heat Release (W),Fuel Consumption Calorimetry / Total Heat Release (kJ),Max Temp at SFU outlet (C),Max Temp at FFD or nearest location (C),FFD inlet CO2 increase (ppm),CO2 partial pressure increase (mmHg),FFD inlet CO increase (ppm)
+IV-1,SIBAL,130,,,"3,150",409,45,25,1390,1.03,80

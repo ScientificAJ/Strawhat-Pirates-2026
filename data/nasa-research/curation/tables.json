@@ -1,0 +1,5143 @@
+[
+  {
+    "id": "fm2-2026-planned-atmospheres",
+    "title": "FM2 2026 planned chamber conditions and exposed fabric geometry",
+    "origin": "planned_conditions",
+    "row_kind": "condition_record",
+    "captured_at": "2026-11-15T02:14:35.821716+00:00",
+    "document_id": "20260001966",
+    "page": 10,
+    "table": "FM² Science Requirements: Chamber and Fuel",
+    "headers": [
+      "Planned test",
+      "Initial pressure (psia)",
+      "Pressure tolerance (± psi)",
+      "Initial oxygen (%)",
+      "Balance gas",
+      "Fabric material",
+      "Exposed width (cm)",
+      "Width tolerance (± cm)",
+      "Exposed length (cm)",
+      "Length tolerance (± cm)"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "pressure",
+        "original_unit": "psia",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "pressure reference: absolute"
+        ]
+      },
+      {
+        "quantity_kind": "pressure_tolerance",
+        "original_unit": "psi",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "tolerance kind: plus_minus"
+        ]
+      },
+      {
+        "quantity_kind": "oxygen_fraction",
+        "original_unit": "%",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "composition basis: Not explicitly specified on source page"
+        ]
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length_tolerance",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "tolerance kind: plus_minus"
+        ]
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length_tolerance",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "tolerance kind: plus_minus"
+        ]
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-FM2",
+        "raw_cells": [
+          "Test 1",
+          "8.2",
+          "0.3",
+          "37",
+          "nitrogen",
+          "Synergy Pro “Navy”",
+          "2",
+          "0.05",
+          "20",
+          "0.2"
+        ],
+        "document_id": "20260001966",
+        "page": 10,
+        "table": "FM² Science Requirements: Chamber and Fuel",
+        "row_label": "planned-test-1",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Test",
+              "condition_label": "Test 1",
+              "source_excerpt": "Test 1: 8.2 psia (+/- 0.3 psi), 37% O2 , balance nitrogen)"
+            }
+          },
+          "1": {
+            "numeric_value": 8.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 1",
+              "source_excerpt": "Test 1: 8.2 psia (+/- 0.3 psi), 37% O2 , balance nitrogen)"
+            }
+          },
+          "2": {
+            "numeric_value": 0.3,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 1",
+              "source_excerpt": "Test 1: 8.2 psia (+/- 0.3 psi), 37% O2 , balance nitrogen)"
+            }
+          },
+          "3": {
+            "numeric_value": 37.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 1",
+              "source_excerpt": "Test 1: 8.2 psia (+/- 0.3 psi), 37% O2 , balance nitrogen)"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 1",
+              "source_excerpt": "Test 1: 8.2 psia (+/- 0.3 psi), 37% O2 , balance nitrogen)"
+            }
+          },
+          "5": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 1",
+              "source_excerpt": "Fabric sheets (Synergy Pro “Navy”) mounted between thin metal frames"
+            }
+          },
+          "6": {
+            "numeric_value": 2.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 1",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "7": {
+            "numeric_value": 0.05,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 1",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "8": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 1",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "9": {
+            "numeric_value": 0.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 1",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          }
+        },
+        "physical_experiment_id": null,
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-FM2",
+        "raw_cells": [
+          "Test 2",
+          "8.2",
+          "0.3",
+          "33",
+          "nitrogen",
+          "Synergy Pro “Navy”",
+          "2",
+          "0.05",
+          "20",
+          "0.2"
+        ],
+        "document_id": "20260001966",
+        "page": 10,
+        "table": "FM² Science Requirements: Chamber and Fuel",
+        "row_label": "planned-test-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Test",
+              "condition_label": "Test 2",
+              "source_excerpt": "Test 2: 8.2 psia (+/- 0.3 psi), 33% O2 , balance nitrogen)"
+            }
+          },
+          "1": {
+            "numeric_value": 8.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 2",
+              "source_excerpt": "Test 2: 8.2 psia (+/- 0.3 psi), 33% O2 , balance nitrogen)"
+            }
+          },
+          "2": {
+            "numeric_value": 0.3,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 2",
+              "source_excerpt": "Test 2: 8.2 psia (+/- 0.3 psi), 33% O2 , balance nitrogen)"
+            }
+          },
+          "3": {
+            "numeric_value": 33.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 2",
+              "source_excerpt": "Test 2: 8.2 psia (+/- 0.3 psi), 33% O2 , balance nitrogen)"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 2",
+              "source_excerpt": "Test 2: 8.2 psia (+/- 0.3 psi), 33% O2 , balance nitrogen)"
+            }
+          },
+          "5": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 2",
+              "source_excerpt": "Fabric sheets (Synergy Pro “Navy”) mounted between thin metal frames"
+            }
+          },
+          "6": {
+            "numeric_value": 2.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 2",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "7": {
+            "numeric_value": 0.05,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 2",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "8": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 2",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "9": {
+            "numeric_value": 0.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 2",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          }
+        },
+        "physical_experiment_id": null,
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-FM2",
+        "raw_cells": [
+          "Test 3",
+          "8.2",
+          "0.3",
+          "29",
+          "nitrogen",
+          "Synergy Pro “Navy”",
+          "2",
+          "0.05",
+          "20",
+          "0.2"
+        ],
+        "document_id": "20260001966",
+        "page": 10,
+        "table": "FM² Science Requirements: Chamber and Fuel",
+        "row_label": "planned-test-3",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Test",
+              "condition_label": "Test 3",
+              "source_excerpt": "Test 3: 8.2 psia (+/- 0.3 psi), 29% O2 , balance nitrogen)"
+            }
+          },
+          "1": {
+            "numeric_value": 8.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 3",
+              "source_excerpt": "Test 3: 8.2 psia (+/- 0.3 psi), 29% O2 , balance nitrogen)"
+            }
+          },
+          "2": {
+            "numeric_value": 0.3,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 3",
+              "source_excerpt": "Test 3: 8.2 psia (+/- 0.3 psi), 29% O2 , balance nitrogen)"
+            }
+          },
+          "3": {
+            "numeric_value": 29.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 3",
+              "source_excerpt": "Test 3: 8.2 psia (+/- 0.3 psi), 29% O2 , balance nitrogen)"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 3",
+              "source_excerpt": "Test 3: 8.2 psia (+/- 0.3 psi), 29% O2 , balance nitrogen)"
+            }
+          },
+          "5": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 3",
+              "source_excerpt": "Fabric sheets (Synergy Pro “Navy”) mounted between thin metal frames"
+            }
+          },
+          "6": {
+            "numeric_value": 2.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 3",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "7": {
+            "numeric_value": 0.05,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 3",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "8": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 3",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "9": {
+            "numeric_value": 0.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 3",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          }
+        },
+        "physical_experiment_id": null,
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-FM2",
+        "raw_cells": [
+          "Test 4",
+          "8.2",
+          "0.3",
+          "25",
+          "nitrogen",
+          "Synergy Pro “Navy”",
+          "2",
+          "0.05",
+          "20",
+          "0.2"
+        ],
+        "document_id": "20260001966",
+        "page": 10,
+        "table": "FM² Science Requirements: Chamber and Fuel",
+        "row_label": "planned-test-4",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Test",
+              "condition_label": "Test 4",
+              "source_excerpt": "Test 4: 8.2 psia (+/- 0.3 psi), 25% O2 , balance nitrogen)"
+            }
+          },
+          "1": {
+            "numeric_value": 8.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 4",
+              "source_excerpt": "Test 4: 8.2 psia (+/- 0.3 psi), 25% O2 , balance nitrogen)"
+            }
+          },
+          "2": {
+            "numeric_value": 0.3,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 4",
+              "source_excerpt": "Test 4: 8.2 psia (+/- 0.3 psi), 25% O2 , balance nitrogen)"
+            }
+          },
+          "3": {
+            "numeric_value": 25.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 4",
+              "source_excerpt": "Test 4: 8.2 psia (+/- 0.3 psi), 25% O2 , balance nitrogen)"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Initial Chamber Conditions",
+              "condition_label": "Test 4",
+              "source_excerpt": "Test 4: 8.2 psia (+/- 0.3 psi), 25% O2 , balance nitrogen)"
+            }
+          },
+          "5": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 4",
+              "source_excerpt": "Fabric sheets (Synergy Pro “Navy”) mounted between thin metal frames"
+            }
+          },
+          "6": {
+            "numeric_value": 2.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 4",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "7": {
+            "numeric_value": 0.05,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 4",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "8": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 4",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          },
+          "9": {
+            "numeric_value": 0.2,
+            "missing_reason": null,
+            "notes": [
+              "Planned initial chamber requirement; not a lunar experimental measurement."
+            ],
+            "source": {
+              "document_id": "20260001966",
+              "pdf_page": 10,
+              "printed_page": 9,
+              "table": null,
+              "section": "Fuel and mounting",
+              "condition_label": "Test 4",
+              "source_excerpt": "Expose 2 cm (+/- 0.05 cm) x 20 cm (+/- 0.2 cm) of both sides of the sheet"
+            }
+          }
+        },
+        "physical_experiment_id": null,
+        "endpoint": null
+      }
+    ],
+    "limitations": [
+      "These are planned science requirements in a March 2026 presentation, not completed Moon burns or measured outcomes.",
+      "Each planned test requires its own initial atmosphere; source specifies venting to vacuum between tests.",
+      "The source does not explicitly state a mole/volume basis for oxygen percentages.",
+      "The source says both sides of the fabric sheet are exposed; geometry is per sheet.",
+      "This 2026 fabric concept differs from the older SIBAL/PMMA concept; do not silently pool historical design requirements as measurements."
+    ]
+  },
+  {
+    "id": "luci-pmma-reported-fit",
+    "title": "PMMA Flame Tip Comparison",
+    "origin": "published_table_transcription",
+    "row_kind": "published_summary",
+    "captured_at": "2026-11-15T02:14:35.821716+00:00",
+    "document_id": "20250010653",
+    "page": 36,
+    "table": "Reported fit table",
+    "headers": [
+      "Endpoint",
+      "Material",
+      "Partial-G (cm/s)",
+      "1-G (cm/s)",
+      "Ratio"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "flame_spread_rate",
+        "original_unit": "cm/s",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "gravity: source-described simulated lunar gravity"
+        ]
+      },
+      {
+        "quantity_kind": "flame_spread_rate",
+        "original_unit": "cm/s",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "gravity: 1-g comparison"
+        ]
+      },
+      {
+        "quantity_kind": "ratio",
+        "original_unit": "1",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-LUCI",
+        "raw_cells": [
+          "Flame Tip",
+          "4-mm-diameter PMMA rod",
+          ".15",
+          ".40",
+          ".38"
+        ],
+        "document_id": "20250010653",
+        "page": 36,
+        "table": "Reported fit table",
+        "row_label": "Flame Tip",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 36,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "Endpoint",
+              "source_excerpt": "PMMA Flame Tip Comparison                         𝑥𝑓𝑡"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Material description comes from the sample-caption context on PDF page 16, not a separate column in the fit table."
+            ],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 16,
+              "table": null,
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": null,
+              "source_excerpt": "LUCI samples 30 s after ignition. Left: Edge view of SIBAL fabric (cotton-fiberglass blend) burning downward in Lunar-g 30 s\nafter ignition. The flame spread for over a minute. Right:4-mm-diameter PMMA rod burning upward in air in Lunar-g, 30 s\nafter ignition. The flame eventually grows to engulf the entire rod."
+            }
+          },
+          "2": {
+            "numeric_value": 0.15,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 36,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "Partial-G (cm/s)",
+              "source_excerpt": "Partial-G 1-G              Ratio"
+            }
+          },
+          "3": {
+            "numeric_value": 0.4,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 36,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "1-G (cm/s)",
+              "source_excerpt": "Partial-G 1-G              Ratio"
+            }
+          },
+          "4": {
+            "numeric_value": 0.38,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 36,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "Ratio",
+              "source_excerpt": "Partial-G 1-G              Ratio"
+            }
+          }
+        },
+        "physical_experiment_id": null,
+        "endpoint": "Flame Tip"
+      }
+    ],
+    "limitations": [
+      "Published test conditions and result summaries; not raw sensor telemetry or a complete experiment archive.",
+      "Rows and endpoints are not automatically independent experimental units. Repeated flight/sample identifiers across publications refer to the same experiment.",
+      "Measurement uncertainty, calibration and condition comparability must be checked before fitting or pooling.",
+      "Published descriptive fit rates in cm/s, unlike the SIBAL comparison table which uses mm/s.",
+      "Ratio .38 is source-reported rounded precision; it was not recomputed from printed rounded rates.",
+      "PMMA base spread is not constant and is not represented by this flame-tip slope."
+    ]
+  },
+  {
+    "id": "luci-sibal-reported-fits",
+    "title": "SIBAL Flame Spread Fit Comparison",
+    "origin": "published_table_transcription",
+    "row_kind": "published_summary",
+    "captured_at": "2026-11-15T02:14:35.821716+00:00",
+    "document_id": "20250010653",
+    "page": 33,
+    "table": "Reported fit table",
+    "headers": [
+      "Endpoint",
+      "Material",
+      "Partial-G (mm/s)",
+      "1-G (mm/s)",
+      "Ratio"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "flame_spread_rate",
+        "original_unit": "mm/s",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "gravity: source-described simulated lunar gravity"
+        ]
+      },
+      {
+        "quantity_kind": "flame_spread_rate",
+        "original_unit": "mm/s",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "gravity: 1-g comparison"
+        ]
+      },
+      {
+        "quantity_kind": "ratio",
+        "original_unit": "1",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-LUCI",
+        "raw_cells": [
+          "Flame Base",
+          "SIBAL fabric",
+          ".9",
+          "1.5",
+          ".6"
+        ],
+        "document_id": "20250010653",
+        "page": 33,
+        "table": "Reported fit table",
+        "row_label": "Flame Base",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Base",
+              "source_column": "Endpoint",
+              "source_excerpt": "Flame Base"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Material description comes from the sample-caption context on PDF page 16, not a separate column in the fit table."
+            ],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 16,
+              "table": null,
+              "experiment_or_endpoint_label": "Flame Base",
+              "source_column": null,
+              "source_excerpt": "LUCI samples 30 s after ignition. Left: Edge view of SIBAL fabric (cotton-fiberglass blend) burning downward in Lunar-g 30 s\nafter ignition. The flame spread for over a minute. Right:4-mm-diameter PMMA rod burning upward in air in Lunar-g, 30 s\nafter ignition. The flame eventually grows to engulf the entire rod."
+            }
+          },
+          "2": {
+            "numeric_value": 0.9,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Base",
+              "source_column": "Partial-G (mm/s)",
+              "source_excerpt": ""
+            }
+          },
+          "3": {
+            "numeric_value": 1.5,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Base",
+              "source_column": "1-G (mm/s)",
+              "source_excerpt": "Partial-   1-G        Ratio"
+            }
+          },
+          "4": {
+            "numeric_value": 0.6,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Base",
+              "source_column": "Ratio",
+              "source_excerpt": "Partial-   1-G        Ratio"
+            }
+          }
+        },
+        "physical_experiment_id": null,
+        "endpoint": "Flame Base"
+      },
+      {
+        "accession": "NASA-LUCI",
+        "raw_cells": [
+          "Flame Tip",
+          "SIBAL fabric",
+          "1.1",
+          "2.8",
+          ".39"
+        ],
+        "document_id": "20250010653",
+        "page": 33,
+        "table": "Reported fit table",
+        "row_label": "Flame Tip",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "Endpoint",
+              "source_excerpt": "Flame Tip"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [
+              "Material description comes from the sample-caption context on PDF page 16, not a separate column in the fit table."
+            ],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 16,
+              "table": null,
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": null,
+              "source_excerpt": "LUCI samples 30 s after ignition. Left: Edge view of SIBAL fabric (cotton-fiberglass blend) burning downward in Lunar-g 30 s\nafter ignition. The flame spread for over a minute. Right:4-mm-diameter PMMA rod burning upward in air in Lunar-g, 30 s\nafter ignition. The flame eventually grows to engulf the entire rod."
+            }
+          },
+          "2": {
+            "numeric_value": 1.1,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "Partial-G (mm/s)",
+              "source_excerpt": ""
+            }
+          },
+          "3": {
+            "numeric_value": 2.8,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "1-G (mm/s)",
+              "source_excerpt": "Partial-   1-G        Ratio"
+            }
+          },
+          "4": {
+            "numeric_value": 0.39,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20250010653",
+              "pdf_page": 33,
+              "table": "Reported fit table",
+              "experiment_or_endpoint_label": "Flame Tip",
+              "source_column": "Ratio",
+              "source_excerpt": "Partial-   1-G        Ratio"
+            }
+          }
+        },
+        "physical_experiment_id": null,
+        "endpoint": "Flame Tip"
+      }
+    ],
+    "limitations": [
+      "Published test conditions and result summaries; not raw sensor telemetry or a complete experiment archive.",
+      "Rows and endpoints are not automatically independent experimental units. Repeated flight/sample identifiers across publications refer to the same experiment.",
+      "Measurement uncertainty, calibration and condition comparability must be checked before fitting or pooling.",
+      "Published descriptive linear-fit results, not raw trajectory points.",
+      "Flame-base and flame-tip rows refer to endpoints from the same paired sample experiments, not independent replicate burns.",
+      "PDF page 19 reports a more precise SIBAL base rate of .92 mm/s; this extraction preserves the .9 printed in the comparison table rather than silently reconciling precision."
+    ]
+  },
+  {
+    "id": "saffire-iv-v-conditions",
+    "title": "Saffire IV-V Sample Test Conditions",
+    "origin": "published_table_transcription",
+    "row_kind": "published_summary",
+    "captured_at": "2026-11-15T02:14:35.821716+00:00",
+    "document_id": "20210011521",
+    "page": 3,
+    "table": "Table 1",
+    "headers": [
+      "Flight/Sample",
+      "Material/configuration",
+      "Length (cm)",
+      "Air Flow Rate (cm/s)",
+      "Flow Direction",
+      "Ambient Pressure (kPa)",
+      "Oxygen Concentration (mol %)",
+      "Pressurized Volume (m3)",
+      "Free volume (m3)"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "flow_velocity",
+        "original_unit": "cm/s",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "pressure",
+        "original_unit": "kPa",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "reference basis: Reported ambient pressure; table does not explicitly label gauge/absolute reference."
+        ]
+      },
+      {
+        "quantity_kind": "oxygen_fraction",
+        "original_unit": "%",
+        "source_value_kind": "condition",
+        "basis": "mole",
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "volume",
+        "original_unit": "m^3",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "volume",
+        "original_unit": "m^3",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-SAFFIRE-IV",
+        "raw_cells": [
+          "IV-1",
+          "SIBAL\nCloth",
+          "50",
+          "20",
+          "Concurrent",
+          "100.0",
+          "22.0",
+          "18.7",
+          "17.9"
+        ],
+        "document_id": "20210011521",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "IV-1",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                        IV-1              IV-2             V-2            V-3             V-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Material/configuration",
+              "source_excerpt": "Material/configuration              SIBAL             2-sided         Cotton         1 sided        Structured"
+            }
+          },
+          "2": {
+            "numeric_value": 50.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                           50                18              50              18              20"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                  20                20              20              20              20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                    Concurrent      Concurrent        Concurrent     Concurrent        Opposed"
+            }
+          },
+          "5": {
+            "numeric_value": 100.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)               100.0            100.0            70.7            71.3            72.6"
+            }
+          },
+          "6": {
+            "numeric_value": 22.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol            22.0              22.0            26.2            25.4            25.7"
+            }
+          },
+          "7": {
+            "numeric_value": 18.7,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for IV-1 and IV-2."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Pressurized Volume (m3)",
+              "source_excerpt": "Pressurized Volume (m3)                        18.7                                     19.2"
+            }
+          },
+          "8": {
+            "numeric_value": 17.9,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for IV-1 and IV-2."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m ) 3"
+            }
+          }
+        },
+        "physical_experiment_id": "IV-1",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-IV",
+        "raw_cells": [
+          "IV-2",
+          "2-sided\nPMMA",
+          "18",
+          "20",
+          "Concurrent",
+          "100.0",
+          "22.0",
+          "18.7",
+          "17.9"
+        ],
+        "document_id": "20210011521",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "IV-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                        IV-1              IV-2             V-2            V-3             V-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Material/configuration",
+              "source_excerpt": "Material/configuration              SIBAL             2-sided         Cotton         1 sided        Structured"
+            }
+          },
+          "2": {
+            "numeric_value": 18.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                           50                18              50              18              20"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                  20                20              20              20              20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                    Concurrent      Concurrent        Concurrent     Concurrent        Opposed"
+            }
+          },
+          "5": {
+            "numeric_value": 100.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)               100.0            100.0            70.7            71.3            72.6"
+            }
+          },
+          "6": {
+            "numeric_value": 22.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol            22.0              22.0            26.2            25.4            25.7"
+            }
+          },
+          "7": {
+            "numeric_value": 18.7,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for IV-1 and IV-2."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Pressurized Volume (m3)",
+              "source_excerpt": "Pressurized Volume (m3)                        18.7                                     19.2"
+            }
+          },
+          "8": {
+            "numeric_value": 17.9,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for IV-1 and IV-2."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-2",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m ) 3"
+            }
+          }
+        },
+        "physical_experiment_id": "IV-2",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-V",
+        "raw_cells": [
+          "V-2",
+          "Cotton\nJersey",
+          "50",
+          "20",
+          "Concurrent",
+          "70.7",
+          "26.2",
+          "19.2",
+          "19.0"
+        ],
+        "document_id": "20210011521",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "V-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                        IV-1              IV-2             V-2            V-3             V-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Material/configuration",
+              "source_excerpt": "Material/configuration              SIBAL             2-sided         Cotton         1 sided        Structured"
+            }
+          },
+          "2": {
+            "numeric_value": 50.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                           50                18              50              18              20"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                  20                20              20              20              20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                    Concurrent      Concurrent        Concurrent     Concurrent        Opposed"
+            }
+          },
+          "5": {
+            "numeric_value": 70.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)               100.0            100.0            70.7            71.3            72.6"
+            }
+          },
+          "6": {
+            "numeric_value": 26.2,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol            22.0              22.0            26.2            25.4            25.7"
+            }
+          },
+          "7": {
+            "numeric_value": 19.2,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for V-2, V-3 and V-4."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Pressurized Volume (m3)",
+              "source_excerpt": "Pressurized Volume (m3)                        18.7                                     19.2"
+            }
+          },
+          "8": {
+            "numeric_value": 19.0,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for V-2, V-3 and V-4."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m ) 3"
+            }
+          }
+        },
+        "physical_experiment_id": "V-2",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-V",
+        "raw_cells": [
+          "V-3",
+          "1 sided\nPMMA",
+          "18",
+          "20",
+          "Concurrent",
+          "71.3",
+          "25.4",
+          "19.2",
+          "19.0"
+        ],
+        "document_id": "20210011521",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "V-3",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                        IV-1              IV-2             V-2            V-3             V-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Material/configuration",
+              "source_excerpt": "Material/configuration              SIBAL             2-sided         Cotton         1 sided        Structured"
+            }
+          },
+          "2": {
+            "numeric_value": 18.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                           50                18              50              18              20"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                  20                20              20              20              20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                    Concurrent      Concurrent        Concurrent     Concurrent        Opposed"
+            }
+          },
+          "5": {
+            "numeric_value": 71.3,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)               100.0            100.0            70.7            71.3            72.6"
+            }
+          },
+          "6": {
+            "numeric_value": 25.4,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol            22.0              22.0            26.2            25.4            25.7"
+            }
+          },
+          "7": {
+            "numeric_value": 19.2,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for V-2, V-3 and V-4."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Pressurized Volume (m3)",
+              "source_excerpt": "Pressurized Volume (m3)                        18.7                                     19.2"
+            }
+          },
+          "8": {
+            "numeric_value": 19.0,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for V-2, V-3 and V-4."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-3",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m ) 3"
+            }
+          }
+        },
+        "physical_experiment_id": "V-3",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-V",
+        "raw_cells": [
+          "V-4",
+          "Structured\nPMMA",
+          "20",
+          "20",
+          "Opposed",
+          "72.6",
+          "25.7",
+          "19.2",
+          "19.0"
+        ],
+        "document_id": "20210011521",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "V-4",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                        IV-1              IV-2             V-2            V-3             V-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Material/configuration",
+              "source_excerpt": "Material/configuration              SIBAL             2-sided         Cotton         1 sided        Structured"
+            }
+          },
+          "2": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                           50                18              50              18              20"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                  20                20              20              20              20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                    Concurrent      Concurrent        Concurrent     Concurrent        Opposed"
+            }
+          },
+          "5": {
+            "numeric_value": 72.6,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)               100.0            100.0            70.7            71.3            72.6"
+            }
+          },
+          "6": {
+            "numeric_value": 25.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol            22.0              22.0            26.2            25.4            25.7"
+            }
+          },
+          "7": {
+            "numeric_value": 19.2,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for V-2, V-3 and V-4."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Pressurized Volume (m3)",
+              "source_excerpt": "Pressurized Volume (m3)                        18.7                                     19.2"
+            }
+          },
+          "8": {
+            "numeric_value": 19.0,
+            "missing_reason": null,
+            "notes": [
+              "The source reports one merged flight-level volume cell for V-2, V-3 and V-4."
+            ],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-4",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m ) 3"
+            }
+          }
+        },
+        "physical_experiment_id": "V-4",
+        "endpoint": null
+      }
+    ],
+    "limitations": [
+      "Published test conditions and result summaries; not raw sensor telemetry or a complete experiment archive.",
+      "Rows and endpoints are not automatically independent experimental units. Repeated flight/sample identifiers across publications refer to the same experiment.",
+      "Measurement uncertainty, calibration and condition comparability must be checked before fitting or pooling."
+    ]
+  },
+  {
+    "id": "saffire-iv-v-vi-conditions",
+    "title": "Saffire IV-VI Sample Test Conditions considered in this paper.",
+    "origin": "published_table_transcription",
+    "row_kind": "published_summary",
+    "captured_at": "2026-11-15T02:14:35.821716+00:00",
+    "document_id": "20240002981",
+    "page": 3,
+    "table": "Table 1",
+    "headers": [
+      "Flight/Sample",
+      "Material",
+      "Length (cm)",
+      "Air Flow Rate (cm/s)",
+      "Flow Direction",
+      "Ambient Pressure (kPa)",
+      "Oxygen Concentration (mol %)",
+      "Free volume (m3)"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "flow_velocity",
+        "original_unit": "cm/s",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "pressure",
+        "original_unit": "kPa",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "reference basis: Reported ambient pressure; table does not explicitly label gauge/absolute reference."
+        ]
+      },
+      {
+        "quantity_kind": "oxygen_fraction",
+        "original_unit": "%",
+        "source_value_kind": "condition",
+        "basis": "mole",
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "volume",
+        "original_unit": "m^3",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-SAFFIRE-IV",
+        "raw_cells": [
+          "IV-1",
+          "SIBAL\nCloth",
+          "50",
+          "20",
+          "Concurrent",
+          "100.0",
+          "22.0",
+          "17.9"
+        ],
+        "document_id": "20240002981",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "IV-1",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                       IV-1             V-2             VI-2            VI-3              VI-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Material",
+              "source_excerpt": "Material                           SIBAL        Cotton Jersey       SIBAL         Two-Sided         One-Sided"
+            }
+          },
+          "2": {
+            "numeric_value": 50.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                          50               50              50               18                18"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                 20               20              20               20                20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                   Concurrent       Concurrent      Concurrent      Concurrent        Concurrent"
+            }
+          },
+          "5": {
+            "numeric_value": 100.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)              100.0            70.7            54.1             54.6              55.2"
+            }
+          },
+          "6": {
+            "numeric_value": 22.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol           22.0             26.2            31.0             30.3              28.8"
+            }
+          },
+          "7": {
+            "numeric_value": 17.9,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m3)                    17.9             19.0            16.7             16.7              16.7"
+            }
+          }
+        },
+        "physical_experiment_id": "IV-1",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-V",
+        "raw_cells": [
+          "V-2",
+          "Cotton Jersey",
+          "50",
+          "20",
+          "Concurrent",
+          "70.7",
+          "26.2",
+          "19.0"
+        ],
+        "document_id": "20240002981",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "V-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                       IV-1             V-2             VI-2            VI-3              VI-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Material",
+              "source_excerpt": "Material                           SIBAL        Cotton Jersey       SIBAL         Two-Sided         One-Sided"
+            }
+          },
+          "2": {
+            "numeric_value": 50.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                          50               50              50               18                18"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                 20               20              20               20                20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                   Concurrent       Concurrent      Concurrent      Concurrent        Concurrent"
+            }
+          },
+          "5": {
+            "numeric_value": 70.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)              100.0            70.7            54.1             54.6              55.2"
+            }
+          },
+          "6": {
+            "numeric_value": 26.2,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol           22.0             26.2            31.0             30.3              28.8"
+            }
+          },
+          "7": {
+            "numeric_value": 19.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m3)                    17.9             19.0            16.7             16.7              16.7"
+            }
+          }
+        },
+        "physical_experiment_id": "V-2",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-VI",
+        "raw_cells": [
+          "VI-2",
+          "SIBAL\nCloth",
+          "50",
+          "20",
+          "Concurrent",
+          "54.1",
+          "31.0",
+          "16.7"
+        ],
+        "document_id": "20240002981",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "VI-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                       IV-1             V-2             VI-2            VI-3              VI-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Material",
+              "source_excerpt": "Material                           SIBAL        Cotton Jersey       SIBAL         Two-Sided         One-Sided"
+            }
+          },
+          "2": {
+            "numeric_value": 50.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                          50               50              50               18                18"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                 20               20              20               20                20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                   Concurrent       Concurrent      Concurrent      Concurrent        Concurrent"
+            }
+          },
+          "5": {
+            "numeric_value": 54.1,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)              100.0            70.7            54.1             54.6              55.2"
+            }
+          },
+          "6": {
+            "numeric_value": 31.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol           22.0             26.2            31.0             30.3              28.8"
+            }
+          },
+          "7": {
+            "numeric_value": 16.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m3)                    17.9             19.0            16.7             16.7              16.7"
+            }
+          }
+        },
+        "physical_experiment_id": "VI-2",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-VI",
+        "raw_cells": [
+          "VI-3",
+          "Two-Sided\nPMMA",
+          "18",
+          "20",
+          "Concurrent",
+          "54.6",
+          "30.3",
+          "16.7"
+        ],
+        "document_id": "20240002981",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "VI-3",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                       IV-1             V-2             VI-2            VI-3              VI-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Material",
+              "source_excerpt": "Material                           SIBAL        Cotton Jersey       SIBAL         Two-Sided         One-Sided"
+            }
+          },
+          "2": {
+            "numeric_value": 18.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                          50               50              50               18                18"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                 20               20              20               20                20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                   Concurrent       Concurrent      Concurrent      Concurrent        Concurrent"
+            }
+          },
+          "5": {
+            "numeric_value": 54.6,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)              100.0            70.7            54.1             54.6              55.2"
+            }
+          },
+          "6": {
+            "numeric_value": 30.3,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol           22.0             26.2            31.0             30.3              28.8"
+            }
+          },
+          "7": {
+            "numeric_value": 16.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m3)                    17.9             19.0            16.7             16.7              16.7"
+            }
+          }
+        },
+        "physical_experiment_id": "VI-3",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-VI",
+        "raw_cells": [
+          "VI-4",
+          "One-Sided\nPMMA",
+          "18",
+          "20",
+          "Concurrent",
+          "55.2",
+          "28.8",
+          "16.7"
+        ],
+        "document_id": "20240002981",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "VI-4",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Flight/Sample",
+              "source_excerpt": "Flight/Sample                       IV-1             V-2             VI-2            VI-3              VI-4"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Material",
+              "source_excerpt": "Material                           SIBAL        Cotton Jersey       SIBAL         Two-Sided         One-Sided"
+            }
+          },
+          "2": {
+            "numeric_value": 18.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Length (cm)",
+              "source_excerpt": "Length (cm)                          50               50              50               18                18"
+            }
+          },
+          "3": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Air Flow Rate (cm/s)",
+              "source_excerpt": "Air Flow Rate (cm/s)                 20               20              20               20                20"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Flow Direction",
+              "source_excerpt": "Flow Direction                   Concurrent       Concurrent      Concurrent      Concurrent        Concurrent"
+            }
+          },
+          "5": {
+            "numeric_value": 55.2,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Ambient Pressure (kPa)",
+              "source_excerpt": "Ambient Pressure (kPa)              100.0            70.7            54.1             54.6              55.2"
+            }
+          },
+          "6": {
+            "numeric_value": 28.8,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Oxygen Concentration (mol %)",
+              "source_excerpt": "Oxygen Concentration (mol           22.0             26.2            31.0             30.3              28.8"
+            }
+          },
+          "7": {
+            "numeric_value": 16.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Free volume (m3)",
+              "source_excerpt": "Free volume (m3)                    17.9             19.0            16.7             16.7              16.7"
+            }
+          }
+        },
+        "physical_experiment_id": "VI-4",
+        "endpoint": null
+      }
+    ],
+    "limitations": [
+      "Published test conditions and result summaries; not raw sensor telemetry or a complete experiment archive.",
+      "Rows and endpoints are not automatically independent experimental units. Repeated flight/sample identifiers across publications refer to the same experiment.",
+      "Measurement uncertainty, calibration and condition comparability must be checked before fitting or pooling.",
+      "VI-1 Nomex did not ignite and is not one of the successful-burn rows in this table (Figure 3, PDF page 4)."
+    ]
+  },
+  {
+    "id": "saffire-iv-v-vi-results",
+    "title": "Saffire IV-VI Heat release and increase of carbon oxides",
+    "origin": "published_table_transcription",
+    "row_kind": "published_summary",
+    "captured_at": "2026-11-15T02:14:35.821716+00:00",
+    "document_id": "20240002981",
+    "page": 6,
+    "table": "Table 2",
+    "headers": [
+      "Saffire Flight/Sample",
+      "Material",
+      "Burn duration (s)",
+      "Oxygen Consumption Calorimetry / Peak Heat Release (W)",
+      "Oxygen Consumption Calorimetry / Total Heat Release (kJ)",
+      "Fuel Consumption Calorimetry / Average Heat Release (W)",
+      "Fuel Consumption Calorimetry / Total Heat Release (kJ)",
+      "Max Temp at SFU outlet (C)",
+      "Max Temp at FFD or nearest location (C)",
+      "FFD inlet CO2 increase (ppm)",
+      "CO2 partial pressure increase (mmHg)",
+      "FFD inlet CO increase (ppm)"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "duration",
+        "original_unit": "s",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "heat_release_rate",
+        "original_unit": "W",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "energy",
+        "original_unit": "kJ",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "heat_release_rate",
+        "original_unit": "W",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "energy",
+        "original_unit": "kJ",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "temperature",
+        "original_unit": "degC",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "temperature",
+        "original_unit": "degC",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "composition_fraction",
+        "original_unit": "ppm",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "pressure",
+        "original_unit": "mmHg",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "composition_fraction",
+        "original_unit": "ppm",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-SAFFIRE-IV",
+        "raw_cells": [
+          "IV-1",
+          "SIBAL",
+          "130",
+          "",
+          "",
+          "3,150",
+          "409",
+          "45",
+          "25",
+          "1390",
+          "1.03",
+          "80"
+        ],
+        "document_id": "20240002981",
+        "page": 6,
+        "table": "Table 2",
+        "row_label": "IV-1",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Saffire Flight/Sample",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Material",
+              "source_excerpt": "Saffire     Material      Burn        Peak       Total      Average     Total    Max        Max         FFD       CO2 partial      FFD"
+            }
+          },
+          "2": {
+            "numeric_value": 130.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Burn duration (s)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "3": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Oxygen Consumption Calorimetry / Peak Heat Release (W)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Oxygen Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "5": {
+            "numeric_value": 3150.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Fuel Consumption Calorimetry / Average Heat Release (W)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "6": {
+            "numeric_value": 409.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Fuel Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "7": {
+            "numeric_value": 45.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Max Temp at SFU outlet (C)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "8": {
+            "numeric_value": 25.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Max Temp at FFD or nearest location (C)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "9": {
+            "numeric_value": 1390.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "FFD inlet CO2 increase (ppm)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "10": {
+            "numeric_value": 1.03,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "CO2 partial pressure increase (mmHg)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          },
+          "11": {
+            "numeric_value": 80.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "FFD inlet CO increase (ppm)",
+              "source_excerpt": "IV-1        SIBAL         130                               3,150      409       45         25         1390         1.03            80"
+            }
+          }
+        },
+        "physical_experiment_id": "IV-1",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-V",
+        "raw_cells": [
+          "V-2",
+          "Cotton\nJersey",
+          "200",
+          "",
+          "",
+          "2,800",
+          "560",
+          "46",
+          "23",
+          "2360",
+          "1.26",
+          "83"
+        ],
+        "document_id": "20240002981",
+        "page": 6,
+        "table": "Table 2",
+        "row_label": "V-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Saffire Flight/Sample",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Material",
+              "source_excerpt": "Saffire     Material      Burn        Peak       Total      Average     Total    Max        Max         FFD       CO2 partial      FFD"
+            }
+          },
+          "2": {
+            "numeric_value": 200.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Burn duration (s)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "3": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Oxygen Consumption Calorimetry / Peak Heat Release (W)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Oxygen Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "5": {
+            "numeric_value": 2800.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Fuel Consumption Calorimetry / Average Heat Release (W)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "6": {
+            "numeric_value": 560.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Fuel Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "7": {
+            "numeric_value": 46.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Max Temp at SFU outlet (C)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "8": {
+            "numeric_value": 23.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Max Temp at FFD or nearest location (C)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "9": {
+            "numeric_value": 2360.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "FFD inlet CO2 increase (ppm)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "10": {
+            "numeric_value": 1.26,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "CO2 partial pressure increase (mmHg)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          },
+          "11": {
+            "numeric_value": 83.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "FFD inlet CO increase (ppm)",
+              "source_excerpt": "V-2        Cotton        200                               2,800      560       46         23         2360         1.26            83"
+            }
+          }
+        },
+        "physical_experiment_id": "V-2",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-VI",
+        "raw_cells": [
+          "VI-2",
+          "SIBAL",
+          "112",
+          "3217",
+          "580",
+          "3,650",
+          "409",
+          "48",
+          "20",
+          "2800",
+          "1.15",
+          "120"
+        ],
+        "document_id": "20240002981",
+        "page": 6,
+        "table": "Table 2",
+        "row_label": "VI-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Saffire Flight/Sample",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Material",
+              "source_excerpt": "Saffire     Material      Burn        Peak       Total      Average     Total    Max        Max         FFD       CO2 partial      FFD"
+            }
+          },
+          "2": {
+            "numeric_value": 112.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Burn duration (s)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "3": {
+            "numeric_value": 3217.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Oxygen Consumption Calorimetry / Peak Heat Release (W)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "4": {
+            "numeric_value": 580.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Oxygen Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "5": {
+            "numeric_value": 3650.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Fuel Consumption Calorimetry / Average Heat Release (W)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "6": {
+            "numeric_value": 409.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Fuel Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "7": {
+            "numeric_value": 48.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Max Temp at SFU outlet (C)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "8": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "Max Temp at FFD or nearest location (C)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "9": {
+            "numeric_value": 2800.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "FFD inlet CO2 increase (ppm)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "10": {
+            "numeric_value": 1.15,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "CO2 partial pressure increase (mmHg)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          },
+          "11": {
+            "numeric_value": 120.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-2",
+              "source_column": "FFD inlet CO increase (ppm)",
+              "source_excerpt": "VI-2        SIBAL         112        3217        580        3,650      409       48         20         2800         1.15            120"
+            }
+          }
+        },
+        "physical_experiment_id": "VI-2",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-VI",
+        "raw_cells": [
+          "VI-3",
+          "2-sided\nPMMA",
+          "780",
+          "3080",
+          "1280",
+          "",
+          "",
+          "77",
+          "21",
+          "8539",
+          "3.51",
+          "308"
+        ],
+        "document_id": "20240002981",
+        "page": 6,
+        "table": "Table 2",
+        "row_label": "VI-3",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Saffire Flight/Sample",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Material",
+              "source_excerpt": "Saffire     Material      Burn        Peak       Total      Average     Total    Max        Max         FFD       CO2 partial      FFD"
+            }
+          },
+          "2": {
+            "numeric_value": 780.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Burn duration (s)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "3": {
+            "numeric_value": 3080.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Oxygen Consumption Calorimetry / Peak Heat Release (W)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "4": {
+            "numeric_value": 1280.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Oxygen Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "5": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Fuel Consumption Calorimetry / Average Heat Release (W)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "6": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Fuel Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "7": {
+            "numeric_value": 77.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Max Temp at SFU outlet (C)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "8": {
+            "numeric_value": 21.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "Max Temp at FFD or nearest location (C)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "9": {
+            "numeric_value": 8539.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "FFD inlet CO2 increase (ppm)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "10": {
+            "numeric_value": 3.51,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "CO2 partial pressure increase (mmHg)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          },
+          "11": {
+            "numeric_value": 308.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-3",
+              "source_column": "FFD inlet CO increase (ppm)",
+              "source_excerpt": "VI-3        2-sided      780         3080       1280                             77         21         8539         3.51            308"
+            }
+          }
+        },
+        "physical_experiment_id": "VI-3",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-VI",
+        "raw_cells": [
+          "VI-4",
+          "1-sided\nPMMA",
+          "1200",
+          "1507",
+          "830",
+          "",
+          "",
+          "57",
+          "21",
+          "8117",
+          "3.37",
+          "320"
+        ],
+        "document_id": "20240002981",
+        "page": 6,
+        "table": "Table 2",
+        "row_label": "VI-4",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Saffire Flight/Sample",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Material",
+              "source_excerpt": "Saffire     Material      Burn        Peak       Total      Average     Total    Max        Max         FFD       CO2 partial      FFD"
+            }
+          },
+          "2": {
+            "numeric_value": 1200.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Burn duration (s)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "3": {
+            "numeric_value": 1507.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Oxygen Consumption Calorimetry / Peak Heat Release (W)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "4": {
+            "numeric_value": 830.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Oxygen Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "5": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Fuel Consumption Calorimetry / Average Heat Release (W)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "6": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Fuel Consumption Calorimetry / Total Heat Release (kJ)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "7": {
+            "numeric_value": 57.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Max Temp at SFU outlet (C)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "8": {
+            "numeric_value": 21.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "Max Temp at FFD or nearest location (C)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "9": {
+            "numeric_value": 8117.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "FFD inlet CO2 increase (ppm)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "10": {
+            "numeric_value": 3.37,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "CO2 partial pressure increase (mmHg)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          },
+          "11": {
+            "numeric_value": 320.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240002981",
+              "pdf_page": 6,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "VI-4",
+              "source_column": "FFD inlet CO increase (ppm)",
+              "source_excerpt": "VI-4        1-sided     1200         1507        830                             57         21         8117         3.37            320"
+            }
+          }
+        },
+        "physical_experiment_id": "VI-4",
+        "endpoint": null
+      }
+    ],
+    "limitations": [
+      "Published test conditions and result summaries; not raw sensor telemetry or a complete experiment archive.",
+      "Rows and endpoints are not automatically independent experimental units. Repeated flight/sample identifiers across publications refer to the same experiment.",
+      "Measurement uncertainty, calibration and condition comparability must be checked before fitting or pooling.",
+      "Source footnote: Empty fields were cases where the data were not available.",
+      "Peak oxygen-consumption heat release and average fuel-consumption heat release are different reported quantities and must not be merged.",
+      "Gas values are increases, not absolute concentrations; SFU outlet and FFD/nearest temperatures are different spatial locations."
+    ]
+  },
+  {
+    "id": "saffire-thin-fuel-results",
+    "title": "Test Conditions and flame size for thin samples",
+    "origin": "published_table_transcription",
+    "row_kind": "published_summary",
+    "captured_at": "2026-11-15T02:14:35.821716+00:00",
+    "document_id": "20210011521",
+    "page": 8,
+    "table": "Table 2",
+    "headers": [
+      "Flight-Sample",
+      "Air flow (cm/s)",
+      "Oxygen concentration (%)",
+      "Pressure (kPa)",
+      "Material",
+      "Steady state size (cm)",
+      "Maximum size (cm)",
+      "Duct Height (cm)",
+      "Sample Width (cm)",
+      "Sample length (cm)"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "flow_velocity",
+        "original_unit": "cm/s",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "oxygen_fraction",
+        "original_unit": "%",
+        "source_value_kind": "condition",
+        "basis": "not explicitly restated in Table 2",
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "pressure",
+        "original_unit": "kPa",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "length",
+        "original_unit": "cm",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-SAFFIRE-IV",
+        "raw_cells": [
+          "IV-1",
+          "20",
+          "22",
+          "100",
+          "SIBAL",
+          "8.5",
+          "11.0",
+          "30",
+          "41",
+          "50"
+        ],
+        "document_id": "20210011521",
+        "page": 8,
+        "table": "Table 2",
+        "row_label": "IV-1",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Flight-Sample",
+              "source_excerpt": "Flight-Sample                       I-1         II-5         II-6         III-1       IV-1              V-2"
+            }
+          },
+          "1": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Air flow (cm/s)",
+              "source_excerpt": "Air flow (cm/s)                      20          20           25            25          20               20"
+            }
+          },
+          "2": {
+            "numeric_value": 22.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Oxygen concentration (%)",
+              "source_excerpt": "Oxygen concentration (%)             21          21           21            21          22              26.2"
+            }
+          },
+          "3": {
+            "numeric_value": 100.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Pressure (kPa)",
+              "source_excerpt": "Pressure (kPa)                      100         100          100           100         100              70.7"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Material",
+              "source_excerpt": "Material                          SIBAL       SIBAL        SIBAL        SIBAL       SIBAL           Cotton jersey"
+            }
+          },
+          "5": {
+            "numeric_value": 8.5,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Steady state size (cm)",
+              "source_excerpt": "Steady state size (cm)                4           4            5             5         8.5              10.0"
+            }
+          },
+          "6": {
+            "numeric_value": 11.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Maximum size (cm)",
+              "source_excerpt": "Maximum size (cm)                   6.2           4            5           8.2        11.0              14.0"
+            }
+          },
+          "7": {
+            "numeric_value": 30.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Duct Height (cm)",
+              "source_excerpt": "Duct Height (cm)                     46          46           46            46          30               30"
+            }
+          },
+          "8": {
+            "numeric_value": 41.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Sample Width (cm)",
+              "source_excerpt": "Sample Width (cm)                    41           5            5            41          41               41"
+            }
+          },
+          "9": {
+            "numeric_value": 50.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "IV-1",
+              "source_column": "Sample length (cm)",
+              "source_excerpt": "Sample length (cm)                   94          30           30            94          50               50"
+            }
+          }
+        },
+        "physical_experiment_id": "IV-1",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SAFFIRE-V",
+        "raw_cells": [
+          "V-2",
+          "20",
+          "26.2",
+          "70.7",
+          "Cotton jersey",
+          "10.0",
+          "14.0",
+          "30",
+          "41",
+          "50"
+        ],
+        "document_id": "20210011521",
+        "page": 8,
+        "table": "Table 2",
+        "row_label": "V-2",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Flight-Sample",
+              "source_excerpt": "Flight-Sample                       I-1         II-5         II-6         III-1       IV-1              V-2"
+            }
+          },
+          "1": {
+            "numeric_value": 20.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Air flow (cm/s)",
+              "source_excerpt": "Air flow (cm/s)                      20          20           25            25          20               20"
+            }
+          },
+          "2": {
+            "numeric_value": 26.2,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Oxygen concentration (%)",
+              "source_excerpt": "Oxygen concentration (%)             21          21           21            21          22              26.2"
+            }
+          },
+          "3": {
+            "numeric_value": 70.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Pressure (kPa)",
+              "source_excerpt": "Pressure (kPa)                      100         100          100           100         100              70.7"
+            }
+          },
+          "4": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Material",
+              "source_excerpt": "Material                          SIBAL       SIBAL        SIBAL        SIBAL       SIBAL           Cotton jersey"
+            }
+          },
+          "5": {
+            "numeric_value": 10.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Steady state size (cm)",
+              "source_excerpt": "Steady state size (cm)                4           4            5             5         8.5              10.0"
+            }
+          },
+          "6": {
+            "numeric_value": 14.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Maximum size (cm)",
+              "source_excerpt": "Maximum size (cm)                   6.2           4            5           8.2        11.0              14.0"
+            }
+          },
+          "7": {
+            "numeric_value": 30.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Duct Height (cm)",
+              "source_excerpt": "Duct Height (cm)                     46          46           46            46          30               30"
+            }
+          },
+          "8": {
+            "numeric_value": 41.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Sample Width (cm)",
+              "source_excerpt": "Sample Width (cm)                    41           5            5            41          41               41"
+            }
+          },
+          "9": {
+            "numeric_value": 50.0,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20210011521",
+              "pdf_page": 8,
+              "table": "Table 2",
+              "experiment_or_endpoint_label": "V-2",
+              "source_column": "Sample length (cm)",
+              "source_excerpt": "Sample length (cm)                   94          30           30            94          50               50"
+            }
+          }
+        },
+        "physical_experiment_id": "V-2",
+        "endpoint": null
+      }
+    ],
+    "limitations": [
+      "Published test conditions and result summaries; not raw sensor telemetry or a complete experiment archive.",
+      "Rows and endpoints are not automatically independent experimental units. Repeated flight/sample identifiers across publications refer to the same experiment.",
+      "Measurement uncertainty, calibration and condition comparability must be checked before fitting or pooling.",
+      "Flame sizes are reported outcomes; sample and duct dimensions are separate conditions.",
+      "The first four rows summarize earlier Saffire I-III flights, not new IV-VI burns."
+    ]
+  },
+  {
+    "id": "gel-20240007628-table-1",
+    "title": "List of 5 test cases: extinction mode, sample location and extinction parameters",
+    "origin": "published_table_transcription",
+    "row_kind": "published_summary",
+    "captured_at": "2026-11-15T02:09:08.811602+00:00",
+    "document_id": "20240007628",
+    "page": 3,
+    "table": "Table 1",
+    "headers": [
+      "Case #",
+      "GEL sample #",
+      "Extinction mode",
+      "Sample location",
+      "Flow (cm/s)",
+      "Re",
+      "Flow strain rate (1/s)",
+      "O₂ (%)",
+      "p (atm)",
+      "Conductive heat loss (W/cm²)"
+    ],
+    "columns": [
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "code",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "source_reported",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": null,
+        "original_unit": null,
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "flow_velocity",
+        "original_unit": "cm/s",
+        "source_value_kind": "condition",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "reynolds_number",
+        "original_unit": "1",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "Source-calculated at ambient temperature using sphere diameter (Table 1 note a)."
+        ]
+      },
+      {
+        "quantity_kind": "strain_rate",
+        "original_unit": "1/s",
+        "source_value_kind": "derived",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "Source-calculated stagnation-point flow strain rate a=(3/2)*U/R (Table 1 note b)."
+        ]
+      },
+      {
+        "quantity_kind": "oxygen_fraction",
+        "original_unit": "%",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": "Flow duct entrance upstream of sample",
+        "notes": [
+          "Source does not explicitly specify mole/volume basis for oxygen percentage.",
+          "Oxygen declines through natural depletion; this is the reported extinction condition."
+        ]
+      },
+      {
+        "quantity_kind": "pressure",
+        "original_unit": "atm",
+        "source_value_kind": "measurement",
+        "basis": null,
+        "location": null,
+        "notes": []
+      },
+      {
+        "quantity_kind": "heat_flux",
+        "original_unit": "W/cm^2",
+        "source_value_kind": "source_reported",
+        "basis": null,
+        "location": null,
+        "notes": [
+          "Retain original conductive heat loss unit as printed; source table is not a calibration record."
+        ]
+      }
+    ],
+    "rows": [
+      {
+        "accession": "NASA-SOFIE-GEL",
+        "raw_cells": [
+          "1",
+          "1409B",
+          "quenching",
+          "inside duct",
+          "4.83",
+          "128.8",
+          "3.63",
+          "14.21",
+          "1.04",
+          "0.36"
+        ],
+        "document_id": "20240007628",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "Case 1, sample 1409B",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Case #",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "GEL sample #",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "2": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Extinction mode",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "3": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Sample location",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "4": {
+            "numeric_value": 4.83,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow (cm/s)",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "5": {
+            "numeric_value": 128.8,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Re",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "6": {
+            "numeric_value": 3.63,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow strain rate (1/s)",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "7": {
+            "numeric_value": 14.21,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "O₂ (%)",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "8": {
+            "numeric_value": 1.04,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "p (atm)",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          },
+          "9": {
+            "numeric_value": 0.36,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Conductive heat loss (W/cm²)",
+              "source_excerpt": "1      1409B       quenching        inside duct    4.83      128.8         3.63        14.21      1.04         0.36",
+              "experiment_or_endpoint_label": "Case 1, sample 1409B"
+            }
+          }
+        },
+        "physical_experiment_id": "1409B",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SOFIE-GEL",
+        "raw_cells": [
+          "2",
+          "1408A",
+          "blowoff",
+          "inside duct",
+          "34.28",
+          "914.1",
+          "25.71",
+          "14.99",
+          "1.06",
+          "0.95"
+        ],
+        "document_id": "20240007628",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "Case 2, sample 1408A",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Case #",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "GEL sample #",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "2": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Extinction mode",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "3": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Sample location",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "4": {
+            "numeric_value": 34.28,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow (cm/s)",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "5": {
+            "numeric_value": 914.1,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Re",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "6": {
+            "numeric_value": 25.71,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow strain rate (1/s)",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "7": {
+            "numeric_value": 14.99,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "O₂ (%)",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "8": {
+            "numeric_value": 1.06,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "p (atm)",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          },
+          "9": {
+            "numeric_value": 0.95,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Conductive heat loss (W/cm²)",
+              "source_excerpt": "2      1408A         blowoff        inside duct   34.28      914.1        25.71        14.99      1.06         0.95",
+              "experiment_or_endpoint_label": "Case 2, sample 1408A"
+            }
+          }
+        },
+        "physical_experiment_id": "1408A",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SOFIE-GEL",
+        "raw_cells": [
+          "3",
+          "1402C",
+          "intermediate",
+          "Inside duct",
+          "11.50",
+          "306.7",
+          "8.63",
+          "13.54",
+          "1.07",
+          "0.37"
+        ],
+        "document_id": "20240007628",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "Case 3, sample 1402C",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Case #",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "GEL sample #",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "2": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Extinction mode",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "3": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Sample location",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "4": {
+            "numeric_value": 11.5,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow (cm/s)",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "5": {
+            "numeric_value": 306.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Re",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "6": {
+            "numeric_value": 8.63,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow strain rate (1/s)",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "7": {
+            "numeric_value": 13.54,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "O₂ (%)",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "8": {
+            "numeric_value": 1.07,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "p (atm)",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          },
+          "9": {
+            "numeric_value": 0.37,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Conductive heat loss (W/cm²)",
+              "source_excerpt": "3      1402C      intermediate Inside duct        11.50      306.7         8.63        13.54      1.07         0.37",
+              "experiment_or_endpoint_label": "Case 3, sample 1402C"
+            }
+          }
+        },
+        "physical_experiment_id": "1402C",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SOFIE-GEL",
+        "raw_cells": [
+          "4",
+          "1409C",
+          "quenching",
+          "duct exit",
+          "0.44",
+          "11.7",
+          "0.33",
+          "20.77",
+          "1.03",
+          "0.17"
+        ],
+        "document_id": "20240007628",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "Case 4, sample 1409C",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Case #",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "GEL sample #",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "2": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Extinction mode",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "3": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Sample location",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "4": {
+            "numeric_value": 0.44,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow (cm/s)",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "5": {
+            "numeric_value": 11.7,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Re",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "6": {
+            "numeric_value": 0.33,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow strain rate (1/s)",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "7": {
+            "numeric_value": 20.77,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "O₂ (%)",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "8": {
+            "numeric_value": 1.03,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "p (atm)",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          },
+          "9": {
+            "numeric_value": 0.17,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Conductive heat loss (W/cm²)",
+              "source_excerpt": "4      1409C       quenching         duct exit     0.44       11.7         0.33        20.77      1.03         0.17",
+              "experiment_or_endpoint_label": "Case 4, sample 1409C"
+            }
+          }
+        },
+        "physical_experiment_id": "1409C",
+        "endpoint": null
+      },
+      {
+        "accession": "NASA-SOFIE-GEL",
+        "raw_cells": [
+          "5",
+          "1410C",
+          "blowoff",
+          "duct exit",
+          "49.68",
+          "1324.8",
+          "37.26",
+          "14.37",
+          "1.07",
+          "not recorded"
+        ],
+        "document_id": "20240007628",
+        "page": 3,
+        "table": "Table 1",
+        "row_label": "Case 5, sample 1410C",
+        "cells": {
+          "0": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Case #",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "1": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "GEL sample #",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "2": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Extinction mode",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "3": {
+            "numeric_value": null,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Sample location",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "4": {
+            "numeric_value": 49.68,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow (cm/s)",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "5": {
+            "numeric_value": 1324.8,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Re",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "6": {
+            "numeric_value": 37.26,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Flow strain rate (1/s)",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "7": {
+            "numeric_value": 14.37,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "O₂ (%)",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "8": {
+            "numeric_value": 1.07,
+            "missing_reason": null,
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "p (atm)",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          },
+          "9": {
+            "numeric_value": null,
+            "missing_reason": "not_reported",
+            "notes": [],
+            "source": {
+              "document_id": "20240007628",
+              "pdf_page": 3,
+              "table": "Table 1",
+              "source_column": "Conductive heat loss (W/cm²)",
+              "source_excerpt": "5      1410C         blowoff         duct exit    49.68      1324.8       37.26        14.37      1.07    not recorded",
+              "experiment_or_endpoint_label": "Case 5, sample 1410C"
+            }
+          }
+        },
+        "physical_experiment_id": "1410C",
+        "endpoint": null
+      }
+    ],
+    "limitations": [
+      "Published selected-case summary, not downloadable raw telemetry or a complete campaign release.",
+      "Inside-duct and duct-exit locations differ and must remain distinct in comparisons.",
+      "Oxygen decreases during each test; table extinction parameters do not describe a constant-composition run.",
+      "Different sample identifiers do not alone prove independent replicates or a valid predictive training split.",
+      "The final conductive heat loss cell says not recorded and must not become zero.",
+      "No source-reported measurement uncertainty, oxygen mole/volume basis, or new calibration is supplied by this transcription.",
+      "NTRS rights are GOV_PERMITTED, not CC0; preserve the recorded rights and official original download reference."
+    ]
+  }
+]

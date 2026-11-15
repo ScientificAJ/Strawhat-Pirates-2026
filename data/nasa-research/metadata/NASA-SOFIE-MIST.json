@@ -1,0 +1,102 @@
+{
+  "accession": "NASA-SOFIE-MIST",
+  "version": 1,
+  "title": "SoFIE — Material Ignition and Suppression Test",
+  "investigationAcronym": "SoFIE-MIST",
+  "description": "Examine thermally assisted burning of PMMA cylinders in microgravity and the boundaries for ignition and extinction. NASA describes delivery via SpaceX-27 and the investigation objectives.",
+  "objective": "Understand how air flow, oxygen, pressure and external radiant heating influence ignition, burning and suppression.",
+  "approach": "Use a cylindrical fuel sample, radiant heaters and an igniter in opposed flow. The retained NASA sources describe the approach; no numerical SoFIE-MIST flight table is included.",
+  "hypothesis": "",
+  "researchImpacts": "",
+  "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+  "researchArea": "Combustion Science",
+  "subResearchArea": "Solid Fuels",
+  "related_glds": [
+    "NASA-SOFIE"
+  ],
+  "flightProgram": "International Space Station",
+  "missionName": "",
+  "missionStart": null,
+  "missionEnd": null,
+  "investigationStartDate": null,
+  "investigationEndDate": null,
+  "projectTitle": "SoFIE — Material Ignition and Suppression Test",
+  "publications": [
+    {
+      "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+      "url": "https://ntrs.nasa.gov/citations/20200000361"
+    }
+  ],
+  "licenseIdentifier": null,
+  "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession.",
+  "field_provenance": {
+    "title": [
+      {
+        "source_id": "nasa-glenn-sofie",
+        "quote": "Material Ignition and Suppression Test (MIST)",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "source_sha256": "1c7af022fad61e8958021a42b81c7b8e7364cc174513749358a7833d202dfb70"
+      }
+    ],
+    "description": [
+      {
+        "source_id": "nasa-science-mist",
+        "quote": "The Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation examines thermally-assisted burning in microgravity, by varying parameters including air flow speed, oxygen concentration, pressure, and level of external radiation. Results could improve understanding of early fire growth behavior and validate models for material flammability, helping to inform selection of safer materials for future space facilities and determine the best methods for extinguishing fires in space.",
+        "origin": "source_summary",
+        "label": "SoFIE-MIST",
+        "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist/",
+        "source_sha256": "60bec20818744128af9b3763e612bcb1d991f014ea5820c4be44e8ee0c3396b9"
+      }
+    ],
+    "objective": [
+      {
+        "source_id": "nasa-science-mist",
+        "quote": "The Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation examines thermally-assisted burning in microgravity, by varying parameters including air flow speed, oxygen concentration, pressure, and level of external radiation. Results could improve understanding of early fire growth behavior and validate models for material flammability, helping to inform selection of safer materials for future space facilities and determine the best methods for extinguishing fires in space.",
+        "origin": "source_summary",
+        "label": "SoFIE-MIST",
+        "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist/",
+        "source_sha256": "60bec20818744128af9b3763e612bcb1d991f014ea5820c4be44e8ee0c3396b9"
+      }
+    ],
+    "approach": [
+      {
+        "source_id": "nasa-science-mist",
+        "quote": "In the Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation, the boundaries for ignition and extinction of a solid fuel (PMMA cylinder) as a function of flow speed, oxygen concentration, and external radiant flux are to be determined. The effects of the space exploration atmospheres (SEA) under consideration by NASA (lower pressure and increased oxygen concentrations compared to air) on the flammability and suppression of materials are of particular interest.",
+        "origin": "source_summary",
+        "label": "SoFIE-MIST",
+        "source_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist/",
+        "source_sha256": "60bec20818744128af9b3763e612bcb1d991f014ea5820c4be44e8ee0c3396b9"
+      },
+      {
+        "source_id": "nasa-glenn-sofie",
+        "quote": "The MIST experimental apparatus would consist of a small-scale combustion wind tunnel, a cylindrical fuel sample, radiant heaters, an igniter, and supporting instrumentation. The flow duct will provide a consistent and uniform flow of the oxidizer gas to the test section where the fuel sample will be located. The test section will have most of the area of its sidewalls available for optical access. Each cylindrical fuel sample will be supported in a holder and placed along the central axis of the flow duct, such that the oxidizer will flow smoothly over the sample surface. An electrical igniter consisting of coiled Kanthal wire will be located around the fuel sample on the downstream end. All tests will be conducted in an opposed-flow configuration.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "source_sha256": "1c7af022fad61e8958021a42b81c7b8e7364cc174513749358a7833d202dfb70"
+      }
+    ],
+    "experimentHardware": [
+      {
+        "source_id": "ntrs-20200000361",
+        "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+        "source_url": "https://ntrs.nasa.gov/citations/20200000361",
+        "source_sha256": "bf31dd62e798030dab5a8a54aa41ea92d91cf5f2735c62b02a0efde87a762c98"
+      }
+    ],
+    "flightProgram": [
+      {
+        "source_id": "ntrs-20200000361",
+        "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+        "source_url": "https://ntrs.nasa.gov/citations/20200000361",
+        "source_sha256": "bf31dd62e798030dab5a8a54aa41ea92d91cf5f2735c62b02a0efde87a762c98"
+      }
+    ]
+  }
+}

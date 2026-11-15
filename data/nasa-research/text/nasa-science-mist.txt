@@ -1,0 +1,69 @@
+Explore This Section
+…
+Investigations
+Solid Fuel Ignition and...
+Overview
+About
+Decadal Survey
+Investigations
+Missions
+Organization
+Partnerships
+Advisory Committee
+Ames Research Center
+Glenn Research Center
+Marshall Space Flight Center
+Jet Propulsion Lab
+Johnson Space Center
+Kennedy Space Center
+Goals
+Scientific Goals Overview
+Precision Health
+Quantum Leaps
+Space Crops
+Foundations
+Space Labs
+Programs
+Programs Overview
+Space Biology Program
+Physical Sciences Program
+Commercial
+Fundamental Physics
+Resources
+News, Media & Features
+Articles, Explainers, Videos & Infographics
+Solicitations
+Contact Us
+Social Media
+Science Digest
+Education & Opportunities
+Data
+Overview
+OSDR
+PSI
+NBISC
+AWGs
+BPS Data Management Policy
+Solid Fuel Ignition and Extinction – Material Ignition and Suppression Test (SoFIE-MIST)
+Science Objectives
+The Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation examines thermally-assisted burning in microgravity, by varying parameters including air flow speed, oxygen concentration, pressure, and level of external radiation. Results could improve understanding of early fire growth behavior and validate models for material flammability, helping to inform selection of safer materials for future space facilities and determine the best methods for extinguishing fires in space.
+Status
+Delivery to the International Space Station via SpaceX-27.
+Experiment Description
+In the Solid Fuel Ignition and Extinction - Material Ignition and Suppression Test (SoFIE-MIST) investigation, the boundaries for ignition and extinction of a solid fuel (PMMA cylinder) as a function of flow speed, oxygen concentration, and external radiant flux are to be determined. The effects of the space exploration atmospheres (SEA) under consideration by NASA (lower pressure and increased oxygen concentrations compared to air) on the flammability and suppression of materials are of particular interest.
+Space Applications
+Assessment of the flammability of materials used in future space missions is a critical part of the design. The equipment and procedures to detect and suppress a fire and to clean up afterwards are essential for crew safety.
+Earth Applications
+Results may help scientists refine combustion models that could be used in terrestrial settings.
+Related Links
+Space Station Research Explorer
+Keep Exploring
+Discover More Topics From NASA
+James Webb Space Telescope
+Webb is the premier observatory of the next decade, serving thousands of astronomers worldwide. It studies every phase in the…
+Perseverance Rover
+This rover and its aerial sidekick were assigned to study the geology of Mars and seek signs of ancient microbial…
+Parker Solar Probe
+On a mission to “touch the Sun,” NASA's Parker Solar Probe became the first spacecraft to fly through the corona…
+Juno
+NASA’s Juno spacecraft entered orbit around Jupiter in 2016, the first explorer to peer below the planet's dense clouds to…

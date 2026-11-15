@@ -1,0 +1,20 @@
+SoFIE-MIST (Solid Fuel Ignition and Extinction – Material Ignition and Suppression Test)
+Principal Investigator: Dr. Fernandez-Pello, University of California, Berkeley
+Overview: This investigation is NASA’s latest science experiment to focus on determining ways to gain control of and suppress fires on the International Space Station. Including this test, NASA has conducted five research missions since 2009 to focus on the safety of both the crew and their habitat.
+NASA astronaut Jessica Watkins services components that support the SOFIE (Solid Fuel Ignition and Extinction) fire safety experiment inside the International Space Station's combustion integrated rack
+Credit: NASA
+Science objectives:
+To study various parameters applied to thermally assisted fires
+To better understand how fires react and grow in microgravity
+To develop of set of guidelines for extinguishing fires in space
+Potential Earth applications:
+To learn more about the early stages of fire development
+To update combustion models that can be applied to different settings on Earth
+Potential space applications:
+To create more fire-resistant materials to be used on future space missions
+To establish a set of procedures and hardware to recognize a new fire and smother it
+To develop a set of procedures and hardware for post-fire clean up
+Related resources:
+Space Station Research Explorer Page
+NASA Science on Health, Safety to Launch on 31st SpaceX Resupply Mission
+NASA’s Biological and Physical Sciences Division pioneers scientific discovery and enables exploration by using space environments to conduct investigations not possible on Earth. Studying biological and physical phenomenon under extreme conditions allows researchers to advance the fundamental scientific knowledge required to go farther and stay longer in space, while also benefitting life on Earth.

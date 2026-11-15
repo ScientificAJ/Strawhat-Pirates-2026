@@ -1,0 +1,94 @@
+{
+  "accession": "NASA-FM2",
+  "version": 1,
+  "title": "Flammability of Materials on the Moon",
+  "investigationAcronym": "FM2",
+  "description": "FM2 is a lunar-surface experiment concept for measuring solid-material flame spread in one-sixth gravity. The retained 2026 requirements describe planned fabric tests and initial atmospheres; they are not lunar measurements.",
+  "objective": "Observe flame spread on the Moon, evaluate whether some materials can be more flammable in partial gravity, and connect terrestrial screening with reduced-gravity behavior.",
+  "approach": "Operate a sealed autonomous chamber with four separately initiated fuel samples, cameras and gas/temperature sensors. Planned initial atmospheres and exposed sample geometry are retained as condition records, separately from measured outcomes.",
+  "hypothesis": "",
+  "researchImpacts": "",
+  "experimentHardware": "Sealed autonomous chamber with cameras and gas/temperature sensors",
+  "researchArea": "Combustion Science",
+  "subResearchArea": "Solid Fuels",
+  "related_glds": [
+    "NASA-LUCI"
+  ],
+  "flightProgram": "Planned lunar surface experiment",
+  "missionName": "",
+  "missionStart": null,
+  "missionEnd": null,
+  "investigationStartDate": null,
+  "investigationEndDate": null,
+  "projectTitle": "Flammability of Materials on the Moon",
+  "publications": [
+    {
+      "title": "Material Flammability at Lunar and Martian Gravity",
+      "url": "https://ntrs.nasa.gov/citations/20260001966"
+    }
+  ],
+  "licenseIdentifier": null,
+  "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession.",
+  "field_provenance": {
+    "title": [
+      {
+        "source_id": "nasa-fm2",
+        "quote": "Flammability of Materials on the Moon (FM2)",
+        "origin": "source_summary",
+        "label": "Flammability of Materials on the Moon (FM2)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "source_sha256": "4c1fbceb982801f5fb39178315ee901f2c71dcd3199e8ec005cd182b27751fc5"
+      }
+    ],
+    "description": [
+      {
+        "source_id": "nasa-fm2",
+        "quote": "FM2 is the first-ever combustion experiment to be performed on another planetary body. Building on the success of the decades-long combustion science ground (1g) program and International Space Station (ISS) microgravity (~0g) combustion experiment campaigns, FM2 investigates burning materials on the Moon at its 1/6 reduced gravity level. Previous computational modeling, bolstered by experiments aboard parabolicflight aircraft and the ISS, suggest that materials may burn at lower oxygen concentrations in lunar gravity compared to Earth. This means that some things that are not flammable on Earth, may be flammable in potential habitats on the Moon and other places with reduced gravity. Since fire can be a catastrophic hazard for spaceflight and extreme human exploration, FM2 is a critical step in determining material flammability and safety for future missions.",
+        "origin": "source_summary",
+        "label": "Flammability of Materials on the Moon (FM2)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "source_sha256": "4c1fbceb982801f5fb39178315ee901f2c71dcd3199e8ec005cd182b27751fc5"
+      }
+    ],
+    "objective": [
+      {
+        "source_id": "nasa-fm2",
+        "quote": "Conduct the first-ever observations and measurements of flame spread on the Moon.",
+        "origin": "source_summary",
+        "label": "Flammability of Materials on the Moon (FM2)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "source_sha256": "4c1fbceb982801f5fb39178315ee901f2c71dcd3199e8ec005cd182b27751fc5"
+      }
+    ],
+    "approach": [
+      {
+        "source_id": "nasa-fm2",
+        "quote": "The experiment burns four fuel samples individually in atmospheric conditions planned for future lunar habitats or vehicles. The experiment is housed inside a sealed chamber and operates autonomously through software. Cameras record flame characteristics including size, intensity, color, and spread rate. Onboard sensors measure flame and fuel temperatures, oxygen concentration, and carbon-dioxide concentrations.",
+        "origin": "source_summary",
+        "label": "Flammability of Materials on the Moon (FM2)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "source_sha256": "4c1fbceb982801f5fb39178315ee901f2c71dcd3199e8ec005cd182b27751fc5"
+      }
+    ],
+    "experimentHardware": [
+      {
+        "source_id": "nasa-fm2",
+        "quote": "The experiment burns four fuel samples individually in atmospheric conditions planned for future lunar habitats or vehicles. The experiment is housed inside a sealed chamber and operates autonomously through software. Cameras record flame characteristics including size, intensity, color, and spread rate. Onboard sensors measure flame and fuel temperatures, oxygen concentration, and carbon-dioxide concentrations.",
+        "origin": "source_summary",
+        "label": "Flammability of Materials on the Moon (FM2)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "source_sha256": "4c1fbceb982801f5fb39178315ee901f2c71dcd3199e8ec005cd182b27751fc5"
+      }
+    ],
+    "flightProgram": [
+      {
+        "source_id": "nasa-fm2",
+        "quote": "Conduct the first-ever observations and measurements of flame spread on the Moon.",
+        "origin": "source_summary",
+        "label": "Flammability of Materials on the Moon (FM2)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+        "source_sha256": "4c1fbceb982801f5fb39178315ee901f2c71dcd3199e8ec005cd182b27751fc5"
+      }
+    ]
+  }
+}

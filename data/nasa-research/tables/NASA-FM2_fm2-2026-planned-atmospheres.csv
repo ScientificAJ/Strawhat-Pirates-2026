@@ -1,0 +1,5 @@
+Planned test,Initial pressure (psia),Pressure tolerance (± psi),Initial oxygen (%),Balance gas,Fabric material,Exposed width (cm),Width tolerance (± cm),Exposed length (cm),Length tolerance (± cm)
+Test 1,8.2,0.3,37,nitrogen,Synergy Pro “Navy”,2,0.05,20,0.2
+Test 2,8.2,0.3,33,nitrogen,Synergy Pro “Navy”,2,0.05,20,0.2
+Test 3,8.2,0.3,29,nitrogen,Synergy Pro “Navy”,2,0.05,20,0.2
+Test 4,8.2,0.3,25,nitrogen,Synergy Pro “Navy”,2,0.05,20,0.2

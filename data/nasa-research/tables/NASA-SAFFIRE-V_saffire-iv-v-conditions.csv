@@ -1,0 +1,7 @@
+Flight/Sample,Material/configuration,Length (cm),Air Flow Rate (cm/s),Flow Direction,Ambient Pressure (kPa),Oxygen Concentration (mol %),Pressurized Volume (m3),Free volume (m3)
+V-2,"Cotton
+Jersey",50,20,Concurrent,70.7,26.2,19.2,19.0
+V-3,"1 sided
+PMMA",18,20,Concurrent,71.3,25.4,19.2,19.0
+V-4,"Structured
+PMMA",20,20,Opposed,72.6,25.7,19.2,19.0

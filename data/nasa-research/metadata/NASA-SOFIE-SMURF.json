@@ -1,0 +1,94 @@
+{
+  "accession": "NASA-SOFIE-SMURF",
+  "version": 1,
+  "title": "SoFIE — Spacecraft Materials Microgravity Research on Flammability",
+  "investigationAcronym": "SoFIE-SMURF",
+  "description": "Relate normal-gravity materials flammability tests to ventilated microgravity behavior to improve spacecraft material selection. This pack retains objectives and hardware context.",
+  "objective": "Develop correlations between ground test flammability and ventilated microgravity behavior, supporting assessment of material fire resistance.",
+  "approach": "Compare normal-gravity test information with microgravity material flammability research using SoFIE shared infrastructure. Retained descriptions do not establish a completed predictive validation dataset.",
+  "hypothesis": "",
+  "researchImpacts": "",
+  "experimentHardware": "SoFIE insert in the Combustion Integrated Rack (CIR)",
+  "researchArea": "Combustion Science",
+  "subResearchArea": "Solid Fuels",
+  "related_glds": [
+    "NASA-SOFIE"
+  ],
+  "flightProgram": "International Space Station",
+  "missionName": "",
+  "missionStart": null,
+  "missionEnd": null,
+  "investigationStartDate": null,
+  "investigationEndDate": null,
+  "projectTitle": "SoFIE — Spacecraft Materials Microgravity Research on Flammability",
+  "publications": [
+    {
+      "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+      "url": "https://ntrs.nasa.gov/citations/20200000361"
+    }
+  ],
+  "licenseIdentifier": null,
+  "versionMessage": "Reviewed NASA research metadata and factual publication transcriptions. This application identifier is not a NASA PSI accession.",
+  "field_provenance": {
+    "title": [
+      {
+        "source_id": "nasa-glenn-sofie",
+        "quote": "Spacecraft Materials Microgravity Research on Flammability (SMuRF)",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "source_sha256": "1c7af022fad61e8958021a42b81c7b8e7364cc174513749358a7833d202dfb70"
+      }
+    ],
+    "description": [
+      {
+        "source_id": "nasa-glenn-sofie",
+        "quote": "The SMµRF experiment will correlate normal gravity flammability test data with data under ventilated microgravity conditions. Rigorous correlations between ground test flammability data in ventilated spacecraft environment would allow selection of materials with increased fire resistance, and thus decrease the fire risk in space systems. The operational flexibility will also increase because the safety factors will be assessable.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "source_sha256": "1c7af022fad61e8958021a42b81c7b8e7364cc174513749358a7833d202dfb70"
+      }
+    ],
+    "objective": [
+      {
+        "source_id": "nasa-glenn-sofie",
+        "quote": "The SMµRF experiment will correlate normal gravity flammability test data with data under ventilated microgravity conditions. Rigorous correlations between ground test flammability data in ventilated spacecraft environment would allow selection of materials with increased fire resistance, and thus decrease the fire risk in space systems. The operational flexibility will also increase because the safety factors will be assessable.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "source_sha256": "1c7af022fad61e8958021a42b81c7b8e7364cc174513749358a7833d202dfb70"
+      }
+    ],
+    "approach": [
+      {
+        "source_id": "nasa-glenn-sofie",
+        "quote": "The SMµRF experiment will correlate normal gravity flammability test data with data under ventilated microgravity conditions. Rigorous correlations between ground test flammability data in ventilated spacecraft environment would allow selection of materials with increased fire resistance, and thus decrease the fire risk in space systems. The operational flexibility will also increase because the safety factors will be assessable.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE)",
+        "source_url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+        "source_sha256": "1c7af022fad61e8958021a42b81c7b8e7364cc174513749358a7833d202dfb70"
+      }
+    ],
+    "experimentHardware": [
+      {
+        "source_id": "ntrs-20200000361",
+        "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+        "source_url": "https://ntrs.nasa.gov/citations/20200000361",
+        "source_sha256": "bf31dd62e798030dab5a8a54aa41ea92d91cf5f2735c62b02a0efde87a762c98"
+      }
+    ],
+    "flightProgram": [
+      {
+        "source_id": "ntrs-20200000361",
+        "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions. It is an experiment insert designed for use within the existing Combustion Integrated Rack (CIR). The CIR chamber provides a level of containment and permits testing at variable oxygen concentrations and pressures representative of current and planned NASA Space Exploration Atmospheres. The applications of SoFIE include: (1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires, (2) Improving understanding of early fire growth behavior, (3) Validating material flammability numerical models, (4) Determining optimal suppression techniques for burning materials by diluents, flow reduction, and venting, (5) Obtaining burning behavior of actual engineering materials planned for spacecraft, (6) Developing corresponding models of microgravity flame spread, flammability, and extinction, and use the results to improve normal gravity combustion models for terrestrial applications. The hardware permits a wide range of solid-material combustion and fire suppression studies. It supports multiple investigations using common infrastructure including sample holders, flow control, test sections, external radiant heaters, igniters, and diagnostics. SoFIE has been developed to meet the requirements of five unique investigations. It is currently being built and slated to begin operations on the ISS in July 2021. Given the general capabilities of the hardware insert, it is intended to be used as a facility for future researchers who can propose to NASA for related solid combustion studies.",
+        "origin": "source_summary",
+        "label": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+        "source_url": "https://ntrs.nasa.gov/citations/20200000361",
+        "source_sha256": "bf31dd62e798030dab5a8a54aa41ea92d91cf5f2735c62b02a0efde87a762c98"
+      }
+    ]
+  }
+}

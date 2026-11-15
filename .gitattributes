@@ -12,3 +12,7 @@ tests/fixtures/nasa-psi-media/manifests/** -text -diff
 tests/fixtures/nasa-psi-methods/assets/** -text -diff
 tests/fixtures/nasa-psi-methods/metadata/** -text -diff
 tests/fixtures/nasa-psi-methods/manifests/** -text -diff
+data/nasa-research/sources/** -text -diff
+data/nasa-research/text/** -text -diff
+data/nasa-research/metadata/** -text -diff
+data/nasa-research/tables/** -text -diff
