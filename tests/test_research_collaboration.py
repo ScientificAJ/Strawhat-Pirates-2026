@@ -29,7 +29,7 @@ from openai.types.responses import (
 def test_collaborator_instructions_keep_action_and_evidence_constraints_together():
     # These are independent acceptance rules for the behavior request, not a
     # snapshot of the complete prompt's wording or formatting.
-    assert PROMPT_VERSION == "scientific-research-v10"
+    assert PROMPT_VERSION == "scientific-research-v11"
     assert "three targeted questions" in SYSTEM
     assert "prepare_simulation" in SYSTEM
     assert "prepare_source_simulation" in SYSTEM

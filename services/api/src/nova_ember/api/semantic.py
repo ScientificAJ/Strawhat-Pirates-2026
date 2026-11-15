@@ -7,7 +7,8 @@ from hashlib import sha256
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
-from nova_ember.contracts.research import Accession, Contract, Digest
+from nova_ember.contracts.research import Contract, Digest
+from nova_ember.domain.identifiers import InvestigationId
 from openai import APIError, OpenAI
 from psycopg.types.json import Jsonb
 from pydantic import Field
@@ -16,7 +17,13 @@ from .config import Settings
 from .database import connect
 from .model_usage import ProviderBudgetExceeded, reserve_usage, settle_usage
 from .repository import Corpus
-from .semantic_passages import MAX_EMBEDDED_DOCUMENTS, PROFILE, build_projection, projection_text
+from .semantic_passages import (
+    MAX_EMBEDDED_DOCUMENTS,
+    PROFILE,
+    build_projection,
+    embedding_documents,
+    projection_text,
+)
 
 EMBEDDING_MODEL = "text-embedding-3-large"
 DIMENSIONS = 1536
@@ -26,9 +33,9 @@ EMBEDDING_RATE = Decimal("0.13") / 1_000_000
 class SemanticQuery(Contract):
     query: str = Field(min_length=1, max_length=1000)
     snapshot_id: Digest
-    accessions: list[Accession] = Field(default_factory=list, max_length=24)
+    accessions: list[InvestigationId] = Field(default_factory=list, max_length=24)
     source_sha256: list[Digest] = Field(default_factory=list, max_length=64)
-    source_kinds: list[Literal["psi", "ntrs"]] = Field(default_factory=list, max_length=2)
+    source_kinds: list[Literal["psi", "ntrs", "nasa"]] = Field(default_factory=list, max_length=3)
     document_kinds: list[Literal["investigation_metadata", "source_passage"]] = Field(
         default_factory=list, max_length=2
     )
@@ -84,7 +91,7 @@ def index_snapshot(settings: Settings, snapshot_id: str) -> dict:
         {**item, "content_sha256": sha256(item["search_text"].encode()).hexdigest()}
         for item in documents
     ]
-    selected = documents[:MAX_EMBEDDED_DOCUMENTS]
+    selected = embedding_documents(documents, MAX_EMBEDDED_DOCUMENTS)
     wanted = {(item["source_id"], item["content_sha256"]) for item in selected}
     with connect(settings.database_url) as connection:
         cached = connection.execute(
@@ -250,6 +257,10 @@ def semantic_search(settings: Settings, query: SemanticQuery) -> dict:
                 "accession": (row["projection"]["accessions"] or [None])[0],
                 "title": row["projection"]["title"],
                 "kind": row["projection"]["kind"],
+                "source_kind": row["projection"]["source_kind"],
+                "source_origin": row["projection"].get("source_origin"),
+                "data_status": row["projection"].get("data_status"),
+                "research_status": row["projection"].get("research_status"),
                 "origin": "source_metadata"
                 if row["projection"]["kind"] == "investigation_metadata"
                 else "source_text",

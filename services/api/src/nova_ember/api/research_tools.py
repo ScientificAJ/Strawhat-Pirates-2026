@@ -12,13 +12,21 @@ from nova_ember.adapters.psi import parse_csv_bytes
 from nova_ember.adapters.records import interpret_table
 from nova_ember.analysis.visualization import DropletVisualizationRequest
 from nova_ember.contracts.research import Contract, EvidenceFact, WorkspaceContext
+from nova_ember.domain.identifiers import InvestigationId
+from nova_ember.evidence.contracts import EvidenceAnchor
 from pydantic import BaseModel, Field
 
 from .agent_capabilities import allowed_tool, require_tool
 from .records import CohortInputs, freeze_selection
 from .repository import Corpus
 from .science import compare_investigations, flex_endpoints
-from .scientific_toolbox import Empty, ScientificToolbox, ScientificToolCall, ToolName
+from .scientific_toolbox import (
+    Empty,
+    ScientificToolbox,
+    ScientificToolCall,
+    SourceVisualizationInput,
+    ToolName,
+)
 from .source_files import bass_calibration, flex_trace, source_text, source_workbook
 from .visualization import SourceDropletVisualizationRequest
 
@@ -36,7 +44,21 @@ def dossier_model_payload(fact: dict, byte_limit: int) -> str:
         "id": fact["id"],
         "label": fact["label"],
         "origin": fact["origin"],
-        "content": {key: content.get(key) for key in ("accession", "title", "source_url")},
+        "content": {
+            key: content[key]
+            for key in (
+                "accession",
+                "title",
+                "source_url",
+                "source_kind",
+                "origin",
+                "record_type",
+                "parent_accession",
+                "research_status",
+                "data_status",
+            )
+            if content.get(key) is not None
+        },
         "sources": sources,
         "limitations": fact.get("limitations", []),
         "model_view": {
@@ -94,14 +116,170 @@ def dossier_model_payload(fact: dict, byte_limit: int) -> str:
                 },
             )
     assets = [
-        {key: asset[key] for key in ("id", "sha256", "file_name", "media_type") if key in asset}
-        for asset in content.get("assets", [])[:3]
+        {
+            key: asset[key]
+            for key in ("id", "accession", "sha256", "file_name", "media_type", "kind", "origin")
+            if key in asset
+        }
+        for asset in content.get("assets", [])[:8]
     ]
     if assets:
         add_if_fits("assets", assets)
         if "assets" in view["content"]:
             add_if_fits("retained_asset_count", len(content.get("assets", [])))
+    literature = [
+        {
+            key: source.get(key)
+            for key in (
+                "document_id",
+                "capture_id",
+                "title",
+                "source_url",
+                "source_sha256",
+                "status",
+            )
+        }
+        for source in content.get("literature_sources", [])[:8]
+    ]
+    if literature:
+        add_if_fits("literature_sources", literature)
     return encoded()
+
+
+def publication_table_context(content: dict) -> tuple[dict, str | None]:
+    """Keep reviewed transcriptions and plans distinct from original measurements."""
+    assets = [content["asset"]] if isinstance(content.get("asset"), dict) else []
+    assets.extend(
+        item["asset"]
+        for item in content.get("items", [])
+        if isinstance(item, dict) and isinstance(item.get("asset"), dict)
+    )
+    tables = {asset["id"]: asset for asset in assets if asset.get("kind") == "publication_table"}
+    if not tables:
+        return content, None
+    planned = all(
+        asset.get("kind") == "publication_table" and asset.get("origin") == "planned_conditions"
+        for asset in assets
+    )
+    return {
+        **content,
+        "source_table_origin": "planned_conditions" if planned else "published_table_transcription",
+        "provenance": {
+            **content.get("provenance", {}),
+            "publication_tables": [
+                {
+                    "asset_id": asset["id"],
+                    "accession": asset["accession"],
+                    "source_kind": asset.get("source_kind"),
+                    "origin": asset.get("origin"),
+                    "source_provenance": asset.get("source_provenance", []),
+                }
+                for asset in tables.values()
+            ],
+        },
+    }, "source_metadata" if planned else "source_text"
+
+
+def publication_table_model_payload(fact: dict, byte_limit: int) -> str | None:
+    """Compact repeated table provenance before reducing scientifically meaningful columns.
+
+    The complete immutable fact retains every field and cell anchor. This model
+    view keeps row/column identities and quantity definitions together; truncating
+    all nested lists at the same index can otherwise hide the requested variable.
+    """
+    content = fact.get("content", {})
+    if content.get("source_table_origin") not in {
+        "planned_conditions",
+        "published_table_transcription",
+    } or not isinstance(content.get("records"), list):
+        return None
+    field_keys = {
+        "column_index",
+        "source_column",
+        "raw_text",
+        "quantity_kind",
+        "source_value_kind",
+        "original_unit",
+        "canonical_value",
+        "canonical_unit",
+        "status",
+        "missing_reason",
+        "location",
+        "basis",
+        "transformation_id",
+    }
+    rows = [
+        {
+            "source_row": row["source_row"],
+            "row_kind": row["row_kind"],
+            "raw_cells": row["raw_cells"],
+            "fields": [
+                {
+                    key: value
+                    for key, value in field.items()
+                    if key in field_keys and value is not None
+                }
+                for field in row["fields"]
+            ],
+        }
+        for row in content["records"]
+    ]
+    asset = content.get("asset", {})
+    identity = {
+        key: asset[key]
+        for key in (
+            "id",
+            "accession",
+            "sha256",
+            "source_kind",
+            "investigation_version",
+            "source_url",
+            "origin",
+            "source_provenance",
+        )
+        if key in asset
+    }
+    view = {
+        "id": fact["id"],
+        "label": fact["label"],
+        "origin": fact["origin"],
+        "sources": [{**identity, "snapshot_id": content["snapshot_id"]}],
+        "limitations": fact.get("limitations", []),
+        "content": {
+            key: content[key]
+            for key in (
+                "snapshot_id",
+                "asset_id",
+                "source_sha256",
+                "source_table_origin",
+                "headers",
+                "source_record_count",
+                "row_kind_counts",
+                "independent_run_count",
+                "refusals",
+            )
+            if key in content
+        },
+    }
+    for count in dict.fromkeys(
+        (len(rows), min(8, len(rows)), min(3, len(rows)), min(1, len(rows)))
+    ):
+        view["content"]["records"] = rows[:count]
+        view["model_view"] = {
+            "status": "partial_preview",
+            "original_records_in_fact": len(rows),
+            "retained_records": count,
+            "instruction": (
+                "All columns of each retained row are preserved. Repeated cell anchors and "
+                "transformation explanations remain in the complete unchanged fact. "
+                "Use its fact ID for citations. Canonical values are registered conversions; "
+                "preserve field value kinds and do not infer missing values or independent runs."
+            ),
+        }
+        encoded = json.dumps(view, default=str, ensure_ascii=False)
+        if len(encoded.encode()) <= byte_limit:
+            return encoded
+    return None
 
 
 def model_fact_payload(fact: dict, byte_limit: int = 28000) -> str:
@@ -109,6 +287,8 @@ def model_fact_payload(fact: dict, byte_limit: int = 28000) -> str:
     complete = json.dumps(fact, default=str)
     if fact.get("label") == "Investigation dossier" and byte_limit >= 2000:
         return dossier_model_payload(fact, byte_limit)
+    if table_view := publication_table_model_payload(fact, byte_limit):
+        return table_view
     encoded_view = json.dumps(fact, default=str)
     if len(encoded_view.encode()) <= byte_limit:
         return encoded_view
@@ -233,7 +413,7 @@ class SearchInput(Contract):
 
 
 class InvestigationInput(Contract):
-    accession: str = Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")
+    accession: InvestigationId
 
 
 class DatasetInput(Contract):
@@ -452,7 +632,18 @@ class ResearchTools:
             "snapshot_id": self.context.snapshot_id,
             "context_version": self.context.context_version,
             "investigations": [
-                {"accession": item["accession"], "title": item["title"]} for item in investigations
+                {
+                    key: item.get(key)
+                    for key in (
+                        "accession",
+                        "title",
+                        "source_kind",
+                        "record_type",
+                        "research_status",
+                        "data_status",
+                    )
+                }
+                for item in investigations
             ],
             "selected_sources": [source.model_dump() for source in self.context.selected_sources],
             "selected_private_inputs": private,
@@ -539,7 +730,19 @@ class ResearchTools:
         items = [
             {
                 key: item.get(key)
-                for key in ("accession", "title", "acronym", "version", "doi", "objective")
+                for key in (
+                    "accession",
+                    "title",
+                    "acronym",
+                    "version",
+                    "doi",
+                    "objective",
+                    "source_kind",
+                    "record_type",
+                    "parent_accession",
+                    "research_status",
+                    "data_status",
+                )
             }
             for item in result["items"]
         ]
@@ -561,13 +764,19 @@ class ResearchTools:
         from .discovery import Discovery
 
         result = Discovery(self.corpus).dossier(inputs.accession, self.context.snapshot_id)
+        limitations = [
+            "Reported objectives and descriptions are distinct from experimental results."
+        ]
+        if result.get("source_kind") == "nasa":
+            limitations.append(
+                "This is a source-linked NASA research record, not a NASA PSI accession. "
+                "Its research/data status distinguishes descriptions, reported results and plans."
+            )
         return self.fact(
             "Investigation dossier",
             result,
             self.retained_sources(result),
-            limitations=[
-                "Reported objectives and descriptions are distinct from experimental results."
-            ],
+            limitations=limitations,
         )
 
     def inspect_dataset(self, inputs: DatasetInput) -> dict:
@@ -583,22 +792,51 @@ class ResearchTools:
         ]
         if inputs.source_rows and len(rows) != len(set(inputs.source_rows)):
             raise ValueError("A requested physical source record is absent.")
+        asset_identity = {key: value for key, value in asset.items() if key != "table_definition"}
         content = {
             **result.model_dump(exclude={"records"}),
+            "asset": asset_identity,
+            "snapshot_id": self.context.snapshot_id,
             "records": [row.model_dump() for row in rows[:30]],
             "preview_limited": len(rows) > 30,
         }
+        content, publication_origin = publication_table_context(content)
+        sources = [
+            {
+                **asset_identity,
+                "snapshot_id": self.context.snapshot_id,
+                "source_rows": [row.source_row for row in rows[:30]],
+            }
+        ]
+        if publication_origin:
+            for row in rows[:30]:
+                for field in row.fields:
+                    if not field.raw_text.strip():
+                        continue
+                    if len(sources) >= 65:
+                        break
+                    sources.append(
+                        EvidenceAnchor(
+                            snapshot_id=self.context.snapshot_id,
+                            source_kind=asset.get("source_kind") or "psi",
+                            accession=asset["accession"],
+                            investigation_version=asset["investigation_version"],
+                            source_sha256=asset["sha256"],
+                            asset_id=asset["id"],
+                            kind="table_cell",
+                            source_row=row.source_row,
+                            column=field.column_index,
+                        ).model_dump(mode="json", exclude_none=True)
+                    )
         return self.fact(
-            "Source-specific table records",
+            "Planned research conditions"
+            if publication_origin == "source_metadata"
+            else "Published table records"
+            if publication_origin
+            else "Source-specific table records",
             content,
-            [
-                {
-                    **asset,
-                    "snapshot_id": self.context.snapshot_id,
-                    "source_rows": [row.source_row for row in rows[:30]],
-                }
-            ],
-            origin="source_measurement",
+            sources,
+            origin=publication_origin or "source_measurement",
             limitations=result.limitations,
         )
 
@@ -625,6 +863,7 @@ class ResearchTools:
             asset = result["asset"]
             anchor = EvidenceAnchor(
                 snapshot_id=self.context.snapshot_id,
+                source_kind=asset.get("source_kind") or "psi",
                 accession=asset["accession"],
                 investigation_version=asset["investigation_version"],
                 source_sha256=asset["sha256"],
@@ -761,7 +1000,8 @@ class ResearchTools:
             }
         origin = "deterministic_calculation"
         if inputs.name in {"search_runs", "get_run"}:
-            origin = "source_measurement"
+            result, publication_origin = publication_table_context(result)
+            origin = publication_origin or "source_measurement"
         elif inputs.name in {"search_evidence", "search_semantic_evidence", "get_source_span"}:
             origin = "source_text"
         elif inputs.name == "method_catalog":
@@ -779,6 +1019,8 @@ class ResearchTools:
             origin = "model_proposal"
         elif inputs.name == "predict":
             origin = "prediction"
+        elif inputs.name == "prepare_source_visualization":
+            origin = "source_media"
         return self.fact(
             inputs.name,
             result,
@@ -799,6 +1041,13 @@ class ResearchTools:
             )
         )
 
+    def prepare_source_visualization(self, inputs: SourceVisualizationInput) -> dict:
+        return self.run_scientific_tool(
+            ScientificToolCall(
+                name="prepare_source_visualization", parameters=inputs.model_dump(mode="json")
+            )
+        )
+
     def registry(self, *, enabled: Callable[[], bool] | None = None) -> list[Tool]:
         enabled_turn_input: object | None = None
         enabled_for_turn = True
@@ -816,6 +1065,15 @@ class ResearchTools:
             return enabled_for_turn
 
         definitions: list[tuple[str, type[BaseModel], Callable[..., dict], str]] = [
+            (
+                "prepare_source_visualization",
+                SourceVisualizationInput,
+                self.prepare_source_visualization,
+                "Show original retained imagery from an investigation. For a request such as "
+                "visualize BASS-II fire, use this directly with its accession: it selects a "
+                "source image by default and needs no calibration or simulation parameters. "
+                "Returns a prepared inline image/video artifact, not a physical prediction.",
+            ),
             (
                 "prepare_simulation",
                 DropletVisualizationRequest,

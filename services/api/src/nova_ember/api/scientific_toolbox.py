@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from nova_ember.analysis.visualization import DropletVisualizationRequest
 from nova_ember.contracts.research import Contract, WorkspaceContext
+from nova_ember.domain.identifiers import InvestigationId
 from nova_ember.evidence.contracts import Claim, ControlCandidate, EarthTransfer, Hypothesis
 from nova_ember.evidence.research import (
     assess_control,
@@ -65,6 +66,11 @@ class ScientificToolCall(ToolName):
 class SelectedRecord(Contract):
     asset_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     source_row: int = Field(ge=2, le=1000000)
+
+
+class SourceVisualizationInput(Contract):
+    accession: InvestigationId
+    asset_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
 
 
 class CohortComparison(Contract):
@@ -202,6 +208,13 @@ class ScientificToolbox:
                 "A selected FLEX/FLEX2 association supplies context only. This does not launch "
                 "a view, infer experimental parameters or predict extinction, temperature or soot.",
                 self.prepare_simulation,
+            ),
+            "prepare_source_visualization": Definition(
+                SourceVisualizationInput,
+                "Prepare original retained imagery for an investigation. Defaults to a "
+                "representative source image, then video, without requiring numerical inputs "
+                "or treating the image as a physical simulation.",
+                self.prepare_source_visualization,
             ),
             "prepare_source_simulation": Definition(
                 SourceDropletVisualizationRequest,
@@ -464,6 +477,54 @@ class ScientificToolbox:
             expected_snapshot=self.context.snapshot_id,
             selected_investigations=self.context.investigations,
         ).model_dump(mode="json")
+
+    def prepare_source_visualization(self, request: SourceVisualizationInput) -> dict:
+        investigation = self.corpus.investigation(request.accession, self.context.snapshot_id)
+        assets = [
+            asset
+            for asset in investigation["assets"]
+            if asset.get("media_type") in {"image/jpeg", "image/png", "video/mp4"}
+            and (request.asset_sha256 is None or asset["sha256"] == request.asset_sha256)
+        ]
+        if not assets:
+            raise ValueError("This investigation has no matching retained image or video.")
+        asset = min(
+            assets,
+            key=lambda item: (
+                item["media_type"] == "video/mp4",
+                item.get("kind") != "representative_image",
+                item["id"],
+            ),
+        )
+        media = self.discovery.media(
+            asset["sha256"],
+            self.context.snapshot_id,
+            accession=request.accession,
+            asset_id=asset["id"],
+        )
+        result = {
+            **media,
+            "artifact_type": "source_media_visualization",
+            "status": "prepared",
+            "title": f"{investigation.get('acronym') or request.accession} · NASA source "
+            + ("video" if asset["media_type"] == "video/mp4" else "image"),
+            "limitations": ["Representative source image; no individual test is identified."]
+            if media["example_role"] == "repository_representative_image"
+            and not media["source_run_association"]
+            else [],
+        }
+        if asset["media_type"].startswith("image/"):
+            result["anchor"] = EvidenceAnchor(
+                snapshot_id=self.context.snapshot_id,
+                source_kind=asset.get("source_kind") or "psi",
+                accession=request.accession,
+                investigation_version=asset["investigation_version"],
+                source_sha256=asset["sha256"],
+                asset_id=asset["id"],
+                kind="media_frame",
+                frame=0,
+            ).model_dump(mode="json", exclude_none=True)
+        return result
 
     def prepare_source_simulation(self, request: SourceDropletVisualizationRequest) -> dict:
         return prepare_source_droplet_visualization(

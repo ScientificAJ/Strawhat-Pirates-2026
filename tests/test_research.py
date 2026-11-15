@@ -104,7 +104,10 @@ def test_fabricated_citations_and_unsupported_numbers_are_withheld():
     assert len(checked["claims"]) == 2
     assert len(checked["withheld_claims"]) == 3
     assert checked["claims"][1]["interpretation_status"] == "model_interpretation"
-    assert any("independently" in item for item in checked["limitations"])
+    assert checked["limitations"] == []
+    reasons = [reason for item in checked["withheld_claims"] for reason in item["reasons"]]
+    assert any("not produced by this research request" in reason for reason in reasons)
+    assert any("numerical statement lacks" in reason for reason in reasons)
 
 
 def test_mixing_a_real_metadata_fact_cannot_launder_proposed_measurements():

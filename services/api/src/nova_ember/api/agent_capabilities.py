@@ -25,6 +25,7 @@ DIRECT_CAPABILITIES = {
     "analyze_source": "analysis",
     "prepare_simulation": "visualization",
     "prepare_source_simulation": "visualization",
+    "prepare_source_visualization": "visualization",
 }
 SCIENTIFIC_CAPABILITIES = {
     "search_runs": "sources",
@@ -46,6 +47,7 @@ SCIENTIFIC_CAPABILITIES = {
     "assess_earth_transfer": "analysis",
     "prepare_simulation": "visualization",
     "prepare_source_simulation": "visualization",
+    "prepare_source_visualization": "visualization",
     "create_chart": "visualization",
     "propose_dashboard": "visualization",
     "list_models": "modeling",

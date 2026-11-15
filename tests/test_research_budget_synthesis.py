@@ -27,8 +27,9 @@ from openai.types.responses import (
 
 
 @pytest.mark.parametrize("synthesis_failure", [False, True])
+@pytest.mark.parametrize("gathering_incomplete", [False, True])
 def test_expensive_next_tool_turn_yields_to_checked_synthesis_without_raising_cap(
-    monkeypatch, tmp_path, synthesis_failure
+    monkeypatch, tmp_path, synthesis_failure, gathering_incomplete
 ):
     context = WorkspaceContext(context_version="bounded-synthesis", snapshot_id="a" * 64)
     corpus = SimpleNamespace(
@@ -66,7 +67,13 @@ def test_expensive_next_tool_turn_yields_to_checked_synthesis_without_raising_ca
     async def count(**kwargs):
         token_checks.append(bool(kwargs["tools"]))
         # A further collection turn cannot fit its half of the existing cap.
-        tokens = 25000 if kwargs["tools"] and paid_calls else 1000 if kwargs["tools"] else 1500
+        tokens = (
+            25000
+            if kwargs["tools"] and paid_calls and not gathering_incomplete
+            else 1000
+            if kwargs["tools"]
+            else 1500
+        )
         return SimpleNamespace(input_tokens=tokens)
 
     class Client:
@@ -97,6 +104,8 @@ def test_expensive_next_tool_turn_yields_to_checked_synthesis_without_raising_ca
             }
         )
         if tools:
+            if gathering_incomplete and len(paid_calls) > 1:
+                raise ModelBehaviorError("Provider response.incomplete: max_output_tokens")
             output = [
                 ResponseFunctionToolCall(
                     type="function_call",
@@ -110,7 +119,11 @@ def test_expensive_next_tool_turn_yields_to_checked_synthesis_without_raising_ca
             if synthesis_failure:
                 raise ModelBehaviorError("Provider response.incomplete: max_output_tokens")
             prompt = json.loads(input[0]["content"][0]["text"])
-            assert prompt["gathering_status"] == "bounded_evidence_collection_stopped"
+            assert prompt["gathering_status"] == (
+                "evidence_collection_response_incomplete"
+                if gathering_incomplete
+                else "bounded_evidence_collection_stopped"
+            )
             fact = prompt["retained_facts"][0]
             assert (
                 fact["content"]["approach"]
@@ -167,20 +180,25 @@ def test_expensive_next_tool_turn_yields_to_checked_synthesis_without_raising_ca
     recorded_phases = result["reproducibility"]["phase_system_instructions"]
     assert recorded_phases == {
         "gathering": paid_calls[0]["instructions"],
-        "synthesis": paid_calls[1]["instructions"],
+        "synthesis": paid_calls[-1]["instructions"],
     }
     assert recorded_phases["gathering"] != result["reproducibility"]["system_instructions"]
     assert recorded_phases["synthesis"] != result["reproducibility"]["system_instructions"]
     if synthesis_failure:
         assert result["status"] == "incomplete"
-        assert result["answer"] is None
+        assert result["answer_source"] == "retained_evidence"
+        assert result["answer"]["claims"][0]["statement"] == (
+            "The investigation examines airflow and solid-fuel flame spread."
+        )
+        assert result["answer"]["claims"][0]["fact_ids"] == [next(iter(tools.facts))]
+        assert not result["answer"]["withheld_claims"]
         assert "No automatic paid retry" in result["failure"]
-        assert len(paid_calls) == 2
+        assert len(paid_calls) == (3 if gathering_incomplete else 2)
         assert len(result["provider_calls"]) == 1
         assert len(result["facts"]) == 1
         assert reservations == [Decimal("0.1")]
         assert settled == [None]
-        assert steps == ["provider-call-1", "provider-call-2"]
+        assert steps == [f"provider-call-{index + 1}" for index in range(len(paid_calls))]
         return
     assert result["status"] == "completed"
     assert (
@@ -188,18 +206,24 @@ def test_expensive_next_tool_turn_yields_to_checked_synthesis_without_raising_ca
         == "The investigation examines airflow and solid-fuel flame spread."
     )
     assert not result["answer"]["withheld_claims"]
-    assert len(paid_calls) == 2
+    assert len(paid_calls) == (3 if gathering_incomplete else 2)
     assert token_checks == [True, True, False]
     assert paid_calls[0]["budget"] == Decimal("0.05")
-    assert paid_calls[1]["budget"] == Decimal("0.1")
-    assert [call["max_tokens"] for call in paid_calls] == [1200, 2500]
-    assert paid_calls[1]["tools"] == 0
-    assert paid_calls[1]["reasoning_effort"] == "low"
+    assert paid_calls[-1]["budget"] == Decimal("0.1")
+    assert [call["max_tokens"] for call in paid_calls] == (
+        [1200, 1200, 2500] if gathering_incomplete else [1200, 2500]
+    )
+    assert paid_calls[-1]["tools"] == 0
+    assert paid_calls[-1]["reasoning_effort"] == "low"
     assert reservations == [Decimal("0.1")]
-    assert settled == [Decimal("0.011")]
-    assert Decimal(result["cost_usd"]) == Decimal("0.011")
+    if gathering_incomplete:
+        assert settled == [None]
+        assert Decimal("0.011") < Decimal(result["cost_usd"]) <= Decimal("0.1")
+    else:
+        assert settled == [Decimal("0.011")]
+        assert Decimal(result["cost_usd"]) == Decimal("0.011")
     assert len(result["provider_calls"]) == 2
-    assert steps == ["provider-call-1", "provider-call-2"]
+    assert steps == [f"provider-call-{index + 1}" for index in range(len(paid_calls))]
 
 
 def test_dossier_model_view_keeps_approach_and_citations_without_repeating_full_metadata():

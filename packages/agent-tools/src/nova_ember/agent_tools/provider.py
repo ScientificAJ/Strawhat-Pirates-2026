@@ -69,6 +69,7 @@ class BudgetedResponsesModel(OpenAIResponsesModel):
         self.budget_usd = budget_usd
         self.spent_usd = Decimal(0)
         self.calls: list[dict] = []
+        self.attempt_count = 0
         self.before_call = before_call
         self.after_call = after_call
         self.provider_client = client
@@ -127,9 +128,10 @@ class BudgetedResponsesModel(OpenAIResponsesModel):
             raise ModelBudgetExceeded(
                 "The remaining request budget cannot cover the next bounded call."
             )
-        step = f"provider-call-{len(self.calls) + 1}"
+        step = f"provider-call-{self.attempt_count + 1}"
         if self.before_call:
             self.before_call(step, reservation)
+        self.attempt_count += 1
         self.spent_usd += reservation
         try:
             result = await super().get_response(*args, **kwargs)

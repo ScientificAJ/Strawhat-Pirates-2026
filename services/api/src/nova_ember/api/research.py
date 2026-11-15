@@ -15,6 +15,7 @@ from agents import Agent, FunctionTool, ModelSettings, RunConfig, Runner
 from agents.exceptions import MaxTurnsExceeded, ModelBehaviorError
 from agents.items import TResponseInputItem
 from fastapi import APIRouter, Cookie, Header, HTTPException, Request, Response
+from nova_ember.adapters.records import source_scalar_text
 from nova_ember.agent_tools.provider import (
     ROUTING_VERSION,
     BudgetedResponsesModel,
@@ -33,6 +34,7 @@ from PIL import Image, UnidentifiedImageError
 from . import jobs
 from .claim_support import (
     asserts_measurement,
+    check_publication_locators,
     check_source_line_locators,
     display_match,
     numeric_evidence,
@@ -44,7 +46,7 @@ from .model_usage import reserve_usage, settle_usage, usage_summary
 from .repository import Corpus
 from .research_tools import ResearchTools, model_fact_payload
 
-PROMPT_VERSION = "scientific-research-v10"
+PROMPT_VERSION = "scientific-research-v11"
 MAX_RESEARCH_TURNS = 6
 GATHERING_OUTPUT_TOKENS = 1200
 ANSWER_OUTPUT_TOKENS = 2500
@@ -76,7 +78,7 @@ SYSTEM = (
     " Explain incompatible conditions, contradictions and unsupported "
     "domains. Do not describe research as certified safety advice. Report "
     "useful supported findings and precise gaps. Your output is a typed "
-    "research answer, with limitations on each claim. Unknown claims may have"
+    "research answer. Unknown claims may have"
     " no fact IDs; other claims must cite supporting facts. Do not claim that"
     " a source-link or another model's agreement independently validates a "
     "scientific interpretation. Propose case/dashboard changes for the "
@@ -153,6 +155,21 @@ SYSTEM += (
     "analysis precisely; do not invent results or imply an unperformed check succeeded."
 )
 
+SYSTEM += (
+    " Write direct, natural answers. Include only consequential, specific limitations that "
+    "change how the requested result should be used, and state each once. Empty claim and "
+    "answer limitation lists are appropriate. Do not add generic validation, measurement, "
+    "causality or safety disclaimers when they do not affect the requested task. "
+    "When asked to visualize fire from an investigation without requesting a numerical "
+    "simulation or particular chart, call prepare_source_visualization directly with the "
+    "matching accession. It prepares retained NASA imagery and chooses a useful source "
+    "image by default. Do not inspect calibration tables or discover unrelated tools merely "
+    "to display that image. Use the returned title and specific representative/run note; "
+    "do not invent image observations or simulation parameters. A source-media preparation "
+    "fact supports a model_interpretation statement about the prepared display, not numerical "
+    "measurements. After the requested visual is prepared, finish the answer."
+)
+
 
 def verify_answer(answer: ResearchAnswer, tools: ResearchTools) -> dict:
     """Check mechanical source/numeric support; preserve interpretation as interpretation."""
@@ -169,6 +186,12 @@ def verify_answer(answer: ResearchAnswer, tools: ResearchTools) -> dict:
         locator_spans, locator_support, locator_errors = check_source_line_locators(
             claim.statement, supporting
         )
+        publication_spans, publication_support, publication_errors = check_publication_locators(
+            claim.statement, supporting
+        )
+        locator_spans.extend(publication_spans)
+        locator_support.extend(publication_support)
+        locator_errors.extend(publication_errors)
         reasons.extend(locator_errors)
         if (
             claim.origin != "unknown"
@@ -299,14 +322,163 @@ def verify_answer(answer: ResearchAnswer, tools: ResearchTools) -> dict:
         "withheld_claims": rejected,
         "contradictions": answer.contradictions,
         "next_actions": answer.next_actions,
-        "limitations": [
-            *answer.limitations,
-            (
-                "Mechanical citation and numeric checks do not independently "
-                "establish an interpretation or causal conclusion."
-            ),
-        ],
+        "limitations": answer.limitations,
     }
+
+
+def retained_evidence_answer(tools: ResearchTools, question: str) -> dict | None:
+    """Return useful recorded work without a model retry or a claim of unfinished analysis."""
+    terms = set(re.findall(r"[a-z]{3,}", question.casefold()))
+    candidates = []
+
+    def add(priority: int, fact, title: str, statement: str, origin: str) -> None:
+        if not statement or len(statement) > 1800:
+            return
+        content = fact.content
+        identity = " ".join(
+            str(content.get(key) or "") for key in ("title", "acronym", "accession")
+        )
+        relevance = len(
+            terms & set(re.findall(r"[a-z]{3,}", (identity + " " + statement).casefold()))
+        )
+        candidates.append(
+            (
+                priority,
+                -relevance,
+                title[:200],
+                {
+                    "statement": statement,
+                    "origin": origin,
+                    "fact_ids": [fact.id],
+                    "limitations": [],
+                },
+            )
+        )
+
+    for fact in tools.facts.values():
+        content = fact.content
+        artifact = content.get("artifact_type")
+        if (
+            artifact == "source_media_visualization"
+            and content.get("status") == "prepared"
+            and fact.origin == "source_media"
+        ):
+            title = str(content.get("title") or "NASA source visualization")
+            add(0, fact, title, f"Prepared {title} below.", "model_interpretation")
+        elif artifact == "educational_simulation" and fact.origin == "deterministic_calculation":
+            add(
+                0,
+                fact,
+                "Prepared droplet visualization",
+                "Prepared the analytical droplet visualization from its recorded model inputs.",
+                "calculated",
+            )
+        elif "vega_lite" in content and fact.origin == "deterministic_calculation":
+            add(
+                0,
+                fact,
+                "Prepared scientific chart",
+                "Prepared the source-bound chart below.",
+                "calculated",
+            )
+        if fact.origin == "deterministic_calculation" and isinstance(
+            content.get("value"), (int, float, Decimal)
+        ):
+            value = content["value"]
+            if not isinstance(value, bool) and Decimal(str(value)).is_finite():
+                unit = str(content.get("unit") or "")
+                add(1, fact, fact.label, f"{fact.label}: {value} {unit}.".strip(), "calculated")
+        counts = content.get("counts")
+        if fact.origin == "deterministic_calculation" and isinstance(counts, list):
+            for item in counts[:3]:
+                if not isinstance(item, dict):
+                    continue
+                count, label = item.get("count"), item.get("label")
+                if (
+                    isinstance(count, int)
+                    and not isinstance(count, bool)
+                    and isinstance(label, str)
+                ):
+                    add(
+                        1, fact, fact.label, f"Source label {label}: {count} records.", "calculated"
+                    )
+        if fact.origin in {"source_metadata", "source_text"}:
+            for field_name in ("approach", "objective", "text"):
+                text = content.get(field_name)
+                if not isinstance(text, str):
+                    continue
+                sentences = re.split(r"(?<=[.!?])\s+|\n+", text.strip())
+                for sentence in sentences:
+                    if len(sentence) < 30 or len(sentence) > 1000 or numeric_mentions(sentence):
+                        continue
+                    title = str(content.get("title") or "Retained source evidence")
+                    add(2, fact, title, sentence, "source_summary")
+                    break
+        records = content.get("records")
+        fields = [
+            field
+            for record in (records if isinstance(records, list) else [])
+            if isinstance(record, dict)
+            for field in record.get("fields", [])
+            if isinstance(field, dict) and field.get("status") == "normalized"
+        ]
+        fields.sort(
+            key=lambda field: (
+                -len(
+                    terms
+                    & set(
+                        re.findall(r"[a-z]{3,}", str(field.get("source_column") or "").casefold())
+                    )
+                )
+            )
+        )
+        for field in fields[:3]:
+            original_unit = field.get("original_unit")
+            scalar = source_scalar_text(str(field.get("raw_text") or "").strip(), original_unit)
+            if scalar is None:
+                continue
+            label = re.sub(
+                r"\s*\([^()]+\)\s*$", "", str(field.get("source_column") or "Source value")
+            )
+            prefix = (
+                "Planned condition"
+                if content.get("source_table_origin") == "planned_conditions"
+                else "Source table"
+            )
+            if field.get("source_value_kind") == "derived":
+                prefix = "Reported derived value"
+            relevant_field = bool(terms & set(re.findall(r"[a-z]{3,}", label.casefold())))
+            add(
+                2 if relevant_field else 3,
+                fact,
+                "Retained table evidence",
+                f"{prefix} — {label}: {scalar} {original_unit or ''}.",
+                "source_summary",
+            )
+
+    if not candidates:
+        return None
+    candidates.sort(key=lambda item: (item[0], item[1]))
+    # A prepared output is the closest response to the task. Otherwise keep two
+    # source statements; every candidate still passes the same evidence gates.
+    for priority in sorted({item[0] for item in candidates}):
+        selected = [item for item in candidates if item[0] == priority][:12]
+        checked = verify_answer(
+            ResearchAnswer.model_validate(
+                {
+                    "title": selected[0][2],
+                    "claims": [item[3] for item in selected],
+                    "contradictions": [],
+                    "next_actions": [],
+                    "limitations": [],
+                }
+            ),
+            tools,
+        )
+        checked["claims"] = checked["claims"][:2]
+        if checked["claims"]:
+            return checked
+    return None
 
 
 def build_research_prompt(request: ResearchRequest, context: dict, tools: ResearchTools) -> dict:
@@ -530,7 +702,7 @@ async def run_research(
         model_input: list[TResponseInputItem] = [message]
 
         async def stages():
-            nonlocal synthesis_prompt
+            nonlocal synthesis_prompt, uncertain
             gathering_status = "completed"
             try:
                 await Runner.run(
@@ -541,6 +713,13 @@ async def run_research(
                 )
             except (ModelBudgetExceeded, MaxTurnsExceeded):
                 gathering_status = "bounded_evidence_collection_stopped"
+            except ModelBehaviorError:
+                if not tools.facts:
+                    raise
+                # Preserve the uncertain collection charge and use the already
+                # reserved final stage; never replay the malformed gathering call.
+                gathering_status = "evidence_collection_response_incomplete"
+                uncertain = True
             # Gathering cannot consume this half of the original allowance. Use the
             # same accounting instance so paid-step IDs and uncertain costs stay unique.
             model.budget_usd = Decimal(str(settings.research_request_budget_usd))
@@ -588,6 +767,13 @@ async def run_research(
     finally:
         settle_usage(settings, reservation, None if uncertain else model.spent_usd)
         await client.close()
+    unresolved_model_answer = None
+    answer_source = "model" if answer is not None else None
+    if answer is None or not answer["claims"]:
+        fallback = retained_evidence_answer(tools, request.question)
+        if fallback is not None:
+            unresolved_model_answer, answer = answer, fallback
+            answer_source = "retained_evidence"
     return {
         "schema_version": 1,
         "status": status,
@@ -595,6 +781,8 @@ async def run_research(
         "context_version": request.context.context_version,
         "snapshot_id": request.context.snapshot_id,
         "answer": answer,
+        "answer_source": answer_source,
+        "unresolved_model_answer": unresolved_model_answer,
         "facts": [fact.model_dump(mode="json") for fact in tools.facts.values()],
         "actions": tools.actions,
         "failure": failure,

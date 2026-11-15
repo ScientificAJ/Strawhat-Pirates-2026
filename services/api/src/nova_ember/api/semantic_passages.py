@@ -1,6 +1,7 @@
 """Bounded search projections of actual retained source text and exact locators."""
 
 import json
+from collections import deque
 from hashlib import sha256
 
 from nova_ember.adapters.documents import (
@@ -34,6 +35,10 @@ def projection_text(record: dict) -> str:
             "approach",
             "hardware",
             "platform",
+            "source_kind",
+            "record_type",
+            "research_status",
+            "data_status",
         )
     }
     return json.dumps(fields, sort_keys=True, ensure_ascii=False)[:12000]
@@ -53,6 +58,7 @@ def asset_parts(corpus, snapshot: str, asset: dict):
     base = {
         "snapshot_id": snapshot,
         "accession": asset["accession"],
+        "source_kind": asset.get("source_kind") or "psi",
         "investigation_version": asset["investigation_version"],
         "source_sha256": asset["sha256"],
         "asset_id": asset["id"],
@@ -132,12 +138,18 @@ def asset_parts(corpus, snapshot: str, asset: dict):
         raise ValueError("No textual passage reader; use the retained format/media source view.")
 
 
-def document_parts(discovery: Discovery, snapshot: dict):
+def document_parts(discovery: Discovery, snapshot: dict, documents: list[dict] | None = None):
     directory = discovery.corpus.settings.object_directory.parent / "evidence-documents"
     base_id = discovery.source_snapshot_id(snapshot)
-    for public in discovery.documents(snapshot["snapshot_id"])["items"]:
+    for public in (
+        discovery.documents(snapshot["snapshot_id"])["items"] if documents is None else documents
+    ):
+        if not public.get("capture_id"):
+            continue
         record = load_ntrs_document(directory, public["document_id"], base_id, public["capture_id"])
         if record is None or record.get("pages") is None or record.get("pdf") is None:
+            continue
+        if public.get("source_sha256") and record["pdf"]["sha256"] != public["source_sha256"]:
             continue
         parts = (
             (
@@ -156,6 +168,24 @@ def document_parts(discovery: Discovery, snapshot: dict):
             for page in read_document_pages(directory, record)
         )
         yield public, parts
+
+
+def embedding_documents(documents: list[dict], limit: int) -> list[dict]:
+    """Keep catalog navigation and distribute bounded vectors across retained sources."""
+    selected = [item for item in documents if item["kind"] == "investigation_metadata"][:limit]
+    groups: dict[str, deque] = {}
+    for item in documents:
+        if item["kind"] != "investigation_metadata":
+            group = item.get("source_group", item["source_id"])
+            groups.setdefault(group, deque()).append(item)
+    while groups and len(selected) < limit:
+        for group in list(groups):
+            if len(selected) == limit:
+                break
+            selected.append(groups[group].popleft())
+            if not groups[group]:
+                del groups[group]
+    return selected
 
 
 def build_projection(corpus, snapshot: dict) -> tuple[list[dict], dict]:
@@ -184,25 +214,38 @@ def build_projection(corpus, snapshot: dict) -> tuple[list[dict], dict]:
             {
                 "source_id": record["accession"],
                 "kind": "investigation_metadata",
-                "source_kind": "psi",
+                "source_kind": record.get("source_kind") or "psi",
                 "accessions": [record["accession"]],
                 "title": record["title"],
                 "text": text,
                 "search_text": text,
                 "source_sha256": record["metadata_sha256"],
                 "anchors": anchors,
+                "data_status": record.get("data_status"),
+                "research_status": record.get("research_status"),
+                "source_origin": record.get("origin") or "source_reported_metadata",
             }
         )
 
-    def retain(parts, title, accessions, source_hash, source_id):
+    public_documents = discovery.documents(identifier)["items"]
+    assets = sorted(
+        snapshot["manifest"]["assets"], key=lambda item: (item["accession"], item["id"])
+    )
+    remaining_sources = len(assets) + sum(
+        item.get("source_sha256") is not None and item.get("page_count") is not None
+        for item in public_documents
+    )
+
+    def retain(parts, title, accessions, source_hash, source_id, source_origin):
+        nonlocal remaining_sources
+        available = max(0, MAX_PROJECTION_DOCUMENTS - len(documents))
+        allowance = min(MAX_PASSAGES_PER_SOURCE, available // max(1, remaining_sources))
+        remaining_sources = max(0, remaining_sources - 1)
         added, limited = 0, False
         try:
             for original, anchor, description in parts:
                 for text, located in chunks(original, anchor):
-                    if (
-                        added >= MAX_PASSAGES_PER_SOURCE
-                        or len(documents) >= MAX_PROJECTION_DOCUMENTS
-                    ):
+                    if added >= allowance or len(documents) >= MAX_PROJECTION_DOCUMENTS:
                         limited = True
                         break
                     identity = located.model_dump(
@@ -214,10 +257,15 @@ def build_projection(corpus, snapshot: dict) -> tuple[list[dict], dict]:
                             "source_id": "passage:" + digest,
                             "kind": "source_passage",
                             "source_kind": located.source_kind,
+                            "source_group": source_id,
+                            "source_origin": source_origin,
                             "accessions": sorted(accessions),
                             "title": title,
                             "text": text,
-                            "search_text": f"{description[:MAX_PASSAGE_CHARACTERS]}\n{text}",
+                            "search_text": (
+                                f"{title[:256]}\n{source_origin}\n"
+                                f"{description[:MAX_PASSAGE_CHARACTERS]}\n{text}"
+                            ),
                             "source_sha256": source_hash,
                             "anchors": [located.model_dump(mode="json")],
                         }
@@ -242,24 +290,31 @@ def build_projection(corpus, snapshot: dict) -> tuple[list[dict], dict]:
             }
         )
 
-    for asset in sorted(
-        snapshot["manifest"]["assets"], key=lambda item: (item["accession"], item["id"])
-    ):
+    for asset in assets:
         retain(
             asset_parts(corpus, identifier, asset),
             asset["file_name"],
             [asset["accession"]],
             asset["sha256"],
             asset["id"],
+            asset.get("origin") or "retained_original_source",
         )
-    for public, parts in document_parts(discovery, snapshot):
+    for public, parts in document_parts(discovery, snapshot, public_documents):
         retain(
             parts,
             public["title"],
             public["associated_investigations"],
             public["source_sha256"],
             "NTRS:" + public["document_id"],
+            "published_report_passage",
         )
+        if public.get("unavailable_text_pages"):
+            coverage[-1]["unavailable_text_pages"] = public["unavailable_text_pages"]
+            if coverage[-1]["status"] == "read":
+                coverage[-1]["status"] = "partial_page_text"
+                coverage[-1]["reason"] = (
+                    "Pages exceeding PDF decoding limits are excluded from text retrieval."
+                )
     return documents, {
         "profile": PROFILE,
         "sources": coverage,
@@ -277,4 +332,6 @@ def build_projection(corpus, snapshot: dict) -> tuple[list[dict], dict]:
             "Non-embedded projected passages remain lexical candidates; "
             "inspect other retained sources through their exact readers."
         ),
+        "projection_allocation": "remaining_capacity_shared_across_remaining_sources_v1",
+        "embedding_selection": "metadata_then_source_round_robin_v1",
     }
