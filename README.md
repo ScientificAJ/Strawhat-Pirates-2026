@@ -2,15 +2,11 @@
 
 **Understand fire. Beyond Earth.**
 
-Nova Ember helps people explore NASA combustion research and follow the evidence behind questions about fire in space. Built by **StrawHat Pirates** for the 2026 NASA Space Apps Challenge, it responds to [Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity Combustion Data](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/): making decades of microgravity combustion findings easier to find, compare and interpret for human space exploration.
+## 🚀 [Try the live demo](https://nova-ember.duckdns.org/app)
 
-## 🎬 Check out the demo
+Open the interactive dashboard to explore NASA combustion research, ask questions and follow the evidence.
 
-**[▶ Download and watch the 28-second Nova Ember demo](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4)**
-
-[Explore the live application](https://nova-ember.duckdns.org/app) · [Demo credits and sources](media/nova-ember-space-apps/credits.md)
-
-GitHub does not preview the video at its current size; download it to watch.
+Nova Ember helps people investigate fire in space. Built by **StrawHat Pirates** for the 2026 NASA Space Apps Challenge, it responds to [Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity Combustion Data](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/): making decades of microgravity combustion findings easier to find, compare and interpret for human space exploration.
 
 ## The challenge and mission
 
@@ -36,7 +32,9 @@ Scientific context stays close to the evidence: source locations and units accom
 
 ## See Nova Ember
 
-The screenshots below show the local application on 15 November 2026.
+[Download the 28-second video](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md)
+
+GitHub does not preview the video at its current size; download it to watch. The screenshots below show the local application on 15 November 2026.
 
 ![Nova Ember comparing the objectives and approaches of two NASA combustion investigations](docs/redesign-2026-11-15/comparison-desktop.png)
 
