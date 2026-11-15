@@ -51,6 +51,19 @@ that secrets never reach the browser, and that data survives a restart. Check
 resource use and model spend under representative usage before relying on this
 host for submission. A successful Compose build alone is not hosted acceptance.
 
-The packaging has been exercised in a local throwaway stack with a local Caddy
-certificate. A Google Cloud deployment, public certificate, real provider key,
-production resource capacity and hosted acceptance have not been verified.
+The initial packaging was exercised in a local throwaway stack with a local Caddy
+certificate; the hosted deployment had not yet been verified at that point.
+
+## Hosted deployment — 15 November 2026
+
+Nova Ember is available at [nova-ember.duckdns.org](https://nova-ember.duckdns.org/app).
+It runs on a Google Cloud VM with a reserved IP and HTTPS. The deployed application
+uses commit `fa0462d`. Public checks covered investigation search, comparison
+and automatic rankings, a source-linked assistant answer, and the BASS-II flame
+illustration. The browser HTML and script assets checked did not contain the
+backend provider key.
+
+Interactive Python and shell execution are unavailable on this host: the existing
+sandbox has not been qualified there. Registered analyses and visualizations are
+available. Voice, representative concurrent traffic, backup restoration and
+full hosted acceptance have not been verified.
