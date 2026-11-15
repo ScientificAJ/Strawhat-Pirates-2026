@@ -22,6 +22,7 @@ import { ArtifactView, isRecord } from "./artifact-view";
 import { ScientificResult } from "./scientific-result";
 import { ScenarioCalculator } from "./laboratory";
 import { JobMonitor } from "./job-monitor";
+import { SimulationLauncher } from "./simulation-launcher";
 import styles from "./laboratory-workbench.module.css";
 
 type Method = { id: string; title: string; schema: MethodSchema };
@@ -258,6 +259,9 @@ export function ModelWorkbench({
   );
   return (
     <div className={styles.stack}>
+      {tab === "start" && (
+        <SimulationLauncher accession="PSI-69" snapshotId={snapshotId} />
+      )}
       <section className={styles.surface}>
         <div className={styles.row}>
           <div>
