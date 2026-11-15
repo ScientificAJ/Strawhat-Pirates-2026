@@ -855,7 +855,7 @@
         "properties": {
           "investigation_ids": {
             "items": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "type": "string"
             },
             "maxItems": 8,
@@ -1571,7 +1571,7 @@
           "investigation_accession": {
             "anyOf": [
               {
-                "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                 "type": "string"
               },
               {
@@ -1842,7 +1842,7 @@
           "accession": {
             "anyOf": [
               {
-                "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                 "type": "string"
               },
               {
@@ -2061,6 +2061,7 @@
             "default": "psi",
             "enum": [
               "psi",
+              "nasa",
               "ntrs"
             ],
             "title": "Source Kind",
@@ -2200,10 +2201,10 @@
           "accessions": {
             "default": [],
             "items": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "type": "string"
             },
-            "maxItems": 24,
+            "maxItems": 64,
             "title": "Accessions",
             "type": "array"
           },
@@ -2886,10 +2887,10 @@
           "accessions": {
             "default": [],
             "items": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "type": "string"
             },
-            "maxItems": 24,
+            "maxItems": 64,
             "title": "Accessions",
             "type": "array"
           },
@@ -3872,7 +3873,8 @@
                 "sample_record",
                 "flow_visualization",
                 "note",
-                "unclassified_record"
+                "unclassified_record",
+                "published_summary"
               ]
             },
             "title": "Row Kind Counts",
@@ -3946,10 +3948,10 @@
           "accessions": {
             "default": [],
             "items": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "type": "string"
             },
-            "maxItems": 24,
+            "maxItems": 64,
             "title": "Accessions",
             "type": "array"
           },
@@ -4019,11 +4021,12 @@
                 "sample_record",
                 "flow_visualization",
                 "note",
-                "unclassified_record"
+                "unclassified_record",
+                "published_summary"
               ],
               "type": "string"
             },
-            "maxItems": 9,
+            "maxItems": 10,
             "title": "Row Kinds",
             "type": "array"
           },
@@ -4265,7 +4268,7 @@
           "accession": {
             "anyOf": [
               {
-                "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                 "type": "string"
               },
               {
@@ -4412,7 +4415,7 @@
           "accession": {
             "anyOf": [
               {
-                "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                 "type": "string"
               },
               {
@@ -4470,7 +4473,7 @@
         "properties": {
           "accessions": {
             "items": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "type": "string"
             },
             "maxItems": 24,
@@ -4511,11 +4514,12 @@
             "items": {
               "enum": [
                 "psi",
-                "ntrs"
+                "ntrs",
+                "nasa"
               ],
               "type": "string"
             },
-            "maxItems": 2,
+            "maxItems": 3,
             "title": "Source Kinds",
             "type": "array"
           },
@@ -5001,7 +5005,8 @@
               "sample_record",
               "flow_visualization",
               "note",
-              "unclassified_record"
+              "unclassified_record",
+              "published_summary"
             ],
             "title": "Row Kind",
             "type": "string"
@@ -5042,7 +5047,7 @@
           "investigation_accession": {
             "anyOf": [
               {
-                "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                 "type": "string"
               },
               {
@@ -5700,7 +5705,7 @@
           },
           "investigations": {
             "items": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "type": "string"
             },
             "maxItems": 12,
@@ -6079,7 +6084,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                  "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                   "type": "string"
                 },
                 {
@@ -6211,7 +6216,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                  "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                   "type": "string"
                 },
                 {
@@ -6504,7 +6509,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                  "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                   "type": "string"
                 },
                 {
@@ -6685,7 +6690,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                  "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                   "type": "string"
                 },
                 {
@@ -6786,7 +6791,8 @@
                     "sample_record",
                     "flow_visualization",
                     "note",
-                    "unclassified_record"
+                    "unclassified_record",
+                    "published_summary"
                   ],
                   "type": "string"
                 },
@@ -7556,7 +7562,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "pattern": "^PSI-[1-9][0-9]{0,5}$",
+                  "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
                   "type": "string"
                 },
                 {
@@ -8283,7 +8289,7 @@
             "name": "accession",
             "required": true,
             "schema": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "title": "Accession",
               "type": "string"
             }
@@ -8338,7 +8344,7 @@
             "name": "accession",
             "required": true,
             "schema": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "title": "Accession",
               "type": "string"
             }
@@ -8396,7 +8402,7 @@
             "name": "accession",
             "required": true,
             "schema": {
-              "pattern": "^PSI-[1-9][0-9]{0,5}$",
+              "pattern": "^(?:PSI-[1-9][0-9]{0,5}|NASA-[A-Z][A-Z0-9-]{1,63})$",
               "title": "Accession",
               "type": "string"
             }

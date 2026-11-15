@@ -38,10 +38,10 @@ from nova_ember.adapters.refresh import (
     refresh_public_sources as refresh_sources_callback,
 )
 from nova_ember.adapters.supporting import workbook_cells
+from nova_ember.domain.identifiers import InvestigationId
 from nova_ember.domain.records import RowKind, SourceField, SourceValueKind
 from nova_ember.evidence.changes import manifest_changes, snapshot_changes
 from nova_ember.evidence.contracts import (
-    Accession,
     Claim,
     Contract,
     ControlCandidate,
@@ -151,9 +151,9 @@ CatalogFacetSelection = dict[FacetName, CatalogFacetOptions]
 
 class RecordQuery(Contract):
     snapshot_id: Digest | None = None
-    accessions: tuple[Accession, ...] = Field(default=(), max_length=24)
+    accessions: tuple[InvestigationId, ...] = Field(default=(), max_length=64)
     text: str = Field(default="", max_length=500)
-    row_kinds: tuple[RowKind, ...] = Field(default=(), max_length=9)
+    row_kinds: tuple[RowKind, ...] = Field(default=(), max_length=10)
     predicates: tuple[FieldPredicate, ...] = Field(default=(), max_length=20)
     catalog_facets: CatalogFacetSelection = Field(default_factory=dict, max_length=8)
     limit: int = Field(default=50, ge=1, le=100)
@@ -163,7 +163,7 @@ class RecordQuery(Contract):
 class InvestigationQuery(Contract):
     snapshot_id: Digest | None = None
     text: str = Field(default="", max_length=500)
-    accessions: tuple[Accession, ...] = Field(default=(), max_length=24)
+    accessions: tuple[InvestigationId, ...] = Field(default=(), max_length=64)
     hardware: str | None = Field(default=None, max_length=256)
     platform: str | None = Field(default=None, max_length=256)
     license: Literal["CC0-1.0", "unknown"] | None = None
@@ -176,7 +176,7 @@ class InvestigationQuery(Contract):
 class EvidenceSearch(Contract):
     snapshot_id: Digest | None = None
     text: str = Field(min_length=1, max_length=500)
-    accessions: tuple[Accession, ...] = Field(default=(), max_length=24)
+    accessions: tuple[InvestigationId, ...] = Field(default=(), max_length=64)
     fields: tuple[str, ...] = Field(default=(), max_length=20)
     limit: int = Field(default=20, ge=1, le=100)
 
@@ -348,7 +348,11 @@ class Discovery:
         observation = latest_observation(directory)
         observed = []
         if observation is not None:
-            originals = {row["accession"]: row for row in before["manifest"]["investigations"]}
+            originals = {
+                row["accession"]: row
+                for row in before["manifest"]["investigations"]
+                if row["accession"].startswith("PSI-")
+            }
             original_collection = self.manifest_collection(before)
             old_manifests = {
                 row["accession"]: row
@@ -434,6 +438,19 @@ class Discovery:
         }
 
     def _metadata(self, record: dict) -> dict:
+        if record.get("source_kind") == "nasa":
+            content = (
+                self.corpus.settings.object_directory / record["metadata_sha256"]
+            ).read_bytes()
+            if sha256(content).hexdigest() != record["metadata_sha256"]:
+                raise ValueError("Retained NASA metadata differs from its frozen checksum.")
+            value = json.loads(content)
+            if (
+                value.get("accession") != record["accession"]
+                or value.get("version") != record["version"]
+            ):
+                raise ValueError("NASA metadata identity differs from its frozen investigation.")
+            return value
         root = self.corpus.settings.fixture_directory.resolve()
         path = (root / record["metadata_path"]).resolve()
         if not path.is_relative_to(root):
@@ -453,6 +470,7 @@ class Discovery:
     def metadata_anchor(snapshot: str, record: dict, field: str) -> EvidenceAnchor:
         return EvidenceAnchor(
             snapshot_id=snapshot,
+            source_kind=record.get("source_kind") or "psi",
             accession=record["accession"],
             investigation_version=record["version"],
             source_sha256=record["metadata_sha256"],
@@ -482,6 +500,9 @@ class Discovery:
                 else "prospective_impact"
                 if field == "researchImpacts"
                 else "source_metadata",
+                "source_origin": "curated_nasa_research_excerpt"
+                if record.get("source_kind") == "nasa"
+                else "source_reported_metadata",
             }
             for field in METADATA_FIELDS
             if field in metadata
@@ -495,6 +516,18 @@ class Discovery:
                 "and measurements."
             ),
             "coverage": self.coverage(snapshot["snapshot_id"], accession)["items"][0],
+            "child_investigations": [
+                public_investigation(item)
+                for item in snapshot["manifest"]["investigations"]
+                if item.get("parent_accession") == accession
+            ],
+            "literature_sources": [
+                item
+                for item in self.documents(snapshot["snapshot_id"])["items"]
+                if accession in item["associated_investigations"]
+            ]
+            if record.get("source_kind") == "nasa"
+            else [],
         }
 
     def read_anchor(self, anchor: EvidenceAnchor) -> dict:
@@ -513,6 +546,9 @@ class Discovery:
             raise MissingSource(
                 "The anchor investigation/version is absent from its frozen snapshot."
             )
+        expected_kind = record.get("source_kind") or "psi"
+        if anchor.source_kind != expected_kind:
+            raise MissingSource("The anchor source namespace differs from its investigation.")
         details: dict[str, Any] = {}
         if anchor.kind == "metadata_field":
             if (
@@ -529,6 +565,13 @@ class Discovery:
             )
             source_url = record["source_url"]
             details["raw_value"] = raw
+            if expected_kind == "nasa":
+                from nova_ember.adapters.nasa_research import metadata_sources
+
+                details.update(
+                    source_origin="curated_nasa_research_excerpt",
+                    upstream_sources=metadata_sources(metadata, anchor.field),
+                )
         else:
             candidates = [
                 row
@@ -548,6 +591,14 @@ class Discovery:
             content = self.corpus.asset_bytes(asset)
             source_url = asset["source_url"]
             details["asset"] = asset
+            if asset.get("source_kind") == "nasa":
+                details.update(
+                    source_origin=asset.get("origin"),
+                    upstream_sources=[
+                        {"label": item.get("title") or "Original NASA publication", **item}
+                        for item in asset.get("source_provenance", [])
+                    ],
+                )
             if anchor.kind == "table_cell":
                 table = parse_csv_bytes(content, asset["encoding"])
                 row = next((row for row in table.rows if row.row_number == anchor.source_row), None)
@@ -603,9 +654,11 @@ class Discovery:
                 if anchor.page > len(pages):
                     raise MissingSource("The selected source PDF page is absent.")
                 page = pages[anchor.page - 1]
+                if page.extraction_error:
+                    raise MissingSource(page.extraction_error)
                 text = page.text
                 details.update(
-                    page_text_sha256=page.text_sha256, extraction_method="pypdf-plain-page-text-v1"
+                    page_text_sha256=page.text_sha256, extraction_method="pypdf-plain-page-text-v2"
                 )
             elif anchor.kind == "document_paragraph":
                 assert anchor.paragraph is not None
@@ -645,6 +698,22 @@ class Discovery:
                     scientific_measurement_ready=False,
                 )
                 text = ""
+            elif anchor.kind == "media_frame":
+                if anchor.frame != 0 or asset["media_type"] not in {"image/jpeg", "image/png"}:
+                    raise MissingSource("Select frame zero of a retained still image.")
+                media = self.media(
+                    asset["sha256"],
+                    snapshot["snapshot_id"],
+                    accession=asset["accession"],
+                    asset_id=asset["id"],
+                )
+                details.update(
+                    content_kind="source_image",
+                    media_type=asset["media_type"],
+                    metadata=media["metadata"],
+                    media_origin="original_source_bytes",
+                )
+                text = ""
             else:
                 raise MissingSource(
                     "This source kind requires a registered calibrated document/media reader."
@@ -662,9 +731,6 @@ class Discovery:
             "source_url": source_url,
             "status": "source_resolved",
             "origin": "source_reported",
-            "scientific_verification": (
-                "Source resolution establishes location, not the truth of an interpretation."
-            ),
             **details,
         }
 
@@ -679,17 +745,30 @@ class Discovery:
             )
         if anchor.source_sha256 != record["pdf"]["sha256"]:
             raise MissingSource("The PDF checksum differs from the selected NTRS source capture.")
+        declared = next(
+            (
+                item
+                for item in snapshot["manifest"].get("nasa_research_documents", [])
+                if item["document_id"] == anchor.document_id
+            ),
+            None,
+        )
+        if declared and record["pdf"]["sha256"] != (
+            declared.get("expected_pdf_sha256") or declared.get("sha256")
+        ):
+            raise MissingSource("This PDF revision is outside the reviewed NASA source snapshot.")
         pages = read_document_pages(directory, record)
         if anchor.page is None or anchor.page > len(pages):
             raise MissingSource("The selected document page is absent.")
         page = pages[anchor.page - 1]
-        start, end = anchor.start or 0, anchor.end
-        if end is None:
-            raise ValueError("Select an exact character range for a document excerpt.")
-        if end > len(page["text"]) or end - start > 1000:
+        if page.get("extraction_error"):
+            raise MissingSource(page["extraction_error"])
+        start = anchor.start or 0
+        end = anchor.end if anchor.end is not None else min(start + 1000, len(page["text"]))
+        if start > len(page["text"]) or end > len(page["text"]) or end - start > 1000:
             raise ValueError("Select a source-page excerpt of at most 1,000 characters.")
         return {
-            "anchor": anchor,
+            "anchor": anchor.model_copy(update={"start": start, "end": end}),
             "text": page["text"][start:end],
             "source_url": record["pdf"]["source_url"] + f"#page={anchor.page}",
             "citation_url": record["source_url"],
@@ -707,10 +786,49 @@ class Discovery:
         snapshot = self.corpus.snapshot(snapshot_id)
         base_id = self.source_snapshot_id(snapshot)
         directory = self.corpus.settings.object_directory.parent / "evidence-documents"
+        declared = {
+            item["document_id"]: item
+            for item in snapshot["manifest"].get("nasa_research_documents", [])
+        }
+        identifiers = {path.stem for path in directory.glob("[0-9]" * 11 + ".json")}
+        valid_ids = {item["accession"] for item in snapshot["manifest"]["investigations"]}
         records = []
-        for path in sorted(directory.glob("[0-9]" * 11 + ".json")):
-            record = load_ntrs_document(directory, path.stem, base_id)
+        for identifier in sorted(identifiers | set(declared)):
+            record = load_ntrs_document(directory, identifier, base_id)
+            reference = declared.get(identifier)
+            if reference and (
+                record is None
+                or record.get("pdf") is None
+                or record["pdf"]["sha256"]
+                != (reference.get("expected_pdf_sha256") or reference.get("sha256"))
+            ):
+                records.append(
+                    {
+                        **reference,
+                        "source_id": "NTRS:" + identifier,
+                        "status": "original_document_not_retained",
+                        "associated_investigations": [
+                            item
+                            for item in reference["associated_investigations"]
+                            if item in valid_ids
+                        ],
+                        "source_sha256": None,
+                        "capture_id": None,
+                        "page_count": None,
+                        "limitations": [
+                            "Official source reference retained; full page text is unavailable "
+                            "until the expected original is captured."
+                        ],
+                    }
+                )
+                continue
             if record is None:
+                continue
+            associated = set(record["associated_investigations"])
+            if reference:
+                associated.update(reference["associated_investigations"])
+            associated.intersection_update(valid_ids)
+            if not associated:
                 continue
             public = {
                 key: record.get(key)
@@ -726,16 +844,21 @@ class Discovery:
                     "redistribution",
                     "associated_investigations",
                     "extraction_method",
+                    "unavailable_text_pages",
                     "limitations",
                 )
             }
             public["source_sha256"] = record["pdf"]["sha256"] if record["pdf"] else None
             public["page_count"] = record["pages"]["page_count"] if record["pages"] else None
+            public["associated_investigations"] = sorted(associated)
             records.append(public)
         return {
             "snapshot_id": snapshot["snapshot_id"],
             "items": records,
-            "scope": "Versioned local NTRS captures bound to this PSI source snapshot.",
+            "scope": (
+                "Versioned NASA report captures and declared originals "
+                "bound to this source snapshot."
+            ),
         }
 
     def search_evidence(self, query: EvidenceSearch) -> dict:
@@ -783,13 +906,15 @@ class Discovery:
             directory = self.corpus.settings.object_directory.parent / "evidence-documents"
             base_id = self.source_snapshot_id(snapshot)
             for public in self.documents(snapshot["snapshot_id"])["items"]:
+                if not public.get("capture_id"):
+                    continue
                 record = load_ntrs_document(
                     directory, public["document_id"], base_id, public["capture_id"]
                 )
                 if record is None or record["pages"] is None:
                     continue
                 if query.accessions and not set(query.accessions).intersection(
-                    record["associated_investigations"]
+                    public["associated_investigations"]
                 ):
                     continue
                 for page in read_document_pages(directory, record):
@@ -827,7 +952,7 @@ class Discovery:
             "items": matches[: query.limit],
             "total": len(matches),
             "search_scope": (
-                "Frozen PSI scientific metadata and captured NTRS page text; "
+                "Frozen PSI/NASA research metadata and captured NTRS page text; "
                 "not a global literature or unacquired-document search."
             ),
             "retrieval_method": "literal-field-all-terms-v1",
@@ -1008,7 +1133,9 @@ class Discovery:
                         "adapter_id": table.adapter_id,
                         "anchor": EvidenceAnchor(
                             snapshot_id=snapshot["snapshot_id"],
+                            source_kind=asset.get("source_kind") or "psi",
                             accession=asset["accession"],
+                            asset_id=asset["id"],
                             investigation_version=asset["investigation_version"],
                             source_sha256=asset["sha256"],
                             kind="table_cell",
@@ -1118,7 +1245,9 @@ class Discovery:
             if query.license and license_value != query.license:
                 continue
             available = assets_by_id.get(record["accession"], [])
-            has_table = any(asset["kind"] == "experimental_table" for asset in available)
+            has_table = any(
+                asset["kind"] in {"experimental_table", "publication_table"} for asset in available
+            )
             if query.availability == "catalog_only" and available:
                 continue
             if query.availability == "assets_available" and not available:
@@ -1195,7 +1324,13 @@ class Discovery:
                 {
                     "accession": record["accession"],
                     "metadata": "available",
-                    "manifest": "available" if manifest else "not_ingested",
+                    "source_kind": record.get("source_kind") or "psi",
+                    "data_status": record.get("data_status"),
+                    "manifest": "curated_nasa_sources"
+                    if record.get("source_kind") == "nasa"
+                    else "available"
+                    if manifest
+                    else "not_ingested",
                     "manifest_file_count": manifest.get("file_count") if manifest else None,
                     "acquired_assets": len(assets),
                     "row_roles": dict(counts),
@@ -1226,7 +1361,31 @@ class Discovery:
         self, accession: str, snapshot_id: str | None = None, limit: int = 50, offset: int = 0
     ) -> dict:
         snapshot = self.corpus.snapshot(snapshot_id)
-        self.corpus.investigation(accession, snapshot["snapshot_id"])
+        investigation = self.corpus.investigation(accession, snapshot["snapshot_id"])
+        if investigation.get("source_kind") == "nasa":
+            sources = investigation.get("source_provenance") or []
+            return {
+                "snapshot_id": snapshot["snapshot_id"],
+                "accession": accession,
+                "source_kind": "nasa",
+                "manifest_kind": "curated_nasa_sources",
+                "manifest_sha256": None,
+                "fetched_at": snapshot["fetched_at"],
+                "items": [
+                    {
+                        **item,
+                        "key": None,
+                        "file_name": item.get("title") or "Official NASA source",
+                        "kind": "publication_reference",
+                        "acquisition_status": "official_source_reference",
+                    }
+                    for item in sources[offset : offset + limit]
+                ],
+                "total": len(sources),
+                "limit": limit,
+                "offset": offset,
+                "rights": "Original publication rights remain attached to the NASA source.",
+            }
         collection = self.manifest_collection(snapshot)
         if collection:
             reference = next(
@@ -1296,7 +1455,10 @@ class Discovery:
                     "version": record["version"],
                 }
             )
-            for target in re.findall(r"PSI-[1-9][0-9]*", str(metadata.get("related_glds") or "")):
+            for target in re.findall(
+                r"(?:PSI-[1-9][0-9]*|NASA-[A-Z][A-Z0-9-]*)",
+                str(metadata.get("related_glds") or ""),
+            ):
                 if target in accessions:
                     relations.append(
                         {
@@ -1312,6 +1474,15 @@ class Discovery:
                             ),
                         }
                     )
+            if record.get("parent_accession") in accessions:
+                relations.append(
+                    {
+                        "source": record["accession"],
+                        "target": record["parent_accession"],
+                        "relation": "part_of_program",
+                        "limitation": "Program membership does not identify independent trials.",
+                    }
+                )
             for raw_name in str(metadata.get("experimentHardware") or "").split(","):
                 raw_name = raw_name.strip()
                 if not raw_name:
@@ -1436,12 +1607,12 @@ def create_discovery_router(corpus: Corpus) -> APIRouter:
         return service.query_records(query)
 
     @router.get("/investigations/{accession}/dossier")
-    def dossier(accession: Accession, snapshot_id: Digest | None = None):
+    def dossier(accession: InvestigationId, snapshot_id: Digest | None = None):
         return service.dossier(accession, snapshot_id)
 
     @router.get("/investigations/{accession}/manifest")
     def manifest(
-        accession: Accession,
+        accession: InvestigationId,
         snapshot_id: Digest | None = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
         offset: Annotated[int, Query(ge=0, le=1000000)] = 0,
@@ -1457,7 +1628,7 @@ def create_discovery_router(corpus: Corpus) -> APIRouter:
         return service.search_evidence(query)
 
     @router.get("/evidence/coverage")
-    def coverage(snapshot_id: Digest | None = None, accession: Accession | None = None):
+    def coverage(snapshot_id: Digest | None = None, accession: InvestigationId | None = None):
         return service.coverage(snapshot_id, accession)
 
     @router.post("/evidence/condition-coverage")
@@ -1480,7 +1651,7 @@ def create_discovery_router(corpus: Corpus) -> APIRouter:
     def media(
         digest: Digest,
         snapshot_id: Digest | None = None,
-        accession: Accession | None = None,
+        accession: InvestigationId | None = None,
         asset_id: Annotated[str | None, Query(min_length=1, max_length=1024)] = None,
     ):
         return service.media(digest, snapshot_id, accession=accession, asset_id=asset_id)
@@ -1492,7 +1663,7 @@ def create_discovery_router(corpus: Corpus) -> APIRouter:
         sheet: Annotated[str | None, Query(max_length=128)] = None,
         limit: Annotated[int, Query(ge=1, le=250)] = 50,
         offset: Annotated[int, Query(ge=0, le=200000)] = 0,
-        accession: Accession | None = None,
+        accession: InvestigationId | None = None,
         asset_id: Annotated[str | None, Query(min_length=1, max_length=1024)] = None,
     ):
         return service.source_format(
@@ -1508,7 +1679,7 @@ def create_discovery_router(corpus: Corpus) -> APIRouter:
         digest: Digest,
         member: Annotated[str, Query(min_length=1, max_length=2048)],
         snapshot_id: Digest | None = None,
-        accession: Accession | None = None,
+        accession: InvestigationId | None = None,
         asset_id: Annotated[str | None, Query(min_length=1, max_length=1024)] = None,
     ):
         asset = corpus.asset(digest, snapshot_id, accession=accession, asset_id=asset_id)

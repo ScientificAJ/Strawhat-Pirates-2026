@@ -4,13 +4,14 @@ import json
 from typing import Annotated, Literal
 from uuid import UUID
 
+from nova_ember.domain.identifiers import Accession as Accession
+from nova_ember.domain.identifiers import InvestigationId
 from nova_ember.evidence.contracts import EvidenceAnchor
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .custom_agents import CustomAgentProfile
 
 Digest = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
-Accession = Annotated[str, Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")]
 
 
 class Contract(BaseModel):
@@ -19,7 +20,7 @@ class Contract(BaseModel):
 
 class SelectedSource(Contract):
     asset_sha256: Digest
-    accession: Accession | None = None
+    accession: InvestigationId | None = None
     asset_id: str | None = Field(default=None, min_length=1, max_length=1024)
     source_rows: list[Annotated[int, Field(ge=1)]] = Field(default_factory=list, max_length=100)
     columns: list[Annotated[int, Field(ge=0, le=1000)]] = Field(default_factory=list, max_length=64)
@@ -62,7 +63,7 @@ class WorkspaceContext(Contract):
     schema_version: Literal[1] = 1
     context_version: str = Field(min_length=1, max_length=128)
     snapshot_id: Digest
-    investigations: list[Accession] = Field(default_factory=list, max_length=12)
+    investigations: list[InvestigationId] = Field(default_factory=list, max_length=12)
     selected_sources: list[SelectedSource] = Field(default_factory=list, max_length=8)
     selected_private_inputs: list[SelectedPrivateInput] = Field(default_factory=list, max_length=8)
     scenario: dict = Field(default_factory=dict)
@@ -102,7 +103,7 @@ class SelectedImage(Contract):
     consent: Literal[True]
     purpose: str = Field(min_length=1, max_length=500)
     asset_sha256: Digest | None = None
-    accession: Accession | None = None
+    accession: InvestigationId | None = None
     asset_id: str | None = Field(default=None, min_length=1, max_length=1024)
     image_base64: str | None = Field(default=None, max_length=1200000)
     media_type: Literal["image/png", "image/jpeg"]

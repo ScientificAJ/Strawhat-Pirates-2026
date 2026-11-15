@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+import re
 from typing import Annotated, Literal
 
+from nova_ember.domain.identifiers import (
+    NASA_INVESTIGATION_PATTERN,
+    PSI_ACCESSION_PATTERN,
+    InvestigationId,
+)
+from nova_ember.domain.identifiers import Accession as Accession
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Digest = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
-Accession = Annotated[str, Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")]
 ScientificOrigin = Literal[
     "source_reported",
     "measured",
@@ -43,8 +49,8 @@ class Contract(BaseModel):
 
 class EvidenceAnchor(Contract):
     snapshot_id: Digest
-    source_kind: Literal["psi", "ntrs"] = "psi"
-    accession: Accession | None = None
+    source_kind: Literal["psi", "nasa", "ntrs"] = "psi"
+    accession: InvestigationId | None = None
     investigation_version: int | None = Field(default=None, ge=1)
     document_id: str | None = Field(default=None, pattern=r"^[0-9]{11}$")
     capture_id: Digest | None = None
@@ -76,11 +82,20 @@ class EvidenceAnchor(Contract):
 
     @model_validator(mode="after")
     def require_locator(self) -> EvidenceAnchor:
-        if self.source_kind == "psi":
-            if self.accession is None or self.investigation_version is None:
-                raise ValueError("A PSI anchor requires its accession and investigation version.")
+        if self.source_kind in {"psi", "nasa"}:
+            pattern = (
+                PSI_ACCESSION_PATTERN if self.source_kind == "psi" else NASA_INVESTIGATION_PATTERN
+            )
+            if (
+                self.accession is None
+                or re.fullmatch(pattern, self.accession) is None
+                or self.investigation_version is None
+            ):
+                raise ValueError(
+                    "An investigation anchor requires a matching source identity and version."
+                )
             if self.document_id is not None or self.capture_id is not None:
-                raise ValueError("A PSI source anchor cannot carry an NTRS document identity.")
+                raise ValueError("An investigation anchor cannot carry an NTRS document identity.")
         elif (
             self.document_id is None
             or self.capture_id is None
@@ -90,7 +105,7 @@ class EvidenceAnchor(Contract):
             or self.asset_id is not None
         ):
             raise ValueError(
-                "An NTRS page anchor requires its document/capture IDs, not a PSI identity."
+                "An NTRS page anchor requires document/capture IDs, not an investigation identity."
             )
         required = {
             "metadata_field": (self.field,),

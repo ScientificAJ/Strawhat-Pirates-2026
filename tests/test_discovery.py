@@ -127,7 +127,7 @@ def test_canonical_numeric_filter_never_invents_calibration(discovery):
 def test_coverage_reports_repository_scope_not_independent_trials(discovery):
     client, _ = discovery
     coverage = client.get("/v1/evidence/coverage").json()
-    assert len(coverage["items"]) == 24
+    assert len(coverage["items"]) == 36
     saffire = next(row for row in coverage["items"] if row["accession"] == "PSI-99")
     assert saffire["row_roles"] == {"sample_record": 9, "flow_visualization": 2, "note": 4}
     assert saffire["independent_run_count"] is None
@@ -166,7 +166,14 @@ def test_investigation_filters_and_manifest_previews_are_bounded(discovery):
     result = client.post("/v1/discovery/investigations", json={"hardware": "P-Trak"}).json()
     assert [row["accession"] for row in result["items"]] == ["PSI-47"]
     unknown = client.post("/v1/discovery/investigations", json={"license": "unknown"}).json()
-    assert [row["accession"] for row in unknown["items"]] == ["PSI-10"]
+    assert {row["accession"] for row in unknown["items"]} == {
+        "PSI-10",
+        *(
+            row["accession"]
+            for row in client.get("/v1/evidence/coverage").json()["items"]
+            if row.get("source_kind") == "nasa"
+        ),
+    }
     manifest = client.get("/v1/investigations/PSI-69/manifest?limit=3").json()
     assert manifest["total"] == 6555
     assert len(manifest["items"]) == 3
@@ -250,6 +257,11 @@ def test_ntrs_page_evidence_keeps_identity_rights_and_exact_excerpt(discovery):
     assert exact["copyright"]["determinationType"] == "GOV_PERMITTED"
     assert exact["original_bytes_served"] is False
     assert "#page=1" in exact["source_url"]
+    preview = client.post("/v1/evidence/read", json={**match["anchor"], "start": None, "end": None})
+    assert preview.status_code == 200
+    assert preview.json()["text"] == "Known page text: 3.5 mm"
+    assert preview.json()["anchor"]["start"] == 0
+    assert preview.json()["anchor"]["end"] == len("Known page text: 3.5 mm")
     wrong = {**match["anchor"], "source_sha256": "a" * 64}
     assert client.post("/v1/evidence/read", json=wrong).status_code == 404
 

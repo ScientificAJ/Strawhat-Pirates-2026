@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from math import isfinite, sqrt
 from types import MappingProxyType
-from typing import Annotated, Literal
+from typing import Literal
 
+from nova_ember.domain.identifiers import InvestigationId
 from nova_ember.domain.scientific import (
     Fraction,
     MethodContext,
@@ -42,7 +43,7 @@ class DropletModelInputs(ScientificInput):
     """
 
     model_id: Literal["droplet_d_squared_v1"] = MODEL_ID
-    investigation_accession: Annotated[str, Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")] | None = None
+    investigation_accession: InvestigationId | None = None
     initial_diameter_mm: Positive
     burning_constant_mm2_s: Positive
     sample_count: int = Field(default=241, strict=True, ge=2, le=601)

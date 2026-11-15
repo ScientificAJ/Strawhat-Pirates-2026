@@ -784,6 +784,10 @@ def _row_kind(definition: TableDefinition, row: SourceRow) -> RowKind:
 
 def interpret_table(asset: dict[str, Any], table: RawTable) -> InterpretedTable:
     """Return reviewed mappings or raw-readable structured refusal without guesses."""
+    if asset.get("kind") == "publication_table":
+        from .nasa_research import interpret_publication_table
+
+        return interpret_publication_table(asset, table)
     definition = DEFINITIONS.get(asset["file_name"])
     refusals = []
     if definition is None:

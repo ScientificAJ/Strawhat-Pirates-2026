@@ -10,6 +10,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from nova_ember.adapters.psi import parse_csv_bytes
 from nova_ember.analysis.oxygen import oxygen_partial_pressure
+from nova_ember.domain.identifiers import InvestigationId
 from nova_ember.domain.records import RowKind
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -37,7 +38,7 @@ from .voice import create_voice_router
 from .workflows import create_workflow_router
 
 FiniteNumber = Annotated[float, Field(strict=True, allow_inf_nan=False)]
-Accession = Annotated[str, Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")]
+
 Digest = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 
 
@@ -51,7 +52,7 @@ class OxygenInputs(BaseModel):
 
 class ComparisonInputs(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    investigation_ids: Annotated[list[Accession], Field(min_length=2, max_length=8)]
+    investigation_ids: Annotated[list[InvestigationId], Field(min_length=2, max_length=8)]
 
     @field_validator("investigation_ids")
     @classmethod
@@ -204,7 +205,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return corpus.investigations(q.strip(), limit, offset, snapshot_id)
 
     @application.get("/v1/investigations/{accession}")
-    def get_investigation(accession: Accession, snapshot_id: Digest | None = None):
+    def get_investigation(accession: InvestigationId, snapshot_id: Digest | None = None):
         return corpus.investigation(accession, snapshot_id)
 
     @application.get("/v1/assets/{digest}/table")
@@ -249,7 +250,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def download_asset(
         digest: Digest,
         snapshot_id: Digest | None = None,
-        accession: Accession | None = None,
+        accession: InvestigationId | None = None,
         asset_id: Annotated[str | None, Query(max_length=768)] = None,
     ):
         asset = corpus.asset(digest, snapshot_id, accession=accession, asset_id=asset_id)

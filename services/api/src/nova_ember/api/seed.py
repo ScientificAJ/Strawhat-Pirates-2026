@@ -135,6 +135,11 @@ def seed(settings: Settings | None = None) -> str:
         canonical = json.dumps(effective, sort_keys=True, separators=(",", ":")).encode()
         snapshot_id = sha256(canonical).hexdigest()
         releases.append((snapshot_id, effective))
+    if settings.nasa_research_directory is not None:
+        effective = enrich_nasa_research(settings, effective, snapshot_id, base_id)
+        canonical = json.dumps(effective, sort_keys=True, separators=(",", ":")).encode()
+        snapshot_id = sha256(canonical).hexdigest()
+        releases.append((snapshot_id, effective))
     migrate(settings.database_url)
     with connect(settings.database_url) as connection:
         for release_id, release in releases:
@@ -145,6 +150,46 @@ def seed(settings: Settings | None = None) -> str:
             (snapshot_id,),
         )
     return snapshot_id
+
+
+def enrich_nasa_research(settings: Settings, base: dict, parent_id: str, source_id: str) -> dict:
+    """Add reviewed NASA research without relabeling it as a PSI source release."""
+    from nova_ember.adapters.nasa_research import checked_file, load_collection
+
+    directory = settings.nasa_research_directory
+    assert directory is not None
+    original = (directory / "collection.json").read_bytes()
+    collection = load_collection(directory)
+    identities = {record["accession"] for record in base["investigations"]}
+    if identities.intersection(record["accession"] for record in collection["investigations"]):
+        raise ValueError("NASA research supplement duplicates an existing investigation.")
+    for record in collection["investigations"]:
+        reference = {"path": record["metadata_path"], "sha256": record["metadata_sha256"]}
+        write_object(
+            settings.object_directory, reference["sha256"], checked_file(directory, reference)
+        )
+    for source in collection["sources"]:
+        for reference in (source, source["text"]):
+            write_object(
+                settings.object_directory, reference["sha256"], checked_file(directory, reference)
+            )
+    for asset in collection["assets"]:
+        write_object(settings.object_directory, asset["sha256"], checked_file(directory, asset))
+    return {
+        **base,
+        "parent_snapshot_id": parent_id,
+        "source_snapshot_id": source_id,
+        "fetched_at": max(base["fetched_at"], collection["captured_at"]),
+        "investigations": [*base["investigations"], *collection["investigations"]],
+        "assets": [*base["assets"], *collection["assets"]],
+        "nasa_research_collection": {
+            "sha256": sha256(original).hexdigest(),
+            "captured_at": collection["captured_at"],
+            "record_count": len(collection["investigations"]),
+            "original_psi_record_count": len(base["investigations"]),
+        },
+        "nasa_research_documents": collection.get("documents", []),
+    }
 
 
 def enrich_snapshot(

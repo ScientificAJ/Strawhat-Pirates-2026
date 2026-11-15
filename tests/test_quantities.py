@@ -14,6 +14,17 @@ from nova_ember.domain.quantities import conversion_formula, convert_source_scal
         ("0", "s", 0, "s"),
         ("1.38", "1", 1.38, "1"),
         ("1e-3", "m", 0.001, "m"),
+        ("1.5", "kJ", 1500, "J"),
+        ("20", "J", 20, "J"),
+        ("1", "Pa", 1, "Pa"),
+        ("101.325", "kPa", 101325, "Pa"),
+        ("1", "atm", 101325, "Pa"),
+        ("760", "mmHg", 101325.0144354, "Pa"),
+        ("8.2", "psia", 56537.0098039776, "Pa"),
+        ("0.3", "m^3", 0.3, "m^3"),
+        ("2.5", "1/s", 2.5, "1/s"),
+        ("0.12", "W/cm^2", 1200, "W/m^2"),
+        ("100", "ppm", 0.0001, "1"),
     ],
 )
 def test_known_unit_conversions_keep_units_and_numerical_meaning(raw, unit, expected, canonical):
@@ -38,7 +49,7 @@ def test_known_unit_conversions_keep_units_and_numerical_meaning(raw, unit, expe
         ("1e-5000", "s"),
         ("1e-1000000", "mm"),
         ("-274", "degC"),
-        ("1", "mmHg"),
+        ("1", "psi"),
         ("9.2 s", "s"),
     ],
 )

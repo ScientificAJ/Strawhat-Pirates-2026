@@ -2342,7 +2342,7 @@ export interface components {
              * @default psi
              * @enum {string}
              */
-            source_kind: "psi" | "ntrs";
+            source_kind: "psi" | "nasa" | "ntrs";
             /** Source Row */
             source_row?: number | null;
             /** Source Sha256 */
@@ -2986,7 +2986,7 @@ export interface components {
              * Row Kinds
              * @default []
              */
-            row_kinds: ("source_test_record" | "condition_record" | "range_summary" | "daily_summary" | "session_record" | "sample_record" | "flow_visualization" | "note" | "unclassified_record")[];
+            row_kinds: ("source_test_record" | "condition_record" | "range_summary" | "daily_summary" | "session_record" | "sample_record" | "flow_visualization" | "note" | "unclassified_record" | "published_summary")[];
             /** Snapshot Id */
             snapshot_id?: string | null;
             /**
@@ -3152,7 +3152,7 @@ export interface components {
             /** Snapshot Id */
             snapshot_id: string;
             /** Source Kinds */
-            source_kinds?: ("psi" | "ntrs")[];
+            source_kinds?: ("psi" | "ntrs" | "nasa")[];
             /** Source Sha256 */
             source_sha256?: string[];
         };
@@ -3338,7 +3338,7 @@ export interface components {
              * Row Kind
              * @enum {string}
              */
-            row_kind: "source_test_record" | "condition_record" | "range_summary" | "daily_summary" | "session_record" | "sample_record" | "flow_visualization" | "note" | "unclassified_record";
+            row_kind: "source_test_record" | "condition_record" | "range_summary" | "daily_summary" | "session_record" | "sample_record" | "flow_visualization" | "note" | "unclassified_record" | "published_summary";
             /** Source Row */
             source_row: number;
         };
@@ -4073,7 +4073,7 @@ export interface operations {
         parameters: {
             query?: {
                 snapshot_id?: string | null;
-                row_kind?: ("source_test_record" | "condition_record" | "range_summary" | "daily_summary" | "session_record" | "sample_record" | "flow_visualization" | "note" | "unclassified_record") | null;
+                row_kind?: ("source_test_record" | "condition_record" | "range_summary" | "daily_summary" | "session_record" | "sample_record" | "flow_visualization" | "note" | "unclassified_record" | "published_summary") | null;
                 limit?: number;
                 offset?: number;
             };

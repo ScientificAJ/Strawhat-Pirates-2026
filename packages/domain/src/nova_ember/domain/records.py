@@ -14,6 +14,7 @@ RowKind = Literal[
     "flow_visualization",
     "note",
     "unclassified_record",
+    "published_summary",
 ]
 FieldStatus = Literal["text", "normalized", "missing", "unresolved"]
 MissingReason = Literal["not_reported", "not_applicable", "ambiguous", "invalid"]

@@ -28,6 +28,7 @@ def evidence_client(tmp_path_factory):
         object_directory=tmp_path_factory.mktemp("supporting-objects"),
         media_directory=None,
         methods_directory=None,
+        nasa_research_directory=None,
     )
     assert settings.supporting_directory is not None
     seed(settings)

@@ -23,6 +23,13 @@ INVESTIGATION_FIELDS = (
     "platform",
     "quality_notes",
     "status",
+    "source_kind",
+    "origin",
+    "record_type",
+    "parent_accession",
+    "data_status",
+    "source_provenance",
+    "research_status",
 )
 ASSET_FIELDS = (
     "id",
@@ -46,6 +53,12 @@ ASSET_FIELDS = (
     "source_run_association",
     "metadata_sha256",
     "manifest_sha256",
+    "source_kind",
+    "origin",
+    "source_provenance",
+    "source_anchors",
+    "table_definition",
+    "redistribution",
 )
 
 
@@ -81,8 +94,20 @@ class Corpus:
         return {
             "snapshot_id": row["id"],
             "fetched_at": row["fetched_at"].isoformat(),
-            "investigation_count": len(row["manifest"]["investigations"]),
+            "investigation_count": sum(
+                record.get("record_type") != "program"
+                for record in row["manifest"]["investigations"]
+            ),
             "asset_count": len(row["manifest"]["assets"]),
+            "research_record_count": len(row["manifest"]["investigations"]),
+            "psi_investigation_count": sum(
+                record["accession"].startswith("PSI-")
+                for record in row["manifest"]["investigations"]
+            ),
+            "program_count": sum(
+                record.get("record_type") == "program"
+                for record in row["manifest"]["investigations"]
+            ),
             "manifest": row["manifest"],
         }
 

@@ -134,3 +134,37 @@ def test_failed_pdf_retains_citation_and_visible_acquisition_error(tmp_path):
     assert (
         json.loads((tmp_path / record["metadata"]["path"]).read_bytes())["distribution"] == "PUBLIC"
     )
+
+
+def test_decoding_limit_preserves_other_pages_and_marks_missing_text(monkeypatch):
+    from types import SimpleNamespace
+
+    import nova_ember.adapters.documents as documents
+    from pypdf.errors import LimitReachedError
+
+    def large_figure_page(**_kwargs):
+        raise LimitReachedError("Compressed figure exceeds the decoding bound")
+
+    def page(extract):
+        return SimpleNamespace(
+            extract_text=extract,
+            rotation=0,
+            mediabox=SimpleNamespace(width=200, height=100),
+        )
+
+    reader = SimpleNamespace(
+        is_encrypted=False,
+        pages=[
+            page(lambda **_kwargs: "First page remains traceable"),
+            page(large_figure_page),
+            page(lambda **_kwargs: "Third page retains its original page number"),
+        ],
+    )
+    monkeypatch.setattr(documents, "PdfReader", lambda *_args, **_kwargs: reader)
+    pages = extract_pdf_pages(pdf_source())
+    assert [item.page for item in pages] == [1, 2, 3]
+    assert pages[0].text == "First page remains traceable"
+    assert pages[1].text == ""
+    assert pages[1].extraction_status == "text_extraction_unavailable"
+    assert "decoding limits" in pages[1].extraction_error
+    assert pages[2].text == "Third page retains its original page number"

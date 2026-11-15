@@ -2,11 +2,12 @@
 
 import json
 from collections.abc import Callable
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 
 from fastapi import APIRouter, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from nova_ember.domain.identifiers import InvestigationId
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from .artifacts import Digest, QuerySpec, execute_query
@@ -29,7 +30,7 @@ class SearchInputs(BaseModel):
 
 class InvestigationInputs(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    accession: Annotated[str, Field(pattern=r"^PSI-[1-9][0-9]{0,5}$")]
+    accession: InvestigationId
     snapshot_id: Digest | None = None
 
 

@@ -62,12 +62,15 @@ def test_database_version_extensions_and_checksum_revisions(corpus_client, corpu
 
 def test_seed_is_idempotent_and_catalog_survives_new_api_process(corpus_client, corpus_settings):
     first = corpus_client.get("/v1/snapshots/current").json()
-    assert first["investigation_count"] == 24
+    assert first["investigation_count"] == 35
+    assert first["research_record_count"] == 36
+    assert first["psi_investigation_count"] == 24
+    assert first["program_count"] == 1
     assert seed(corpus_settings) == first["snapshot_id"]
     new_client = TestClient(create_app(corpus_settings))
     catalog = new_client.get("/v1/investigations?limit=100").json()
-    assert catalog["total"] == 24
-    assert len({item["accession"] for item in catalog["items"]}) == 24
+    assert catalog["total"] == 36
+    assert len({item["accession"] for item in catalog["items"]}) == 36
     assert catalog["snapshot_id"] == first["snapshot_id"]
 
 

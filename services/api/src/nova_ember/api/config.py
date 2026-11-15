@@ -32,6 +32,7 @@ class Settings:
     openai_api_key: str | None = field(default=None, repr=False)
     research_daily_budget_usd: float = 5.0
     research_request_budget_usd: float = 0.10
+    nasa_research_directory: Path | None = None
 
     def __post_init__(self) -> None:
         if any(
@@ -55,6 +56,9 @@ class Settings:
         methods = Path(
             os.environ.get("NOVA_METHODS_DIRECTORY", root / "tests/fixtures/nasa-psi-methods")
         ).resolve()
+        nasa_research = Path(
+            os.environ.get("NOVA_NASA_RESEARCH_DIRECTORY", root / "data/nasa-research")
+        ).resolve()
         return cls(
             database_url=os.environ.get(
                 "NOVA_DATABASE_URL",
@@ -70,6 +74,9 @@ class Settings:
             supporting_directory=supporting if (supporting / "snapshot.json").is_file() else None,
             media_directory=media if (media / "snapshot.json").is_file() else None,
             methods_directory=methods if (methods / "snapshot.json").is_file() else None,
+            nasa_research_directory=nasa_research
+            if (nasa_research / "collection.json").is_file()
+            else None,
             openai_api_key=backend_key(root),
             research_daily_budget_usd=float(os.environ.get("NOVA_DAILY_MODEL_BUDGET_USD", "5")),
             research_request_budget_usd=float(

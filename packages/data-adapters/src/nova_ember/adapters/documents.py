@@ -19,7 +19,7 @@ from urllib.parse import urljoin, urlsplit
 
 import httpx
 from pypdf import PdfReader
-from pypdf.errors import PdfReadError
+from pypdf.errors import LimitReachedError, PdfReadError
 
 from .manifests import checked_json, write_immutable
 from .psi import Capture, SourceUnavailable
@@ -44,6 +44,8 @@ class PdfPage:
     rotation_degrees: int
     width_points: float
     height_points: float
+    extraction_status: str = "page_text_available"
+    extraction_error: str | None = None
 
 
 def extract_pdf_pages(content: bytes) -> tuple[PdfPage, ...]:
@@ -63,7 +65,14 @@ def extract_pdf_pages(content: bytes) -> tuple[PdfPage, ...]:
         pages = []
         total = 0
         for number, page in enumerate(reader.pages, start=1):
-            text = page.extract_text(extraction_mode="plain") or ""
+            extraction_error = None
+            try:
+                text = page.extract_text(extraction_mode="plain") or ""
+            except LimitReachedError:
+                # Some reports embed large figure streams. Preserve the page number
+                # and usable surrounding pages without relaxing the reader's limits.
+                text = ""
+                extraction_error = "This page exceeds the registered PDF decoding limits."
             total += len(text)
             if total > MAX_EXTRACTED_CHARACTERS or len(text) > 100_000:
                 raise ValueError("Extracted PDF text exceeds the bounded document/page limit.")
@@ -75,6 +84,8 @@ def extract_pdf_pages(content: bytes) -> tuple[PdfPage, ...]:
                     page.rotation,
                     float(page.mediabox.width),
                     float(page.mediabox.height),
+                    "text_extraction_unavailable" if extraction_error else "page_text_available",
+                    extraction_error,
                 )
             )
         return tuple(pages)
@@ -199,7 +210,7 @@ def capture_ntrs_document(
         "status": "metadata_available",
         "pdf": None,
         "pages": None,
-        "extraction_method": "pypdf-plain-page-text-v1",
+        "extraction_method": "pypdf-plain-page-text-v2",
         "reader_version": version("pypdf"),
         "extraction_limits": {
             "wall_seconds": 30,
@@ -236,7 +247,16 @@ def capture_ntrs_document(
                 "byte_size": len(extracted),
                 "page_count": len(pages),
             }
-            record["status"] = "page_text_available"
+            unavailable = [page.page for page in pages if page.extraction_error]
+            record["status"] = (
+                "partial_page_text_available" if unavailable else "page_text_available"
+            )
+            if unavailable:
+                record["unavailable_text_pages"] = unavailable
+                record["limitations"].append(
+                    "Some page text exceeded decoding limits; those pages remain available "
+                    "in the original NASA document and are excluded from text retrieval."
+                )
         except ValueError as error:
             record["status"] = "text_extraction_unavailable"
             record["extraction_error"] = str(error)
