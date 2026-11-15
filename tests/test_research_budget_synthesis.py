@@ -218,10 +218,10 @@ def test_expensive_next_tool_turn_yields_to_checked_synthesis_without_raising_ca
     assert reservations == [Decimal("0.1")]
     if gathering_incomplete:
         assert settled == [None]
-        assert Decimal("0.011") < Decimal(result["cost_usd"]) <= Decimal("0.1")
+        assert Decimal("0.022") < Decimal(result["cost_usd"]) <= Decimal("0.1")
     else:
-        assert settled == [Decimal("0.011")]
-        assert Decimal(result["cost_usd"]) == Decimal("0.011")
+        assert settled == [Decimal("0.022")]
+        assert Decimal(result["cost_usd"]) == Decimal("0.022")
     assert len(result["provider_calls"]) == 2
     assert steps == [f"provider-call-{index + 1}" for index in range(len(paid_calls))]
 

@@ -1,16 +1,20 @@
 """Provider routing and per-run accounting without provider-owned scientific state."""
 
 import json
+from dataclasses import replace
 from decimal import Decimal
 from typing import Any
 
-from agents import OpenAIResponsesModel
+from agents import ModelSettings, OpenAIResponsesModel
 from openai import AsyncOpenAI
 
 REASONING_MODELS = {"routine": "gpt-6.1-terra", "complex": "gpt-6.1-sol"}
+SERVICE_TIER = "priority"
+# Fast/Priority prices per million tokens, checked 15 November 2026:
+# https://developers.openai.com/api/docs/pricing
 RATES = {
-    "gpt-6.1-terra": (Decimal("1"), Decimal("5")),
-    "gpt-6.1-sol": (Decimal("2"), Decimal("10")),
+    "gpt-6.1-terra": (Decimal("2"), Decimal("10")),
+    "gpt-6.1-sol": (Decimal("4"), Decimal("20")),
 }
 ROUTING_VERSION = "sol-terra-complexity-v1"
 
@@ -78,7 +82,17 @@ class BudgetedResponsesModel(OpenAIResponsesModel):
     async def get_response(self, *args: Any, **kwargs: Any):
         instructions = kwargs.get("system_instructions", args[0] if args else "")
         supplied_input = kwargs.get("input", args[1] if len(args) > 1 else "")
-        settings = kwargs.get("model_settings", args[2] if len(args) > 2 else None)
+        settings = (
+            kwargs.get("model_settings", args[2] if len(args) > 2 else None) or ModelSettings()
+        )
+        settings = replace(
+            settings,
+            extra_args={**(settings.extra_args or {}), "service_tier": SERVICE_TIER},
+        )
+        if len(args) > 2:
+            args = (*args[:2], settings, *args[3:])
+        else:
+            kwargs["model_settings"] = settings
         tools = kwargs.get("tools", args[3] if len(args) > 3 else [])
         schema = kwargs.get("output_schema", args[4] if len(args) > 4 else None)
         # UTF-8 byte count bounds text tokens; include schemas and protocol overhead.
@@ -144,6 +158,7 @@ class BudgetedResponsesModel(OpenAIResponsesModel):
         self.spent_usd += cost - reservation
         record = {
             "model": self.selected_model,
+            "requested_service_tier": SERVICE_TIER,
             "input_tokens": usage.input_tokens,
             "output_tokens": usage.output_tokens,
             "cost_usd": str(cost),

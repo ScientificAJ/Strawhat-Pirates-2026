@@ -76,6 +76,10 @@ records projected, embedded and omitted scope; cached matching vectors are reuse
 
 ## Verification
 
+Sol and Terra text requests explicitly use `service_tier="priority"`, including
+research and profile/skill drafting. Budget estimates use the Fast/Priority token
+rates; the configured request and daily limits still apply.
+
 ```sh
 pnpm test
 pnpm lint

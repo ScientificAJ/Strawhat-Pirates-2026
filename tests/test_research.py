@@ -7,6 +7,7 @@ from decimal import Decimal
 from types import SimpleNamespace
 
 import pytest
+from agents import ModelSettings
 from nova_ember.agent_tools.provider import (
     BudgetedResponsesModel,
     ModelBudgetExceeded,
@@ -28,8 +29,8 @@ def test_complex_and_routine_routes_preserve_the_selected_models():
     assert route_model("Explain a mechanism", complexity="routine") == "gpt-6.1-terra"
     with pytest.raises(ValueError):
         route_model("Find a source", complexity="unregistered-model")
-    assert token_cost("gpt-6.1-sol", 20000, 4000) == Decimal("0.08")
-    assert token_cost("gpt-6.1-terra", 20000, 4000) == Decimal("0.04")
+    assert token_cost("gpt-6.1-sol", 20000, 4000) == Decimal("0.16")
+    assert token_cost("gpt-6.1-terra", 20000, 4000) == Decimal("0.08")
 
 
 def test_key_is_backend_only_and_absent_from_configuration_representation(tmp_path, monkeypatch):
@@ -230,7 +231,7 @@ def test_budget_is_checked_before_network_or_step_execution(monkeypatch):
     )
     with pytest.raises(ModelBudgetExceeded):
         asyncio.run(
-            model.get_response("Instructions", "Input", SimpleNamespace(max_tokens=1000), [], None)
+            model.get_response("Instructions", "Input", ModelSettings(max_tokens=1000), [], None)
         )
     assert not calls
     assert model.spent_usd == 0
@@ -248,9 +249,9 @@ def test_confirmed_usage_replaces_conservative_reservation(monkeypatch):
     client = AsyncOpenAI(api_key="development-placeholder")
     model = BudgetedResponsesModel("gpt-6.1-terra", client, Decimal("0.1"), exact_token_count=False)
     asyncio.run(
-        model.get_response("Instructions", "Input", SimpleNamespace(max_tokens=1000), [], None)
+        model.get_response("Instructions", "Input", ModelSettings(max_tokens=1000), [], None)
     )
-    assert model.spent_usd == Decimal("0.00035")
+    assert model.spent_usd == Decimal("0.00070")
     assert model.calls[0]["response_id"] == "response-placeholder"
     asyncio.run(client.close())
 
@@ -267,7 +268,7 @@ def test_uncertain_provider_call_keeps_reservation_and_is_not_retried(monkeypatc
     model = BudgetedResponsesModel("gpt-6.1-terra", client, Decimal("0.1"), exact_token_count=False)
     with pytest.raises(TimeoutError):
         asyncio.run(
-            model.get_response("Instructions", "Input", SimpleNamespace(max_tokens=1000), [], None)
+            model.get_response("Instructions", "Input", ModelSettings(max_tokens=1000), [], None)
         )
     assert len(calls) == 1
     assert model.spent_usd > 0
