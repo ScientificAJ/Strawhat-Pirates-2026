@@ -29,3 +29,17 @@ The official [Project Submission Guide](https://www.spaceappschallenge.org/resou
 ## Before release
 
 Complete the outstanding checks in the linked media and software inventories; identify and clear each asset used in the final submission, preserve required notices, and verify the final project-page references and AI disclosures. Check any image, generated content or audio under the applicable organizer rules. Confirm that the public demo, project link and hosted application are accessible and match the submitted revision. A successful push is not a submitted project or a verified deployment.
+
+## Update — later on 15 November 2026
+
+The Space Apps team photo and account avatar were replaced and their saves confirmed in the site interface. Both use the unaltered [*Marble head of a Greek general*](https://www.metmuseum.org/art/collection/search/251493), Fletcher Fund, 1924, accession 24.97.32, from The Metropolitan Museum of Art. The [Met API record](https://collectionapi.metmuseum.org/public/collection/v1/objects/251493) identifies the image as public domain; the museum's [Open Access policy](https://www.metmuseum.org/policies/image-resources) applies CC0 to public-domain collection images. The earlier film image and its unverified license no longer describe the current photos. The uploaded original's SHA-256 is `c697019dd8393535ff4eeed9738ad8c98cbb18c0a54ccd121d93851ac676f75d`. No generative alteration was applied to this replacement.
+
+The video production chat identifies `nova-ember-demo-v2.mp4` as the revised cut; its hash matches that chat's corrected final render. The earlier description of it as a draft did not reflect that revision. A completed local export is distinct from a separately hosted public video and final submission. The form itself confirms a maximum 30-second video or seven slides, a public project link, NASA and other source lists and SI-use fields. At inspection, its Project tab was incomplete and had not been submitted.
+
+The [third-party notice collection](third-party-notices/2026-11-15/README.md) now preserves notices and package records from five inspected local application images; the worker and seed share the API image layers. Additional release-specific image, source and relinking reviews remain listed there; the locally inspected images are not evidence of the contents of any hosted deployment.
+
+A procedural BASS-II flame visualization in the application is rendered by code and is labeled as illustrative, rather than being a saved image-generation-model output. Its code was AI-assisted. The organizer's wording does not establish whether a procedural rendering selected by a model requires the same visible watermark as SI-generated imagery; clarify this with the organizer for any submitted capture. The reviewed demo frames did not show that visualization.
+
+The [submission source register](submission-source-register-2026-11-15.md) provides individual PSI and NASA publication links and other resource references for preparing the project form. The team About page also displays the Met image credit.
+
+The hosting chat subsequently reported a live deployment at [nova-ember.duckdns.org/app](https://nova-ember.duckdns.org/app), with successful source-linked assistant and research-flow checks. An independent HTTPS request in this review returned HTTP 200 with certificate verification succeeding. This request alone did not retest the full application; hosted Python and shell execution were reported disabled pending host-specific qualification.

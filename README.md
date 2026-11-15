@@ -28,9 +28,9 @@ Scientific context stays close to the evidence: source locations and units accom
 
 ## See Nova Ember
 
-[Watch the 28-second demo draft](media/nova-ember-space-apps/nova-ember-demo-v2.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md)
+[Open Nova Ember](https://nova-ember.duckdns.org/app) · [Watch the revised 28-second demo](media/nova-ember-space-apps/nova-ember-demo-v2-attributed.mp4) · [Video credits and sources](media/nova-ember-space-apps/credits.md)
 
-The screenshots below show the local application on 15 November 2026. The hosted application and final demo link are being prepared separately.
+The screenshots below show the local application on 15 November 2026.
 
 ![Nova Ember comparing the objectives and approaches of two NASA combustion investigations](docs/redesign-2026-11-15/comparison-desktop.png)
 
@@ -82,7 +82,7 @@ AI tools were used in the project in the following ways:
 - **ChatGPT** helped outline the system architecture.
 - **Gemini web app (Hydrogen)** helped rapidly prototype visualizations. **Gemini Hydrogen High** also assisted with drafting and refining this README.
 - **OpenAI Codex** helped rapidly prototype code, create project files and validate implementation work.
-- **ChatGPT Images 2.0** was used to upscale the team image. The original image source and applicable license are being verified.
+- **ChatGPT Images 2.0** was used to upscale an earlier team image. The current Space Apps team and profile images use an unaltered public-domain photograph from The Met instead.
 - **OpenAI text-to-speech**, using the Marin voice, generated the demo video's narration; the [video credits](media/nova-ember-space-apps/credits.md) describe the audio and other media.
 
 The application's optional research assistant, semantic search and voice features also use configured OpenAI models. Their responses and interpretations are distinct from source-reported data and registered calculations.
@@ -94,8 +94,10 @@ Nova Ember builds on NASA's public research and the challenge resources:
 - [Flame in Freefall challenge](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/) — the problem and challenge objectives.
 - [NASA PSI combustion research](https://psi.nasa.gov/physci/repo/search?q=combustion) — investigation records and available data.
 - [NASA: Studying Combustion and Fire Safety](https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/) — background on combustion research in space.
-- [NASA research collection](data/nasa-research/README.md) and [source inventory](docs/data-sources.md) — retained sources, identifiers, table provenance, coverage and rights notes. The application links individual evidence to its original record or publication.
+- [NASA research collection](data/nasa-research/README.md), [source inventory](docs/data-sources.md) and [submission source register](docs/submission-source-register-2026-11-15.md) — retained sources, identifiers, table provenance, coverage and rights notes. The application links individual evidence to its original record or publication.
+
+The Space Apps team and profile images use The Metropolitan Museum of Art’s [*Marble head of a Greek general*](https://www.metmuseum.org/art/collection/search/251493), Roman, 1st–2nd century CE, Fletcher Fund, 1924 (24.97.32). The Met provides the image as [public domain under CC0](https://www.metmuseum.org/policies/image-resources).
 
 The demo uses NASA Glenn’s [candle-flame image](https://images.nasa.gov/details/GRC-1998-C-00486) and footage from [*Great Balls of Fire — FLEX*](https://svs.gsfc.nasa.gov/11318/), credited to Science@NASA and NASA’s Goddard Space Flight Center. Its music is [“Mesmerizing Galaxy” by Kevin MacLeod](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300011), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the track was trimmed, faded and mixed. The [video credits](media/nova-ember-space-apps/credits.md) provide the full source and modification record.
 
-The repository's original code is licensed under [Apache-2.0](LICENSE). Major open-source components include Next.js and React (MIT), Vega (BSD-3-Clause), Three.js (MIT), Lucide (ISC), FastAPI (MIT), and Psycopg (LGPL-3.0). Inter and IBM Plex Mono are distributed under the SIL Open Font License. The [third-party software inventory](docs/third-party-software-2026-11-15.md) lists locked dependencies, recorded licenses and bundled notices. NASA data, publications, media and other third-party components retain their own applicable rights and notices; the [source inventory](docs/data-sources.md) records available rights assertions and unresolved cases. The [NASA Space Apps participant terms](https://www.spaceappschallenge.org/legal/) require citations for sources used and applicable third-party license documentation.
+The repository's original code is licensed under [Apache-2.0](LICENSE). Major open-source components include Next.js and React (MIT), Vega (BSD-3-Clause), Three.js (MIT), Lucide (ISC), FastAPI (MIT), and Psycopg (LGPL-3.0). Inter and IBM Plex Mono are distributed under the SIL Open Font License. The [third-party software inventory](docs/third-party-software-2026-11-15.md) lists locked dependencies and recorded licenses; the [local image notice collection](docs/third-party-notices/2026-11-15/README.md) preserves the license and copyright files recovered from inspected application images. NASA data, publications, media and other third-party components retain their own applicable rights and notices; the [source inventory](docs/data-sources.md) records available rights assertions and unresolved cases. The [NASA Space Apps participant terms](https://www.spaceappschallenge.org/legal/) require citations for sources used and applicable third-party license documentation.
