@@ -1,4 +1,17 @@
-# NASA PSI source collection
+# NASA source collections
+
+The current successor retains the 24 PSI combustion investigations and adds 11
+investigations from NASA research pages and NTRS publications, together with a
+separate SoFIE program entry. The [NASA research pack](../data/nasa-research/README.md)
+contains the pinned originals, reviewed curation and reproducible table builder.
+Its 14 tables connect to record search, SI evidence tools, comparison, queries,
+charts and exports. FM2 rows describe planned conditions; LUCI rates are published
+descriptive fits. Neither is relabeled as raw measurement data.
+
+The [expansion report](nasa-research-expansion-2026-11-15.md) describes current scope
+and exclusions. The observations below describe the original PSI starter capture.
+
+## Original PSI starter capture
 
 The starter-capture observations below are historical. The successor supporting,
 media and method packs, complete manifest discovery, refresh and selective source

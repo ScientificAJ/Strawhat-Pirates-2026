@@ -23,6 +23,8 @@ The [current brief](MASTER_BRIEF.md) organizes the product around research tasks
 
 Original source values, units and locations stay attached to interpreted data and derived results. Comparison preserves condition differences. Descriptive fits are separate from validated prediction; safety-control and Earth-transfer research do not establish operational suitability. See [scientific methods](docs/methods.md), [data dictionary](docs/data-dictionary.md), [source inventory](docs/data-sources.md) and the [bounded science review](docs/science-validation-2026-11-15.md).
 
+The current catalog contains **35 investigations and one SoFIE program entry**: the 24 PSI combustion studies plus Saffire IV–VI, SoFIE's five studies, FLARE, FM2 and LUCI. The [NASA research collection](data/nasa-research/README.md) supplies reviewed source captures and publication tables to discovery, the assistant, comparison and analysis. These selected sources do not mirror NASA's multi-terabyte raw archive. See the [source expansion report](docs/nasa-research-expansion-2026-11-15.md) for available data, omitted material and local verification.
+
 The [redesign report](docs/product-redesign-2026-11-15.md) records the connected research journeys, rendered checks, a bounded live assistant result and remaining limits. The [earlier full local verification report](docs/full-product-verification-2026-11-15.md) remains evidence for the **pre-redesign** version. Hosted acceptance, actual device/voice behavior, broader scientific evaluation and source-specific gaps need their own evidence; the plan keeps those states distinct.
 
 ## Project references

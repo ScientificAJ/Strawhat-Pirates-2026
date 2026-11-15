@@ -45,6 +45,35 @@ in `.data/objects`. Original licensed fixtures live separately in
 Docker may assign ownership of the PostgreSQL directory to its database user;
 do not recursively change that directory's ownership.
 
+The committed `data/nasa-research` pack is verified and imported by ordinary
+startup. It contains NASA source captures, reviewed metadata and 14 publication
+tables. Rebuilding these views is offline:
+
+```sh
+python3 scripts/build_nasa_research.py --check
+```
+
+To retain the seven reviewed original NTRS reports for page-text search, run the
+bounded acquisition explicitly. It checks each PDF's expected checksum and size
+before updating a capture; source references and table browsing work without it.
+
+```sh
+python3 scripts/python.py scripts/capture_nasa_research_documents.py
+python3 scripts/build_nasa_research.py --check --document-cache .data/evidence-documents/objects
+```
+
+The PDFs stay in the ignored evidence-document cache with their original rights.
+Pages that exceed the PDF decoder's limits remain linked at NASA and are marked
+unavailable for text search. No limit is relaxed to force extraction. Semantic
+indexing is an explicit model-backed operation when a backend key is configured:
+
+```sh
+python3 scripts/python.py -m nova_ember.api.semantic
+```
+
+Reindex after acquiring reports or importing a new source snapshot. Search status
+records projected, embedded and omitted scope; cached matching vectors are reused.
+
 ## Verification
 
 ```sh

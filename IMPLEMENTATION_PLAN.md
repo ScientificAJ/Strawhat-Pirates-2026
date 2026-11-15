@@ -12,6 +12,13 @@ For this redesign, record the exact check, source revision, environment, outcome
 
 The [redesign report](docs/product-redesign-2026-11-15.md) records the implemented journeys, local checks and bounded live observation. Checked items below refer to that evidence; public deployment and unperformed acceptance remain open.
 
+The subsequent [NASA source expansion](docs/nasa-research-expansion-2026-11-15.md)
+adds Saffire IV–VI, SoFIE and its five studies, FLARE, FM2 and LUCI throughout
+discovery, assistant evidence, comparison and analysis. It preserves the previous
+24-study source snapshots. Publication-table transcriptions, source-derived fits
+and future test conditions have separate origins; no raw archive mirroring or
+unqualified predictive training is implied by the larger catalog.
+
 ## Delivery work
 
 ### 1. Reorganize the product around research

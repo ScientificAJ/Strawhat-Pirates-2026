@@ -96,7 +96,7 @@ The [methods reference](docs/methods.md), [data dictionary](docs/data-dictionary
 | Responsibility | Existing implementation and constraint |
 | --- | --- |
 | Interface and API | Next.js/React/TypeScript and Python/FastAPI; generated contracts and a same-origin API |
-| Source corpus | Versioned NASA PSI metadata, retained original files, source-specific readers and exact evidence anchors; catalog presence does not imply every file is acquired or interpreted |
+| Source corpus | Versioned NASA PSI metadata plus reviewed NASA research pages, NTRS reports and publication tables; source-specific readers and exact evidence anchors; catalog presence does not imply every file is acquired or interpreted |
 | Search and analysis | Literal and semantic retrieval, typed record queries, condition-aware comparison, registered numerical methods, charts, datasets and source-bound exports |
 | Research assistance | Existing model connection and typed tool registry; mechanical source/numeric/domain checks and explicit approvals remain authoritative |
 | Personal continuity | Browser documents, conversations, notes, revisions and preferences; existing data must survive the visible redesign |
@@ -129,8 +129,17 @@ The official challenge Details and Resources were read in the browser on **15 No
 | [Apollo 1](https://sma.nasa.gov/sma-disciplines/accllp/apollo-1), [Apollo 13](https://sma.nasa.gov/sma-disciplines/accllp/apollo-13), and [Mir fire history](https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/) | Fire and oxygen-system incident context, distinct from experimental data |
 | NASA Spinoff: [air tanks](https://spinoff.nasa.gov/node/9582), [smoke detector](https://spinoff.nasa.gov/node/9407), [protective attire](https://spinoff.nasa.gov/node/9918) | Source-described Earth technology applications |
 
-The broad PSI keyword search for **combustion** returns **26 records** across research areas. A follow-up check on 15 November 2026, with the **Combustion Science** research-area filter and no keyword restriction, returned **24 investigations**. Their identifiers exactly match the retained application corpus. The two additional keyword matches are PSI-181 (a Materials Science solder investigation) and PSI-108 (a Fluid Physics convection investigation); they do not establish a gap in combustion-category coverage. Metadata coverage does not imply every underlying file is retained or every scientific field is interpreted.
+The broad PSI keyword search for **combustion** returns **26 records** across research areas. A follow-up check on 15 November 2026, with the **Combustion Science** research-area filter and no keyword restriction, returned **24 investigations**. Their identifiers exactly match the retained PSI subset. The two additional keyword matches are PSI-181 (a Materials Science solder investigation) and PSI-108 (a Fluid Physics convection investigation); they do not establish a gap in combustion-category coverage. Metadata coverage does not imply every underlying file is retained or every scientific field is interpreted.
 
 NASA's broader combustion program includes work outside this PSI set: the NASA Glenn overview also lists SoFIE, FLARE and FM2. Broader literature/context discovery can include these with clear data-availability labels; their existence does not establish that corresponding PSI datasets are available. The challenge specifically states that partial-gravity combustion data are not yet available in PSI, mentioning LUCI and FM2 as expected future sources.
+
+The current successor implements that broader discovery: **35 investigations and
+one SoFIE program entry**, including Saffire IV–VI, all five SoFIE studies, FLARE,
+FM2 and LUCI. NASA identifiers used for these records are application identifiers,
+not invented PSI accessions. Selected published conditions and results connect to
+search, SI citations, side-by-side comparison and source-bound analysis. LUCI's
+published simulated-lunar-gravity fits exist outside PSI; FM2's retained March 2026
+requirements remain planned conditions. See the [collection scope](data/nasa-research/README.md)
+and [expansion evidence](docs/nasa-research-expansion-2026-11-15.md).
 
 The [complexity reassessment](docs/complexity-reassessment-2026-11-15.md) explains which services, safeguards and verification practices serve these research tasks. The [submission guide](docs/submission-guide-2026-11-15.md) keeps release and submission facts separate; current competition rules still need their own check.
