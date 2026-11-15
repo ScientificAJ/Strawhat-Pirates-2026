@@ -64,7 +64,15 @@ if ! compose "$target" build; then
   exit 1
 fi
 ready() {
-  compose "$1" exec -T web node -e 'fetch("http://127.0.0.1:3100/app", {signal: AbortSignal.timeout(10000)}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
+  local attempt
+  for attempt in {1..12}; do
+    if compose "$1" exec -T web node -e 'fetch("http://127.0.0.1:3100/app", {signal: AbortSignal.timeout(10000)}).then(r => { if (!r.ok) console.error("Web readiness HTTP status:", r.status); process.exit(r.ok ? 0 : 1); }).catch(e => { console.error("Web readiness request failed:", e.cause?.code || e.name); process.exit(1); })'; then
+      return 0
+    fi
+    echo "Web readiness attempt $attempt of 12 failed." >&2
+    if (( attempt < 12 )); then sleep 5; fi
+  done
+  return 1
 }
 if ! compose "$target" up --detach --no-build --wait --wait-timeout 180 || ! ready "$target"; then
   printf '%s\n' "$target" > "$state/failed-revision"

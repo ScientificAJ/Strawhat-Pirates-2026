@@ -55,10 +55,20 @@ if [[ -f "$TEST_BUILD_FAIL" && " $* " == *" build "* ]]; then exit 1; fi
 if [[ -f "$TEST_UP_FAIL" && " $* " == *" up "* && " $* " == *" --no-build "* ]]; then
   exit 1
 fi
+if [[ -f "$TEST_READY_FAILURES" && " $* " == *" exec "* ]]; then
+  remaining=$(cat "$TEST_READY_FAILURES")
+  if (( remaining > 0 )); then
+    echo "$((remaining - 1))" > "$TEST_READY_FAILURES"
+    exit 1
+  fi
+fi
 exit 0
 """
         )
         docker.chmod(0o755)
+        sleeper = binary / "sleep"
+        sleeper.write_text("#!/usr/bin/env bash\nexit 0\n")
+        sleeper.chmod(0o755)
         executable = base / "deploy.sh"
         executable.write_text(
             script.replace("root=/opt/nova-ember", f"root={root}").replace(
@@ -71,6 +81,7 @@ exit 0
             "TEST_LOG": str(log),
             "TEST_BUILD_FAIL": str(base / "build_fail"),
             "TEST_UP_FAIL": str(base / "up_fail"),
+            "TEST_READY_FAILURES": str(base / "ready_failures"),
         }
 
         def run(expected=0):
@@ -92,6 +103,20 @@ exit 0
         assert "--project-directory" not in lines
         before = log.read_text()
         assert "Already checked" in run() and log.read_text() == before
+        code = commit("services/main.py", "transient readiness")
+        (base / "ready_failures").write_text("2\n")
+        before = log.read_text()
+        assert "Deployed revision" in run()
+        attempts = log.read_text()[len(before) :].count(" exec ")
+        assert attempts == 3
+        assert state.joinpath("deployed-revision").read_text().strip() == code
+        commit("services/main.py", "persistent readiness failure")
+        (base / "ready_failures").write_text("12\n")
+        before = log.read_text()
+        assert "attempting to restore" in run(1)
+        attempts = log.read_text()[len(before) :].count(" exec ")
+        assert attempts == 13  # Twelve checks of the new release, then one of the rollback.
+        assert state.joinpath("deployed-revision").read_text().strip() == code
         commit("services/main.py", "change two")
         (base / "build_fail").touch()
         assert "Build failed" in run(1)
