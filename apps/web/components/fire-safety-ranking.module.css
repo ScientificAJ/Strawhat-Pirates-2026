@@ -1,0 +1,50 @@
+.ranking {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ranking p,
+.ranking blockquote {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.ranking p,
+.ranking small {
+  color: var(--secondary);
+  font-size: 0.875rem;
+}
+
+.list {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 8px;
+}
+
+.list small {
+  display: block;
+}
+
+.rank {
+  font-variant-numeric: tabular-nums;
+  color: var(--secondary);
+}
+
+.list details {
+  margin-top: 6px;
+  font-size: 0.875rem;
+}
+
+.list blockquote {
+  margin: 8px 0;
+  max-width: 72ch;
+}

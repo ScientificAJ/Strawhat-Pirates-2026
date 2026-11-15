@@ -16,7 +16,11 @@ from nova_ember.api.discovery import (
     RecordQuery,
     create_discovery_router,
 )
+from nova_ember.api.fire_safety_ranking import rank_fire_safety
 from nova_ember.api.repository import Corpus
+from nova_ember.api.research_tools import ResearchTools
+from nova_ember.api.scientific_toolbox import FireSafetyRankingInput
+from nova_ember.contracts.research import WorkspaceContext
 
 ROOT = Path(__file__).parent / "fixtures/nasa-psi"
 
@@ -46,6 +50,76 @@ def service():
 def option(response, name, value):
     facet = next(item for item in response["catalog_facets"] if item["name"] == name)
     return next(item for item in facet["options"] if item["value"] == value)
+
+
+def test_automatic_fire_safety_ranking_is_source_backed_and_stably_tied(service):
+    detection = rank_fire_safety(service, "detection", None)
+    by_id = {item["investigation"]["accession"]: item for item in detection["items"]}
+    assert by_id["PSI-101"]["relevance"] == "direct"
+    assert by_id["PSI-102"]["relevance"] == "direct"
+    assert by_id["PSI-25"]["relevance"] == "related"
+    assert by_id["PSI-107"]["relevance"] == "related"
+    assert by_id["PSI-60"]["relevance"] == "related"
+    assert by_id["PSI-115"]["relevance"] == "related"
+    assert by_id["PSI-101"]["rank"] < by_id["PSI-25"]["rank"]
+    assert detection == rank_fire_safety(service, "detection", None)
+    for item in detection["items"]:
+        anchor = item["evidence"]["anchor"]
+        record = next(
+            r
+            for r in service.corpus.snapshot()["manifest"]["investigations"]
+            if r["accession"] == item["investigation"]["accession"]
+        )
+        assert item["evidence"]["quote"] in service._metadata(record)[anchor["field"]]
+        assert anchor["source_sha256"] == record["metadata_sha256"]
+        assert item["data_availability"] in {
+            "source_table",
+            "conditions_table",
+            "other_assets",
+            "catalog_only",
+        }
+
+
+def test_automatic_suppression_ranking_includes_related_extinction(service):
+    result = rank_fire_safety(service, "suppression", None)
+    by_id = {item["investigation"]["accession"]: item for item in result["items"]}
+    assert by_id["PSI-69"]["relevance"] == "direct"
+    assert by_id["PSI-68"]["relevance"] == "related"
+    assert by_id["PSI-117"]["relevance"] == "related"
+    assert by_id["PSI-142"]["relevance"] == "related"
+    assert by_id["PSI-69"]["rank"] < by_id["PSI-68"]["rank"]
+
+
+def test_automatic_ranking_separates_condition_tables_and_validates_area(service):
+    bass = next(
+        row for row in service.corpus.manifest["investigations"] if row["accession"] == "PSI-25"
+    )
+    bass["data_status"] = "reported_conditions"
+    application = FastAPI()
+    application.include_router(create_discovery_router(service.corpus))
+    client = TestClient(application)
+    result = client.get("/v1/discovery/fire-safety-ranking", params={"area": "prevention"})
+    assert result.status_code == 200
+    by_id = {item["investigation"]["accession"]: item for item in result.json()["items"]}
+    assert by_id["PSI-25"]["data_availability"] == "conditions_table"
+    assert by_id["PSI-25"]["data_status"] == "reported_conditions"
+    assert (
+        client.get("/v1/discovery/fire-safety-ranking", params={"area": "invalid"}).status_code
+        == 422
+    )
+
+
+def test_research_assistant_uses_same_ranking_and_keeps_source_anchors(service):
+    tools = ResearchTools(
+        service.corpus,
+        WorkspaceContext(snapshot_id=service.corpus.snapshot_id, context_version="test-ranking"),
+    )
+    fact = tools.rank_fire_safety(FireSafetyRankingInput(area="detection"))
+    expected = rank_fire_safety(service, "detection", None)
+    assert fact["content"]["items"] == expected["items"][:12]
+    assert fact["origin"] == "deterministic_calculation"
+    assert any(anchor["accession"] == "PSI-101" for anchor in fact["sources"])
+    assert "rank_fire_safety" in {tool.name for tool in tools.registry()}
 
 
 def test_exact_annotations_all_resolve_to_the_original_frozen_source(service):

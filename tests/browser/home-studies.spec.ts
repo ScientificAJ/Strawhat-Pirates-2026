@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { mockFireSafetyRankings } from "./fire-safety-ranking-fixture";
 
 test("fire-safety starting points open a populated comparison", async ({
   page,
+  request,
 }) => {
+  await mockFireSafetyRankings(page, request);
   await page.goto("/app");
   const prevention = page
     .locator("article")
@@ -27,9 +30,9 @@ test("fire-safety starting points open a populated comparison", async ({
     path: "/tmp/nova-home-studies-mobile.png",
     fullPage: true,
   });
-  await prevention.getByRole("link", { name: "Compare and rank" }).click();
+  await prevention.getByRole("link", { name: "Compare the first two" }).click();
   await expect(page).toHaveURL(
-    /\/app\/compare\?ids=PSI-26%2CPSI-25|\/app\/compare\?ids=PSI-26,PSI-25/,
+    /\/app\/compare\?ids=PSI-25%2CPSI-26|\/app\/compare\?ids=PSI-25,PSI-26/,
   );
   await expect(
     page.getByText("Change selected investigations (2/8)"),
@@ -37,4 +40,11 @@ test("fire-safety starting points open a populated comparison", async ({
   await expect(
     page.getByText("Check experimental comparability and rank evidence"),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Automatic fire-safety ranking" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("combobox", { name: "Research focus" }),
+  ).toHaveValue("prevention");
+  await expect(page.getByLabel("Rank 1").first()).toBeVisible();
 });

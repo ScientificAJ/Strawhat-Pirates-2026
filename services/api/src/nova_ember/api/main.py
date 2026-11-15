@@ -65,7 +65,7 @@ class ComparisonInputs(BaseModel):
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_environment()
     corpus = Corpus(settings)
-    application = FastAPI(title="Nova Ember scientific API", version="0.1.0")
+    application = FastAPI(title="Nova Ember scientific API", version="1.0.0")
     application.include_router(create_discovery_router(corpus))
     application.include_router(create_methods_router(settings))
     application.include_router(create_visualization_router(corpus))

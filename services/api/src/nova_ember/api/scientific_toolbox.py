@@ -39,6 +39,7 @@ from .discovery import (
     RecordQuery,
 )
 from .exporting import CaseExport
+from .fire_safety_ranking import FireSafetyArea, rank_fire_safety
 from .methods import MethodCall, method_catalog, method_source_snapshot, run_method
 from .model_registry import PredictionInputs, list_models, predict
 from .records import CohortInputs, freeze_selection
@@ -71,6 +72,11 @@ class SelectedRecord(Contract):
 class SourceVisualizationInput(Contract):
     accession: InvestigationId
     asset_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+
+
+class FireSafetyRankingInput(Contract):
+    area: FireSafetyArea
+    limit: int = Field(default=12, ge=1, le=24)
 
 
 class BassFireIllustrationInput(Contract):
@@ -195,6 +201,12 @@ class ScientificToolbox:
                 "Apply the registered comparison/applicability or ranking policies "
                 "to explicit conditions.",
                 self.applicability,
+            ),
+            "rank_fire_safety": Definition(
+                FireSafetyRankingInput,
+                "Rank studies by source-stated topical focus and retained material availability. "
+                "Ranks indicate research starting points, not scientific impact or fire risk.",
+                self.fire_safety_ranking,
             ),
             "compute_metric": Definition(
                 MethodCall,
@@ -489,6 +501,14 @@ class ScientificToolbox:
             expected_snapshot=self.context.snapshot_id,
             selected_investigations=self.context.investigations,
         ).model_dump(mode="json")
+
+    def fire_safety_ranking(self, request: FireSafetyRankingInput) -> dict:
+        result = rank_fire_safety(self.discovery, request.area, self.context.snapshot_id)
+        return {
+            **result,
+            "total_items": len(result["items"]),
+            "items": result["items"][: request.limit],
+        }
 
     def prepare_bass_fire_illustration(self, request: BassFireIllustrationInput) -> dict:
         snapshot = self._snapshot(request.snapshot_id)

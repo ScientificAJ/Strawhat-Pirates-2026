@@ -52,6 +52,7 @@ import { ActualThumbnail } from "./run-workbench";
 import s from "./workbench.module.css";
 import journey from "./research-journey.module.css";
 import { investigationAvailability } from "../lib/source-description";
+import { FireSafetyRanking, type FireSafetyArea } from "./fire-safety-ranking";
 
 type Page<T> = {
   snapshot_id: string;
@@ -659,6 +660,15 @@ export function DiscoveryWorkbench({
         "catalogFacets",
       ].includes(key),
   );
+  const focusByPurpose: Record<string, FireSafetyArea> = {
+    "Material flammability": "prevention",
+    "Detection research": "detection",
+    "Suppression research": "suppression",
+  };
+  const rankingArea =
+    applied.entity === "investigations"
+      ? focusByPurpose[applied.catalogFacets?.purpose?.[0] ?? ""]
+      : undefined;
   return (
     <section className={s.workbench}>
       <div className="page-heading">
@@ -734,6 +744,12 @@ export function DiscoveryWorkbench({
           </button>
         ))}
       </div>
+      {rankingArea && (
+        <section className={s.surface} aria-label="Ranked investigations">
+          <h2>Ranked {rankingArea} research</h2>
+          <FireSafetyRanking area={rankingArea} snapshotId={snapshotId} />
+        </section>
+      )}
       <div
         className={s.tabs}
         role="tablist"

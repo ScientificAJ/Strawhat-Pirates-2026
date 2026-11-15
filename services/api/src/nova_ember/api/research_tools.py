@@ -23,6 +23,7 @@ from .science import compare_investigations, flex_endpoints
 from .scientific_toolbox import (
     BassFireIllustrationInput,
     Empty,
+    FireSafetyRankingInput,
     ScientificToolbox,
     ScientificToolCall,
     SourceVisualizationInput,
@@ -1037,6 +1038,11 @@ class ResearchTools:
             ScientificToolCall(name="prepare_simulation", parameters=inputs.model_dump(mode="json"))
         )
 
+    def rank_fire_safety(self, inputs: FireSafetyRankingInput) -> dict:
+        return self.run_scientific_tool(
+            ScientificToolCall(name="rank_fire_safety", parameters=inputs.model_dump(mode="json"))
+        )
+
     def prepare_source_simulation(self, inputs: SourceDropletVisualizationRequest) -> dict:
         return self.run_scientific_tool(
             ScientificToolCall(
@@ -1075,6 +1081,14 @@ class ResearchTools:
             return enabled_for_turn
 
         definitions: list[tuple[str, type[BaseModel], Callable[..., dict], str]] = [
+            (
+                "rank_fire_safety",
+                FireSafetyRankingInput,
+                self.rank_fire_safety,
+                "Rank investigations for prevention, detection or suppression using the "
+                "same source-anchored criteria as the research dashboard. Cite its source "
+                "anchors and describe rankings as research starting points, not fire risk.",
+            ),
             (
                 "prepare_bass_fire_illustration",
                 BassFireIllustrationInput,

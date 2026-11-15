@@ -160,6 +160,8 @@ SYSTEM += (
     "change how the requested result should be used, and state each once. Empty claim and "
     "answer limitation lists are appropriate. Do not add generic validation, measurement, "
     "causality or safety disclaimers when they do not affect the requested task. "
+    "For a fire-safety ranking, call rank_fire_safety for the requested prevention, detection "
+    "or suppression area, and report the source-linked research ranking and its criteria. "
     "When an original NASA photograph or video is requested, call prepare_source_visualization "
     "even if the user also says visualize. Otherwise, when asked to generate or visualize "
     "BASS-II fire, call prepare_bass_fire_illustration and explain briefly that it is an "

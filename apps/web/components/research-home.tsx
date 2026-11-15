@@ -24,23 +24,28 @@ import {
 } from "../lib/research-history";
 import { ErrorState, LoadingRows, Notice } from "./chrome";
 import { sourceUrl } from "./workbench-common";
+import { FireSafetyRanking, type FireSafetyArea } from "./fire-safety-ranking";
 
 const questions = [
   "How does airflow affect flame spread in microgravity?",
   "Which NASA investigations study smoke detection?",
   "What evidence is useful for choosing spacecraft materials?",
 ];
-const topics = [
+const topics: {
+  title: string;
+  description: string;
+  href: string;
+  label: string;
+  area?: FireSafetyArea;
+  studies?: { name: string; id: string }[];
+}[] = [
   {
     title: "Prevention: How do materials catch fire and burn?",
     description:
       "Explore solid fuels, flame spread and the conditions an experiment tested.",
     href: "/app/investigations?focus=prevention",
     label: "Materials & flame spread",
-    studies: [
-      { name: "BASS", id: "PSI-26" },
-      { name: "BASS-II", id: "PSI-25" },
-    ],
+    area: "prevention",
   },
   {
     title: "Detection: How can a fire be detected?",
@@ -48,10 +53,7 @@ const topics = [
       "Find smoke and aerosol investigations relevant to detecting a fire early.",
     href: "/app/investigations?focus=detection",
     label: "Smoke & detection",
-    studies: [
-      { name: "SAME", id: "PSI-102" },
-      { name: "SAME-R", id: "PSI-101" },
-    ],
+    area: "detection",
   },
   {
     title: "Suppression: What makes a flame go out?",
@@ -59,10 +61,7 @@ const topics = [
       "Investigate fuel droplets, surrounding gases and flame extinction.",
     href: "/app/investigations?focus=suppression",
     label: "Extinction & suppression",
-    studies: [
-      { name: "FLEX", id: "PSI-69" },
-      { name: "FLEX-2", id: "PSI-68" },
-    ],
+    area: "suppression",
   },
   {
     title: "What might this mean for Earth?",
@@ -318,21 +317,27 @@ export function ResearchHome({
                 <ArrowRight size={21} />
               </Link>
               <div className="science-topic-actions">
-                <span>Start with:</span>
-                {topic.studies.map((study) => (
-                  <Link
-                    key={study.id}
-                    href={`/app/investigations/${study.id}?snapshot=${snapshotId}`}
-                  >
-                    {study.name}
-                  </Link>
-                ))}
-                {topic.studies.length > 1 && (
-                  <Link
-                    href={`/app/compare?ids=${topic.studies.map((study) => study.id).join(",")}&snapshot=${snapshotId}`}
-                  >
-                    Compare and rank
-                  </Link>
+                {topic.area ? (
+                  <div>
+                    <span>Ranked starting points</span>
+                    <FireSafetyRanking
+                      area={topic.area}
+                      snapshotId={snapshotId}
+                      compact
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <span>Start with:</span>
+                    {topic.studies?.map((study) => (
+                      <Link
+                        key={study.id}
+                        href={`/app/investigations/${study.id}?snapshot=${snapshotId}`}
+                      >
+                        {study.name}
+                      </Link>
+                    ))}
+                  </>
                 )}
               </div>
             </article>

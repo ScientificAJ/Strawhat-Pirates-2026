@@ -33,6 +33,7 @@ import {
 } from "./workbench-common";
 import s from "./workbench.module.css";
 import journey from "./research-journey.module.css";
+import { FireSafetyRanking, type FireSafetyArea } from "./fire-safety-ranking";
 
 type Condition = {
   value?: string | number | null;
@@ -202,6 +203,8 @@ export function ComparisonWorkbench({
   const [numberValue, setNumberValue] = useState(false);
   const [rankingSignature, setRankingSignature] = useState("");
   const [rankingMode, setRankingMode] = useState("relevance");
+  const [automaticArea, setAutomaticArea] =
+    useState<FireSafetyArea>("prevention");
   const [assessments, setAssessments] = useState<Record<string, Assessment>>(
     {},
   );
@@ -246,6 +249,15 @@ export function ComparisonWorkbench({
     );
   const baseWeights: Record<string, number> =
     rankingMode === "applicability" ? applicability : relevance;
+  useEffect(() => {
+    const focus = new URLSearchParams(window.location.search).get("focus");
+    if (
+      focus === "prevention" ||
+      focus === "detection" ||
+      focus === "suppression"
+    )
+      setAutomaticArea(focus);
+  }, []);
   useEffect(() => {
     if (!id || id === "new") {
       const routeIds = new URLSearchParams(window.location.search)
@@ -674,6 +686,25 @@ export function ComparisonWorkbench({
       )}
       {!recordItems.length && selected.length >= 2 && catalog.data && (
         <section className={journey.researchSummary}>
+          <h2>Automatic fire-safety ranking</h2>
+          <label className={s.field}>
+            Research focus
+            <select
+              value={automaticArea}
+              onChange={(event) =>
+                setAutomaticArea(event.target.value as FireSafetyArea)
+              }
+            >
+              <option value="prevention">Prevention and flammability</option>
+              <option value="detection">Detection and aerosols</option>
+              <option value="suppression">Suppression and extinction</option>
+            </select>
+          </label>
+          <FireSafetyRanking
+            area={automaticArea}
+            snapshotId={snapshotId}
+            selectedIds={selected}
+          />
           <h2>Research side by side</h2>
           <p
             id="comparison-scroll-hint"

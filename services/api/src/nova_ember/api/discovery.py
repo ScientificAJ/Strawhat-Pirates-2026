@@ -69,6 +69,7 @@ from .catalog_facets import (
     matches_facets,
 )
 from .config import Settings
+from .fire_safety_ranking import FireSafetyArea, rank_fire_safety
 from .repository import Corpus, MissingSource, public_asset, public_investigation
 
 METADATA_FIELDS = (
@@ -1601,6 +1602,10 @@ def create_discovery_router(corpus: Corpus) -> APIRouter:
     @router.post("/discovery/investigations")
     def investigations(query: InvestigationQuery):
         return service.query_investigations(query)
+
+    @router.get("/discovery/fire-safety-ranking")
+    def fire_safety_ranking(area: FireSafetyArea, snapshot_id: Digest | None = None):
+        return rank_fire_safety(service, area, snapshot_id)
 
     @router.post("/discovery/records")
     def records(query: RecordQuery):

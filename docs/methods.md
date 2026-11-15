@@ -142,6 +142,16 @@ Evidence support, critical mismatches and modeling readiness stay separate.
 Ranking alone never authorizes a scientific inference or becomes a safety
 probability. Source-provided component scores and explanations remain inspectable.
 
+The automatic `fire-safety-evidence-v1` ranking offers starting points for
+prevention, detection, and suppression. It matches source-stated research
+objectives and pinned classifications, then orders equally relevant studies by
+the type of material retained locally. Condition-only tables, including FM2's
+planned conditions, are identified separately. Equivalent groups share a rank,
+with accession as the stable display
+order. Each result carries the source quotation and locator used for its match.
+This ordering describes research relevance and available material; it does not
+measure fire risk or the relative scientific impact of the studies.
+
 Spacecraft/station, lunar, Mars, rover, suit and Earth-transfer presets identify
 research contexts while leaving unspecified numerical conditions unknown. The
 30%-oxygen/10.2-psia example is explicitly hypothetical, not a mission standard.
